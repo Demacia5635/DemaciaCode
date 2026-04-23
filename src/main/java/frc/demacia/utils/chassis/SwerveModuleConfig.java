@@ -27,6 +27,8 @@ public class SwerveModuleConfig {
     public CancoderConfig cancoderConfig;
     public double steerOffset;
 
+    public double position; 
+
     public double SteerVelToDriveVel;
 
         /**

@@ -1,35 +1,29 @@
 package frc.demacia.utils.chassis;
 
-import edu.wpi.first.math.geometry.Translation2d;
 import frc.demacia.utils.sensors.PigeonConfig;
+import frc.demacia.vision.Camera;
+import frc.demacia.vision.TagPose;
 
 /**
  * Configuration class for swerve drive chassis.
- * 
- * <p>Contains all module configurations, physical dimensions, and motion constraints.</p>
- * 
- * <p><b>Example:</b></p>
+ * * <p>Contains all module configurations, physical dimensions, and motion constraints.</p>
+ * * <p><b>Example:</b></p>
  * <pre>
  * ChassisConfig config = new ChassisConfig(...)
- *     .withMaxLinearAccel(10.0)      // 10 m/s² max acceleration
- *     .withMaxOmegaVelocity(Math.toRadians(540))  // 540°/s rotation
- *     .withMaxRadius(0.4);           // 0.4m turn radius
+ * .withMaxLinearAccel(10.0)      // 10 m/s² max acceleration
+ * .withMaxOmegaVelocity(Math.toRadians(540))  // 540°/s rotation
+ * .withMaxRadius(0.4);           // 0.4m turn radius
  * </pre>
  */
 public class ChassisConfig {
-    public String name;
+    public final String name;
 
-    public SwerveModuleConfig frontLeftModuleConfig;
-    public SwerveModuleConfig frontRightModuleConfig;
-    public SwerveModuleConfig backLeftModuleConfig;
-    public SwerveModuleConfig backRightModuleConfig;
+    public final SwerveModuleConfig[] swerveModuleConfig;
 
-    public PigeonConfig pigeonConfig;
+    public final PigeonConfig pigeonConfig;
 
-    public Translation2d frontLeftPosition;
-    public Translation2d frontRightPosition;
-    public Translation2d backLeftPosition;
-    public Translation2d backRightPosition;
+    public TagPose[] tags;
+    public Camera objectCamera;
 
     public double cycleDt = 0.02;
     public double maxLinearAccel = 10;
@@ -40,26 +34,19 @@ public class ChassisConfig {
     public double maxDeltaVelocity = maxLinearAccel * cycleDt;
     public double maxVelocityToIgnoreRadius = maxRadius * maxOmegaVelocity;
     public double minVelocity = 1.5;
-    public double maxDriveVelocity = 4;
+    public double maxDriveVelocity = 5;
     public double maxRotationalVelocity = 4;
 
-    public ChassisConfig(String name, SwerveModuleConfig frontLeftModuleConfig, SwerveModuleConfig frontRightModuleConfig, SwerveModuleConfig backLeftModuleConfig, SwerveModuleConfig backRightModuleConfig, PigeonConfig pigeonConfig, Translation2d frontLeftPosition, Translation2d frontRightPosition, Translation2d backLeftPosition, Translation2d backRightPosition){
+    public ChassisConfig(String name, SwerveModuleConfig[] swerveModuleConfigs, PigeonConfig pigeonConfig, TagPose[] tags) {
         this.name = name;
-        this.frontLeftModuleConfig = frontLeftModuleConfig;
-        this.frontRightModuleConfig = frontRightModuleConfig;
-        this.backLeftModuleConfig = backLeftModuleConfig;
-        this.backRightModuleConfig = backRightModuleConfig;
+        this.swerveModuleConfig = swerveModuleConfigs;
         this.pigeonConfig = pigeonConfig;
-        this.frontLeftPosition = frontLeftPosition;
-        this.frontRightPosition = frontRightPosition;
-        this.backLeftPosition = backLeftPosition;
-        this.backRightPosition = backRightPosition;
+        this.tags = tags;
     }
 
     /**
      * Sets the robot control loop period.
-     * 
-     * @param cycleDt Period in seconds (typically 0.02 for 50Hz)
+     * * @param cycleDt Period in seconds (typically 0.02 for 50Hz)
      * @return this config for chaining
      */
     public ChassisConfig withCycleDt(double cycleDt){
@@ -69,10 +56,8 @@ public class ChassisConfig {
 
     /**
      * Sets maximum linear acceleration.
-     * 
-     * <p>Higher values = more aggressive acceleration but risk of wheel slip.</p>
-     * 
-     * @param maxLinearAccel Maximum acceleration in m/s²
+     * * <p>Higher values = more aggressive acceleration but risk of wheel slip.</p>
+     * * @param maxLinearAccel Maximum acceleration in m/s²
      * @return this config for chaining
      */
     public ChassisConfig withMaxLinearAccel(double maxLinearAccel){
@@ -82,8 +67,7 @@ public class ChassisConfig {
 
     /**
      * Sets maximum rotational velocity.
-     * 
-     * @param maxOmegaVelocity Maximum rotation speed in rad/s
+     * * @param maxOmegaVelocity Maximum rotation speed in rad/s
      * @return this config for chaining
      */
     public ChassisConfig withMaxOmegaVelocity(double maxOmegaVelocity){
@@ -98,10 +82,8 @@ public class ChassisConfig {
 
     /**
      * Sets maximum turning radius for smooth motion profiling.
-     * 
-     * <p>Smaller radius = tighter turns but requires slowing down.</p>
-     * 
-     * @param maxRadius Radius in meters
+     * * <p>Smaller radius = tighter turns but requires slowing down.</p>
+     * * @param maxRadius Radius in meters
      * @return this config for chaining
      */
     public ChassisConfig withMaxRadius(double maxRadius){
@@ -126,10 +108,8 @@ public class ChassisConfig {
 
     /**
      * Sets minimum velocity during direction changes.
-     * 
-     * <p>Prevents the robot from stopping during sharp turns.</p>
-     * 
-     * @param minVelocity Minimum velocity in m/s
+     * * <p>Prevents the robot from stopping during sharp turns.</p>
+     * * @param minVelocity Minimum velocity in m/s
      * @return this config for chaining
      */
     public ChassisConfig withMinVelocity(double minVelocity){
@@ -144,6 +124,11 @@ public class ChassisConfig {
 
     public ChassisConfig withMaxRotationalVelocity(double maxRotationalVelocity){
         this.maxRotationalVelocity = maxRotationalVelocity;
+        return this;
+    }
+
+    public ChassisConfig withObjectCamera(Camera objectCamera){
+        this.objectCamera = objectCamera;
         return this;
     }
 }

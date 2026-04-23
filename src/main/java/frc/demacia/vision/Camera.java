@@ -6,8 +6,6 @@ package frc.demacia.vision;
 
 import edu.wpi.first.math.geometry.Translation3d;
 
-/** Add your docs here. */
-
 public class Camera {
 
     private String name;
@@ -15,19 +13,22 @@ public class Camera {
     private double pitch;
     private double yaw;
     private String tableName;
-    private Enum<?> cameraType;
+    private boolean isCroping;
+    private boolean isObjectCamera = false;
 
-    public Camera(String name, Translation3d robotToCamPosition, double pitch, double yaw, Enum<?> cameraType) {
+    public Camera(String name, Translation3d robotToCamPosition, double pitch, double yaw, boolean isCroping, boolean isObjectCamera) {
         this.name = name;
         this.robotToCamPosition = robotToCamPosition;
         this.pitch = pitch;
         this.yaw = yaw;
-        this.cameraType = cameraType;
         this.tableName = "limelight-"+name;
+        this.isCroping = isCroping;
+        this.isObjectCamera = isObjectCamera;
     }
 
+
     public Translation3d getRobotToCamPosition() {
-        return robotToCamPosition;
+        return robotToCamPosition != null? robotToCamPosition  : new Translation3d();
     }
 
     public double getHeight() {
@@ -49,5 +50,13 @@ public class Camera {
     public String getTableName() {
         return this.tableName;
     }
-    public Enum<?> getCameraType(){return this.cameraType;}
+
+
+    public boolean getIsCroping(){
+        return isCroping;
+    }
+
+    public boolean getIsObjectCamera() {
+        return isObjectCamera;
+    }
 }
