@@ -130,13 +130,6 @@ public class Tag extends SubsystemBase {
    * * @return Distance in meters
    */
   public double GetDistFromCamera() {
-    if (camera.getCameraType().name().equals("REEF")) {
-      alpha = camToTagPitch + camera.getPitch();
-      dist = (Math.abs(height - camera.getHeight())) * (Math.tan(Math.toRadians(alpha)));
-      dist = dist/Math.cos(Math.toRadians(camToTagYaw));
-      //LogManager.log(camera.getName() + ":" + dist);
-      return Math.abs(dist);
-    }
     alpha = camToTagPitch + camera.getPitch();
     dist = (Math.abs(height - camera.getHeight())) / (Math.tan(Math.toRadians(alpha)));
     dist = dist/Math.cos(Math.toRadians(camToTagYaw));
