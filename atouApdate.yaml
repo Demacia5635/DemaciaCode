@@ -1,0 +1,16 @@
+name: Sync Template
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * 1'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: AndreasAugustin/actions-template-sync@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_repo_path: Demacia5635/2026UpdateRobotCodeEmpty
