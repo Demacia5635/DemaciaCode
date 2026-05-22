@@ -1,16 +1,43 @@
-name: Sync Template
+name: Sync Specific Folder
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
-  schedule:
-    - cron: '0 9 * * 1'
 
 jobs:
-  sync:
+  sync-folder:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: AndreasAugustin/actions-template-sync@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          source_repo_path: Demacia5635/2026UpdateRobotCodeEmpty
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Sync Only Demacia Folder
+        run: |
+          rm -rf src/main/java/frc/demacia
+          
+          mkdir -p temp_repo
+          git clone --depth 1 https://github.com/Demacia5635/2026UpdateRobotCodeEmpty.git temp_repo
+          
+          mkdir -p src/main/java/frc
+          
+          cp -r temp_repo/src/main/java/frc/demacia src/main/java/frc/
+          
+          rm -rf temp_repo
+
+      - name: Commit and Push Changes
+        run: |
+          git add src/main/java/frc/demacia
+          if ! git diff --cached --quiet; then
+            git commit -m " אוטומציה: עדכון תיקיית demacia מהתבנית המרכזית"
+            git push origin main
+          else
+            echo "התיקייה כבר מעודכנת לחלוטין, אין צורך לבצע push."
+          fi
