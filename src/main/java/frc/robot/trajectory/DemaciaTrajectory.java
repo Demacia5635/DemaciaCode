@@ -3,283 +3,120 @@ package frc.robot.trajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-
+ 
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * DemaciaTrajectory — receives a list of waypoints, builds a sequence of
- * straight legs and arcs, then computes the required ChassisSpeeds every cycle.
- *
- * Build phase  : call build() once before the command starts.
- * Tracking phase: call calculateSpeeds() every execute() cycle.
- */
+ 
 public class DemaciaTrajectory {
-
-    private static final double CYCLE_TIME         = 0.02;              // seconds per cycle
-    private static final double ARRIVE_THRESHOLD   = 0.05;              // meters — switch leg when closer than this
-    private static final double ANGLE_ERR_MAX      = Math.toRadians(45);// radians — switch leg if error exceeds this
-    private static final double ARC_DONE_THRESHOLD = Math.toRadians(3); // radians — arc is done when heading is this close
-    private static final double KP_HEADING         = 3.0;               // P-gain for robot rotation correction
-
+ 
     private final List<Leg> legs = new ArrayList<>();
-    private int currentLegIndex = 0;
-    private boolean finished = false;
-
-    // =========================================================================
-    //  PATH BUILDING
-    // =========================================================================
-
-    /**
-     * Builds the full leg list from the given waypoints.
-     * Step A: compute circle centers for every internal waypoint.
-     * Step B: compute tangent points and create straight + arc legs.
-     *
-     * @param points list of at least 2 waypoints
-     * @param radius uniform turn radius for the entire path (meters)
-     */
-    public void build(List<TrajectoryPoint> points, double radius) {
+ 
+    public List<Leg> build(List<Pose2d> points, double[] velocities,
+                           double[] maxVelocities, double[] maxAccelerations,
+                           double radius) {
         legs.clear();
-        currentLegIndex = 0;
-        finished = false;
-
-        if (points.size() < 2) return;
-
-        // Step A: compute circle centers for internal waypoints (not first or last)
+        if (points.size() < 2) return legs;
+ 
+        // compute circle centers for every internal waypoint
         Circle[] circles = new Circle[points.size()];
         for (int i = 1; i < points.size() - 1; i++) {
-            circles[i] = Circle.calculateCircleCenter(
-                    points.get(i - 1).pose.getTranslation(),
-                    points.get(i + 1).pose.getTranslation(),
-                    points.get(i).pose.getTranslation(),
+            circles[i] = Circle.calculate(
+                    points.get(i - 1).getTranslation(),
+                    points.get(i + 1).getTranslation(),
+                    points.get(i).getTranslation(),
                     radius);
         }
-
-        // Step B.1: straight leg from start to the first tangent point
-        Translation2d firstTangent = TangentCalculator.pointToCircleTangent(
-                points.get(0).pose.getTranslation(),
-                circles[1].center,
-                radius,
-                circles[1].isLeftTurn);
-
-        addStraightLeg(points.get(0).pose,
-                       toPose(firstTangent, points.get(0).pose.getRotation()),
-                       points.get(1));
-
-        // Step B.2: arc + straight for each internal waypoint
+ 
+        // straight leg from start to first tangent point
+        Translation2d firstTangent = pointToCircleTangent(
+                points.get(0).getTranslation(), circles[1], radius);
+        addStraight(points.get(0),
+                    new Pose2d(firstTangent, points.get(0).getRotation()),
+                    maxVelocities[1], maxAccelerations[1], velocities[1]);
+ 
         for (int i = 1; i < points.size() - 1; i++) {
             Circle curr = circles[i];
-            boolean hasNext = (i + 1 < points.size() - 1);
-
+            boolean hasNext = i + 1 < points.size() - 1;
+ 
             if (hasNext) {
                 Circle next = circles[i + 1];
                 Translation2d[] tangents;
-
-                // Same turn direction -> parallel (straight) tangent
-                // Opposite turn direction -> cross tangent
+ 
                 if (curr.isLeftTurn == next.isLeftTurn) {
-                    tangents = TangentCalculator.sameTurnTangents(
-                            curr.center, next.center, radius, curr.isLeftTurn);
+                    tangents = sameTurnTangents(curr, next, radius);
                 } else {
-                    tangents = TangentCalculator.oppositeTurnTangents(
-                            curr.center, next.center, radius, curr.isLeftTurn);
+                    tangents = oppositeTurnTangents(curr, next, radius);
                 }
-
-                // Arc from the end of the previous straight to the first tangent point
-                addArcLeg(legs.get(legs.size() - 1).end,
-                          toPose(tangents[0], angleToTarget(curr.center, tangents[0], curr.isLeftTurn)),
-                          curr, points.get(i));
-
-                // Straight leg between the two tangent points
-                addStraightLeg(legs.get(legs.size() - 1).end,
-                               toPose(tangents[1], angleToTarget(next.center, tangents[1], next.isLeftTurn)),
-                               points.get(i + 1));
-
+ 
+                addArc(legs.get(legs.size() - 1).end,
+                       new Pose2d(tangents[0], tangentHeading(curr, tangents[0])),
+                       curr, maxVelocities[i], maxAccelerations[i], velocities[i]);
+ 
+                addStraight(legs.get(legs.size() - 1).end,
+                            new Pose2d(tangents[1], tangentHeading(next, tangents[1])),
+                            maxVelocities[i + 1], maxAccelerations[i + 1], velocities[i + 1]);
             } else {
-                // Last internal waypoint: arc to the final tangent point
-                Translation2d lastTangent = TangentCalculator.pointToCircleTangent(
-                        points.get(points.size() - 1).pose.getTranslation(),
-                        curr.center,
-                        radius,
-                        curr.isLeftTurn);
-                addArcLeg(legs.get(legs.size() - 1).end,
-                          toPose(lastTangent, angleToTarget(curr.center, lastTangent, curr.isLeftTurn)),
-                          curr, points.get(i));
+                Translation2d lastTangent = pointToCircleTangent(
+                        points.get(points.size() - 1).getTranslation(), curr, radius);
+                addArc(legs.get(legs.size() - 1).end,
+                       new Pose2d(lastTangent, tangentHeading(curr, lastTangent)),
+                       curr, maxVelocities[i], maxAccelerations[i], velocities[i]);
             }
         }
-
-        // Step B.3: final straight leg to the last waypoint
-        addStraightLeg(legs.get(legs.size() - 1).end,
-                       points.get(points.size() - 1).pose,
-                       points.get(points.size() - 1));
+ 
+        // final straight to last waypoint
+        addStraight(legs.get(legs.size() - 1).end,
+                    points.get(points.size() - 1),
+                    maxVelocities[points.size() - 1],
+                    maxAccelerations[points.size() - 1],
+                    velocities[points.size() - 1]);
+ 
+        return legs;
     }
-
-    // =========================================================================
-    //  PATH TRACKING
-    // =========================================================================
-
-    /**
-     * Called every execute() cycle. Returns the ChassisSpeeds needed to
-     * follow the current leg. Automatically advances to the next leg when done.
-     *
-     * @param currentSpeeds robot-relative speeds from the drivetrain
-     * @param pose          current robot pose from odometry
-     */
-    public ChassisSpeeds calculateSpeeds(ChassisSpeeds currentSpeeds, Pose2d pose) {
-        if (finished || legs.isEmpty()) return new ChassisSpeeds();
-
-        Leg leg = legs.get(currentLegIndex);
-        CalculateResult result;
-
-        if (leg.type == Leg.LegType.STRAIGHT) {
-            result = trackStraight(leg, currentSpeeds, pose);
-        } else {
-            result = trackArc(leg, currentSpeeds, pose);
-        }
-
-        // Advance to next leg when current leg is complete
-        if (result.distanceLeft <= 0) {
-            currentLegIndex++;
-            if (currentLegIndex >= legs.size()) {
-                finished = true;
-                return new ChassisSpeeds();
-            }
-        }
-
-        return toChassisSpeeds(result, currentSpeeds, pose);
+ 
+    // --- tangent helpers ---
+ 
+    private Translation2d pointToCircleTangent(Translation2d p, Circle c, double radius) {
+        Translation2d vec = p.minus(c.center);
+        double d = vec.getNorm();
+        double base = vec.getAngle().getRadians();
+        double alpha = Math.acos(radius / d);
+        double angle = base + (c.isLeftTurn ? -alpha : alpha);
+        return c.center.plus(new Translation2d(radius * Math.cos(angle), radius * Math.sin(angle)));
     }
-
-    public boolean isFinished() { return finished; }
-
-    // =========================================================================
-    //  STRAIGHT LEG TRACKING
-    // =========================================================================
-
-    /**
-     * Tracks a straight leg.
-     * - Computes distance and angle to the end point.
-     * - Ends the leg if close enough or angle error is too large.
-     * - Uses a "double correction" heading to guide the robot back to the base line.
-     * - Computes velocity using the trapezoidal profile.
-     */
-    private CalculateResult trackStraight(Leg leg, ChassisSpeeds currentSpeeds, Pose2d pose) {
-        Translation2d vec = leg.end.getTranslation().minus(pose.getTranslation());
-
-        double distanceLeft  = vec.getNorm();
-        double angleToTarget = vec.getAngle().getRadians();
-        double baseAngle     = leg.start.getRotation().getRadians();
-        double angleError    = baseAngle - angleToTarget;
-        double endAngle      = leg.end.getRotation().getRadians();
-
-        // End condition: arrived or angle error too large
-        if (distanceLeft < ARRIVE_THRESHOLD || Math.abs(angleError) > ANGLE_ERR_MAX) {
-            return new CalculateResult(leg.endVelocity, endAngle, 0);
-        }
-
-        double currentV = Math.hypot(currentSpeeds.vxMetersPerSecond,
-                                     currentSpeeds.vyMetersPerSecond);
-        double v = Trapezoid.calculate(currentV, leg.endVelocity,
-                                       leg.maxVelocity, leg.maxAcceleration, distanceLeft);
-
-        // Double-correction heading: steers back toward the base line
-        double angle = 2 * angleToTarget - endAngle;
-
-        return new CalculateResult(v, angle, distanceLeft);
+ 
+    private Translation2d[] sameTurnTangents(Circle c1, Circle c2, double radius) {
+        Translation2d vec = c2.center.minus(c1.center);
+        double angle = vec.getAngle().getRadians() + (c1.isLeftTurn ? -Math.PI / 2 : Math.PI / 2);
+        Translation2d offset = new Translation2d(radius * Math.cos(angle), radius * Math.sin(angle));
+        return new Translation2d[]{ c1.center.plus(offset), c2.center.plus(offset) };
     }
-
-    // =========================================================================
-    //  ARC TRACKING
-    // =========================================================================
-
-    /**
-     * Tracks an arc leg.
-     * - Computes the base heading (tangent direction at current position).
-     * - Ends the leg when the base heading is close to the target heading.
-     * - Corrects the effective radius based on how far the robot is from the ideal circle.
-     * - Computes angular rate (omega) = velocity / corrected_radius.
-     */
-    private CalculateResult trackArc(Leg leg, ChassisSpeeds currentSpeeds, Pose2d pose) {
-        Translation2d centerToPos = leg.arcCenter.minus(pose.getTranslation());
-
-        // Tangent direction at the robot's current position on the circle
-        double baseHeading   = centerToPos.getAngle().getRadians()
-                               + (leg.isLeftTurn ? Math.PI / 2 : -Math.PI / 2);
-        double targetHeading = leg.end.getRotation().getRadians();
-
-        // End condition: heading is close enough to the target
-        if (Math.abs(baseHeading - targetHeading) < ARC_DONE_THRESHOLD) {
-            return new CalculateResult(leg.endVelocity, targetHeading, 0);
-        }
-
-        // Corrected radius: pulls the robot back toward the ideal circle
-        double r = centerToPos.getNorm();
-        r = leg.arcRadius * 2 - r;
-
-        double distanceLeft = Math.abs(targetHeading - baseHeading) * leg.arcRadius;
-
-        double currentV = Math.hypot(currentSpeeds.vxMetersPerSecond,
-                                     currentSpeeds.vyMetersPerSecond);
-        double v = Trapezoid.calculate(currentV, leg.endVelocity,
-                                       leg.maxVelocity, leg.maxAcceleration, distanceLeft);
-
-        // omega = v / r, then advance the heading by omega * dt
-        double omega       = v / r;
-        double angleChange = omega * CYCLE_TIME;
-        double angle       = baseHeading + (leg.isLeftTurn ? angleChange : -angleChange);
-
-        return new CalculateResult(v, angle, distanceLeft);
+ 
+    private Translation2d[] oppositeTurnTangents(Circle c1, Circle c2, double radius) {
+        Translation2d vec = c2.center.minus(c1.center);
+        double d = vec.getNorm();
+        double base = vec.getAngle().getRadians();
+        double a = Math.acos(radius * 2 / d);
+        double angle = base + (c1.isLeftTurn ? +a : -a);
+        Translation2d offset = new Translation2d(radius * Math.cos(angle), radius * Math.sin(angle));
+        return new Translation2d[]{ c1.center.plus(offset), c2.center.minus(offset) };
     }
-
-    // =========================================================================
-    //  HELPERS
-    // =========================================================================
-
-    /** Converts a CalculateResult into field-relative ChassisSpeeds with heading correction. */
-    private ChassisSpeeds toChassisSpeeds(CalculateResult result,
-                                           ChassisSpeeds currentSpeeds,
-                                           Pose2d pose) {
-        double vx = result.velocity * Math.cos(result.heading);
-        double vy = result.velocity * Math.sin(result.heading);
-
-        // Simple P controller for robot rotation toward the leg's end heading
-        double robotHeading  = pose.getRotation().getRadians();
-        double targetHeading = currentLegIndex < legs.size()
-                ? legs.get(currentLegIndex).end.getRotation().getRadians()
-                : robotHeading;
-        double headingError = angleModulus(targetHeading - robotHeading);
-        double omega = KP_HEADING * headingError;
-
-        return new ChassisSpeeds(vx, vy, omega);
-    }
-
-    private void addStraightLeg(Pose2d start, Pose2d end, TrajectoryPoint tp) {
-        legs.add(new Leg(start, end, tp.maxVelocity, tp.maxAcceleration, tp.velocity));
-    }
-
-    private void addArcLeg(Pose2d start, Pose2d end, Circle circle, TrajectoryPoint tp) {
-        legs.add(new Leg(start, end, circle.center, circle.radius, circle.isLeftTurn,
-                         tp.maxVelocity, tp.maxAcceleration, tp.velocity));
-    }
-
-    private Pose2d toPose(Translation2d t, Rotation2d r) {
-        return new Pose2d(t, r);
-    }
-
-    /** Returns the tangent heading at a point on a circle (perpendicular to the radius). */
-    private Rotation2d angleToTarget(Translation2d center, Translation2d point, boolean isLeftTurn) {
-        Translation2d vec = point.minus(center);
-        double angle = vec.getAngle().getRadians() + (isLeftTurn ? Math.PI / 2 : -Math.PI / 2);
+ 
+    private Rotation2d tangentHeading(Circle c, Translation2d point) {
+        Translation2d vec = point.minus(c.center);
+        double angle = vec.getAngle().getRadians() + (c.isLeftTurn ? Math.PI / 2 : -Math.PI / 2);
         return new Rotation2d(angle);
     }
-
-    /** Wraps angle to the range [-π, π] */
-    private static double angleModulus(double angle) {
-        while (angle > Math.PI)  angle -= 2 * Math.PI;
-        while (angle < -Math.PI) angle += 2 * Math.PI;
-        return angle;
+ 
+    // --- leg builders ---
+ 
+    private void addStraight(Pose2d start, Pose2d end,
+                              double maxV, double maxA, double endV) {
+        legs.add(new Leg(start, end, maxV, maxA, endV));
     }
-
-    /** Returns the built leg list (useful for debugging / visualization). */
-    public List<Leg> getLegs() { return legs; }
+ 
+    private void addArc(Pose2d start, Pose2d end, Circle c,
+                        double maxV, double maxA, double endV) {
+        legs.add(new Leg(start, end, c.center, c.radius, c.isLeftTurn, maxV, maxA, endV));
+    }
 }
