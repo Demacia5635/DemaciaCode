@@ -4,24 +4,22 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
  
 public class Leg {
+
  
-    public enum Type { STRAIGHT, ARC }
+    private final Pose2d start;
+    private final Pose2d end;
+    private final double maxVelocity;
+    private final double maxAcceleration;
+    private final double endVelocity;
  
-    public final Type type;
-    public final Pose2d start;
-    public final Pose2d end;
-    public final double maxVelocity;
-    public final double maxAcceleration;
-    public final double endVelocity;
+    private final Circle circleStart;
+    private final Circle circleEnd;
+
+    private final Translation2d arcCenter;
+    private final double arcRadius;
+    private final boolean isLeftTurn;
  
-    // arc only
-    public final Translation2d arcCenter;
-    public final double arcRadius;
-    public final boolean isLeftTurn;
- 
-    public Leg(Pose2d start, Pose2d end,
-               double maxVelocity, double maxAcceleration, double endVelocity) {
-        this.type            = Type.STRAIGHT;
+    public Leg(Pose2d start, Pose2d end, double maxVelocity, double maxAcceleration, double endVelocity) {
         this.start           = start;
         this.end             = end;
         this.maxVelocity     = maxVelocity;
@@ -32,10 +30,7 @@ public class Leg {
         this.isLeftTurn      = false;
     }
  
-    public Leg(Pose2d start, Pose2d end,
-               Translation2d arcCenter, double arcRadius, boolean isLeftTurn,
-               double maxVelocity, double maxAcceleration, double endVelocity) {
-        this.type            = Type.ARC;
+    public Leg(Pose2d start, Pose2d end,Translation2d arcCenter, double arcRadius, boolean isLeftTurn,double maxVelocity, double maxAcceleration, double endVelocity) {
         this.start           = start;
         this.end             = end;
         this.maxVelocity     = maxVelocity;
@@ -46,8 +41,9 @@ public class Leg {
         this.isLeftTurn      = isLeftTurn;
     }
  
-    @Override
-    public String toString() {
-        return String.format("[%s] %s -> %s", type, start.getTranslation(), end.getTranslation());
-    }
+        public double getDistance() {
+            if (isLeftTurn){
+                return arcCenter
+            }
+        }
 }

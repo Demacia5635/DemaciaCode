@@ -1,5 +1,6 @@
 package frc.robot.trajectory;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
  
 public class Circle {
@@ -12,26 +13,32 @@ public class Circle {
         this.radius = radius;
         this.isLeftTurn = isLeftTurn;
     }
- 
-    // Builds a circle around midPoint using the bisector of the angle between from and to.
-    // isLeftTurn is determined by the sign of the angle difference.
-    public static Circle calculate(Translation2d from, Translation2d to,
-                                   Translation2d midPoint, double radius) {
-        double fromAngle = from.minus(midPoint).getAngle().getRadians();
-        double toAngle   = to.minus(midPoint).getAngle().getRadians();
- 
-        double bisector  = (fromAngle + toAngle) / 2;
-        double angleDiff = angleModulus(fromAngle + Math.PI - toAngle);
- 
-        Translation2d center = midPoint.plus(
-                new Translation2d(radius * Math.cos(bisector), radius * Math.sin(bisector)));
- 
-        return new Circle(center, radius, angleDiff < 0);
+
+    private double getDeltaAngle(Translation2d start, Translation2d end) {
+        double startAngle = Math.atan2(start.getY() - center.getY(), start.getX() - center.getX());
+        double endAngle = Math.atan2(end.getY() - center.getY(), end.getX() - center.getX());
+        double deltaAngle = endAngle - startAngle;
+        if (isLeftTurn && deltaAngle < 0) {
+            deltaAngle += 2 * Math.PI;
+        } else if (!isLeftTurn && deltaAngle > 0) {
+            deltaAngle -= 2 * Math.PI;
+        }
+        return deltaAngle;
+    }
+
+    public double getArchDistance() {
+        return radius * getDeltaAngle(new Translation2d(), new Translation2d());
+    }
+
+    public double getHeading(Pose2d p1, Pose2d p2, double angle) {
+        Translation2d v = p1.getTranslation().plus(p2.getTranslation());
+        Translation2d Vector = new Translation2d(v.getAngle().getRadians() + getArchDistance(),Math.sqrt(-1));
+        return 2* angle +Vector.getAngle().getRadians();
+    }
+
+    public double getVelocity(double maxVelocity, double maxAcceleration, double distanceLeft, double currentVelocity, double finishVelocity) {
+        DemaciaTrapezoid trapezoid = new DemaciaTrapezoid(maxVelocity, maxAcceleration);
+        return trapezoid.calculate(distanceLeft, currentVelocity, finishVelocity);
     }
  
-    private static double angleModulus(double a) {
-        while (a >  Math.PI) a -= 2 * Math.PI;
-        while (a < -Math.PI) a += 2 * Math.PI;
-        return a;
-    }
 }
