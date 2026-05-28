@@ -1,4 +1,4 @@
-package frc.robot.trajectory;
+package frc.demacia.path;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
