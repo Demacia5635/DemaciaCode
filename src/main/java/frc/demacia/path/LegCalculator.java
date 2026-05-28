@@ -50,7 +50,7 @@ public class LegCalculator {
      * @param isLeftTurn shared turn direction
      * @return [tangent1 on circle1, tangent2 on circle2]
      */
-    public static Translation2d[] sameTurnTangents(Translation2d center1,
+    public static Pose2d[] sameTurnTangents(Translation2d center1,
                                                     Translation2d center2,
                                                     double radius,
                                                     boolean isLeftTurn) {
@@ -61,9 +61,9 @@ public class LegCalculator {
 
         Translation2d offset = new Translation2d(radius * Math.cos(angle),
                                                   radius * Math.sin(angle));
-        return new Translation2d[]{
-                center1.plus(offset),
-                center2.plus(offset)   // same offset — parallel tangent
+        return new Pose2d[]{
+                new Pose2d(center1.plus(offset).getX(), center1.plus(offset).getY(), center1.plus(offset).getAngle()),
+                new Pose2d(center2.plus(offset).getX(), center2.plus(offset).getY(), center2.plus(offset).getAngle())   // same offset — parallel tangent
         };
     }
 
@@ -79,7 +79,7 @@ public class LegCalculator {
      * @param isLeftTurn turn direction of circle 1
      * @return [tangent1 on circle1, tangent2 on circle2]
      */
-    public static Translation2d[] oppositeTurnTangents(Translation2d center1,
+    public static Pose2d[] oppositeTurnTangents(Translation2d center1,
                                                         Translation2d center2,
                                                         double radius,
                                                         boolean isLeftTurn) {
@@ -92,9 +92,9 @@ public class LegCalculator {
 
         Translation2d offset = new Translation2d(radius * Math.cos(angle),
                                                   radius * Math.sin(angle));
-        return new Translation2d[]{
-                center1.plus(offset),
-                center2.minus(offset)  // opposite sign — cross tangent
+        return new Pose2d[]{
+                new Pose2d(center1.plus(offset).getX(), center1.plus(offset).getY(), center1.plus(offset).getAngle()),
+                new Pose2d(center2.minus(offset).getX(), center2.minus(offset).getY(), center2.minus(offset).getAngle())  // opposite sign — cross tangent
         };
     }
 }
