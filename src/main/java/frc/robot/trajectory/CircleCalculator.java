@@ -7,12 +7,12 @@ import edu.wpi.first.math.geometry.Translation2d;
  * Holds a circle used for curved path segments.
  * Stores the center, radius, and turn direction.
  */
-public class Circle {
+public class CircleCalculator {
     public final Translation2d center;
     public final double radius;
     public final boolean isLeftTurn;
 
-    public Circle(Translation2d center, double radius, boolean isLeftTurn) {
+    public CircleCalculator(Translation2d center, double radius, boolean isLeftTurn) {
         this.center = center;
         this.radius = radius;
         this.isLeftTurn = isLeftTurn;
@@ -27,7 +27,7 @@ public class Circle {
      * @param midPoint  the waypoint the circle is built around (P2)
      * @param radius    desired turn radius
      */
-    public static Circle calculateCircleCenter(Translation2d from,
+    public static CircleCalculator calculateCircleCenter(Translation2d from,
                                                Translation2d to,
                                                Translation2d midPoint,
                                                double radius) {
@@ -44,7 +44,7 @@ public class Circle {
         Translation2d center = midPoint.plus(
                 new Translation2d(radius * Math.cos(vecAngle), radius * Math.sin(vecAngle)));
 
-        return new Circle(center, radius, isLeftTurn);
+        return new CircleCalculator(center, radius, isLeftTurn);
     }
 
     /** Wraps angle to the range [-π, π] */

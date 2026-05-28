@@ -1,5 +1,6 @@
 package frc.robot.trajectory;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 /**
@@ -9,7 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
  *   2. Circle -> Circle, same turn direction  (parallel tangent)
  *   3. Circle -> Circle, opposite turn direction  (cross tangent)
  */
-public class TangentCalculator {
+public class LegCalculator {
 
     /**
      * Tangent point from an external point P1 to a circle.
@@ -23,11 +24,11 @@ public class TangentCalculator {
      * @param isLeftTurn turn direction of the circle
      * @return the tangent point on the circle
      */
-    public static Translation2d pointToCircleTangent(Translation2d p1,
+    public static Translation2d pointToCircleTangent(Pose2d p1,
                                                       Translation2d center,
                                                       double radius,
                                                       boolean isLeftTurn) {
-        Translation2d vec = p1.minus(center);
+        Translation2d vec = p1.getTranslation().minus(center);
         double d = vec.getNorm();
         double baseAngle = vec.getAngle().getRadians();
         double alpha = Math.acos(radius / d);
