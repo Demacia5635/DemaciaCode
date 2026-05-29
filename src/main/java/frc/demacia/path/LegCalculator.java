@@ -1,21 +1,39 @@
 package frc.demacia.path;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * Static helpers for computing tangent points between points and circles.
- * Three cases are handled:
- *   1. Point -> Circle  (first and last leg of the path)
- *   2. Circle -> Circle, same turn direction  (parallel tangent)
- *   3. Circle -> Circle, opposite turn direction  (cross tangent)
+ * Four cases are handled:
+ * 1. Circle -> Circle (Overloaded wrapper accepting Circle objects)
+ * 2. Point -> Circle  (First and last leg of the path)
+ * 3. Circle -> Circle, same turn direction  (Parallel tangent)
+ * 4. Circle -> Circle, opposite turn direction  (Cross tangent)
  */
 public class LegCalculator {
 
     /**
+     * Automatically detects whether the two circles turn in the same or opposite
+     * directions, and returns the tangent poses with the correct driving heading.
+     *
+     * @param c1 the starting circle
+     * @param c2 the ending circle
+     * @return an array containing [Pose2d tangent on circle 1, Pose2d tangent on circle 2]
+     */
+    public static Pose2d[] circleToCircleTangents(Circle c1, Circle c2) {
+        if (c1.isLeft == c2.isLeft) {
+            return sameTurnTangents(c1.center, c2.center, c1.radius, c1.isLeft);
+        } else {
+            return oppositeTurnTangents(c1.center, c2.center, c1.radius, c1.isLeft);
+        }
+    }
+
+    /**
      * Tangent point from an external point P1 to a circle.
      * The tangent-to-center angle is always 90°, so:
-     *   alpha = acos(r / d)
+     * alpha = acos(r / d)
      * The sign of alpha depends on the turn direction.
      *
      * @param p1         the external point
@@ -25,9 +43,9 @@ public class LegCalculator {
      * @return the tangent point on the circle
      */
     public static Translation2d pointToCircleTangent(Pose2d p1,
-                                                      Translation2d center,
-                                                      double radius,
-                                                      boolean isLeftTurn) {
+                                                     Translation2d center,
+                                                     double radius,
+                                                     boolean isLeftTurn) {
         Translation2d vec = p1.getTranslation().minus(center);
         double d = vec.getNorm();
         double baseAngle = vec.getAngle().getRadians();
@@ -48,41 +66,48 @@ public class LegCalculator {
      * @param center2    center of circle 2
      * @param radius     shared radius
      * @param isLeftTurn shared turn direction
-     * @return [tangent1 on circle1, tangent2 on circle2]
+     * @return an array containing [Pose2d tangent on circle 1, Pose2d tangent on circle 2]
      */
     public static Pose2d[] sameTurnTangents(Translation2d center1,
-                                                    Translation2d center2,
-                                                    double radius,
-                                                    boolean isLeftTurn) {
+                                            Translation2d center2,
+                                            double radius,
+                                            boolean isLeftTurn) {
         Translation2d vec = center2.minus(center1);
         double baseAngle = vec.getAngle().getRadians();
         // Perpendicular to the center-to-center vector
         double angle = baseAngle + (isLeftTurn ? -Math.PI / 2 : Math.PI / 2);
 
         Translation2d offset = new Translation2d(radius * Math.cos(angle),
-                                                  radius * Math.sin(angle));
+                                                 radius * Math.sin(angle));
+        
+        Translation2d t1 = center1.plus(offset);
+        Translation2d t2 = center2.plus(offset);
+        
+        // Calculate the actual driving direction along the tangent line
+        Rotation2d heading = t2.minus(t1).getAngle();
+
         return new Pose2d[]{
-                new Pose2d(center1.plus(offset).getX(), center1.plus(offset).getY(), center1.plus(offset).getAngle()),
-                new Pose2d(center2.plus(offset).getX(), center2.plus(offset).getY(), center2.plus(offset).getAngle())   // same offset — parallel tangent
+                new Pose2d(t1, heading),
+                new Pose2d(t2, heading)
         };
     }
 
     /**
      * Tangent points between two circles with OPPOSITE turn directions.
      * Uses the cross tangent formula:
-     *   a = acos(2r / d)
+     * a = acos(2r / d)
      * The offset vector is added to center1 and subtracted from center2.
      *
      * @param center1    center of circle 1
      * @param center2    center of circle 2
      * @param radius     shared radius
      * @param isLeftTurn turn direction of circle 1
-     * @return [tangent1 on circle1, tangent2 on circle2]
+     * @return an array containing [Pose2d tangent on circle 1, Pose2d tangent on circle 2]
      */
     public static Pose2d[] oppositeTurnTangents(Translation2d center1,
-                                                        Translation2d center2,
-                                                        double radius,
-                                                        boolean isLeftTurn) {
+                                                Translation2d center2,
+                                                double radius,
+                                                boolean isLeftTurn) {
         Translation2d vec = center2.minus(center1);
         double d = vec.getNorm();
         double baseAngle = vec.getAngle().getRadians();
@@ -91,10 +116,17 @@ public class LegCalculator {
         double angle = baseAngle + (isLeftTurn ? +a : -a);
 
         Translation2d offset = new Translation2d(radius * Math.cos(angle),
-                                                  radius * Math.sin(angle));
+                                                 radius * Math.sin(angle));
+        
+        Translation2d t1 = center1.plus(offset);
+        Translation2d t2 = center2.minus(offset);
+        
+        // Calculate the actual driving direction along the tangent line
+        Rotation2d heading = t2.minus(t1).getAngle();
+
         return new Pose2d[]{
-                new Pose2d(center1.plus(offset).getX(), center1.plus(offset).getY(), center1.plus(offset).getAngle()),
-                new Pose2d(center2.minus(offset).getX(), center2.minus(offset).getY(), center2.minus(offset).getAngle())  // opposite sign — cross tangent
+                new Pose2d(t1, heading),
+                new Pose2d(t2, heading)
         };
     }
 }

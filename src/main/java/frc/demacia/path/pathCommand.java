@@ -11,28 +11,29 @@ import frc.demacia.utils.chassis.Chassis;
 public class pathCommand extends Command {
   /** Creates a new pathCommand. */
   demaciaTrajectory trajectory;
-  public pathCommand(demaciaTrajectory trajectory) {
+  Chassis chassis;
+  public pathCommand(demaciaTrajectory trajectory, Chassis chassis) {
     this.trajectory = trajectory;
+    this.chassis = chassis;
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(Chassis.getInstance());
   }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Chassis.getInstance().setVelocities(trajectory.getChassisSpeeds(Chassis.getInstance().getPose()));
+    chassis.setVelocities(trajectory.getChassisSpeeds(chassis.getPose()));
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    chassis.stop();
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return (chassis.getPose().getX() >= trajectory.getPointLestPose().getX() - pathConstans.TOLERANCE) && (chassis.getPose().getY() >= trajectory.getPointLestPose().getY() - pathConstans.TOLERANCE);
   }
 }

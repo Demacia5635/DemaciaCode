@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import frc.demacia.utils.log.LogManager;
 
 public class demaciaTrajectory {
     private List<Pose2d> demaciaPathPoint;
@@ -56,6 +57,7 @@ public class demaciaTrajectory {
             this.pathPoint.add(new Pose2d(leg.getStart(), demaciaPathPoint.get(i - 1).getRotation()));
             this.pathPoint.add(new Pose2d(leg.getEnd(), demaciaPathPoint.get(i).getRotation()));
         }
+
     }
 
     /**
@@ -129,6 +131,10 @@ public class demaciaTrajectory {
         double num = Math.abs((y2 - y1) * x - (x2 - x1) * y + x2 * y1 - y2 * x1);
         double den = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
         return (num / den) <= 0.2; 
+    }
+
+    public Pose2d getPointLestPose(){
+        return this.demaciaPathPoint.get(demaciaPathPoint.size() - 1);
     }
 
     public List<Pose2d> getDemaciaPathPoint() {
