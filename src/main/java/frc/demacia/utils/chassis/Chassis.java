@@ -135,7 +135,7 @@ public class Chassis extends SubsystemBase {
         this.chassisConfig = chassisConfig;
 
         modules = new SwerveModule[4];
-        Translation2d[] modulePositions = new Translation2d[4];
+        Translation2d[] modulePositions = chassisConfig.modulePositions;
         for (int i = 0; i < 4; i++) {
             modules[i] = new SwerveModule(chassisConfig.swerveModuleConfig[i]);
             // modulePositions[i] = chassisConfig.swerveModuleConfig[i].position;
@@ -144,6 +144,7 @@ public class Chassis extends SubsystemBase {
         gyro = new Pigeon(chassisConfig.pigeonConfig);
 
         addStatus();
+        LogManager.log("modole pose " + modulePositions.toString());
         demaciaKinematics = new DemaciaKinematics(modulePositions);
         wpilibKinematics = new SwerveDriveKinematics(modulePositions);
       

@@ -1,5 +1,6 @@
 package frc.demacia.utils.chassis;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import frc.demacia.utils.sensors.PigeonConfig;
 import frc.demacia.vision.Camera;
 import frc.demacia.vision.TagPose;
@@ -36,12 +37,14 @@ public class ChassisConfig {
     public double minVelocity = 1.5;
     public double maxDriveVelocity = 5;
     public double maxRotationalVelocity = 4;
-
-    public ChassisConfig(String name, SwerveModuleConfig[] swerveModuleConfigs, PigeonConfig pigeonConfig, TagPose[] tags) {
+    public Translation2d[] modulePositions;
+    
+    public ChassisConfig(String name, SwerveModuleConfig[] swerveModuleConfigs, PigeonConfig pigeonConfig, TagPose[] tags, Translation2d[] modulePositions) {
         this.name = name;
         this.swerveModuleConfig = swerveModuleConfigs;
         this.pigeonConfig = pigeonConfig;
         this.tags = tags;
+        this.modulePositions = modulePositions;
     }
 
     /**
