@@ -2,6 +2,7 @@ package frc.demacia.utils.motors;
 
 import java.util.function.Supplier;
 
+import com.revrobotics.REVLibError;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.demacia.utils.log.LogManager;
 import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
@@ -42,6 +44,12 @@ public class SparkMaxMotor extends SparkMax implements MotorInterface {
   private double setPoint = 0;
   private double lastTime = 0;
 
+  // Motor Stalling
+  private final Timer stallTimer = new Timer();
+  private boolean conditionActive = false;
+  private boolean IsDone = false;
+  private boolean isStalled = false;
+
   /**
    * Creates a new Spark Max motor wrapper.
    * @param config The configuration object
@@ -53,7 +61,7 @@ public class SparkMaxMotor extends SparkMax implements MotorInterface {
     configMotor();
     addLog();
     setName(name);
-    SmartDashboard.putData(name, this);
+    // SmartDashboard.putData(name, this);
     LogManager.log(name + " motor initialized");
   }
 
@@ -165,6 +173,11 @@ public class SparkMaxMotor extends SparkMax implements MotorInterface {
   }
 
   @Override
+  public REVLibError clearFaults() {
+    return super.clearFaults();
+  }
+
+  @Override
   public void setDuty(double power) {
     super.set(power);
     controlType = ControlType.kDutyCycle;
@@ -200,7 +213,7 @@ public class SparkMaxMotor extends SparkMax implements MotorInterface {
   }
 
   @Override
-  public void setVelocityWithAcceleratoin(double velocity, Supplier<Double> wantedAccelerationSupplier) {
+  public void setVelocityWithAcceleration(double velocity, Supplier<Double> wantedAccelerationSupplier) {
       setVelocity(velocity, wantedAccelerationSupplier.get() * config.pid[closedLoopSlot.value].kA());
   }
 
@@ -366,7 +379,7 @@ public class SparkMaxMotor extends SparkMax implements MotorInterface {
           value -> {
             if (value) {
               if (!configPidFf.isScheduled()) {
-                configPidFf.schedule();
+                CommandScheduler.getInstance().schedule(configPidFf);
               }
             } else {
               if (configPidFf.isScheduled()) {
@@ -404,7 +417,7 @@ public class SparkMaxMotor extends SparkMax implements MotorInterface {
         value -> {
           if (value) {
             if (!configMotionMagic.isScheduled()) {
-              configMotionMagic.schedule();
+              CommandScheduler.getInstance().schedule(configMotionMagic);
             }
           } else {
             if (configMotionMagic.isScheduled()) {
@@ -416,6 +429,34 @@ public class SparkMaxMotor extends SparkMax implements MotorInterface {
       }
     });
   }
+  public void updateStallDetection() {
+    if (config.conditionIsTrue == null || config.lowVelocityThreshold == 0)
+      return;
+    double currentVelocity = Math.abs(getCurrentVelocity());
+    double currentCurrent = getCurrentCurrent();
+    if (currentCurrent > config.highCurrentThreshold && currentVelocity < config.lowVelocityThreshold) {
+      if (!conditionActive) {
+        stallTimer.restart();
+        conditionActive = true;
+        IsDone = false;
+        isStalled = true;
+
+      }
+      if (stallTimer.hasElapsed(config.secondsThreshold) && !IsDone) {
+        config.conditionIsTrue.accept(config);
+        IsDone = true;
+      }
+    } else if (conditionActive) {
+      stallTimer.stop();
+      stallTimer.reset();
+      conditionActive = false;
+      IsDone = false;
+      isStalled = false;
+    }
+  }
+  public boolean getStallDetection() {
+  return isStalled;
+}
 
   public double gearRatio() {
     return config.motorRatio;

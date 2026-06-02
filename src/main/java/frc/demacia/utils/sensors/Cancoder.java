@@ -9,43 +9,52 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import frc.demacia.utils.Data;
 import frc.demacia.utils.log.LogManager;
 import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
+import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
 
 /**
  * CTRE CANcoder absolute magnetic encoder wrapper.
  * 
- * <p>Provides access to CANcoder position, velocity, and acceleration with:</p>
+ * <p>
+ * Provides access to CANcoder position, velocity, and acceleration with:
+ * </p>
  * <ul>
- *   <li>Automatic unit conversion (rotations → radians)</li>
- *   <li>Offset calibration support</li>
- *   <li>Automatic logging of telemetry</li>
- *   <li>Fault monitoring</li>
+ * <li>Automatic unit conversion (rotations → radians)</li>
+ * <li>Offset calibration support</li>
+ * <li>Automatic logging of telemetry</li>
+ * <li>Fault monitoring</li>
  * </ul>
  * 
- * <p><b>Key Features:</b></p>
+ * <p>
+ * <b>Key Features:</b>
+ * </p>
  * <ul>
- *   <li>Absolute position (survives power cycles)</li>
- *   <li>±0.5° accuracy typical</li>
- *   <li>Up to 100Hz update rate</li>
+ * <li>Absolute position (survives power cycles)</li>
+ * <li>±0.5° accuracy typical</li>
+ * <li>Up to 100Hz update rate</li>
  * </ul>
  * 
- * <p><b>Example Usage:</b></p>
+ * <p>
+ * <b>Example Usage:</b>
+ * </p>
+ * 
  * <pre>
  * CancoderConfig config = new CancoderConfig(10, CANBus.CANivore, "SteerEncoder")
- *     .withOffset(0.245)  // Calibrated offset
- *     .withInvert(false);
+ *         .withOffset(0.245) // Calibrated offset
+ *         .withInvert(false);
  * 
  * Cancoder encoder = new Cancoder(config);
  * 
  * // Read position
- * double angle = encoder.getCurrentAbsPosition();  // Radians
+ * double angle = encoder.getCurrentAbsPosition(); // Radians
  * 
  * // Use in swerve module
  * steerMotor.setPosition(encoder.getCurrentAbsPosition() - offset);
  * </pre>
  */
-public class Cancoder extends CANcoder implements AnalogSensorInterface{
+public class Cancoder extends CANcoder implements AnalogSensorInterface {
 
     CancoderConfig config;
     String name;
@@ -53,7 +62,7 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface{
     StatusSignal<Angle> positionSignal;
     StatusSignal<Angle> absPositionSignal;
     StatusSignal<AngularVelocity> velocitySignal;
-    
+
     double lastPosition;
     double lastAbsPosition;
     double lastVelocity;
@@ -66,18 +75,19 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface{
     public Cancoder(CancoderConfig config) {
         super(config.id, config.canbus);
         this.config = config;
-		name = config.name;
+        name = config.name;
         setName(name);
-		configCancoder();
+        configCancoder();
         setStatusSignals();
         addLog();
-		LogManager.log(name + " cancoder initialized");
+        LogManager.log(name + " cancoder initialized");
     }
-    
+
     private void configCancoder() {
         CANcoderConfiguration canConfig = new CANcoderConfiguration();
-		canConfig.MagnetSensor.MagnetOffset = config.offset;
-        canConfig.MagnetSensor.SensorDirection = config.isInverted ? SensorDirectionValue.Clockwise_Positive: SensorDirectionValue.CounterClockwise_Positive;
+        canConfig.MagnetSensor.MagnetOffset = config.offset;
+        canConfig.MagnetSensor.SensorDirection = config.isInverted ? SensorDirectionValue.Clockwise_Positive
+                : SensorDirectionValue.CounterClockwise_Positive;
         getConfigurator().apply(canConfig);
     }
 
@@ -86,7 +96,7 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface{
         AnalogSensorInterface.super.setName(name);
         this.name = name;
     }
-    
+
     private void setStatusSignals() {
         positionSignal = getPosition();
         absPositionSignal = getAbsolutePosition();
@@ -100,11 +110,13 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface{
     /**
      * Checks for CANcoder faults and logs them.
      * 
-     * <p>Call periodically to catch:</p>
+     * <p>
+     * Call periodically to catch:
+     * </p>
      * <ul>
-     *   <li>Magnet not detected</li>
-     *   <li>CAN bus errors</li>
-     *   <li>Hardware failures</li>
+     * <li>Magnet not detected</li>
+     * <li>CAN bus errors</li>
+     * <li>Hardware failures</li>
      * </ul>
      */
     public void checkElectronics() {
@@ -113,14 +125,12 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface{
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "unlikely-arg-type" })
     private void addLog() {
-        LogManager.addEntry(name + ": abs Position, Position, Velocity, Acceleration", 
-            () -> getCurrentAbsPosition(),
-            () -> getCurrentPosition(),
-            () -> getCurrentVelocity(),
-            () -> getCurrentAcceleration()
-        ).withLogLevel(LogLevel.LOG_ONLY_NOT_IN_COMP).build();
+        Data.addSignals(config.canbus.equals(Canbus.Rio), absPositionSignal);
+        LogManager.addEntry(name + ": abs Position",
+                () -> absPositionSignal.getValueAsDouble() * 2 * Math.PI).withLogLevel(LogLevel.LOG_ONLY_NOT_IN_COMP)
+                .build();
     }
 
     /**
@@ -128,7 +138,7 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface{
      * 
      * @return Sensor name from configuration
      */
-    public String getName(){
+    public String getName() {
         return config.name;
     }
 
@@ -137,15 +147,17 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface{
      * 
      * @return Current relative position in radians
      */
-    public double get(){
+    public double get() {
         return getCurrentPosition();
     }
-    
+
     /**
      * Gets the relative position since power-on.
      * 
-     * <p>Starts at absolute position on boot, then tracks changes.
-     * Can exceed 2π for continuous rotation tracking.</p>
+     * <p>
+     * Starts at absolute position on boot, then tracks changes.
+     * Can exceed 2π for continuous rotation tracking.
+     * </p>
      * 
      * @return Relative position in radians (can be > 2π)
      */
@@ -157,8 +169,10 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface{
     /**
      * Gets the absolute position (persists through power cycles).
      * 
-     * <p>This is the primary method for reading CANcoder position.
-     * Value is in radians and includes configured offset.</p>
+     * <p>
+     * This is the primary method for reading CANcoder position.
+     * Value is in radians and includes configured offset.
+     * </p>
      * 
      * @return Absolute position in radians (0 to 2π)
      */
@@ -172,7 +186,7 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface{
      * 
      * @return Velocity in radians per second
      */
-    public double getCurrentVelocity(){
+    public double getCurrentVelocity() {
         lastVelocity = StatusSignalHelper.getStatusSignalWith2Pi(velocitySignal, lastVelocity);
         return lastVelocity;
     }

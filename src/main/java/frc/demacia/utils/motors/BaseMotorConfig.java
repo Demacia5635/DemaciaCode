@@ -1,5 +1,7 @@
 package frc.demacia.utils.motors;
 
+import java.util.function.Consumer;
+
 import com.ctre.phoenix6.CANBus;
 
 /**
@@ -81,6 +83,10 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
     public double kSin = 0;
     public double posToRad = 0;
 
+    public double highCurrentThreshold = 0;    
+    public double lowVelocityThreshold = 0;
+    public double secondsThreshold = 0;
+    public Consumer<T> conditionIsTrue;
     /**
      * Base constructor.
      * @param id The CAN ID
@@ -289,6 +295,15 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
         this.canbus = canbus;
         return (T) this;
     }
+
+@SuppressWarnings("unchecked")
+public T withDetectStallInMotor(double current, double velocity, double seconds, Consumer<T> conditionIsTrue) {
+    this.highCurrentThreshold = current;
+    this.lowVelocityThreshold = velocity;
+    this.secondsThreshold = seconds;
+    this.conditionIsTrue = conditionIsTrue;
+    return (T) this;
+}
 
     /**
      * Helper method to copy fields from another configuration object.

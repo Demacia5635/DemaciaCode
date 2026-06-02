@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableRegistry;
-
 /**
  * Common interface for all motor controllers in the robot.
  * <p>
@@ -72,7 +71,7 @@ public interface MotorInterface extends Sendable {
      * @param velocity The target velocity
      * @param wantedAccelerationSupplier The supplier for the acceleration
      */
-    void setVelocityWithAcceleratoin(double velocity, Supplier<Double> wantedAccelerationSupplier);
+    void setVelocityWithAcceleration(double velocity, Supplier<Double> wantedAccelerationSupplier);
 
     /**
      * Sets the target position using Motion Magic.
@@ -150,7 +149,16 @@ public interface MotorInterface extends Sendable {
      * @param position The new position to set
      */
     void setEncoderPosition(double position);
-
+    /**
+     * Checks if the motor is stalled based on current, velocity, and time thresholds.
+     * @return true if the motor is stalled, false otherwise
+     */
+    void updateStallDetection();
+    /** 
+     * Checks if stall detection is enabled.
+     * @return true if stall detection is enabled, false otherwise
+     */
+    boolean getStallDetection();
     /**
      * Stops the motor immediately and disables control.
      */

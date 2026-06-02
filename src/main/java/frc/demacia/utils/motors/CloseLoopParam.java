@@ -14,7 +14,7 @@ package frc.demacia.utils.motors;
  * 
  * <p><b>Note:</b> This class calculates output in <i>volts</i>, not normalized [-1, 1].</p>
  */
-class CloseLoopParam {
+public class CloseLoopParam {
 
     public static String[] PARAMETER_NAMES = {"kP", "kI", "kD", "kS", "kV", "kA", "kG"};
 
