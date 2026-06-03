@@ -39,12 +39,11 @@ public class ChassisConfig {
     public double maxRotationalVelocity = 4;
     public Translation2d[] modulePositions;
     
-    public ChassisConfig(String name, SwerveModuleConfig[] swerveModuleConfigs, PigeonConfig pigeonConfig, TagPose[] tags, Translation2d[] modulePositions) {
+    public ChassisConfig(String name, SwerveModuleConfig[] swerveModuleConfigs, PigeonConfig pigeonConfig, TagPose[] tags) {
         this.name = name;
         this.swerveModuleConfig = swerveModuleConfigs;
         this.pigeonConfig = pigeonConfig;
         this.tags = tags;
-        this.modulePositions = modulePositions;
     }
 
     /**

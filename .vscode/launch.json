@@ -4,8 +4,13 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-    
-
+    {
+      "type": "java",
+      "name": "PathSimulatorApp",
+      "request": "launch",
+      "mainClass": "frc.demacia.path.PathSimulatorApp",
+      "projectName": "DemaciaCode-1"
+    },
     {
       "type": "java",
       "name": "FRCPathVisualizer",
