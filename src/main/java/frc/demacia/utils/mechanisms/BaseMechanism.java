@@ -160,35 +160,80 @@ public class BaseMechanism extends SubsystemBase{
     }
 
     public void addLimit(String motorName, double min,  double max) {
-        motorLimits.put(motorName, new Pair<Double, Double>(min, max));
+        motorLimits.put(motorName, new Pair<>(min, max));
+
+        MotorInterface motor = motors.get(motorName);
+        if (motor != null) {
+            for (int i = 0; i < motorArray.length; i++) {
+                if (motorArray[i] == motor) {
+                    motorLimitsArray[i] = new Pair<>(min, max);
+                    break;
+                }
+            }
+        }
     }
 
     public void addLimit(int motorIndex, double min,  double max) {
-        motorLimitsArray[motorIndex] = new Pair<Double, Double>(min, max);
+        motorLimitsArray[motorIndex] = new Pair<>(min, max);
+
+        motorLimits.put(
+            motorArray[motorIndex].getName(),
+            new Pair<>(min, max)
+        );  
     }
 
     public void addLimitMax(String motorName, double max) {
         motorLimits.put(motorName, new Pair<Double, Double>(
             motorLimits.get(motorName).getFirst(), 
             max));
+
+        MotorInterface motor = motors.get(motorName);
+        if (motor != null) {
+            for (int i = 0; i < motorArray.length; i++) {
+                if (motorArray[i] == motor) {
+                    motorLimitsArray[i] = motorLimits.get(motorName);
+                    break;
+                }
+            }
+        }
     }
 
     public void addLimitMax(int motorIndex, double max) {
         motorLimitsArray[motorIndex] = new Pair<Double, Double>(
             motorLimitsArray[motorIndex].getFirst(), 
             max);
+
+        motorLimits.put(
+            motorArray[motorIndex].getName(),
+            motorLimitsArray[motorIndex]
+        );
     }
 
     public void addLimitMin(String motorName, double min) {
         motorLimits.put(motorName, new Pair<Double, Double>(
             min,
             motorLimits.get(motorName).getSecond()));
+
+        MotorInterface motor = motors.get(motorName);
+        if (motor != null) {
+            for (int i = 0; i < motorArray.length; i++) {
+                if (motorArray[i] == motor) {
+                    motorLimitsArray[i] = motorLimits.get(motorName);
+                    break;
+                }
+            }
+        }
     }
 
     public void addLimitMin(int motorIndex, double min) {
         motorLimitsArray[motorIndex] = new Pair<Double, Double>(
             min,
             motorLimitsArray[motorIndex].getSecond());
+
+        motorLimits.put(
+            motorArray[motorIndex].getName(),
+            motorLimitsArray[motorIndex]
+        );
     }
 
     /**

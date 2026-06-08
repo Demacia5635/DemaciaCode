@@ -64,7 +64,7 @@ public class CalibrationCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    timer.start();
+    timer.restart();
   }
 
   /**
