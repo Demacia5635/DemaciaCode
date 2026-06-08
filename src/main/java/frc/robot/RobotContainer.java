@@ -63,12 +63,12 @@ public class RobotContainer implements Sendable{
   private void configureBindings() {
     
 
-    // mechanism testing code
-    turret.setDefaultCommand(
-      new PowerCommand(turret, TurretConstants.MOTOR_NAME, 
-        () -> driverController.getLeftX() * 0.6
-      )
-    );
+    // // mechanism testing code
+    // turret.setDefaultCommand(
+    //   new PowerCommand(turret, TurretConstants.MOTOR_NAME, 
+    //     () -> driverController.getLeftX() * 0.6
+    //   )
+    // );
   }
 
   public static boolean getIsRed() {
