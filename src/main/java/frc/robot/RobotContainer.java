@@ -11,7 +11,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.demacia.utils.DemaciaUtils;
+import frc.demacia.utils.controller.CommandController;
+import frc.demacia.utils.controller.CommandController.ControllerType;
 import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.mechanisms.PowerCommand;
+import frc.robot.mechanismTesting.turret.TurretConstants;
+import frc.robot.mechanismTesting.turret.subsystems.Turret;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -26,7 +31,10 @@ public class RobotContainer implements Sendable{
   public static boolean isRed = false;
 
   // The robot's subsystems and commands are defined here...
+  private static CommandController driverController;
 
+  // mechanism testing code
+  public Turret turret;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
 
@@ -34,7 +42,11 @@ public class RobotContainer implements Sendable{
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
+
+    driverController = new CommandController(0, ControllerType.kPS5);
     
+    // mechanism testing code
+    this.turret = new Turret();
     // Configure the trigger bindings
     configureBindings();
   }
@@ -50,6 +62,13 @@ public class RobotContainer implements Sendable{
    */
   private void configureBindings() {
     
+
+    // mechanism testing code
+    turret.setDefaultCommand(
+      new PowerCommand(turret, TurretConstants.MOTOR_NAME, 
+        () -> driverController.getLeftX() * 0.6
+      )
+    );
   }
 
   public static boolean getIsRed() {
