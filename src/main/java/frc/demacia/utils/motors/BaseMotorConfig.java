@@ -297,11 +297,10 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
     }
 
 @SuppressWarnings("unchecked")
-public T withDetectStallInMotor(double current, double velocity, double seconds, Consumer<T> conditionIsTrue) {
+public T withDetectStallInMotor(double current, double velocity, double seconds) {
     this.highCurrentThreshold = current;
     this.lowVelocityThreshold = velocity;
     this.secondsThreshold = seconds;
-    this.conditionIsTrue = conditionIsTrue;
     return (T) this;
 }
 

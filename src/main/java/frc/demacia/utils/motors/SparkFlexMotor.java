@@ -43,9 +43,6 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
   private double setPoint = 0;
   private double lastTime = 0;
     // Motor Stalling
-  private final Timer stallTimer = new Timer();
-  private boolean conditionActive = false;
-  private boolean IsDone = false;
   private boolean isStalled = false;
 
 
@@ -173,6 +170,9 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setDuty(double power) {
+    if (getStallDetection()) {
+      return;
+    }
     super.set(power);
     controlType = ControlType.kDutyCycle;
     if (power == 0){
@@ -184,6 +184,9 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setVoltage(double voltage) {
+    if (getStallDetection()) {
+      return;
+    }
     super.setVoltage(voltage);
     controlType = ControlType.kVoltage;
     controlMode = ControlMode.VOLTAGE;
@@ -191,6 +194,9 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setVelocity(double velocity, double feedForward) {
+    if (getStallDetection()) {
+      return;
+    }
     if (config.maxVelocity == 0) {
       LogManager.log(name + ": maxVelocity not configured", AlertType.kError);
       return;
@@ -203,16 +209,25 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setVelocity(double velocity) {
+    if (getStallDetection()) {
+      return;
+    }
     setVelocity(velocity, 0);
   }
 
   @Override
   public void setVelocityWithAcceleration(double velocity, Supplier<Double> wantedAccelerationSupplier) {
+      if (getStallDetection()) {
+        return;
+      }
       setVelocity(velocity, wantedAccelerationSupplier.get() * config.pid[closedLoopSlot.value].kA());
   }
 
   @Override
   public void setPositionVoltage(double position, double feedForward) {
+    if (getStallDetection()) {
+      return;
+    }
     getClosedLoopController().setSetpoint(position, ControlType.kPosition, closedLoopSlot, feedForward);
     controlType = ControlType.kPosition;
     controlMode = ControlMode.POSITION_VOLTAGE;
@@ -221,11 +236,17 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setPositionVoltage(double position) {
+    if (getStallDetection()) {
+      return;
+    }
     setPositionVoltage(position, 0);
   }
 
   @Override
   public void setMotion(double position, double feedForward) {
+    if (getStallDetection()) {
+      return;
+    }
     if (config.maxVelocity == 0) {
       LogManager.log(name + ": maxVelocity not configured", AlertType.kError);
       return;
@@ -238,17 +259,26 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setMotion(double position) {
+    if (getStallDetection()) {
+      return;
+    }
     setMotion(position, 0);
   }
 
   @Override
   public void setAngle(double angle, double feedForward) {
+    if (getStallDetection()) {
+      return;
+    }
     setMotion(getCurrentPosition() + MathUtil.angleModulus(angle - getCurrentAngle()), feedForward);
     controlMode = ControlMode.ANGLE;
   }
 
   @Override
   public void setAngle(double angle) {
+    if (getStallDetection()) {
+      return;
+    }
     setAngle(angle, 0);
   }
 
@@ -438,30 +468,15 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
   }
 
   public void updateStallDetection() {
-    if (config.conditionIsTrue == null || config.lowVelocityThreshold == 0)
+    if (config.lowVelocityThreshold == 0)
       return;
+      
     double currentVelocity = Math.abs(getCurrentVelocity());
     double currentCurrent = getCurrentCurrent();
-    if (currentCurrent > config.highCurrentThreshold && currentVelocity < config.lowVelocityThreshold) {
-      if (!conditionActive) {
-        stallTimer.restart();
-        conditionActive = true;
-        IsDone = false;
-        isStalled = true;
-
-      }
-      if (stallTimer.hasElapsed(config.secondsThreshold) && !IsDone) {
-        config.conditionIsTrue.accept(config);
-        IsDone = true;
-      }
-    } else if (conditionActive) {
-      stallTimer.stop();
-      stallTimer.reset();
-      conditionActive = false;
-      IsDone = false;
-      isStalled = false;
-    }
+    
+    isStalled = (currentCurrent > config.highCurrentThreshold && currentVelocity < config.lowVelocityThreshold);
   }
+  
   public boolean getStallDetection() {
   return isStalled;
 }

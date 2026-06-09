@@ -25,7 +25,6 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -69,9 +68,6 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
 
   ControlMode controlMode = ControlMode.DISABLE;
   // Motor Stalling
-  private final Timer stallTimer = new Timer();
-  private boolean conditionActive = false;
-  private boolean IsDone = false;
   private boolean isStalled = false;
 
 
@@ -123,31 +119,16 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
     getConfigurator().apply(cfg);
   }
 
-  public void updateStallDetection() {
-    if (config.conditionIsTrue == null || config.lowVelocityThreshold == 0)
+   public void updateStallDetection() {
+    if (config.lowVelocityThreshold == 0)
       return;
+      
     double currentVelocity = Math.abs(getCurrentVelocity());
     double currentCurrent = getCurrentCurrent();
-    if (currentCurrent > config.highCurrentThreshold && currentVelocity < config.lowVelocityThreshold) {
-      if (!conditionActive) {
-        stallTimer.restart();
-        conditionActive = true;
-        IsDone = false;
-        isStalled = true;
-
-      }
-      if (stallTimer.hasElapsed(config.secondsThreshold) && !IsDone) {
-        config.conditionIsTrue.accept(config);
-        IsDone = true;
-      }
-    } else if (conditionActive) {
-      stallTimer.stop();
-      stallTimer.reset();
-      conditionActive = false;
-      IsDone = false;
-      isStalled = false;
-    }
+    
+    isStalled = (currentCurrent > config.highCurrentThreshold && currentVelocity < config.lowVelocityThreshold);
   }
+
   public boolean getStallDetection() {
   return isStalled;
 }
