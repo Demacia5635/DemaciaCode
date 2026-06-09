@@ -8,7 +8,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.Timer;
 import frc.demacia.utils.log.LogManager;
 
 /**
@@ -28,9 +27,6 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
 
     ControlMode controlMode = ControlMode.DISABLE;
     // Motor Stalling
-    private final Timer stallTimer = new Timer();
-    private boolean conditionActive = false;
-    private boolean IsDone = false;
     private boolean isStalled = false;
 
     /**
@@ -262,29 +258,15 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
     }
 
     public void updateStallDetection() {
-        if (config.conditionIsTrue == null || config.lowVelocityThreshold == 0)
-            return;
-        double currentVelocity = Math.abs(getCurrentVelocity());
-        double currentCurrent = getCurrentCurrent();
-        if (currentCurrent > config.highCurrentThreshold && currentVelocity < config.lowVelocityThreshold) {
-            if (!conditionActive) {
-                stallTimer.restart();
-                conditionActive = true;
-                IsDone = false;
-                isStalled = true;
-            }
-            if (stallTimer.hasElapsed(config.secondsThreshold) && !IsDone) {
-                config.conditionIsTrue.accept(config);
-                IsDone = true;
-            }
-        } else if (conditionActive) {
-            stallTimer.stop();
-            stallTimer.reset();
-            conditionActive = false;
-            IsDone = false;
-            isStalled = false;
-        }
-    }
+    if (config.lowVelocityThreshold == 0)
+      return;
+      
+    double currentVelocity = Math.abs(getCurrentVelocity());
+    double currentCurrent = getCurrentCurrent();
+    
+    isStalled = (currentCurrent > config.highCurrentThreshold && currentVelocity < config.lowVelocityThreshold);
+  }
+
 public boolean getStallDetection() {
   return isStalled;
 }
