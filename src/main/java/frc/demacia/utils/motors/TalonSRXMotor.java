@@ -27,6 +27,8 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
 
     ControlMode controlMode = ControlMode.DISABLE;
     // Motor Stalling
+    private Runnable stallDetectionStrategy = () -> {
+    };
     private boolean isStalled = false;
 
     /**
@@ -63,12 +65,47 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
         configPeakOutputReverse(config.minVolt / 12.0);
         configVoltageCompSaturation(config.maxVolt);
         enableVoltageCompensation(true);
+        initStallStrategy();
     }
 
     @Override
     public void setName(String name) {
         MotorInterface.super.setName(name);
         this.name = name;
+    }
+
+    private void initStallStrategy() {
+        if (config.lowVelocityThreshold > 0 && config.highCurrentThreshold > 0) {
+            stallDetectionStrategy = this::checkStallLogic;
+        } else {
+            stallDetectionStrategy = () -> {
+            };
+        }
+    }
+
+    private void checkStallLogic() {
+        double currentVelocity = Math.abs(getCurrentVelocity());
+        double currentCurrent = getCurrentCurrent();
+
+        boolean stallCondition = (currentCurrent > config.highCurrentThreshold
+                && currentVelocity < config.lowVelocityThreshold);
+
+        if (stallCondition && !isStalled) {
+            isStalled = true;
+            stop();
+        }
+    }
+
+    public void updateStallDetection() {
+        stallDetectionStrategy.run();
+    }
+
+    public void resetStall() {
+        isStalled = false;
+    }
+
+    public boolean getStallDetection() {
+        return isStalled;
     }
 
     /** Configures the logging entries for this motor */
@@ -111,6 +148,9 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
 
     @Override
     public void setDuty(double power) {
+        if (isStalled) {
+            return;
+        }
         set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, power);
         if (power == 0) {
             controlMode = ControlMode.DISABLE;
@@ -121,53 +161,83 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
 
     @Override
     public void setVoltage(double voltage) {
+        if (isStalled) {
+            return;
+        }
         set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, voltage / 12.0);
         controlMode = ControlMode.VOLTAGE;
     }
 
     @Override
     public void setVelocity(double velocity, double feedForward) {
+        if (isStalled) {
+            return;
+        }
         LogManager.log("there is no Velocity");
     }
 
     @Override
     public void setVelocity(double velocity) {
+        if (isStalled) {
+            return;
+        }
         setVelocity(velocity, 0);
     }
 
     @Override
     public void setVelocityWithAcceleration(double velocity, Supplier<Double> wantedAccelerationSupplier) {
+        if (isStalled) {
+            return;
+        }
         setVelocity(velocity, wantedAccelerationSupplier.get() * config.pid[slot].kA());
     }
 
     @Override
     public void setMotion(double position, double feedForward) {
+        if (isStalled) {
+            return;
+        }
         LogManager.log("there is no motion");
     }
 
     @Override
     public void setMotion(double position) {
+        if (isStalled) {
+            return;
+        }
         setMotion(position, 0);
     }
 
     @Override
     public void setAngle(double angle, double feedForward) {
+        if (isStalled) {
+            return;
+        }
         setMotion(getCurrentPosition() + MathUtil.angleModulus(angle - getCurrentAngle()), feedForward);
         controlMode = ControlMode.ANGLE;
     }
 
     @Override
     public void setAngle(double angle) {
+        if (isStalled) {
+            return;
+        }
         setAngle(angle, 0);
     }
 
     @Override
     public void setPositionVoltage(double position, double feedForward) {
+        if (isStalled) {
+            return;
+        }
         LogManager.log("there is no PositionVoltage");
     }
 
     @Override
     public void setPositionVoltage(double position) {
+        if (isStalled) {
+            return;
+        }
         setPositionVoltage(position, 0);
     }
 
@@ -256,20 +326,6 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
     public double gearRatio() {
         return config.motorRatio;
     }
-
-    public void updateStallDetection() {
-    if (config.lowVelocityThreshold == 0)
-      return;
-      
-    double currentVelocity = Math.abs(getCurrentVelocity());
-    double currentCurrent = getCurrentCurrent();
-    
-    isStalled = (currentCurrent > config.highCurrentThreshold && currentVelocity < config.lowVelocityThreshold);
-  }
-
-public boolean getStallDetection() {
-  return isStalled;
-}
 
     public void stop() {
         setDuty(0);

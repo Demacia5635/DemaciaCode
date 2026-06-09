@@ -1,7 +1,5 @@
 package frc.demacia.utils.motors;
 
-import java.util.function.Consumer;
-
 import com.ctre.phoenix6.CANBus;
 
 /**
@@ -86,7 +84,6 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
     public double highCurrentThreshold = 0;    
     public double lowVelocityThreshold = 0;
     public double secondsThreshold = 0;
-    public Consumer<T> conditionIsTrue;
     /**
      * Base constructor.
      * @param id The CAN ID

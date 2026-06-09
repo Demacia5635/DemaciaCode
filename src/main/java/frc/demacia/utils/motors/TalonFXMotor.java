@@ -69,7 +69,8 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
   ControlMode controlMode = ControlMode.DISABLE;
   // Motor Stalling
   private boolean isStalled = false;
-
+  private Runnable stallDetectionStrategy = () -> {
+  };
 
   /**
    * Creates a new TalonFX motor wrapper.
@@ -115,23 +116,43 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
     cfg.Voltage.PeakForwardVoltage = config.maxVolt;
     cfg.Voltage.PeakReverseVoltage = config.minVolt;
     configureMotionMagic(false);
-
+    initStallStrategy();
     getConfigurator().apply(cfg);
   }
 
-   public void updateStallDetection() {
-    if (config.lowVelocityThreshold == 0)
-      return;
-      
+  public void updateStallDetection() {
+    stallDetectionStrategy.run();
+  }
+
+  private void checkStallLogic() {
     double currentVelocity = Math.abs(getCurrentVelocity());
     double currentCurrent = getCurrentCurrent();
-    
-    isStalled = (currentCurrent > config.highCurrentThreshold && currentVelocity < config.lowVelocityThreshold);
+
+    boolean stallCondition = (currentCurrent > config.highCurrentThreshold
+        && currentVelocity < config.lowVelocityThreshold);
+
+    if (stallCondition && !isStalled) {
+      isStalled = true;
+      stop();
+    }
+  }
+
+  private void initStallStrategy() {
+    if (config.lowVelocityThreshold > 0 && config.highCurrentThreshold > 0) {
+      stallDetectionStrategy = this::checkStallLogic;
+    } else {
+      stallDetectionStrategy = () -> {
+      };
+    }
   }
 
   public boolean getStallDetection() {
-  return isStalled;
-}
+    return isStalled;
+  }
+
+  public void resetStall() {
+    isStalled = false;
+  }
 
   public void configSoftwareLimit(double min, double max) {
     SoftwareLimitSwitchConfigs cfg = new SoftwareLimitSwitchConfigs();
@@ -270,6 +291,9 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
 
   @Override
   public void setDuty(double power) {
+    if (isStalled) {
+            return;
+        }
     setControl(dutyCycle.withOutput(power));
     if (power == 0) {
       controlMode = ControlMode.DISABLE;
@@ -279,40 +303,61 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
   }
 
   public void setVolt(double voltage) {
+    if (isStalled) {
+            return;
+        }
     setVoltage(voltage);
     controlMode = ControlMode.VOLTAGE;
   }
 
   @Override
   public void setVelocity(double velocity, double feedForward) {
+    if (isStalled) {
+            return;
+        }
     setControl(velocityVoltage.withVelocity(velocity).withFeedForward(feedForward + velocityFeedForward(velocity)));
     controlMode = ControlMode.VELOCITY;
   }
 
   @Override
   public void setVelocity(double velocity) {
+    if (isStalled) {
+            return;
+        }
     setVelocity(velocity, 0);
   }
 
   @Override
   public void setVelocityWithAcceleration(double velocity, Supplier<Double> wantedAccelerationSupplier) {
+    if (isStalled) {
+            return;
+        }
     setVelocity(velocity, wantedAccelerationSupplier.get() * config.pid[slot].kA());
   }
 
   @Override
   public void setMotion(double position, double feedForward) {
+    if (isStalled) {
+            return;
+        }
     setControl(motionMagicVoltage.withPosition(position)); // .withFeedForward(feedForward +
                                                            // positionFeedForward(position)));
     controlMode = ControlMode.MOTION;
   }
 
   public void setMotionExpo(double position) {
+    if (isStalled) {
+            return;
+        }
     setMotionExpo(position, 0);
   }
 
   MotionMagicExpoVoltage motionMagicExpoVoltage = new MotionMagicExpoVoltage(0).withSlot(slot);
 
   public void setMotionExpo(double position, double feedForward) {
+    if (isStalled) {
+            return;
+        }
     setControl(
         motionMagicExpoVoltage.withPosition(position).withFeedForward(feedForward + positionFeedForward(position)));
     controlMode = ControlMode.MOTION;
@@ -320,28 +365,43 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
 
   @Override
   public void setMotion(double position) {
+    if (isStalled) {
+            return;
+        }
     setMotion(position, 0);
   }
 
   @Override
   public void setAngle(double angle, double feedForward) {
+    if (isStalled) {
+            return;
+        }
     setMotion(getCurrentPosition() + MathUtil.angleModulus(angle - getCurrentAngle()), feedForward);
     controlMode = ControlMode.ANGLE;
   }
 
   @Override
   public void setAngle(double angle) {
+    if (isStalled) {
+            return;
+        }
     setAngle(angle, 0);
   }
 
   @Override
   public void setPositionVoltage(double position, double feedForward) {
+    if (isStalled) {
+            return;
+        }
     setControl(positionVoltage.withPosition(position).withFeedForward(feedForward));
     controlMode = ControlMode.POSITION_VOLTAGE;
   }
 
   @Override
   public void setPositionVoltage(double position) {
+    if (isStalled) {
+            return;
+        }
     setPositionVoltage(position, 0);
   }
 

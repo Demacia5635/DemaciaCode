@@ -80,6 +80,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
       cfg.closedLoop.maxMotion.cruiseVelocity(config.maxVelocity).maxAcceleration(config.maxAcceleration);
     }
     configure(cfg, com.revrobotics.ResetMode.kNoResetSafeParameters, com.revrobotics.PersistMode.kPersistParameters);
+    initStallStrategy();
   }
 
   /**
@@ -170,7 +171,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setDuty(double power) {
-    if (getStallDetection()) {
+    if (isStalled) {
       return;
     }
     super.set(power);
@@ -184,7 +185,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setVoltage(double voltage) {
-    if (getStallDetection()) {
+    if (isStalled) {
       return;
     }
     super.setVoltage(voltage);
@@ -194,7 +195,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setVelocity(double velocity, double feedForward) {
-    if (getStallDetection()) {
+    if (isStalled) {
       return;
     }
     if (config.maxVelocity == 0) {
@@ -209,7 +210,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setVelocity(double velocity) {
-    if (getStallDetection()) {
+    if (isStalled) {
       return;
     }
     setVelocity(velocity, 0);
@@ -217,7 +218,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setVelocityWithAcceleration(double velocity, Supplier<Double> wantedAccelerationSupplier) {
-      if (getStallDetection()) {
+      if (isStalled) {
         return;
       }
       setVelocity(velocity, wantedAccelerationSupplier.get() * config.pid[closedLoopSlot.value].kA());
@@ -225,7 +226,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setPositionVoltage(double position, double feedForward) {
-    if (getStallDetection()) {
+    if (isStalled) {
       return;
     }
     getClosedLoopController().setSetpoint(position, ControlType.kPosition, closedLoopSlot, feedForward);
@@ -236,7 +237,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setPositionVoltage(double position) {
-    if (getStallDetection()) {
+    if (isStalled) {
       return;
     }
     setPositionVoltage(position, 0);
@@ -244,7 +245,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setMotion(double position, double feedForward) {
-    if (getStallDetection()) {
+    if (isStalled) {
       return;
     }
     if (config.maxVelocity == 0) {
@@ -259,7 +260,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setMotion(double position) {
-    if (getStallDetection()) {
+    if (isStalled) {
       return;
     }
     setMotion(position, 0);
@@ -267,7 +268,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setAngle(double angle, double feedForward) {
-    if (getStallDetection()) {
+    if (isStalled) {
       return;
     }
     setMotion(getCurrentPosition() + MathUtil.angleModulus(angle - getCurrentAngle()), feedForward);
@@ -276,10 +277,14 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
 
   @Override
   public void setAngle(double angle) {
-    if (getStallDetection()) {
+    if (isStalled) {
       return;
     }
     setAngle(angle, 0);
+  }
+
+  public void resetStall() {
+    isStalled = false;
   }
 
   private double velocityFeedForward(double velocity) {
@@ -467,19 +472,37 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
     getEncoder().setPosition(position);
   }
 
+  private Runnable stallDetectionStrategy = () -> {
+  };
+
   public void updateStallDetection() {
-    if (config.lowVelocityThreshold == 0)
-      return;
-      
+    stallDetectionStrategy.run();
+  }
+
+  private void checkStallLogic() {
     double currentVelocity = Math.abs(getCurrentVelocity());
     double currentCurrent = getCurrentCurrent();
-    
-    isStalled = (currentCurrent > config.highCurrentThreshold && currentVelocity < config.lowVelocityThreshold);
+
+    boolean stallCondition = (currentCurrent > config.highCurrentThreshold && currentVelocity < config.lowVelocityThreshold);
+
+    if (stallCondition && !isStalled) {
+      isStalled = true;
+      stop();
+    }
   }
-  
+
+  private void initStallStrategy() {
+    if (config.lowVelocityThreshold > 0 && config.highCurrentThreshold > 0) {
+      stallDetectionStrategy = this::checkStallLogic;
+    } else {
+      stallDetectionStrategy = () -> {
+      };
+    }
+  }
+
   public boolean getStallDetection() {
-  return isStalled;
-}
+    return isStalled;
+  }
 
   public void stop(){
     stopMotor();

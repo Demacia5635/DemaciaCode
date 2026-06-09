@@ -46,6 +46,8 @@ public class SparkMaxMotor extends SparkMax implements MotorInterface {
 
   // Motor Stalling
   private boolean isStalled = false;
+  private Runnable stallDetectionStrategy = () -> {
+  };
 
   /**
    * Creates a new Spark Max motor wrapper.
@@ -81,6 +83,7 @@ public class SparkMaxMotor extends SparkMax implements MotorInterface {
       cfg.closedLoop.maxMotion.cruiseVelocity(config.maxVelocity).maxAcceleration(config.maxAcceleration);
     }
     configure(cfg, com.revrobotics.ResetMode.kNoResetSafeParameters, com.revrobotics.PersistMode.kPersistParameters);
+    initStallStrategy();
   }
 
   /**
@@ -116,6 +119,29 @@ public class SparkMaxMotor extends SparkMax implements MotorInterface {
       configure(cfg, com.revrobotics.ResetMode.kNoResetSafeParameters, com.revrobotics.PersistMode.kPersistParameters);
     }
   }
+
+  private void checkStallLogic() {
+    double currentVelocity = Math.abs(getCurrentVelocity());
+    double currentCurrent = getCurrentCurrent();
+
+    boolean stallCondition = (currentCurrent > config.highCurrentThreshold
+        && currentVelocity < config.lowVelocityThreshold);
+
+    if (stallCondition && !isStalled) {
+      isStalled = true;
+      stop();
+    }
+  }
+
+  private void initStallStrategy() {
+    if (config.lowVelocityThreshold > 0 && config.highCurrentThreshold > 0) {
+      stallDetectionStrategy = this::checkStallLogic;
+    } else {
+      stallDetectionStrategy = () -> {
+      };
+    }
+  }
+
 
   @Override
   public void setName(String name) {
@@ -427,17 +453,15 @@ public class SparkMaxMotor extends SparkMax implements MotorInterface {
     });
   }
   public void updateStallDetection() {
-    if (config.lowVelocityThreshold == 0)
-      return;
-      
-    double currentVelocity = Math.abs(getCurrentVelocity());
-    double currentCurrent = getCurrentCurrent();
-    
-    isStalled = (currentCurrent > config.highCurrentThreshold && currentVelocity < config.lowVelocityThreshold);
+    stallDetectionStrategy.run();
   }
   public boolean getStallDetection() {
-  return isStalled;
-}
+    return isStalled;
+  }
+
+  public void resetStall() {
+    isStalled = false;
+  }
 
   public double gearRatio() {
     return config.motorRatio;
