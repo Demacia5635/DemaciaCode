@@ -35,7 +35,7 @@ public class demaciaTrajectory {
 
         // 2. Compute turn circles for middle waypoints
 
-        allCircles.add(new Circle(demaciaPathPoint.get(0).getTranslation(), 0, false));
+        allCircles.add(new Circle(demaciaPathPoint.get(0).getTranslation(), 0, false, 0));
 
         for (int i = 1; i < demaciaPathPoint.size() - 1; i++) {
             Translation2d from = demaciaPathPoint.get(i - 1).getTranslation();
@@ -49,7 +49,7 @@ public class demaciaTrajectory {
             allCircles.add(circle);
         }
 
-        allCircles.add(new Circle(demaciaPathPoint.get(demaciaPathPoint.size() - 1).getTranslation(), 0, false));
+        allCircles.add(new Circle(demaciaPathPoint.get(demaciaPathPoint.size() - 1).getTranslation(), 0, false, 0));
 
         // 3. Build straight legs between circles
         for (int i = 1; i < allCircles.size(); i++) {            
@@ -108,6 +108,7 @@ public class demaciaTrajectory {
         }
 
         // Convert scalar speed and heading into field-relative X and Y velocities
+        LogManager.log("target vel: " + targetVelocity + " target heading: " + targetHeading);
         double vx = targetVelocity * targetHeading.getCos();
         double vy = targetVelocity * targetHeading.getSin();
         
@@ -117,6 +118,8 @@ public class demaciaTrajectory {
 
         return new ChassisSpeeds(vx, vy, omega);
     }
+
+    
     public Object checkRobotLocation(Pose2d currentRobotPose) {
         // Safety margin in meters
         double tolerance = 0.7; 

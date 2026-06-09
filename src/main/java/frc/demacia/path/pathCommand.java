@@ -23,7 +23,7 @@ public class pathCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // LogManager.log("vel" + trajectory.getChassisSpeeds(chassis.getPose()));
+    LogManager.log("vel" + trajectory.getChassisSpeeds(chassis.getPose()));
     chassis.setVelocities(trajectory.getChassisSpeeds(chassis.getPose()));
   }
 

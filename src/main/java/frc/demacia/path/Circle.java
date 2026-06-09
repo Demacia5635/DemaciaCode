@@ -3,11 +3,13 @@ package frc.demacia.path;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import frc.demacia.utils.log.LogManager;
 
 public class Circle {
     public Translation2d center;
     public double radius;
     public boolean isLeft;
+    public double angleDiff;
 
     // Track accumulated distance inside this circle
     private double totalDistanceTraveled = 0.0;
@@ -15,14 +17,16 @@ public class Circle {
 
     private DemaciaTrapezoid trapezoid = new DemaciaTrapezoid(3, 0);
 
-    public Circle(Translation2d center, double radius, boolean isLeft) {
+    public Circle(Translation2d center, double radius, boolean isLeft, double angleDiff) {
         this.center = center;
         this.radius = radius;
         this.isLeft = isLeft;
+        this.angleDiff = angleDiff;
     }
 
     public double getDist(){
-        return radius * Math.PI / 2;
+        // LogManager.log("")
+        return radius * Math.abs(angleDiff);
     }
 
     public void updateDistance(Pose2d currentPose) {
@@ -39,6 +43,7 @@ public class Circle {
     public double getVel(){
         double totalArcDist = getDist();
         double distLeft = totalArcDist - totalDistanceTraveled;
+        LogManager.log("dist left" + distLeft + " total dist traaveld"+ totalDistanceTraveled + "total arch dist" + totalArcDist);
         if (distLeft < 0) distLeft = 0;
         return trapezoid.calculate(totalDistanceTraveled, totalArcDist, 0);
     }

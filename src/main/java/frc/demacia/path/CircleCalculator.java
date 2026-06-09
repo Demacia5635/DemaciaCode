@@ -44,7 +44,7 @@ public class CircleCalculator {
         Translation2d center = midPoint.plus(
                 new Translation2d(radius * Math.cos(vecAngle), radius * Math.sin(vecAngle)));
 
-        return new Circle(center, radius, isLeftTurn);
+        return new Circle(center, radius, isLeftTurn, angleDiff);
     }
 
     /** Wraps angle to the range [-π, π] */
