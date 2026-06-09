@@ -25,12 +25,15 @@ public class TurretConstants {
     ;
 
     public static final double MIN_POSITION = 0;
-    public static final String LIMIT_SWITCH_NAME_MIN = null;
-    public static final LimitSwitchConfig LIMIT_SWITCH_CONFIG_MIN = null;
+    public static final String LIMIT_SWITCH_NAME_MIN = "TurretLimitSwitchMin";
+    
+    private static final int LIMIT_SWITCH_CHANNEL_MIN = 0;
+    public static final LimitSwitchConfig LIMIT_SWITCH_CONFIG_MIN = new LimitSwitchConfig(LIMIT_SWITCH_CHANNEL_MIN, LIMIT_SWITCH_NAME_MIN);
     public static final double MAX_POSITION = 0;
-    public static final String LIMIT_SWITCH_NAME_MAX = null;
-    public static final LimitSwitchConfig LIMIT_SWITCH_CONFIG_MAX = null;
-
+    public static final String LIMIT_SWITCH_NAME_MAX = "TurretLimitSwitchMax";
+    private static final int LIMIT_SWITCH_CHANNEL_MAX = 0;
+    public static final LimitSwitchConfig LIMIT_SWITCH_CONFIG_MAX = new LimitSwitchConfig(LIMIT_SWITCH_CHANNEL_MAX, LIMIT_SWITCH_NAME_MAX);
+    
     public static enum TURRET_STATES implements MechanismState{
         Hub, 
         Delivery;
