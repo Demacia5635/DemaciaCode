@@ -43,12 +43,11 @@ public class RobotPose {
 
     private Matrix<N3, N1> visionSTD;
     private Matrix<N3, N1> questSTDWhileShooting;
-    
+    private Chassis chassis;
     private BuiltInAccelerometer accelerometer;
 
-    private RobotPose(Translation2d[] modulePositions, Matrix<N3, N1> stateSTD,
-            Matrix<N3, N1> questSTD) {
-        this.vision = new Vision((VisionConstants.Tags.TAGS_ARRAY));
+    private RobotPose(Translation2d[] modulePositions, Matrix<N3, N1> stateSTD,Matrix<N3, N1> questSTD, Chassis chassis) {
+        this.vision = new Vision((VisionConstants.Tags.TAGS_ARRAY), chassis);
 
         this.quest = new Quest();
         this.questSTD = questSTD;
@@ -56,8 +55,10 @@ public class RobotPose {
         this.visionSTD = new Matrix<N3, N1>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 }));
         this.hasUpdatedQuestIntialPose = false;
         this.hasQuestDisconnected = false;
-        this.poseEstimator = new DemaciaPoseEstimator(modulePositions, stateSTD, visionSTD);
+        this.chassis = chassis;
+        this.poseEstimator = new DemaciaPoseEstimator(modulePositions, stateSTD, visionSTD, chassis);
         this.accelerometer = new BuiltInAccelerometer(); 
+        SmartDashboard.putData("resetPoseTo0", new InstantCommand(this::resetPose));
     }
 
     public Quest getQuest() {
@@ -69,11 +70,9 @@ public class RobotPose {
         return poseEstimator.getEstimatedPose();
     }
 
-    public static void initialize(Translation2d[] modulePositions, Matrix<N3, N1> stateSTD,
-            Matrix<N3, N1> questSTD) {
-
+    public static void initialize(Translation2d[] modulePositions, Matrix<N3, N1> stateSTD,Matrix<N3, N1> questSTD, Chassis chassis) {
         if (instance == null)
-            instance = new RobotPose(modulePositions, stateSTD, questSTD);
+            instance = new RobotPose(modulePositions, stateSTD, questSTD, chassis);
     }
 
     public void resetPose() {
@@ -142,16 +141,16 @@ public class RobotPose {
     public void setAngle3DLimelight() {
         Rotation2d newAngle = vision.getRobotAngle();
         if (newAngle != null)
-            Chassis.getInstance().setYaw(newAngle);
+            chassis.setYaw(newAngle);
 
     }
 
     public void update(OdometryObservation odometryObservation) {
 
         vision.updateValues();
-        if (!quest.isConnected())
+        // if (!quest.isConnected())
             // RobotContainer.getMainLeds().isQuestDisconnected = true;
-            LogManager.log("quest is not connected"); //TODO: cange to led signal
+            // LogManager.log("quest is not connected"); //TODO: cange to led signal
 
         if (Math.abs(accelerometer.getX()) < 0.3 && Math.abs(accelerometer.getZ()) < 0.3)
             addOdometryCalculation(odometryObservation);

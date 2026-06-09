@@ -27,7 +27,7 @@ public class CircleCalculator {
      * @param midPoint  the waypoint the circle is built around (P2)
      * @param radius    desired turn radius
      */
-    public static CircleCalculator calculateCircleCenter(Translation2d from,
+    public static Circle calculateCircleCenter(Translation2d from,
                                                Translation2d to,
                                                Translation2d midPoint,
                                                double radius) {
@@ -44,7 +44,7 @@ public class CircleCalculator {
         Translation2d center = midPoint.plus(
                 new Translation2d(radius * Math.cos(vecAngle), radius * Math.sin(vecAngle)));
 
-        return new CircleCalculator(center, radius, isLeftTurn);
+        return new Circle(center, radius, isLeftTurn);
     }
 
     /** Wraps angle to the range [-π, π] */

@@ -6,6 +6,7 @@ package frc.demacia.path;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.utils.chassis.Chassis;
+import frc.demacia.utils.log.LogManager;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class pathCommand extends Command {
@@ -16,12 +17,13 @@ public class pathCommand extends Command {
     this.trajectory = trajectory;
     this.chassis = chassis;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(Chassis.getInstance());
+    addRequirements(chassis);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // LogManager.log("vel" + trajectory.getChassisSpeeds(chassis.getPose()));
     chassis.setVelocities(trajectory.getChassisSpeeds(chassis.getPose()));
   }
 

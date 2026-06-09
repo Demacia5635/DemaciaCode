@@ -14,6 +14,9 @@ import frc.demacia.path.demaciaTrajectory;
 import frc.demacia.path.pathCommand;
 import frc.demacia.utils.DemaciaUtils;
 import frc.demacia.utils.chassis.Chassis;
+import frc.demacia.utils.chassis.DriveCommand;
+import frc.demacia.utils.controller.CommandController;
+import frc.demacia.utils.controller.CommandController.ControllerType;
 import frc.demacia.utils.log.LogManager;
 import frc.robot.chassis.RobotBChassisConstants;
 
@@ -30,10 +33,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer implements Sendable{
-  private Chassis chassis = Chassis.getInstance();
+  private Chassis chassis;
   public static boolean isComp = false;
   private static boolean hasRemovedFromLog = false;
   public static boolean isRed = false;
+  public CommandController controller = new CommandController(0, ControllerType.kPS5);
 
   private List<Pose2d> demaciaPathPoints = new ArrayList<>();
 
@@ -46,10 +50,11 @@ public class RobotContainer implements Sendable{
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
-    Chassis.initialize(RobotBChassisConstants.CHASSIS_CONFIG);
-    chassis.setDefaultCommand(new pathCommand(new demaciaTrajectory(demaciaPathPoints), chassis));
+    chassis = new Chassis(RobotBChassisConstants.CHASSIS_CONFIG);
+    chassis.setDefaultCommand(new DriveCommand(chassis, controller));
     // Configure the trigger bindings
     configureBindings();
+    configPoint();
   }
 
   /**
@@ -105,6 +110,6 @@ public class RobotContainer implements Sendable{
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return null;
+    return new pathCommand(new demaciaTrajectory(demaciaPathPoints), chassis);
   }
 }

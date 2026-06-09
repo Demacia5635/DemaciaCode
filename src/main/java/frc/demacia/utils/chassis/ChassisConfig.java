@@ -44,6 +44,11 @@ public class ChassisConfig {
         this.swerveModuleConfig = swerveModuleConfigs;
         this.pigeonConfig = pigeonConfig;
         this.tags = tags;
+        this.modulePositions = new Translation2d[swerveModuleConfigs.length];
+
+        for (int i = 0; i < swerveModuleConfigs.length; i++) {
+            modulePositions[i] = swerveModuleConfigs[i].position;
+        }
     }
 
     /**

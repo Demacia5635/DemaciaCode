@@ -18,17 +18,19 @@ import frc.demacia.vision.TagPose;
 public class Vision {
 
     private ArrayList<TagPose> tags;
-
-    public Vision(TagPose[] poses) {
+    private Chassis chassis;
+    public Vision(TagPose[] poses, Chassis chassis) {
 
         this.tags = new ArrayList<>();
         for (TagPose p : poses) {
             tags.add(p);
         }
+        this.chassis = chassis;
     }
 
-    public Vision(ArrayList<TagPose> tags) {
+    public Vision(ArrayList<TagPose> tags, Chassis chassis) {
         this.tags = tags;
+        this.chassis = chassis;
     }
 
     public Vision() {
@@ -103,7 +105,7 @@ public class Vision {
             y += pose2d.getY() * confidence;
 
         }
-        return new Pose2d(x, y, Chassis.getInstance().getGyroAngle());
+        return new Pose2d(x, y, chassis.getGyroAngle());
     }
 
     public void updateValues() {

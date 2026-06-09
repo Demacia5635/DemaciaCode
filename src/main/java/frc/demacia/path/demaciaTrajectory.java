@@ -13,10 +13,10 @@ public class demaciaTrajectory {
     private List<PointPair<Pose2d>> pointPairs;
     private List<Pose2d> pathPoint;
     
-    private List<CircleCalculator> allCircles;
+    private List<Circle> allCircles;
     private List<Leg> allLegs;
     
-    private double radius = 3.0;
+    private double radius = 0.5;
 
     public demaciaTrajectory(List<Pose2d> demaciaPathPoint) {
         this.demaciaPathPoint = demaciaPathPoint;
@@ -34,22 +34,27 @@ public class demaciaTrajectory {
         }
 
         // 2. Compute turn circles for middle waypoints
+
+        allCircles.add(new Circle(demaciaPathPoint.get(0).getTranslation(), 0, false));
+
         for (int i = 1; i < demaciaPathPoint.size() - 1; i++) {
             Translation2d from = demaciaPathPoint.get(i - 1).getTranslation();
             Translation2d mid = demaciaPathPoint.get(i).getTranslation();
             Translation2d to = demaciaPathPoint.get(i + 1).getTranslation();
             
-            CircleCalculator circle = CircleCalculator.calculateCircleCenter(from, to, mid, this.radius);
+            Circle circle = CircleCalculator.calculateCircleCenter(from, to, mid, this.radius);
+
+            LogManager.log("form: " + from + " mid: " + mid + " to: " + to + " circle raduis: " + circle.radius + " circle center: " + circle.center);
+
             allCircles.add(circle);
         }
 
+        allCircles.add(new Circle(demaciaPathPoint.get(demaciaPathPoint.size() - 1).getTranslation(), 0, false));
+
         // 3. Build straight legs between circles
-        for (int i = 1; i < allCircles.size(); i++) {
-            CircleCalculator c1 = allCircles.get(i - 1);
-            CircleCalculator c2 = allCircles.get(i);
-            
-            Circle startCircle = new Circle(c1.center, c1.radius, c1.isLeftTurn);
-            Circle endCircle = new Circle(c2.center, c2.radius, c2.isLeftTurn);
+        for (int i = 1; i < allCircles.size(); i++) {            
+            Circle startCircle = allCircles.get(i - 1);
+            Circle endCircle = allCircles.get(i);
             
             Leg leg = new Leg(startCircle, endCircle);
             allLegs.add(leg);
@@ -58,6 +63,15 @@ public class demaciaTrajectory {
             this.pathPoint.add(new Pose2d(leg.getEnd(), demaciaPathPoint.get(i).getRotation()));
         }
 
+        for (int i = 0; i < this.pathPoint.size(); i++){
+            LogManager.log("Path Point " + i + ": " + this.pathPoint.get(i));
+        }
+
+        LogManager.log("Path Point size: " + this.pathPoint.size());
+        LogManager.log("All Circles size: " + this.allCircles.size());
+        LogManager.log("All Legs size: " + this.allLegs.size());
+        LogManager.log("Demacia Path Point size: " + this.demaciaPathPoint.size());
+        LogManager.log("lest path point" + getPointLestPose());
     }
 
     /**
@@ -87,54 +101,83 @@ public class demaciaTrajectory {
             Translation2d baseVector = currentLeg.getEnd().minus(currentRobotPose.getTranslation());
             targetHeading = currentLeg.getTargetHeading(currentRobotPose.getRotation(), baseVector);
         } else {
-            // Off-track: safe stop
+            // Off-track or uninitialized: safe stop
+            // LogManager.log("fauck");
+            LogManager.log("location: " + location);
             return new ChassisSpeeds(0, 0, 0);
         }
 
-        // Turn scalar speed and rotation into linear components (X and Y velocities)
+        // Convert scalar speed and heading into field-relative X and Y velocities
         double vx = targetVelocity * targetHeading.getCos();
         double vy = targetVelocity * targetHeading.getSin();
         
-        // P-control for angular velocity targeting the desired tracking heading
+        // P-control loop for angular velocity targeting the desired heading
         double headingError = targetHeading.minus(currentRobotPose.getRotation()).getRadians();
         double omega = headingError * 4.0; 
 
         return new ChassisSpeeds(vx, vy, omega);
     }
-
     public Object checkRobotLocation(Pose2d currentRobotPose) {
-        for (Leg leg : allLegs) {
-            if (leg.getStartCircle().isPointInside(currentRobotPose)) {
-                return leg.getStartCircle(); 
-            }
-            if (leg.getEndCircle().isPointInside(currentRobotPose)) {
-                return leg.getEndCircle();   
+        // Safety margin in meters
+        double tolerance = 0.7; 
+
+        // First priority: Check if the robot is inside any of the defined turning circles (with 0.5m tolerance)
+        for (Circle circle : allCircles){
+            if (isInsideCircleWithTolerance(currentRobotPose, circle, tolerance)){
+                return circle;
             }
         }
 
+        // Second priority: Check if the robot is tracking along a straight leg segment
         for (Leg leg : allLegs) {
             if (isRobotNearLine(currentRobotPose, leg)) {
                 return leg;
             }
         }
-        return null;
+
+        // If the robot is neither in the extended circle nor on the line, it's off-track
+        return "ROBOT_LOST_BETWEEN_POINTS"; 
     }
 
-    private boolean isRobotNearLine(Pose2d robotPose, Leg leg) {
-        double x = robotPose.getX();
-        double y = robotPose.getY();
-        double x1 = leg.getStartCircle().center.getX();
-        double y1 = leg.getStartCircle().center.getY();
-        double x2 = leg.getEndCircle().center.getX();
-        double y2 = leg.getEndCircle().center.getY();
+    /**
+     * Helper method to check if the robot is within the circle's radius plus a tolerance margin.
+     */
+    private boolean isInsideCircleWithTolerance(Pose2d robotPose, Circle circle, double tolerance) {
+        // Calculate physical distance from the robot to the center of the circle
+        double distanceToCenter = robotPose.getTranslation().minus(circle.center).getNorm();
+        
+        // Return true if the robot is within the radius + tolerance threshold
+        return distanceToCenter <= (circle.radius + tolerance);
+    }
 
-        double num = Math.abs((y2 - y1) * x - (x2 - x1) * y + x2 * y1 - y2 * x1);
-        double den = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
-        return (num / den) <= 0.2; 
+    /**
+     * Calculates cross-track error from the robot to the finite line segment of the leg.
+     */
+    private boolean isRobotNearLine(Pose2d robotPose, Leg leg) {
+        Translation2d start = leg.getStart();
+        Translation2d end = leg.getEnd();
+        Translation2d robot = robotPose.getTranslation();
+
+        Translation2d segment = end.minus(start);
+        Translation2d robotToStart = robot.minus(start);
+
+        double segmentLengthSq = segment.getX() * segment.getX() + segment.getY() * segment.getY();
+        if (segmentLengthSq == 0) return false;
+
+        // Calculate projection factor 't' and clamp it to keep it within the segment boundaries
+        double t = (robotToStart.getX() * segment.getX() + robotToStart.getY() * segment.getY()) / segmentLengthSq;
+        t = Math.max(0.0, Math.min(1.0, t));
+
+        // Get the closest point on the segment
+        Translation2d closestPoint = start.plus(new Translation2d(t * segment.getX(), t * segment.getY()));
+
+        // Verify if the distance is within the 0.2 meters tolerance threshold
+        double distance = robot.getDistance(closestPoint);
+        return distance <= 0.2; 
     }
 
     public Pose2d getPointLestPose(){
-        return this.demaciaPathPoint.get(demaciaPathPoint.size() - 1);
+        return demaciaPathPoint.get(demaciaPathPoint.size() - 1);
     }
 
     public List<Pose2d> getDemaciaPathPoint() {

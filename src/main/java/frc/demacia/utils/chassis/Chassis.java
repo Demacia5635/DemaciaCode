@@ -87,16 +87,16 @@ import frc.demacia.vision.utils.VisionConstants;
  */
 public class Chassis extends SubsystemBase {
 
-    private static Chassis instance;
+    // private static Chassis instance;
 
-    public static void initialize(ChassisConfig chassisConfig) {
-        if (instance == null)
-            instance = new Chassis(chassisConfig);
-    }
+    // public static void initialize(ChassisConfig chassisConfig) {
+    //     if (instance == null)
+    //         instance = new Chassis(chassisConfig);
+    // }
 
-    public static Chassis getInstance() {
-        return instance;
-    }
+    // public static Chassis getInstance() {
+    //     return instance;
+    // }
 
     private final ChassisConfig chassisConfig;
 
@@ -129,7 +129,7 @@ public class Chassis extends SubsystemBase {
 
     OdometryObservation observation;
 
-    private Chassis(ChassisConfig chassisConfig) {
+    public Chassis(ChassisConfig chassisConfig) {
         setName(getName());
 
         this.chassisConfig = chassisConfig;
@@ -144,7 +144,7 @@ public class Chassis extends SubsystemBase {
         gyro = new Pigeon(chassisConfig.pigeonConfig);
 
         addStatus();
-        LogManager.log("modole pose " + modulePositions.toString());
+        LogManager.log("moudle pose"+ modulePositions.toString());
         demaciaKinematics = new DemaciaKinematics(modulePositions);
         wpilibKinematics = new SwerveDriveKinematics(modulePositions);
       
@@ -161,10 +161,7 @@ public class Chassis extends SubsystemBase {
         SmartDashboard.putData("chassis/set brake",
                 new InstantCommand(() -> setNeutralMode(true)).ignoringDisable(true));
 
-        RobotPose.initialize(modulePositions, new Matrix<>(
-                new SimpleMatrix(
-                        new double[] { 0.03, 0.03, 0 })),
-                VisionConstants.QUEST_STD);
+        RobotPose.initialize(modulePositions, new Matrix<>(new SimpleMatrix(new double[] { 0.03, 0.03, 0 })),VisionConstants.QUEST_STD, this);
 
         SmartDashboard.putData("reset with 3d",
                 new InstantCommand(() -> RobotPose.getInstance().setAngle3DLimelight()).ignoringDisable(true));

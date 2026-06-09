@@ -140,8 +140,9 @@ public final class RobotBChassisConstants {
                     moduleName,
                     SteerMotor.getSteerMotor(i * 3 + 2, moduleName),
                     DriveMotor.getDriveMotor(i * 3 + 1, moduleName),
-                    new CancoderConfig(i * 3 + 3, CANBUS, NAME + "/" + moduleName + "/" + "Cancoder"))
-                    // .withPosion(new Translation2d(i == 0 || i == 1 ? 0.295 : -0.295,i == 0 || i == 2 ? 0.395 : -0.395))
+                    new CancoderConfig(i * 3 + 3, CANBUS, NAME + "/" + moduleName + "/" + "Cancoder")
+                    )
+                    .withPosion(new Translation2d(i == 0 || i == 1 ? 0.295 : -0.295,i == 0 || i == 2 ? 0.395 : -0.395))
                     //TODO: MAY CARATE PROBLAM
                     .withSteerOffset(offsets[i])
                     .withDrivePowerToSteerPower(0.022);
@@ -168,5 +169,6 @@ public final class RobotBChassisConstants {
         NAME, 
         MODULES, 
         PIGEON_CONFIG, 
-        new TagPose[] {});
+        new TagPose[] {}
+        );
 }

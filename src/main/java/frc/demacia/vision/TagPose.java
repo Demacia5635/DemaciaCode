@@ -60,10 +60,13 @@ public class TagPose {
 
   private boolean isUpsidedown = false;
 
+  private Chassis chassis;
+
   @SuppressWarnings("unchecked")
-  public TagPose(Camera camera) {
+  public TagPose(Camera camera, Chassis chassis) {
     confidence = 0;
     this.camera = camera;
+    this.chassis = chassis;
     Table = NetworkTableInstance.getDefault().getTable(camera.getTableName());
     latency = 0;
     field = new Field2d();
@@ -79,13 +82,13 @@ public class TagPose {
     SmartDashboard.putData("chassis/reset gyro by camera " + camera.getName(),
         Commands.sequence(
             new InstantCommand(() -> changePipeline(5)).ignoringDisable(true),
-            new InstantCommand(() -> Chassis.getInstance().setYaw(getRobotAngle())).ignoringDisable(true),
+            new InstantCommand(() -> chassis.setYaw(getRobotAngle())).ignoringDisable(true),
             new InstantCommand(() -> changePipeline(0)).ignoringDisable(true)).ignoringDisable(true));
 
   }
 
-  public TagPose(Camera camera, boolean isUpsidedown) {
-    this(camera);
+  public TagPose(Camera camera, boolean isUpsidedown, Chassis chassis) {
+    this(camera, chassis);
     this.isUpsidedown = isUpsidedown;
   }
 
@@ -121,7 +124,7 @@ public class TagPose {
       }
 
       if (id > 0 && id < VisionConstants.TAG_HEIGHT.length) {
-        pose = new Pose2d(getOriginToRobot(), Chassis.getInstance().getGyroAngle());
+        pose = new Pose2d(getOriginToRobot(), chassis.getGyroAngle());
         field.setRobotPose(pose);
         confidence = getConfidence();
       }
@@ -166,7 +169,7 @@ public class TagPose {
         Rotation2d.fromDegrees(camToTagYaw + camera.getYaw()));
     // Add camera offset to get robot center to tag vector
     robotToTag = (camera.getRobotToCamPosition().toTranslation2d()
-        .plus(cameraToTag)).rotateBy(Chassis.getInstance().getGyroAngle());
+        .plus(cameraToTag)).rotateBy(chassis.getGyroAngle());
     return robotToTag;
   }
 
@@ -214,13 +217,13 @@ public class TagPose {
 
   private double getYawCrop() {
     double TagYaw = ((-camToTagYaw) + camera.getYaw()) / 31.25;
-    return TagYaw + Chassis.getInstance().getChassisSpeedsFieldRel().vyMetersPerSecond * VisionConstants.PREDICT_Y
-        + Chassis.getInstance().getChassisSpeedsFieldRel().omegaRadiansPerSecond * VisionConstants.PREDICT_OMEGA;
+    return TagYaw + chassis.getChassisSpeedsFieldRel().vyMetersPerSecond * VisionConstants.PREDICT_Y
+        + chassis.getChassisSpeedsFieldRel().omegaRadiansPerSecond * VisionConstants.PREDICT_OMEGA;
   }
 
   private double getPitchCrop() {
     double TagPitch = camToTagPitch / 24.45;
-    return TagPitch + Chassis.getInstance().getChassisSpeedsFieldRel().vxMetersPerSecond * VisionConstants.PREDICT_X;
+    return TagPitch + chassis.getChassisSpeedsFieldRel().vxMetersPerSecond * VisionConstants.PREDICT_X;
   }
 
   private void cropStop() {
