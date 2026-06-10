@@ -1,6 +1,7 @@
 package frc.demacia.path;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 /**
@@ -22,29 +23,38 @@ public class CircleCalculator {
      * Calculates the circle center for a given midpoint using the bisector of the angle
      * between the vectors midPoint->from and midPoint->to.
      *
-     * @param from      previous waypoint (P1)
-     * @param to        next waypoint (P3)
-     * @param midPoint  the waypoint the circle is built around (P2)
+     * @param p1      previous waypoint (P1)
+     * @param p3        next waypoint (P3)
+     * @param p2  the waypoint the circle is built around (P2)
      * @param radius    desired turn radius
+     * @return An ArcSegment object containing the start, finish, and center.
      */
-    public static Circle calculateCircleCenter(Translation2d from,
-                                               Translation2d to,
-                                               Translation2d midPoint,
-                                               double radius) {
-        double midPointToFromAngle = from.minus(midPoint).getAngle().getRadians();
-        double midPointToToAngle   = to.minus(midPoint).getAngle().getRadians();
+    public static ArcSegment calculateCircleCenter(Translation2d p1,
+                                                   Translation2d p3,
+                                                   Translation2d p2,
+                                                   double radius) {
+        double midPointToFromAngle = p1.minus(p2).getAngle().getRadians();
+        double midPointToToAngle   = p3.minus(p2).getAngle().getRadians();
 
         // Angle of the bisector between the two vectors
         double vecAngle = (midPointToFromAngle + midPointToToAngle) / 2;
 
         // Positive angle diff = right turn, negative = left turn
         double angleDiff = angleModulus(midPointToFromAngle + Math.PI - midPointToToAngle);
-        boolean isLeftTurn = angleDiff < 0;
+        // הערה: משתנה זה (isLeftTurn) כרגע לא נכנס ישירות ל-ArcSegment, 
+        // אך הוא נשאר כאן למקרה שתצטרך אותו בעתיד.
+        boolean isLeftTurn = angleDiff < 0; 
 
-        Translation2d center = midPoint.plus(
+        Translation2d center = p2.plus(
                 new Translation2d(radius * Math.cos(vecAngle), radius * Math.sin(vecAngle)));
 
-        return new Circle(center, radius, isLeftTurn, angleDiff);
+        // מכיוון ש-ArcSegment דורש Pose2d, אנו מייצרים אותם מתוך ה-Translation2d.
+        // כאן השתמשתי בזווית הנוכחית של המסלול כברירת מחדל (new Rotation2d()).
+        // אם יש לך זוויות כיוון מדויקות לנקודות ההתחלה והסיום, מומלץ להעביר אותן לכאן.
+        Pose2d startPose = new Pose2d(p1, new Rotation2d(midPointToFromAngle));
+        Pose2d finishPose = new Pose2d(p3, new Rotation2d(midPointToToAngle));
+
+        return new ArcSegment(startPose, finishPose, center);
     }
 
     /** Wraps angle to the range [-π, π] */
@@ -53,4 +63,4 @@ public class CircleCalculator {
         while (angle < -Math.PI) angle += 2 * Math.PI;
         return angle;
     }
-    }
+}

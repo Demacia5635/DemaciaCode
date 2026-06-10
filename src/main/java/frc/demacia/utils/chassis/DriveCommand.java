@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.utils.DemaciaUtils;
 import frc.demacia.utils.controller.CommandController;
+import frc.demacia.utils.log.LogManager;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveCommand extends Command {
@@ -65,7 +66,9 @@ public class DriveCommand extends Command {
 
     if(precisionMode) chassis.setVelocities(speeds);
     else {
-        chassis.setRobotRelSpeedsWithAccel(speeds);}
+        chassis.setVelocities(speeds);
+        LogManager.log("speed: " + speeds);
+      }
   }
 
   // Called once the command ends or is interrupted.

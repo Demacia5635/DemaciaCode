@@ -1,5 +1,8 @@
 package frc.demacia.path;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -22,13 +25,32 @@ public class LegCalculator {
      * @param c2 the ending circle
      * @return an array containing [Pose2d tangent on circle 1, Pose2d tangent on circle 2]
      */
-    public static Pose2d[] circleToCircleTangents(Circle c1, Circle c2) {
-        if (c1.isLeft == c2.isLeft) {
-            return sameTurnTangents(c1.center, c2.center, c1.radius, c1.isLeft);
-        } else {
-            return oppositeTurnTangents(c1.center, c2.center, c1.radius, c1.isLeft);
-        }
+    // public static Pose2d[] circleToCircleTangents(Circle c1, Circle c2) {
+    //     if (c1.isLeft == c2.isLeft) {
+    //         return sameTurnTangents(c1.center, c2.center, c1.radius, c1.isLeft);
+    //     } else {
+    //         return oppositeTurnTangents(c1.center, c2.center, c1.radius, c1.isLeft);
+    //     }
+    // }
+
+    public static List<Pose2d> retornPoint(Translation2d p1, ArcSegment arc, double radius){
+        double dictance = p1.minus(arc.getCenterCircle()).getNorm();
+        double alpha = Math.acos(radius/dictance);
+        double beta = 180 - (alpha + 90);
+        Translation2d vector3 = new Translation2d(dictance, new Rotation2d(beta));
+        Translation2d vector2 = vector3.minus(arc.getCenterCircle());
+        return new ArrayList<>(){
+            {
+                add(new Pose2d(p1, vector3.getAngle()));
+                add(new Pose2d(vector2, vector3.getAngle()));
+            }
+        };
+        // Pose2d[]{
+        //     new Pose2d(p1, vector3.getAngle()),
+        //     new Pose2d(vector2, vector3.getAngle())
+        // }.asLi;
     }
+
 
     /**
      * Tangent point from an external point P1 to a circle.
