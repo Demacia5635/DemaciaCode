@@ -1,22 +1,27 @@
 package frc.demacia.path;
 
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 public class SegmantBase {
 
-    private Pose2d startPose;
-    private Pose2d endPose;
+    private Translation2d startPose;
+    private Translation2d endPose;
 
-    public SegmantBase(Pose2d startPose, Pose2d endPose) {
+    public SegmantBase(Translation2d startPose, Translation2d endPose) {
         this.startPose = startPose;
         this.endPose = endPose;
     }
 
-    public Pose2d getStartPose() {
+    public Translation2d getStartPose() {
         return startPose;
     }
 
-    public Pose2d getEndPose() {
+    public Translation2d getEndPose() {
         return endPose;
+    }
+
+    @Override
+    public String toString(){
+        return "Start point: " + startPose + " Finish Point: " + endPose;
     }
 }

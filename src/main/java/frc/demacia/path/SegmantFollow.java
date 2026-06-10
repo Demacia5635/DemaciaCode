@@ -49,7 +49,7 @@ public class SegmantFollow {
             calculatedVel = new Translation2d(velocity, fixedVelocityHeadingWithRatio);
         }
 
-        double angleError = MathUtil.angleModulus(CurrentSegmant.getEndPose().getRotation().getRadians() - currentPose.getRotation().getRadians());
+        double angleError = MathUtil.angleModulus(CurrentSegmant.getEndPose().getAngle().getRadians() - currentPose.getRotation().getRadians());
         double omega = rotisanPid.calculate(angleError, currentVelocity.omegaRadiansPerSecond);
         return new ChassisSpeeds(calculatedVel.getX(), calculatedVel.getY(), omega);
     }

@@ -54,7 +54,7 @@ public class CircleCalculator {
         Pose2d startPose = new Pose2d(p1, new Rotation2d(midPointToFromAngle));
         Pose2d finishPose = new Pose2d(p3, new Rotation2d(midPointToToAngle));
 
-        return new ArcSegment(startPose, finishPose, center);
+        return new ArcSegment(startPose.getTranslation(), finishPose.getTranslation(), center);
     }
 
     /** Wraps angle to the range [-π, π] */

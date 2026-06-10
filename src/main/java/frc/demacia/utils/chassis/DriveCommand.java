@@ -67,7 +67,7 @@ public class DriveCommand extends Command {
     if(precisionMode) chassis.setVelocities(speeds);
     else {
         chassis.setVelocities(speeds);
-        LogManager.log("speed: " + speeds);
+        // LogManager.log("speed: " + speeds);
       }
   }
 

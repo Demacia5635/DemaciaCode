@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.demacia.path.demaciaTrajectory;
-import frc.demacia.path.pathCommand;
+import frc.demacia.path.DemaciaTrajectoryGood;
+import frc.demacia.path.PathCommand;
 import frc.demacia.utils.DemaciaUtils;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
@@ -69,8 +69,8 @@ public class RobotContainer implements Sendable{
 
   private void configPoint() {
     demaciaPathPoints.add(new Pose2d(0, 0, new Rotation2d()));
-    demaciaPathPoints.add(new Pose2d(1, 1, new Rotation2d()));
-    demaciaPathPoints.add(new Pose2d(2, 0, new Rotation2d()));
+    demaciaPathPoints.add(new Pose2d(2, 2, new Rotation2d()));
+    demaciaPathPoints.add(new Pose2d(4, 0, new Rotation2d()));
   }
 
   private void configureBindings() {
@@ -110,6 +110,6 @@ public class RobotContainer implements Sendable{
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return new pathCommand(new demaciaTrajectory(demaciaPathPoints), chassis);
+    return new PathCommand(new DemaciaTrajectoryGood(demaciaPathPoints), chassis);
   }
 }
