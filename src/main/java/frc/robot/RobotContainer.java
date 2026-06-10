@@ -15,6 +15,7 @@ import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
 import frc.demacia.utils.log.LogManager;
 import frc.demacia.utils.mechanisms.PowerCommand;
+import frc.robot.logTesting.LogFunctions;
 import frc.robot.mechanismTesting.turret.TurretConstants;
 import frc.robot.mechanismTesting.turret.subsystems.Turret;
 
@@ -33,8 +34,8 @@ public class RobotContainer implements Sendable{
   // The robot's subsystems and commands are defined here...
   private static CommandController driverController;
 
-  // mechanism testing code
-  public Turret turret;
+  // // mechanism testing code
+  // public Turret turret;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
 
@@ -42,11 +43,12 @@ public class RobotContainer implements Sendable{
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
-
+    //log test
+    LogFunctions test = new LogFunctions();
     driverController = new CommandController(0, ControllerType.kPS5);
     
-    // mechanism testing code
-    this.turret = new Turret();
+    // // mechanism testing code
+    // this.turret = new Turret();
     // Configure the trigger bindings
     configureBindings();
   }
