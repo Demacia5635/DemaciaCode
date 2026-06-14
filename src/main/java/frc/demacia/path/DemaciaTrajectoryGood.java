@@ -82,10 +82,12 @@ public class DemaciaTrajectoryGood {
         }
         this.pathPoint.add(demaciaPathPoint.get(demaciaPathPoint.size() - 1));
 
-        for (int i = 0; i < (pathPoint.size() / 2) - 1; i++) {
-            LineSegment line = new LineSegment(pathPoint.get(2 * i), pathPoint.get((2 * i) + 1));
+        for (int i = 0; i < pathPoint.size() - 2; i += 2) {
+            LineSegment line = new LineSegment(pathPoint.get(i), pathPoint.get(i + 1));
             segments.add(line);
-            // segments.add(arcSegmants.get(i)) ;
+
+            ArcSegment arc = new ArcSegment(pathPoint.get(i + 1), pathPoint.get(i + 2), arcSegmants.get(i / 2).center(), arcSegmants.get(i / 2).isLeft());
+            segments.add(arc);
         }
         segments.add(new LineSegment(pathPoint.get(pathPoint.size() - 2), pathPoint.get(pathPoint.size() - 1)));
 
