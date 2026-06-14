@@ -8,15 +8,20 @@ public class ArcSegment extends SegmantBase {
     private Translation2d centerCircle;
     private Translation2d centerToStart;
     private Translation2d centerToFinish;
+    private boolean isLeft;
 
-    public ArcSegment(Translation2d startingPoint, Translation2d finishPoint, Translation2d centerCircle ){
+    public ArcSegment(Translation2d startingPoint, Translation2d finishPoint, Translation2d centerCircle, boolean isLeft){
         super(startingPoint, finishPoint);
+
         this.centerCircle = centerCircle;
+        this.isLeft = isLeft;
+
         this.centerToStart = startingPoint.minus(centerCircle);
         this.centerToFinish = finishPoint.minus(centerCircle);
     }
 
     public Translation2d getCenterCircle(){return this.centerCircle;}
+    public boolean getIsLeft() {return this.isLeft;}
 
     public Rotation2d getAngleBetweenRadius(){
         return centerToStart.getAngle().minus(centerToFinish.getAngle());

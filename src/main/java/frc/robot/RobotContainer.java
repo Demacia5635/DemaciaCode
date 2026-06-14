@@ -25,6 +25,7 @@ import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -39,7 +40,7 @@ public class RobotContainer implements Sendable{
   public static boolean isRed = false;
   public CommandController controller = new CommandController(0, ControllerType.kPS5);
 
-  private List<Pose2d> demaciaPathPoints = new ArrayList<>();
+  private List<Translation2d> demaciaPathPoints = new ArrayList<>();
 
   // The robot's subsystems and commands are defined here...
 
@@ -68,10 +69,10 @@ public class RobotContainer implements Sendable{
    */
 
   private void configPoint() {
-    demaciaPathPoints.add(new Pose2d(0, 0, new Rotation2d()));
-    demaciaPathPoints.add(new Pose2d(2, 2, new Rotation2d()));
-    demaciaPathPoints.add(new Pose2d(4, 0, new Rotation2d()));
-    demaciaPathPoints.add(new Pose2d(2, -2, new Rotation2d()));
+    demaciaPathPoints.add(new Translation2d(0, 0));
+    demaciaPathPoints.add(new Translation2d(2, 2));
+    demaciaPathPoints.add(new Translation2d(4, 0));
+    demaciaPathPoints.add(new Translation2d(-1, -2));
   }
 
   private void configureBindings() {

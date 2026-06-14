@@ -24,20 +24,20 @@ public class PathCommand extends Command {
   public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    chassis.setVelocities(trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), chassis.getPose()));
-  }
+  // @Override
+  // public void execute() {
+  //   chassis.setVelocities(trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), chassis.getPose()));
+  // }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    chassis.stop();
-  }
+  // // Called once the command ends or is interrupted.
+  // @Override
+  // public void end(boolean interrupted) {
+  //   chassis.stop();
+  // }
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return ((chassis.getPose().getX() == trajectory.getEndPoint().getX() + 0.5) && (chassis.getPose().getX() == trajectory.getEndPoint().getX() - 0.5)) && ((chassis.getPose().getY() == trajectory.getEndPoint().getY() + 0.5) && (chassis.getPose().getY() == trajectory.getEndPoint().getY() - 0.5));
-  }
+  // // Returns true when the command should end.
+  // @Override
+  // public boolean isFinished() {
+  //   return ((chassis.getPose().getX() == trajectory.getEndPoint().getX() + 0.5) && (chassis.getPose().getX() == trajectory.getEndPoint().getX() - 0.5)) && ((chassis.getPose().getY() == trajectory.getEndPoint().getY() + 0.5) && (chassis.getPose().getY() == trajectory.getEndPoint().getY() - 0.5));
+  // }
 }

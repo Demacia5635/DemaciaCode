@@ -6,6 +6,7 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import frc.demacia.utils.log.LogManager;
 
 /**
  * Static helpers for computing tangent points between points and circles.
@@ -33,16 +34,25 @@ public class LegCalculator {
     //     }
     // }
 
-    public static List<Pose2d> returnPoint(Translation2d p1, ArcSegment arc, double radius){
-        double dictance = p1.minus(arc.getCenterCircle()).getNorm();
-        double alpha = Math.acos(radius/dictance);
-        double beta = 180 - (alpha + 90);
-        Translation2d vector3 = new Translation2d(dictance, new Rotation2d(beta));
-        Translation2d vector2 = vector3.minus(arc.getCenterCircle());
+    public static List<Translation2d> returnPoint(Translation2d p1, Translation2d p2, Circle arc, double radius){
+        Translation2d distance = arc.center().minus(p1);
+        double alpha = /*Math.acos*/Math.asin(radius/(distance.getNorm()));
+        // double beta = 90 - alpha; //180 - (alpha + 90);
+        Translation2d vector1 = distance.rotateBy(new Rotation2d(alpha));
+        Translation2d vector2 = vector1.div(vector1.getNorm()).times(Math.cos(alpha) * distance.getNorm());
+
+        Translation2d pp1 = p1.plus(vector2);
+
+        Translation2d vector3 = pp1.minus(arc.center());
+        Translation2d vector4 = p2.minus(arc.center());
+
+        Translation2d pp2 = vector4.rotateBy(vector4.getAngle().minus(vector3.getAngle())).plus(arc.center());
+
+        LogManager.log("p1: " + p1 + " vector2: " + vector2 + " vector1: " + vector1 + " arc: " + arc);
         return new ArrayList<>(){
             {
-                add(new Pose2d(p1, vector3.getAngle()));
-                add(new Pose2d(vector2, vector3.getAngle()));
+                add(pp1);
+                add(pp2);
             }
         };
         // Pose2d[]{
