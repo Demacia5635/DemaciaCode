@@ -9,15 +9,15 @@ import edu.wpi.first.math.geometry.Translation2d;
  * Stores the center, radius, and turn direction.
  */
 public class CircleCalculator {
-    public final Translation2d center;
-    public final double radius;
-    public final boolean isLeftTurn;
+    // public final Translation2d center;
+    // public final double radius;
+    // public final boolean isLeftTurn;
 
-    public CircleCalculator(Translation2d center, double radius, boolean isLeftTurn) {
-        this.center = center;
-        this.radius = radius;
-        this.isLeftTurn = isLeftTurn;
-    }
+    // public CircleCalculator(Translation2d center, double radius, boolean isLeftTurn) {
+    //     this.center = center;
+    //     this.radius = radius;
+    //     this.isLeftTurn = isLeftTurn;
+    // }
 
     /**
      * Calculates the circle center for a given midpoint using the bisector of the angle

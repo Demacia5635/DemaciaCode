@@ -1,9 +1,5 @@
 package frc.demacia.path;
 
-import java.security.PublicKey;
-
-import javax.sound.sampled.Line;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -17,8 +13,8 @@ public class SegmantFollow {
     private ProfiledPIDController  rotisanPid;
 
     public SegmantFollow() {
-        driveTrapzoid = new DemaciaTrapezoid(pathConstans.MAX_VELOCITY, pathConstans.MAX_ACCELERATION);
-        rotisanPid = new ProfiledPIDController(1, 0, 0, new Constraints(pathConstans.MAX_ANGULAR_VELOCITY, pathConstans.MAX_ANGULAR_ACCELERATION));
+        driveTrapzoid = new DemaciaTrapezoid(PathConstants.MAX_VELOCITY, PathConstants.MAX_ACCELERATION);
+        rotisanPid = new ProfiledPIDController(1, 0, 0, new Constraints(PathConstants.MAX_ANGULAR_VELOCITY, PathConstants.MAX_ANGULAR_ACCELERATION));
     }
 
     public ChassisSpeeds getChassisSpeeds(SegmantBase CurrentSegmant, Pose2d currentPose, ChassisSpeeds currentVelocity, double finalVel) {
@@ -26,7 +22,7 @@ public class SegmantFollow {
         Translation2d chassisPoseAsVector = currentPose.getTranslation();
 
         Translation2d calculatedVel = Translation2d.kZero;
-        if(pathUtils.isLineSegment(CurrentSegmant)){
+        if(PathUtils.isLineSegment(CurrentSegmant)){
             LineSegment segmant = (LineSegment) CurrentSegmant;
             Translation2d posToFinash = segmant.getEndPose().minus(chassisPoseAsVector);
             double vel = driveTrapzoid.calculate(posToFinash.getNorm(), currentVelVector.getNorm(), finalVel);
@@ -41,9 +37,9 @@ public class SegmantFollow {
             ArcSegment segmant = (ArcSegment) CurrentSegmant;
             Translation2d centerToChassis = chassisPoseAsVector.minus(segmant.getCenterCircle());
             Rotation2d tanToCircleAngle = centerToChassis.getAngle().plus(Rotation2d.kCW_90deg.times(Math.signum(segmant.getAngleBetweenRadius().getRadians())));
-            Rotation2d fixedVelocityHeadingWithRatio = tanToCircleAngle.times(centerToChassis.getNorm() / pathConstans.MAX_ANGULAR_VELOCITY);
+            Rotation2d fixedVelocityHeadingWithRatio = tanToCircleAngle.times(centerToChassis.getNorm() / PathConstants.MAX_ANGULAR_VELOCITY);
             double velocity = 0;
-            if(Math.abs(chassisPoseAsVector.getNorm() - pathConstans.MAX_VELOCITY) < 0.1) velocity = pathConstans.MAX_VELOCITY;
+            if(Math.abs(chassisPoseAsVector.getNorm() - PathConstants.MAX_VELOCITY) < 0.1) velocity = PathConstants.MAX_VELOCITY;
             else velocity = driveTrapzoid.calculate(centerToChassis.getNorm(), chassisPoseAsVector.getNorm(), 0);
              
             calculatedVel = new Translation2d(velocity, fixedVelocityHeadingWithRatio);

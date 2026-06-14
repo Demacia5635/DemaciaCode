@@ -71,6 +71,7 @@ public class RobotContainer implements Sendable{
     demaciaPathPoints.add(new Pose2d(0, 0, new Rotation2d()));
     demaciaPathPoints.add(new Pose2d(2, 2, new Rotation2d()));
     demaciaPathPoints.add(new Pose2d(4, 0, new Rotation2d()));
+    demaciaPathPoints.add(new Pose2d(2, -2, new Rotation2d()));
   }
 
   private void configureBindings() {

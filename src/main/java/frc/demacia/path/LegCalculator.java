@@ -33,7 +33,7 @@ public class LegCalculator {
     //     }
     // }
 
-    public static List<Pose2d> retornPoint(Translation2d p1, ArcSegment arc, double radius){
+    public static List<Pose2d> returnPoint(Translation2d p1, ArcSegment arc, double radius){
         double dictance = p1.minus(arc.getCenterCircle()).getNorm();
         double alpha = Math.acos(radius/dictance);
         double beta = 180 - (alpha + 90);

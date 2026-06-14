@@ -3,8 +3,6 @@ package frc.demacia.path;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sound.sampled.Line;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -44,17 +42,21 @@ public class DemaciaTrajectoryGood {
 
         this.currentSegmentIndex = 0;
         this.currentSegment = segments.get(this.currentSegmentIndex);
-        LogManager.log(segments.size());
+        LogManager.log("Segments size: " + segments.size());
         for (int i = 0; i < segments.size(); i++){
             LogManager.log(segments.get(i));
         }
-        LogManager.log(lineSegmants.size());
+        LogManager.log("Line Segments size: " + lineSegmants.size());
         for (int i = 0; i < lineSegmants.size(); i++){
             LogManager.log(lineSegmants.get(i));
         }
-        LogManager.log(arcSegmants.size());
+        LogManager.log("Arc Segments size: " + arcSegmants.size());
         for (int i = 0; i < arcSegmants.size(); i++){
             LogManager.log(arcSegmants.get(i));
+        }
+        LogManager.log("Path Point size: " + pathPoint.size());
+        for (int i = 0; i < pathPoint.size(); i++){
+            LogManager.log(pathPoint.get(i));
         }
     }
 
@@ -71,20 +73,20 @@ public class DemaciaTrajectoryGood {
         }
 
         for(int i = 0; i < demaciaPathPoint.size() / 2; i++){
-            segments.add(new LineSegment(demaciaPathPoint.get(i).getTranslation(), demaciaPathPoint.get(i+1).getTranslation(), true));
+            segments.add(new LineSegment(demaciaPathPoint.get(i).getTranslation(), demaciaPathPoint.get(i+1).getTranslation()));
             segments.add(new ArcSegment(demaciaPathPoint.get(i+1).getTranslation(), demaciaPathPoint.get(i+2).getTranslation(), arcSegmants.get(i).getCenterCircle()));
         }
-        segments.add(new LineSegment(demaciaPathPoint.get(demaciaPathPoint.size() - 2).getTranslation(), demaciaPathPoint.get(demaciaPathPoint.size() - 1).getTranslation(), true));
+        segments.add(new LineSegment(demaciaPathPoint.get(demaciaPathPoint.size() - 2).getTranslation(), demaciaPathPoint.get(demaciaPathPoint.size() - 1).getTranslation()));
 
         for (int i = 0; i < demaciaPathPoint.size() - 1; i++) {
             for (int j = 0; j < demaciaPathPoint.size(); j++) {
-                lineSegmants.add(new LineSegment(demaciaPathPoint.get(i).getTranslation(), demaciaPathPoint.get(i + 1).getTranslation(), true));
+                lineSegmants.add(new LineSegment(demaciaPathPoint.get(i).getTranslation(), demaciaPathPoint.get(i + 1).getTranslation()));
             }
         }
 
         for (int i = 1; i < arcSegmants.size(); i++) {
             Translation2d from = demaciaPathPoint.get(i - 1).getTranslation();
-            pathPoint.addAll(LegCalculator.retornPoint(from, arcSegmants.get(i), 0.5));
+            pathPoint.addAll(LegCalculator.returnPoint(from, arcSegmants.get(i), 0.5));
         }  
 
         if(!segments.isEmpty()){
@@ -98,7 +100,7 @@ public class DemaciaTrajectoryGood {
 
     public ChassisSpeeds calculateSpeeds(ChassisSpeeds currentSpeeds, Pose2d currentPose) {
         
-        double finishVelocity = currentSegmentIndex == segments.size() - 1 ? 0 : pathConstans.MAX_VELOCITY;
+        double finishVelocity = currentSegmentIndex == segments.size() - 1 ? 0 : PathConstants.MAX_VELOCITY;
         ChassisSpeeds speeds = segmentFollow.getChassisSpeeds(segments.get(currentSegmentIndex), currentPose, currentSpeeds, finishVelocity);
         
         if(isFinishedSegment(currentSpeeds, currentPose, currentSegment)){
@@ -134,12 +136,12 @@ public class DemaciaTrajectoryGood {
 
             LineSegment lineSegment = (LineSegment) currentSegment;
 
-            boolean isVelocityHeadingTowardesFinishPoint = pathUtils.isVelocityHeadingInRange(currentVelocityHeading, lineSegment.getStartToEndVector().getAngle());
+            boolean isVelocityHeadingTowardesFinishPoint = PathUtils.isVelocityHeadingInRange(currentVelocityHeading, lineSegment.getStartToEndVector().getAngle());
             if(currentSegmentIndex == segments.size() -1){
-                return (distanceFromFinishPoint < pathConstans.MAX_POSITION_THRESHOLD_FINAL_POINT);
+                return (distanceFromFinishPoint < PathConstants.MAX_POSITION_THRESHOLD_FINAL_POINT);
             }
             // LogManager.log((distanceFromFinishPoint < PathsConstants.MAX_POSITION_THRESHOLD_DURING_PATH) + " " + (distanceFromFinishPoint < (PathsConstants.MAX_POSITION_THRESHOLD_DURING_PATH * 3)) + " " +  isVelocityHeadingTowardesFinishPoint);
-            return (distanceFromFinishPoint < pathConstans.MAX_POSITION_THRESHOLD_DURING_PATH) || ((distanceFromFinishPoint < (pathConstans.MAX_POSITION_THRESHOLD_DURING_PATH * 3)) && isVelocityHeadingTowardesFinishPoint);
+            return (distanceFromFinishPoint < PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH) || ((distanceFromFinishPoint < (PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH * 3)) && isVelocityHeadingTowardesFinishPoint);
             
             
         }
@@ -148,9 +150,9 @@ public class DemaciaTrajectoryGood {
             ArcSegment arcSegment = (ArcSegment) currentSegment;
             Translation2d centerToFinish = arcSegment.getCenterCircle().minus(arcSegment.getEndPose());
             Rotation2d wantedVelocityHeading = centerToFinish.getAngle().minus(Rotation2d.kCW_90deg);
-            boolean isHeadingTowardesNextSegment = pathUtils.isVelocityHeadingInRange(currentVelocityHeading, wantedVelocityHeading);
+            boolean isHeadingTowardesNextSegment = PathUtils.isVelocityHeadingInRange(currentVelocityHeading, wantedVelocityHeading);
             // LogManager.log("isFinishedSegment " + (distanceFromFinishPoint < pathConstans.MAX_POSITION_THRESHOLD_DURING_PATH) + " " + (distanceFromFinishPoint < (pathConstans.MAX_POSITION_THRESHOLD_DURING_PATH * 3)) + " "  + "isHeadingTowardesNextSegment " + isHeadingTowardesNextSegment + " " + currentVelocityHeading + "currentVelocityHeading" + " " + "wantedVelocityHeading" + wantedVelocityHeading + " " + "distanceFromFinishPoint" + distanceFromFinishPoint);
-            return (distanceFromFinishPoint < pathConstans.MAX_POSITION_THRESHOLD_DURING_PATH) || ((distanceFromFinishPoint < (pathConstans.MAX_POSITION_THRESHOLD_DURING_PATH * 3)) && isHeadingTowardesNextSegment);
+            return (distanceFromFinishPoint < PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH) || ((distanceFromFinishPoint < (PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH * 3)) && isHeadingTowardesNextSegment);
         }
     }
 

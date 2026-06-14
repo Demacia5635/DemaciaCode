@@ -1,6 +1,6 @@
 package frc.demacia.path;
 
-public class pathConstans {
+public class PathConstants {
     public static final double TOLERANCE = 0.5;
     public static final double MAX_VELOCITY = 3; // m/s
     public static final double MAX_ACCELERATION = 2; // m/s^2

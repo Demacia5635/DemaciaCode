@@ -21,4 +21,9 @@ public class ArcSegment extends SegmantBase {
     public Rotation2d getAngleBetweenRadius(){
         return centerToStart.getAngle().minus(centerToFinish.getAngle());
     }
+
+    @Override
+    public String toString(){
+        return super.toString() + " Center Circle: " + this.centerCircle;
+    }
 }
