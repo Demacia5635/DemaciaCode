@@ -8,6 +8,8 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.demacia.path.DemaciaTrajectoryGood;
@@ -52,10 +54,11 @@ public class RobotContainer implements Sendable{
     SmartDashboard.putData("RC", this);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
     chassis = new Chassis(RobotBChassisConstants.CHASSIS_CONFIG);
-    chassis.setDefaultCommand(new DriveCommand(chassis, controller));
+    // chassis.setDefaultCommand(new DriveCommand(chassis, controller));
     // Configure the trigger bindings
     configureBindings();
     configPoint();
+    SmartDashboard.putData("Commands", CommandScheduler.getInstance());
   }
 
   /**

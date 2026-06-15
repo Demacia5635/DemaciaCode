@@ -1,7 +1,5 @@
 package frc.demacia.path;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-
 public class DemaciaTrapezoid {
     private final double maxVelocity;
     private final double maxAccel;
@@ -19,6 +17,20 @@ public class DemaciaTrapezoid {
         if (v <= finishVelocity)
             return 0;
         return (v * v - finishVelocity * finishVelocity) / (2 * maxAccel);
+    }
+
+    public double nextVelocity(double distance, double currentVelocity, double endVelocity){
+        double vmax = Math.sqrt((distance * 2 * maxAccel + currentVelocity*currentVelocity + endVelocity*endVelocity) / 2);
+        if(vmax > currentVelocity) { // we can accelerate
+            return Math.max(currentVelocity + maxAccel * 0.02, maxVelocity);
+        } else { // we need to deccelerate
+            double deaccelTime = 2 * distance / (currentVelocity + endVelocity);
+            if(deaccelTime < 0.02) {
+                return endVelocity;
+            } else {
+                return currentVelocity - (currentVelocity - endVelocity) * 0.02 / deaccelTime;
+            }
+        }
     }
 
     public double calculate(double distanceLeft, double currentVelocity, double finishVelocity) {
