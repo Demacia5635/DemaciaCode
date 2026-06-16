@@ -1,6 +1,7 @@
-package frc.demacia.path;
+package frc.demacia.path.segments;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import frc.demacia.path.constans.PathConstants;
 
 public class LineSegment extends SegmantBase {
     private Translation2d startToEndVector;
@@ -18,7 +19,7 @@ public class LineSegment extends SegmantBase {
         this(PathConstants.MAX_VELOCITY, startPoint, endPoint/*, isRight*/);
     }
 
-    public Translation2d getStartToEndVector() {
+    public Translation2d getTranslation() {
         return startToEndVector;
     }
 

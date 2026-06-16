@@ -2,9 +2,10 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.demacia.path;
+package frc.demacia.path.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.demacia.path.DemaciaTrajectoryGood;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.log.LogManager;
 
@@ -27,7 +28,8 @@ public class PathCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // LogManager.log(trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), chassis.getPose()));
+    // LogManager.log("chassis.getChassisSpeedsFieldRel():" + chassis.getChassisSpeedsFieldRel() + " chassis.getPose():" + chassis.getPose());
+    // LogManager.log("the speed the robot get:" + trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), chassis.getPose()));
     chassis.setVelocities(trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), chassis.getPose()));
   }
 
@@ -42,6 +44,7 @@ public class PathCommand extends Command {
   @Override
   public boolean isFinished() {
     // return (Math.abs(chassis.getPose().getTranslation().minus(trajectory.getEndPoint()).getNorm()) < 0.5);
-    return ((chassis.getPose().getX() == trajectory.getEndPoint().getX() + 0.5) || (chassis.getPose().getX() == trajectory.getEndPoint().getX() - 0.5)) || ((chassis.getPose().getY() == trajectory.getEndPoint().getY() + 0.5) || (chassis.getPose().getY() == trajectory.getEndPoint().getY() - 0.5));
+    // return ((chassis.getPose().getX() == trajectory.getEndPoint().getX() + 0.5) || (chassis.getPose().getX() == trajectory.getEndPoint().getX() - 0.5)) || ((chassis.getPose().getY() == trajectory.getEndPoint().getY() + 0.5) || (chassis.getPose().getY() == trajectory.getEndPoint().getY() - 0.5));
+    return trajectory.isFinishedTrajectory;
   }
 }

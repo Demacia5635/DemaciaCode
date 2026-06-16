@@ -1,4 +1,4 @@
-package frc.demacia.path;
+package frc.demacia.path.trapzoid;
 
 import frc.demacia.utils.log.LogManager;
 

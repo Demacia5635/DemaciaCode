@@ -1,4 +1,4 @@
-package frc.demacia.path;
+package frc.demacia.path.segments;
 
 import edu.wpi.first.math.geometry.Translation2d;
 
@@ -18,6 +18,10 @@ public class SegmantBase {
 
     public Translation2d getEndPose() {
         return endPose;
+    }
+    
+    public Translation2d getTranslation(){
+        return getStartPose().minus(getEndPose());
     }
 
     @Override

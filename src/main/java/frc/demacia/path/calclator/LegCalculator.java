@@ -1,4 +1,4 @@
-package frc.demacia.path;
+package frc.demacia.path.calclator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import frc.demacia.path.segments.ArcSegment;
 import frc.demacia.utils.log.LogManager;
 
 /**
@@ -34,8 +35,8 @@ public class LegCalculator {
     //     }
     // }
 
-    public static List<Translation2d> returnPoint(Translation2d p1, Translation2d p2, Circle arc, double radius){
-        Translation2d distance = arc.center().minus(p1);
+    public static List<Translation2d> returnPoint(Translation2d p1, Translation2d p2, ArcSegment arc, double radius){
+        Translation2d distance = arc.getCenter().minus(p1);
         double alpha = /*Math.acos*/Math.asin(radius/(distance.getNorm()));
         // double beta = 90 - alpha; //180 - (alpha + 90);
         Translation2d vector1 = distance.rotateBy(new Rotation2d(alpha));
@@ -43,10 +44,10 @@ public class LegCalculator {
 
         Translation2d pp1 = p1.plus(vector2);
 
-        Translation2d vector3 = pp1.minus(arc.center());
-        Translation2d vector4 = p2.minus(arc.center());
+        Translation2d vector3 = pp1.minus(arc.getCenter());
+        Translation2d vector4 = p2.minus(arc.getCenter());
 
-        Translation2d pp2 = vector4.rotateBy(vector4.getAngle().minus(vector3.getAngle())).plus(arc.center());
+        Translation2d pp2 = vector4.rotateBy(vector4.getAngle().minus(vector3.getAngle())).plus(arc.getCenter());
 
         LogManager.log("p1: " + p1 + " vector2: " + vector2 + " vector1: " + vector1 + " arc: " + arc);
         return new ArrayList<>(){

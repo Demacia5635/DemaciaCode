@@ -147,7 +147,7 @@ public class Chassis extends SubsystemBase {
         gyro.getRawGyro(XYZ_GYRO);
         //TODO:RETURN
         // addStatus();
-        LogManager.log("moudle pose"+ modulePositions.toString());
+        // LogManager.log("moudle pose"+ modulePositions.toString());
         demaciaKinematics = new DemaciaKinematics(modulePositions);
         wpilibKinematics = new SwerveDriveKinematics(modulePositions);
       

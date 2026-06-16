@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.demacia.path.DemaciaTrajectoryGood;
-import frc.demacia.path.PathCommand;
+import frc.demacia.path.commands.PathCommand;
 import frc.demacia.utils.DemaciaUtils;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
@@ -85,7 +85,7 @@ public class RobotContainer implements Sendable{
 
   private void configPoint() {
     demaciaPathPoints.add(new Translation2d(0, 0));
-    demaciaPathPoints.add(new Translation2d(0, 0.8));
+    demaciaPathPoints.add(new Translation2d(0, -1));
     // demaciaPathPoints.add(new Translation2d(0, 0));
     // demaciaPathPoints.add(new Translation2d(2, 2));
     // demaciaPathPoints.add(new Translation2d(4, 0));
