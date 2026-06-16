@@ -9,6 +9,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -24,6 +25,8 @@ import frc.robot.chassis.RobotBChassisConstants;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -41,7 +44,8 @@ public class RobotContainer implements Sendable{
   private static boolean hasRemovedFromLog = false;
   public static boolean isRed = false;
   public CommandController controller = new CommandController(0, ControllerType.kPS5);
-
+  // public PigeonIMU pigeon = new PigeonIMU(14);
+  // public final double[] pigeonArry = new double[3];
   private List<Translation2d> demaciaPathPoints = new ArrayList<>();
 
   // The robot's subsystems and commands are defined here...
@@ -49,13 +53,21 @@ public class RobotContainer implements Sendable{
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
 
+
+  //run command
+  // RunCommand checkPigen = new RunCommand(()-> {
+  //   pigeon.getYawPitchRoll(pigeonArry);
+  //   LogManager.log(pigeonArry[0]);
+  // });
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
+    // checkPigen.schedule();
     chassis = new Chassis(RobotBChassisConstants.CHASSIS_CONFIG);
-    // chassis.setDefaultCommand(new DriveCommand(chassis, controller));
-    // Configure the trigger bindings
+    chassis.setDefaultCommand(new DriveCommand(chassis, controller));
+    // Configure the trigger רםנםאbindings
     configureBindings();
     configPoint();
     SmartDashboard.putData("Commands", CommandScheduler.getInstance());
@@ -73,9 +85,11 @@ public class RobotContainer implements Sendable{
 
   private void configPoint() {
     demaciaPathPoints.add(new Translation2d(0, 0));
-    demaciaPathPoints.add(new Translation2d(2, 2));
-    demaciaPathPoints.add(new Translation2d(4, 0));
-    demaciaPathPoints.add(new Translation2d(-1, -2));
+    demaciaPathPoints.add(new Translation2d(0, 0.8));
+    // demaciaPathPoints.add(new Translation2d(0, 0));
+    // demaciaPathPoints.add(new Translation2d(2, 2));
+    // demaciaPathPoints.add(new Translation2d(4, 0));
+    // demaciaPathPoints.add(new Translation2d(-1, -2));
   }
 
   private void configureBindings() {
@@ -115,6 +129,6 @@ public class RobotContainer implements Sendable{
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return new PathCommand(new DemaciaTrajectoryGood(demaciaPathPoints), chassis);
+    return new PathCommand(new DemaciaTrajectoryGood(demaciaPathPoints,chassis), chassis);
   }
 }

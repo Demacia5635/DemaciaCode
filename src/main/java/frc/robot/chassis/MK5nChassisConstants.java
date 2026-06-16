@@ -102,6 +102,6 @@ public class MK5nChassisConstants {
   public static final ChassisConfig CHASSIS_CONFIG = new ChassisConfig(
       NAME,
       modules,
-      PIGEON_CONFIG,
+      14,
       new TagPose[] {});
 }

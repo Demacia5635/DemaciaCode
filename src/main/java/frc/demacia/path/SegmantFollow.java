@@ -25,10 +25,10 @@ public class SegmantFollow {
         Translation2d calculatedVel;
         if(PathUtils.isLineSegment(CurrentSegmant)){
             LineSegment segmant = (LineSegment) CurrentSegmant;
-            Translation2d posToFinish = segmant.getEndPose().minus(chassisPoseAsVector);
-            double vel = driveTrapzoid.nextVelocity(posToFinish.getNorm(), currentVelVector.getNorm(), finalVel);
-            Rotation2d VelHadingError = segmant.getStartToEndVector().getAngle().minus(currentPose.getRotation());
-            Rotation2d fixedVel = posToFinish.getAngle().minus(VelHadingError);
+            Translation2d VectorToFinish = segmant.getEndPose().minus(chassisPoseAsVector);
+            double vel = driveTrapzoid.nextVelocity(VectorToFinish.getNorm(), currentVelVector.getNorm(), finalVel);
+            Rotation2d VelHadingError = segmant.getStartToEndVector().getAngle().minus(currentPose.getTranslation().getAngle());
+            Rotation2d fixedVel = VectorToFinish.getAngle().minus(VelHadingError.times(2));
 
             calculatedVel = new Translation2d(vel, fixedVel);
         }
@@ -47,6 +47,7 @@ public class SegmantFollow {
 
         double angleError = MathUtil.angleModulus(CurrentSegmant.getEndPose().getAngle().getRadians() - currentPose.getRotation().getRadians());
         double omega = rotationPid.calculate(angleError, currentVelocity.omegaRadiansPerSecond);
+        LogManager.log("CurrentSegmant: " + CurrentSegmant + " currentPose: " + currentPose + " currentVelocity: " + currentVelocity + " finalVel: " + finalVel + " chassis wanted speed: " + new ChassisSpeeds(calculatedVel.getX(), calculatedVel.getY(), omega));
         return new ChassisSpeeds(calculatedVel.getX(), calculatedVel.getY(), omega);
     }
 

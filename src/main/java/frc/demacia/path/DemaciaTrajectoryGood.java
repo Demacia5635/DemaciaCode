@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.log.LogManager;
 
 public class DemaciaTrajectoryGood {
@@ -23,7 +24,9 @@ public class DemaciaTrajectoryGood {
     private SegmantBase currentSegment;
     private boolean isFinishedTrajectory;
 
-    public DemaciaTrajectoryGood(List<Translation2d> demaciaPoints) {
+    private Chassis chassis;
+    public DemaciaTrajectoryGood(List<Translation2d> demaciaPoints,Chassis chassis) {
+        this.chassis = chassis;
         this.demaciaPathPoints = demaciaPoints;
         this.pathPoints = new ArrayList<Translation2d>();
         this.lineSegments = new ArrayList<LineSegment>();
@@ -39,8 +42,15 @@ public class DemaciaTrajectoryGood {
             this.isFinishedTrajectory = true;
             return;
         }
+        // else if (demaciaPathPoints.size() == 2) {
+        //     LineSegment segment = new LineSegment(demaciaPathPoints.get(0), demaciaPathPoints.get(1));
+        //     segments.add(segment);
+        // }
+        else {
+            buildPath();
+        }
 
-        buildPath();
+        // buildPath();
 
         this.currentSegmentIndex = 0;
         this.currentSegment = segments.get(this.currentSegmentIndex);
@@ -88,14 +98,15 @@ public class DemaciaTrajectoryGood {
             segments.add(arc);
         }
         segments.add(new LineSegment(pathPoints.get(pathPoints.size() - 2), pathPoints.get(pathPoints.size() - 1)));
-
+        
+        LogManager.log(segments);
     }
 
     public ChassisSpeeds calculateSpeeds(ChassisSpeeds currentSpeeds, Pose2d currentPose) {
         
         double finishVelocity = currentSegmentIndex == segments.size() - 1 ? 0 : PathConstants.MAX_VELOCITY;
         ChassisSpeeds speeds = segmentFollow.getChassisSpeeds(segments.get(currentSegmentIndex), currentPose, currentSpeeds, finishVelocity);
-        LogManager.log("speeds: " + speeds + " currentSegmentIndex: " + currentSegmentIndex + " segments.get(currentSegmentIndex): " + segments.get(currentSegmentIndex) + " currentPose: " + currentPose + " currentSpeeds: " + currentSpeeds + " finishVelocity: " + finishVelocity);
+        // LogManager.log("speeds: " + speeds);// + " currentSegmentIndex: " + currentSegmentIndex + " segments.get(currentSegmentIndex): " + segments.get(currentSegmentIndex) + " currentPose: " + currentPose + " currentSpeeds: " + currentSpeeds + " finishVelocity: " + finishVelocity);
         if(isFinishedSegment(currentSpeeds, currentPose, currentSegment)){
             if(currentSegmentIndex == segments.size() - 1) {
                 isFinishedTrajectory = true;
@@ -104,7 +115,7 @@ public class DemaciaTrajectoryGood {
             currentSegmentIndex++;
             currentSegment = segments.get(currentSegmentIndex);
         }
-        
+        // LogManager.log("wanted speed" + speeds + " current speed: " + chassis.getVelocityAsVector());
         return speeds;
         // if(isFinishedSegment(currentSpeeds, currentPose, currentSegment)){
         //     if(currentSegmentIndex == segments.size() - 1) {

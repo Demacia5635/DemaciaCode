@@ -16,9 +16,7 @@ public class PathCommand extends Command {
   public PathCommand(DemaciaTrajectoryGood trajectory,Chassis chassis) {
     this.chassis = chassis;
     this.trajectory = trajectory;
-
     addRequirements(chassis);
-
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -29,7 +27,7 @@ public class PathCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    LogManager.log(trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), chassis.getPose()));
+    // LogManager.log(trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), chassis.getPose()));
     chassis.setVelocities(trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), chassis.getPose()));
   }
 
@@ -37,12 +35,13 @@ public class PathCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     chassis.stop();
+    LogManager.log("stop command");
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (Math.abs(chassis.getPose().getTranslation().minus(trajectory.getEndPoint()).getNorm()) < 0.5);
-    // return ((chassis.getPose().getX() == trajectory.getEndPoint().getX() + 0.5) && (chassis.getPose().getX() == trajectory.getEndPoint().getX() - 0.5)) && ((chassis.getPose().getY() == trajectory.getEndPoint().getY() + 0.5) && (chassis.getPose().getY() == trajectory.getEndPoint().getY() - 0.5));
+    // return (Math.abs(chassis.getPose().getTranslation().minus(trajectory.getEndPoint()).getNorm()) < 0.5);
+    return ((chassis.getPose().getX() == trajectory.getEndPoint().getX() + 0.5) || (chassis.getPose().getX() == trajectory.getEndPoint().getX() - 0.5)) || ((chassis.getPose().getY() == trajectory.getEndPoint().getY() + 0.5) || (chassis.getPose().getY() == trajectory.getEndPoint().getY() - 0.5));
   }
 }

@@ -168,7 +168,7 @@ public final class RobotBChassisConstants {
     public static final ChassisConfig CHASSIS_CONFIG = new ChassisConfig(
         NAME, 
         MODULES, 
-        PIGEON_CONFIG, 
+        PIGEON_ID, 
         new TagPose[] {}
         );
 }
