@@ -280,9 +280,8 @@ public class Chassis extends SubsystemBase {
      */
 
     public void setVelocities(ChassisSpeeds speeds) {
-        // LogManager.log("kinematics speed: " + speeds);
-        ChassisSpeeds fieldChassisSpeed = ChassisSpeeds.fromRobotRelativeSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, getGyroAngle());
-        SwerveModuleState[] states = demaciaKinematics.toSwerveModuleStates(fieldChassisSpeed);
+        LogManager.log("wanted speed: " + speeds + " current speed: " + getVelocityAsVector());
+        SwerveModuleState[] states = demaciaKinematics.toSwerveModuleStates(speeds);
         setModuleStates(states);
     }
 

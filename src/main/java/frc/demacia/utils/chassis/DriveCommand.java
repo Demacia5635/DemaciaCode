@@ -39,9 +39,6 @@ public class DriveCommand extends Command {
       return precisionMode;
   }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -56,6 +53,7 @@ public class DriveCommand extends Command {
     double velX = Math.pow(joyX, 2) * chassis.getMaxDriveVelocity() * Math.signum(joyX);
     double velY = Math.pow(joyY, 2) * chassis.getMaxDriveVelocity() * Math.signum(joyY);
     double velRot = Math.pow(rot, 2) * chassis.getMaxRotationalVelocity() * Math.signum(rot);
+
     if(precisionMode){
         velX /= 4;
         velY /= 4;
@@ -64,20 +62,13 @@ public class DriveCommand extends Command {
     
     speeds = new ChassisSpeeds(velX, velY,velRot);
 
-    if(precisionMode) chassis.setVelocities(speeds);
-    else {
-        chassis.setVelocities(speeds);
-        // LogManager.log("speed: " + speeds);
-      }
+    chassis.setVelocities(speeds);
+    
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
+  public void end(boolean interrupted) {
+    chassis.stop();
   }
 }

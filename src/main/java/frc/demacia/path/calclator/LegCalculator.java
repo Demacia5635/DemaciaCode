@@ -19,21 +19,6 @@ import frc.demacia.utils.log.LogManager;
  */
 public class LegCalculator {
 
-    /**
-     * Automatically detects whether the two circles turn in the same or opposite
-     * directions, and returns the tangent poses with the correct driving heading.
-     *
-     * @param c1 the starting circle
-     * @param c2 the ending circle
-     * @return an array containing [Pose2d tangent on circle 1, Pose2d tangent on circle 2]
-     */
-    // public static Pose2d[] circleToCircleTangents(Circle c1, Circle c2) {
-    //     if (c1.isLeft == c2.isLeft) {
-    //         return sameTurnTangents(c1.center, c2.center, c1.radius, c1.isLeft);
-    //     } else {
-    //         return oppositeTurnTangents(c1.center, c2.center, c1.radius, c1.isLeft);
-    //     }
-    // }
 
     public static List<Translation2d> returnPoint(Translation2d p1, Translation2d p2, ArcSegment arc, double radius){
         Translation2d distance = arc.getCenter().minus(p1);
@@ -46,7 +31,7 @@ public class LegCalculator {
 
         Translation2d vector3 = pp1.minus(arc.getCenter());
         Translation2d vector4 = p2.minus(arc.getCenter());
-
+    
         Translation2d pp2 = vector4.rotateBy(vector4.getAngle().minus(vector3.getAngle())).plus(arc.getCenter());
 
         LogManager.log("p1: " + p1 + " vector2: " + vector2 + " vector1: " + vector1 + " arc: " + arc);

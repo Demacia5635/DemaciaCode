@@ -4,9 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.log.LogManager;
 
 /**
@@ -44,8 +46,6 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
-    // m_robotContainer.pigeon.getYawPitchRoll(m_robotContainer.pigeonArry);
-    // LogManager.log("gyro angle: " + m_robotContainer.pigeon.getFusedHeading());
     CommandScheduler.getInstance().run();
   }
 

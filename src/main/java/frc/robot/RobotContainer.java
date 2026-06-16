@@ -31,6 +31,7 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -39,27 +40,14 @@ import edu.wpi.first.math.geometry.Translation2d;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer implements Sendable{
-  private Chassis chassis;
   public static boolean isComp = false;
   private static boolean hasRemovedFromLog = false;
   public static boolean isRed = false;
-  public CommandController controller = new CommandController(0, ControllerType.kPS5);
-  // public PigeonIMU pigeon = new PigeonIMU(14);
-  // public final double[] pigeonArry = new double[3];
   private List<Translation2d> demaciaPathPoints = new ArrayList<>();
-
   // The robot's subsystems and commands are defined here...
-
-
+  private Chassis chassis;
   // Replace with CommandPS4Controller or CommandJoystick if needed
-
-
-  //run command
-  // RunCommand checkPigen = new RunCommand(()-> {
-  //   pigeon.getYawPitchRoll(pigeonArry);
-  //   LogManager.log(pigeonArry[0]);
-  // });
-
+  public CommandController controller = new CommandController(0, ControllerType.kPS5);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
