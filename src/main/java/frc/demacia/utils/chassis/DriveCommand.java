@@ -20,8 +20,8 @@ public class DriveCommand extends Command {
 
 
   /** Creates a new DriveCommand. */
-  public DriveCommand(Chassis chassis, CommandController controller) {
-    this.chassis = chassis;
+  public DriveCommand( CommandController controller) {
+    this.chassis = Chassis.getInstance();
     this.controller = controller;
     precisionMode = false;
     addRequirements(chassis);
@@ -59,9 +59,9 @@ public class DriveCommand extends Command {
         velY /= 4;
         velRot /= 4;
     }
-    
+    LogManager.log("wanted angle" +chassis.getGyroAngle().getDegrees());
     speeds = new ChassisSpeeds(velX, velY,velRot);
-
+    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, chassis.getGyroAngle());
     chassis.setVelocities(speeds);
     
   }

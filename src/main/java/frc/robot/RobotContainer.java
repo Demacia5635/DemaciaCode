@@ -53,8 +53,9 @@ public class RobotContainer implements Sendable{
     SmartDashboard.putData("RC", this);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
     // checkPigen.schedule();
-    chassis = new Chassis(RobotBChassisConstants.CHASSIS_CONFIG);
-    chassis.setDefaultCommand(new DriveCommand(chassis, controller));
+    chassis = Chassis.getInstance();
+    Chassis.initialize(RobotBChassisConstants.CHASSIS_CONFIG);
+    Chassis.getInstance().setDefaultCommand(new DriveCommand(controller));
     // Configure the trigger רםנםאbindings
     configureBindings();
     configPoint();
