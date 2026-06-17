@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.demacia.utils.log.LogManager;
 import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
@@ -41,6 +42,12 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
   private double lastAcceleration;
   private double setPoint = 0;
   private double lastTime = 0;
+    // Motor Stalling
+  private final Timer stallTimer = new Timer();
+  private boolean conditionActive = false;
+  private boolean IsDone = false;
+  private boolean isStalled = false;
+
 
   /**
    * Creates a new Spark Flex motor wrapper.
@@ -53,7 +60,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
     configMotor();
     addLog();
     setName(name);
-    SmartDashboard.putData(name, this);
+    // SmartDashboard.putData(name, this);
     LogManager.log(name + " motor initialized");
   }
 
@@ -200,7 +207,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
   }
 
   @Override
-  public void setVelocityWithAcceleratoin(double velocity, Supplier<Double> wantedAccelerationSupplier) {
+  public void setVelocityWithAcceleration(double velocity, Supplier<Double> wantedAccelerationSupplier) {
       setVelocity(velocity, wantedAccelerationSupplier.get() * config.pid[closedLoopSlot.value].kA());
   }
 
@@ -351,7 +358,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
           value -> {
             if (value) {
               if (!configPidFf.isScheduled()) {
-                configPidFf.schedule();
+                CommandScheduler.getInstance().schedule(configPidFf);
               }
             } else {
               if (configPidFf.isScheduled()) {
@@ -389,7 +396,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
         value -> {
           if (value) {
             if (!configMotionMagic.isScheduled()) {
-              configMotionMagic.schedule();
+              CommandScheduler.getInstance().schedule(configMotionMagic);
             }
           } else {
             if (configMotionMagic.isScheduled()) {
@@ -429,6 +436,35 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
   public void setEncoderPosition(double position) {
     getEncoder().setPosition(position);
   }
+
+  public void updateStallDetection() {
+    if (config.conditionIsTrue == null || config.lowVelocityThreshold == 0)
+      return;
+    double currentVelocity = Math.abs(getCurrentVelocity());
+    double currentCurrent = getCurrentCurrent();
+    if (currentCurrent > config.highCurrentThreshold && currentVelocity < config.lowVelocityThreshold) {
+      if (!conditionActive) {
+        stallTimer.restart();
+        conditionActive = true;
+        IsDone = false;
+        isStalled = true;
+
+      }
+      if (stallTimer.hasElapsed(config.secondsThreshold) && !IsDone) {
+        config.conditionIsTrue.accept(config);
+        IsDone = true;
+      }
+    } else if (conditionActive) {
+      stallTimer.stop();
+      stallTimer.reset();
+      conditionActive = false;
+      IsDone = false;
+      isStalled = false;
+    }
+  }
+  public boolean getStallDetection() {
+  return isStalled;
+}
 
   public void stop(){
     stopMotor();

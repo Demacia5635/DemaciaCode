@@ -94,17 +94,9 @@ public class LedStrip extends SubsystemBase{
   /**
    * set the strip solid gay
    */
-  public void setSolidGay() {
-    manager.setSolidGay(this);
+  public void setGay() {
+    manager.setGay(this);
   }
-
-  /**
-   * set the strip blink gay
-   */
-  public void setBlinkGay() {
-    manager.setBlinkGay(this);
-  }
-
   /**
    * get the colors of the strip
    * @return arr of colors that are the colors of the leds in the leds manager

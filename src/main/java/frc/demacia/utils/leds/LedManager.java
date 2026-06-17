@@ -97,30 +97,15 @@ public class LedManager extends SubsystemBase{
    * set the leds to being gay always
    * @param strip the wanted strip
    */
-  public void setSolidGay(LedStrip strip) {
+  public void setGay(LedStrip strip) {
       for (int i = strip.offset; i < strip.size + strip.offset; i++) {
         ledColors[i] = Color.fromHSV((int) (currentH + i * 3), 255, 255);
       }
 
-      currentH += 3;
+      currentH += 1;
       currentH %= 180;
   }
   
-  /**
-   * set the leds to being gay blinky
-   * @param strip the wanted strip
-   */
-  public void setBlinkGay(LedStrip strip) {
-    for (int i = strip.offset; i < strip.size + strip.offset; i++) {
-      ledColors[i] = Timer.getFPGATimestamp() % BLINK_TIME != 0
-      ? Color.fromHSV((int) (currentH + i * 3), 255, 255)
-      : Color.kBlack;
-    }
-
-    currentH += 3;
-    currentH %= 180;
-  }
-
   /**
    * get the colors of a strip
    * @param offset the offset of the strip

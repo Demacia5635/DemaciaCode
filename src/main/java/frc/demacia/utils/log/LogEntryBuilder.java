@@ -33,16 +33,16 @@ public class LogEntryBuilder<T> {
     private String metadata = "";
     private boolean isSeparated = false;
     private Data<T> data;
+    private boolean isRio = true;
     
     /**
      * Creates a builder for Phoenix6 StatusSignals.
      * @param name The name of the log entry
      * @param statusSignals Variable arguments of StatusSignals
      */
-    @SafeVarargs
-    LogEntryBuilder(String name, StatusSignal<T>... statusSignals) {
+    LogEntryBuilder(String name, StatusSignal<T>[] statusSignals, boolean isRio) {
         this.name = name;
-        this.data = new Data<>(statusSignals);
+        this.data = new Data<>(statusSignals, isRio);
     }
     
     /**
@@ -108,8 +108,8 @@ public class LogEntryBuilder<T> {
             LogManager.log("Log level cannot be null");
             return null;
         }
-        
-        LogEntry<T> entry = LogManager.add(name, data, logLevel, metadata, isSeparated);
+
+        LogEntry<T> entry = LogManager.add(name, data, logLevel, metadata, isSeparated, isRio);
         return entry;
     }
 }

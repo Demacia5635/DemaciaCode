@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
  * Supports driving multiple motors or a single motor.
  * </p>
  */
-public class DriveCommand extends Command {
+public class PowerCommand extends Command {
   private final BaseMechanism mechanism;
   private final String[] motorNames;
   private final DoubleSupplier[] powers;
@@ -21,7 +21,7 @@ public class DriveCommand extends Command {
    * @param motorNames The names of the motors to drive
    * @param powers The suppliers that provide the duty cycle power [-1.0, 1.0] (e.g., joystick input)
    */
-  public DriveCommand(BaseMechanism mechanism, String[] motorNames, DoubleSupplier[] powers) {
+  public PowerCommand(BaseMechanism mechanism, String[] motorNames, DoubleSupplier[] powers) {
     this.mechanism = mechanism;
     this.motorNames = motorNames;
     this.powers = powers;
@@ -34,7 +34,7 @@ public class DriveCommand extends Command {
    * @param motorName The name of the motor to drive
    * @param power A supplier that provides the duty cycle power [-1.0, 1.0] (e.g., joystick input)
    */
-  public DriveCommand(BaseMechanism mechanism, String motorName, DoubleSupplier power) {
+  public PowerCommand(BaseMechanism mechanism, String motorName, DoubleSupplier power) {
     this(mechanism, new String[] { motorName }, new DoubleSupplier[] { power });
   }
 
