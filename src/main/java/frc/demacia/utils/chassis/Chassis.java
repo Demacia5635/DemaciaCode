@@ -368,11 +368,16 @@ public class Chassis extends SubsystemBase {
     }
 
     public double getGyroAngularVelocity() {
-        gyroAngularVelocityStatus.refresh();
-        if (gyroAngularVelocityStatus.getStatus() == StatusCode.OK) {
-            lastGyroAngularVelocity = gyroAngularVelocityStatus.getValue().in(Units.RadiansPerSecond);
-        }
-        return lastGyroAngularVelocity;
+        // gyroAngularVelocityStatus.refresh();
+        // if (gyroAngularVelocityStatus.getStatus() == StatusCode.OK) {
+        //     lastGyroAngularVelocity = gyroAngularVelocityStatus.getValue().in(Units.RadiansPerSecond);
+        // }
+        // return lastGyroAngularVelocity;
+        double[] xyz_dps = new double[3];
+        gyro.getRawGyro(xyz_dps);
+
+        double angularVelocityZ = xyz_dps[2];
+        return Math.toRadians(angularVelocityZ);
     }
 
     public void setModuleState(SwerveModuleState state) {
@@ -435,6 +440,7 @@ public class Chassis extends SubsystemBase {
      * @return Current velocities transformed to field frame
      */
     public ChassisSpeeds getChassisSpeedsFieldRel() {
+
         return ChassisSpeeds.fromRobotRelativeSpeeds(
                 demaciaKinematics.toChassisSpeeds(getModuleStates(),
                         getGyroAngularVelocity()),

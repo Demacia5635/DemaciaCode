@@ -38,9 +38,9 @@ public final class RobotBChassisConstants {
         private static final double KP = 1d;
         private static final double KI = 0d;
         private static final double KD = 0d;
-        private static final double KS = 0.17123;
-        private static final double KV = 2.20388;
-        private static final double KA = 0.48899;
+        private static final double KS = 0.45;
+        private static final double KV = 2.65;
+        private static final double KA = 0.5;
         private static final double KG = 0d;
 
         /**

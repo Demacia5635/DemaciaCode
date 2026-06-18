@@ -20,11 +20,11 @@ public class DriveCommand extends Command {
 
 
   /** Creates a new DriveCommand. */
-  public DriveCommand( CommandController controller) {
+  public DriveCommand(CommandController controller) {
     this.chassis = Chassis.getInstance();
     this.controller = controller;
     precisionMode = false;
-    addRequirements(chassis);
+    addRequirements(this.chassis);
   }
 
   public void invertPrecisionMode() {

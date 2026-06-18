@@ -74,10 +74,11 @@ public class RobotContainer implements Sendable{
 
   private void configPoint() {
     demaciaPathPoints.add(new Translation2d(0, 0));
-    demaciaPathPoints.add(new Translation2d(0, -1));
+    demaciaPathPoints.add(new Translation2d(0, 2));
     // demaciaPathPoints.add(new Translation2d(0, 0));
-    // demaciaPathPoints.add(new Translation2d(2, 2));
-    // demaciaPathPoints.add(new Translation2d(4, 0));
+    demaciaPathPoints.add(new Translation2d(2, 0));
+    demaciaPathPoints.add(new Translation2d(0, 3));
+    demaciaPathPoints.add(new Translation2d(1,0));
     // demaciaPathPoints.add(new Translation2d(-1, -2));
   }
 
@@ -118,6 +119,6 @@ public class RobotContainer implements Sendable{
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return new PathCommand(new DemaciaTrajectoryGood(demaciaPathPoints,chassis), chassis);
+    return new PathCommand(new DemaciaTrajectoryGood(demaciaPathPoints));
   }
 }

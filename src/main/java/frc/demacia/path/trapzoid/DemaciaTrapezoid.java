@@ -25,7 +25,7 @@ public class DemaciaTrapezoid {
         double vmax = Math.sqrt((distance * 2 * maxAccel + currentVelocity*currentVelocity + endVelocity*endVelocity) / 2);
         LogManager.log("vmax: " + vmax + " currentVelocity: " + currentVelocity);
         if(vmax > currentVelocity) { // we can accelerate
-            return Math.max(currentVelocity + maxAccel * 0.02, maxVelocity);
+            return Math.min(currentVelocity + maxAccel * 0.02, maxVelocity);
         } else { // we need to deccelerate
             double deaccelTime = 2 * distance / (currentVelocity + endVelocity);
             if(deaccelTime < 0.02) {

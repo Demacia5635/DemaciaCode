@@ -33,8 +33,8 @@ public class DemaciaTrajectoryGood {
     public boolean isFinishedTrajectory;
 
     private Chassis chassis;
-    public DemaciaTrajectoryGood(List<Translation2d> demaciaPoints,Chassis chassis) {
-        this.chassis = chassis;
+    public DemaciaTrajectoryGood(List<Translation2d> demaciaPoints) {
+        this.chassis = Chassis.getInstance();
         this.demaciaPathPoints = demaciaPoints;
         this.pathPoints = new ArrayList<Translation2d>();
         this.lineSegments = new ArrayList<LineSegment>();
@@ -59,6 +59,15 @@ public class DemaciaTrajectoryGood {
         }
         this.currentSegmentIndex = 0;
         this.currentSegment = segments.get(this.currentSegmentIndex);
+
+        for (int i = 0; i < segments.size(); i++){
+            LogManager.log("segments.get(" + i + "): " + segments.get(i));
+        }
+        for (int i = 0; i < lineSegments.size(); i++){
+            LogManager.log("lineSegments.get(" + i + "): " + lineSegments.get(i));
+        }
+
+        LogManager.log( "----------start---------------"+"first point"  + demaciaPoints + "path point" + pathPoints+ "radius" + radius + " ---------end--------");
     }
 
     private void buildPath() {
@@ -68,7 +77,7 @@ public class DemaciaTrajectoryGood {
         }
 
         for (int i = 0; i < lineSegments.size() - 1; i++) {
-            ArcSegment arc = arcCalculator.calclateCenter(lineSegments.get(i).getStartPose(), lineSegments.get(i).getEndPose(), lineSegments.get(i+i).getEndPose(),radius);
+            ArcSegment arc = arcCalculator.calclateCenter(lineSegments.get(i).getStartPose(), lineSegments.get(i).getEndPose(), lineSegments.get(i+1).getEndPose(),radius);
             this.arcSegmants.add(arc);
         }
 
@@ -105,7 +114,7 @@ public class DemaciaTrajectoryGood {
             currentSegmentIndex++;
             currentSegment = segments.get(currentSegmentIndex);
         }
-        LogManager.log("wanted speed" + speeds + " current speed: " + chassis.getVelocityAsVector());
+        // LogManager.log("wanted speed" + speeds + " current speed: " + chassis.getVelocityAsVector());
         return speeds;
     }
 

@@ -4,6 +4,7 @@
 
 package frc.demacia.path.commands;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.path.DemaciaTrajectoryGood;
 import frc.demacia.utils.chassis.Chassis;
@@ -14,8 +15,8 @@ public class PathCommand extends Command {
   /** Creates a new PathCommand. */
   DemaciaTrajectoryGood trajectory;
   Chassis chassis;
-  public PathCommand(DemaciaTrajectoryGood trajectory,Chassis chassis) {
-    this.chassis = chassis;
+  public PathCommand(DemaciaTrajectoryGood trajectory) {
+    this.chassis = Chassis.getInstance();
     this.trajectory = trajectory;
     addRequirements(chassis);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -31,20 +32,20 @@ public class PathCommand extends Command {
     // LogManager.log("chassis.getChassisSpeedsFieldRel():" + chassis.getChassisSpeedsFieldRel() + " chassis.getPose():" + chassis.getPose());
     // LogManager.log("the speed the robot get:" + trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), chassis.getPose()));
     chassis.setVelocities(trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), chassis.getPose()));
+    // chassis.setVelocities(new ChassisSpeeds(0,0.4,0));
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     chassis.stop();
-    LogManager.log("stop command");
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // return (Math.abs(chassis.getPose().getTranslation().minus(trajectory.getEndPoint()).getNorm()) < 0.5);
+    return (chassis.getPose().getTranslation().minus(trajectory.getEndPoint()).getNorm() < 0.08);
     // return ((chassis.getPose().getX() == trajectory.getEndPoint().getX() + 0.5) || (chassis.getPose().getX() == trajectory.getEndPoint().getX() - 0.5)) || ((chassis.getPose().getY() == trajectory.getEndPoint().getY() + 0.5) || (chassis.getPose().getY() == trajectory.getEndPoint().getY() - 0.5));
-    return trajectory.isFinishedTrajectory;
+    // return trajectory.isFinishedTrajectory;
   }
 }
