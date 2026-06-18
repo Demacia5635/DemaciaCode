@@ -31,10 +31,10 @@ public class DemaciaPoseEstimator {
     private final double kBufferDuration = 1.5;
     private NavigableMap<Double, VisionUpdate> visionUpdates = new TreeMap<>();
     private Pose2d estimatedPose;
-
+    private Chassis chassis;
     private final TimeInterpolatableBuffer<Pose2d> odometryBuffer;
 
-    public DemaciaPoseEstimator(Translation2d[] modulePositions, Matrix<N3, N1> stateSTD, Matrix<N3, N1> visionSTD) {
+    public DemaciaPoseEstimator(Translation2d[] modulePositions, Matrix<N3, N1> stateSTD, Matrix<N3, N1> visionSTD, Chassis chassis) {
 
         this.odometry = new DemaciaOdometry(modulePositions);
         estimatedPose = odometry.getPose2d();
@@ -43,7 +43,7 @@ public class DemaciaPoseEstimator {
         }
         setVisionMeasurementStdDevs(visionSTD);
         this.odometryBuffer = TimeInterpolatableBuffer.createBuffer(kBufferDuration);
-
+        this.chassis = chassis;
     }
 
     public final void setVisionMeasurementStdDevs(Matrix<N3, N1> visionMeasurementStdDevs) {
@@ -200,7 +200,7 @@ public class DemaciaPoseEstimator {
     }
 
     public Pose2d getEstimatedPose() {
-        return new Pose2d(estimatedPose.getTranslation(), Chassis.getInstance().getGyroAngle());
+        return new Pose2d(estimatedPose.getTranslation(), chassis.getGyroAngle());
     }
 
     public void resetPose() {

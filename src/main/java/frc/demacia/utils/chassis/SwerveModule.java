@@ -1,9 +1,11 @@
+
 package frc.demacia.utils.chassis;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.motors.MotorInterface;
 import frc.demacia.utils.sensors.Cancoder;
 
@@ -24,9 +26,9 @@ import frc.demacia.utils.sensors.Cancoder;
  */
 public class SwerveModule {
     private SwerveModuleConfig config;
-    private MotorInterface steerMotor;
-    private MotorInterface driveMotor;
-    private Cancoder cancoder;
+    public MotorInterface steerMotor;
+    public MotorInterface driveMotor;
+    public Cancoder cancoder;
     public String name;
 
     public SwerveModule(SwerveModuleConfig config) {
@@ -37,6 +39,10 @@ public class SwerveModule {
         name = config.name;
 
         steerMotor.setEncoderPosition(getAbsoluteAngle() - config.steerOffset);
+    }
+
+    public MotorInterface getSteerMotor() {
+        return steerMotor;
     }
 
     /**
@@ -80,6 +86,7 @@ public class SwerveModule {
      * @param velocityMetersPerSecond Target velocity
      */
     public void setDriveVelocity(double velocityMetersPerSecond) {
+        SmartDashboard.putNumber("Drive Vel", velocityMetersPerSecond);
         driveMotor.setVelocity(velocityMetersPerSecond);
     }
 
@@ -89,6 +96,7 @@ public class SwerveModule {
      * @param positionRadians Target angle in radians
      */
     public void setSteerPosition(double positionRadians) {
+        if(Math.abs(positionRadians - steerMotor.getCurrentPosition()) <= Math.toRadians(0.5) ) steerMotor.setDuty(0);
         steerMotor.setPositionVoltage(positionRadians);
         // steerMotor.setMotionMagic(positionRadians);
     }
@@ -131,8 +139,17 @@ public class SwerveModule {
             diff = diff + Math.PI;
         }
 
-        setSteerPosition(steerMotor.getCurrentPosition() + diff);
-        setDriveVelocity(vel - steerMotor.getCurrentVelocity() * config.SteerVelToDriveVel);
+        if (Math.abs(diff) <= Math.toRadians(0.7)) {
+            setSteerPower(0);
+        } else {
+            setSteerPosition(steerMotor.getCurrentPosition() + diff);
+        }
+
+        if (vel == 0) {
+            setDrivePower(0);
+        } else {
+            setDriveVelocity(vel - steerMotor.getCurrentVelocity() * config.steerVelToDriveVel);
+        }
     }
 
     /**

@@ -232,7 +232,7 @@ public class VisionConstants {
                                 // new TagPose(new Camera("hub", new Translation3d(-0.133, 0.19, 0.545), 29, 0.0, false)),
                                 //prev x offset 0.283 
                                 // new TagPose(new Camera("hub", new Translation3d(0.27,-0.20,0.345), 19d, 2d, false, false)),
-                                // new TagPose(new Camera("back", new Translation3d(-0.276, -0.195, 0.195), 31d, 195d, false, false), true)
+                                new TagPose(new Camera("back", new Translation3d(-0.276, -0.195, 0.195), 31d, 195d, false, false), true)
                         };
 
         }
