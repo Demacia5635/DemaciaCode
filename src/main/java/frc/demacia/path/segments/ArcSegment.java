@@ -26,7 +26,11 @@ public class ArcSegment extends SegmantBase {
     public boolean getIsLeft() {return this.isLeft;}
 
     public Rotation2d getAngleBetweenRadius(){
-        return centerToStart.getAngle().minus(centerToFinish.getAngle());
+        return centerToFinish.getAngle().minus(centerToStart.getAngle());
+    }
+
+    public Rotation2d getFinishAngle(){
+        return centerToFinish.getAngle();
     }
 
     @Override

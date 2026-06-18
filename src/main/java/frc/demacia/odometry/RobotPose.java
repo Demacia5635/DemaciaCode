@@ -21,12 +21,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import frc.demacia.odometry.DemaciaPoseEstimator.OdometryObservation;
 import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.utils.log.LogManager;
 import frc.demacia.vision.subsystem.Quest;
 import frc.demacia.vision.utils.Vision;
 import frc.demacia.vision.utils.VisionConstants;
 
-import frc.robot.RobotContainer;
 
 public class RobotPose {
 

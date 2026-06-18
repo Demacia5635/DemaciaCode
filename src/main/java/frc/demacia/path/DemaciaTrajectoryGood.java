@@ -32,9 +32,7 @@ public class DemaciaTrajectoryGood {
     private SegmantBase currentSegment;
     public boolean isFinishedTrajectory;
 
-    private Chassis chassis;
     public DemaciaTrajectoryGood(List<Translation2d> demaciaPoints) {
-        this.chassis = Chassis.getInstance();
         this.demaciaPathPoints = demaciaPoints;
         this.pathPoints = new ArrayList<Translation2d>();
         this.lineSegments = new ArrayList<LineSegment>();
@@ -67,7 +65,6 @@ public class DemaciaTrajectoryGood {
             LogManager.log("lineSegments.get(" + i + "): " + lineSegments.get(i));
         }
 
-        LogManager.log( "----------start---------------"+"first point"  + demaciaPoints + "path point" + pathPoints+ "radius" + radius + " ---------end--------");
     }
 
     private void buildPath() {
@@ -96,8 +93,10 @@ public class DemaciaTrajectoryGood {
             segments.add(arc);
         }
         segments.add(new LineSegment(pathPoints.get(pathPoints.size() - 2), pathPoints.get(pathPoints.size() - 1)));
+        // LogManager.log("----------------------------------start-----------------------------"
+        //  + "path point" + pathPoints + "current pose" + Chassis.getInstance().getPose() + "current segment" + currentSegment +
+        //  "--------------------------end------------------------");
         
-        // LogManager.log(segments);
     }
 
     public ChassisSpeeds calculateSpeeds(ChassisSpeeds currentSpeeds, Pose2d currentPose) {

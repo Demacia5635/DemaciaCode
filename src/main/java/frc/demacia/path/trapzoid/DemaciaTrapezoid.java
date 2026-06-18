@@ -16,19 +16,20 @@ public class DemaciaTrapezoid {
 
     // Distance needed to decelerate from velocity v to finishVelocity
     private double stoppingDistance(double v, double finishVelocity) {
+        LogManager.log("finishVelocity: " + finishVelocity + " v: " + v);
         if (v <= finishVelocity)
             return 0;
         return (v * v - finishVelocity * finishVelocity) / (2 * maxAccel);
     }
 
     public double nextVelocity(double distance, double currentVelocity, double endVelocity){
+        
         double vmax = Math.sqrt((distance * 2 * maxAccel + currentVelocity*currentVelocity + endVelocity*endVelocity) / 2);
-        LogManager.log("vmax: " + vmax + " currentVelocity: " + currentVelocity);
         if(vmax > currentVelocity) { // we can accelerate
             return Math.min(currentVelocity + maxAccel * 0.02, maxVelocity);
         } else { // we need to deccelerate
             double deaccelTime = 2 * distance / (currentVelocity + endVelocity);
-            if(deaccelTime < 0.02) {
+            if(deaccelTime < 0.08) {
                 return endVelocity;
             } else {
                 return currentVelocity - (currentVelocity - endVelocity) * 0.02 / deaccelTime;
@@ -38,7 +39,6 @@ public class DemaciaTrapezoid {
 
     public double calculate(double distanceLeft, double currentVelocity, double finishVelocity) {
         double nextVelocityIfAccel = Math.min(currentVelocity + maxDeltaV, maxVelocity);
-        double nextVelocityIfCoast = currentVelocity;
         double nextVelocityIfDecel = Math.max(currentVelocity - maxDeltaV, finishVelocity);
 
         // If we need to start braking now to reach finishVelocity in time, decelerate
@@ -47,14 +47,11 @@ public class DemaciaTrapezoid {
         }
 
         // If we can accelerate and still have room to stop afterward, accelerate
-        if (nextVelocityIfAccel <= maxVelocity
-                && stoppingDistance(nextVelocityIfAccel, finishVelocity) < distanceLeft) {
+        if (stoppingDistance(nextVelocityIfAccel, finishVelocity) < distanceLeft) {
             return nextVelocityIfAccel;
         }
 
         // Otherwise cruise
-        return nextVelocityIfCoast;
+        return currentVelocity;
     }
-
-
 }
