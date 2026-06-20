@@ -25,8 +25,8 @@ public class SegmantFollow {
         Translation2d currentVelVector = new Translation2d(currentVelocity.vxMetersPerSecond, currentVelocity.vyMetersPerSecond);
         Translation2d chassisPoseAsVector = currentPose.getTranslation();
 
-        double angleError = MathUtil.angleModulus(CurrentSegmant.getEndPose().getAngle().getRadians() - currentPose.getRotation().getRadians());
-        double omega = rotationPid.calculate(angleError, currentVelocity.omegaRadiansPerSecond);
+        // double angleError = MathUtil.angleModulus(CurrentSegmant.getEndPose().getAngle().getRadians() - currentPose.getRotation().getRadians());
+        // double omega = rotationPid.calculate(angleError, currentVelocity.omegaRadiansPerSecond);
 
         Translation2d calculatedVel;
 
@@ -34,7 +34,8 @@ public class SegmantFollow {
             LineSegment segmant = (LineSegment) CurrentSegmant;
             Translation2d VectorToFinish = segmant.getEndPose().minus(chassisPoseAsVector);
             double vel = driveTrapzoid.nextVelocity(VectorToFinish.getNorm(), currentVelVector.getNorm(), finalVel);
-            Rotation2d fixeHading = new Rotation2d(2 * currentVelVector.getAngle().getRadians() + VectorToFinish.getAngle().getRadians());
+            Rotation2d fixeHading = new Rotation2d(2 * VectorToFinish.getAngle().getRadians() - segmant.getTranslation().getAngle().getRadians());
+            LogManager.log("calculatedVel: Norm: " + vel + " Rotation2d: " + fixeHading + " " + new Translation2d(vel, fixeHading));
             calculatedVel = new Translation2d(vel, fixeHading);
         }
         
@@ -42,14 +43,15 @@ public class SegmantFollow {
             ArcSegment segmant = (ArcSegment) CurrentSegmant;
             Translation2d centerToChassis = chassisPoseAsVector.minus(segmant.getCenter());
             double baseHeading = centerToChassis.getAngle().getRadians() + (segmant.getIsLeft() ? Math.PI/2 : -Math.PI/2);
-            double hading = baseHeading + omega * 0.02;
+            double headingVelOmega = currentVelVector.getNorm() / PathConstants.radius;
+            double heading = baseHeading + (segmant.getIsLeft() ? headingVelOmega * 0.02 : - headingVelOmega * 0.02);
             double distanceLeft = Math.abs(segmant.getFinishAngle().getRadians() - baseHeading) * PathConstants.radius;
             double velocity = driveTrapzoid.nextVelocity(distanceLeft, currentVelVector.getNorm(), finalVel);
-
-            calculatedVel = new Translation2d(velocity, new Rotation2d(hading));
+            LogManager.log("calculatedVel: Norm: " + velocity + " Rotation2d: " + heading + " " + new Translation2d(velocity, new Rotation2d(heading)));
+            calculatedVel = new Translation2d(velocity, new Rotation2d(heading));
         }
-
-        return new ChassisSpeeds(calculatedVel.getX(), calculatedVel.getY(), omega);
+        // LogManager.log("omega: " + omega);
+        return new ChassisSpeeds(calculatedVel.getX(), calculatedVel.getY(), 0);
     }
 
 }

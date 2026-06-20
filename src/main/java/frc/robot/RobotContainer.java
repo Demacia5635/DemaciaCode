@@ -52,7 +52,9 @@ public class RobotContainer implements Sendable{
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
     // checkPigen.schedule();
     Chassis.initialize(RobotBChassisConstants.CHASSIS_CONFIG);
-    Chassis.getInstance().setDefaultCommand(new DriveCommand(controller));
+    DriveCommand driveCommand = new DriveCommand(controller);
+    driveCommand.invertPrecisionMode();
+    Chassis.getInstance().setDefaultCommand(driveCommand);
     // Configure the trigger רםנםאbindings
     configureBindings();
     configPoint();
@@ -71,12 +73,11 @@ public class RobotContainer implements Sendable{
 
   private void configPoint() {
     demaciaPathPoints.add(new Translation2d(0, 0));
-    demaciaPathPoints.add(new Translation2d(0, 2));
-    // demaciaPathPoints.add(new Translation2d(0, 0));
-    demaciaPathPoints.add(new Translation2d(2, 0.5));
-    demaciaPathPoints.add(new Translation2d(1, 1));
-    demaciaPathPoints.add(new Translation2d(-0.5,0));
-    // demaciaPathPoints.add(new Translation2d(-1, -2));
+    demaciaPathPoints.add(new Translation2d(2, 0));
+    demaciaPathPoints.add(new Translation2d(3, 0.5));
+    demaciaPathPoints.add(new Translation2d(3, 3));
+    demaciaPathPoints.add(new Translation2d(2, 0));
+    demaciaPathPoints.add(new Translation2d(-0.5, 0));
   }
 
   private void configureBindings() {
