@@ -288,8 +288,9 @@ public class LogManager extends SubsystemBase {
     boolean isSupplier = data.getSupplierArray() != null;
     boolean isDouble = data.isDouble();
     boolean isBoolean = data.isBoolean();
+    boolean isArray = data.isArray();
 
-    if (!(isSignal || isSupplier) || isSeperated) {
+    if (!(isSignal || isSupplier) || isSeperated || isArray) {
       return -1;
     }
 
