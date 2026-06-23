@@ -73,10 +73,10 @@ public class RobotContainer implements Sendable{
 
   private void configPoint() {
     demaciaPathPoints.add(new Translation2d(0, 0));
-    demaciaPathPoints.add(new Translation2d(2, 0));
-    demaciaPathPoints.add(new Translation2d(3, 0.5));
-    demaciaPathPoints.add(new Translation2d(3, 3));
-    demaciaPathPoints.add(new Translation2d(2, 0));
+    demaciaPathPoints.add(new Translation2d(2, -0.5));
+    demaciaPathPoints.add(new Translation2d(3, -0.5));
+    demaciaPathPoints.add(new Translation2d(3, -3));
+    demaciaPathPoints.add(new Translation2d(2, -0.5));
     demaciaPathPoints.add(new Translation2d(-0.5, 0));
   }
 
