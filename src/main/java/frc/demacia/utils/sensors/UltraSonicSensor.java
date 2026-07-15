@@ -4,7 +4,9 @@ import java.util.Queue;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.dashboard.ElasticGenerator;
 import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
 
 /**
@@ -65,7 +67,9 @@ public class UltraSonicSensor extends Ultrasonic implements AnalogSensorInterfac
         setName(name);
         setAutomaticMode(true);
         addLog();
+        SmartDashboard.putData("sensors/" + config.name, this);
 		LogManager.log(name + " UltraSonicSensor initialized");
+        ElasticGenerator.getInstance().registerSensor(this);
     }
 
     @SuppressWarnings("unchecked")
@@ -136,6 +140,7 @@ public class UltraSonicSensor extends Ultrasonic implements AnalogSensorInterfac
      */
     @Override
     public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("value", this::getRangeMeters, null);
         builder.addDoubleProperty("range", this::getRangeMeters, null);
         builder.addDoubleProperty("avg range", this::getAverage, null);
         

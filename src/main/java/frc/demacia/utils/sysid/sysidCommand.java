@@ -1,0 +1,28 @@
+package frc.demacia.utils.sysid;
+
+import java.util.Map;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.demacia.utils.motors.CloseLoopParam;
+import frc.demacia.utils.motors.MotorInterface;
+
+public class sysidCommand extends InstantCommand {
+    public sysidCommand() {
+        super(() -> {
+            Map<String, CloseLoopParam> sysidResults = Sysid.getPidParams();
+            if (sysidResults == null || sysidResults.isEmpty()) {
+                return;
+            }
+            for (MotorInterface motor : Sysid.getMotors()) {
+                if (sysidResults.containsKey(motor.getName())) {
+                    CloseLoopParam params = sysidResults.get(motor.getName());
+                    motor.updatePid(params, 0);
+                }
+            }
+        });
+    }
+
+    @Override
+    public boolean runsWhenDisabled() {
+        return true;
+    }
+}

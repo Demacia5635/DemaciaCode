@@ -1,12 +1,9 @@
 package frc.demacia.utils.mechanisms;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.log.LogManager;
-import frc.demacia.utils.LookUpTable;
 import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
 import frc.demacia.utils.motors.MotorInterface;
 import frc.demacia.utils.sensors.SensorInterface;
@@ -32,9 +29,6 @@ public class StateBaseMechanism extends BaseMechanism {
         String name();
     }
 
-    /** The name of the mechanism */
-    public String name;
-
     /** Chooser for selecting states via the Dashboard */
     SendableChooser<MechanismState> stateChooser = new SendableChooser<>();
     
@@ -44,17 +38,10 @@ public class StateBaseMechanism extends BaseMechanism {
     /** * Default IDLE state.
      * Sets all motor targets to 0.
      */
-    private final MechanismState IDLE_STATE = new MechanismState() {
+    public final MechanismState IDLE_STATE = new MechanismState() {
+        double[] idleValues = new double[motorsAmount];
         @Override 
         public double[] getValues() { 
-            double[] idleValues = new double[motors != null ? motors.size() : 0];
-            if (isPosMotors != null){
-                for (int i = 0; i < idleValues.length; i++){
-                    if (isPosMotors[i]){
-                        idleValues[i] = motorArray[i].getCurrentPosition();
-                    }
-                }
-            }
             return idleValues; 
         }
         @Override
@@ -67,7 +54,7 @@ public class StateBaseMechanism extends BaseMechanism {
      * Special TESTING state.
      * Uses values from a specific 'Test Values' array that can be edited on the Dashboard.
      */
-    private final MechanismState TESTING_STATE = new MechanismState() {
+    public final MechanismState TESTING_STATE = new MechanismState() {
         @Override 
         public double[] getValues() { 
             return getTestValues(); 
@@ -78,25 +65,8 @@ public class StateBaseMechanism extends BaseMechanism {
         }
     };
 
-    /**
-     * Special TESTING state.
-     * Uses values from a specific 'Test Values' array that can be edited on the Dashboard.
-     */
-    private final MechanismState LOOKUPTABLE_STATE = new MechanismState() {
-        @Override 
-        public double[] getValues() { 
-            return getLookUpTableValues(); 
-        }
-        @Override
-        public String name() {
-            return "LOOKUPTABLE";
-        }
-    };
-
     /** Stores the values used when in TESTING state */
     protected double[] testValues;
-
-    private boolean[] isPosMotors;
 
     /**
      * Constructs a new StateBaseMechanism.
@@ -119,8 +89,8 @@ public class StateBaseMechanism extends BaseMechanism {
     @SuppressWarnings("unchecked")
     private void addNT(Class<? extends MechanismState> enumClass) {
         stateChooser.addOption(TESTING_STATE.name(), TESTING_STATE);
-        stateChooser.addOption(IDLE_STATE.name(), IDLE_STATE);
-        stateChooser.addOption(IDLE_STATE.name() + "2", IDLE_STATE); 
+        stateChooser.setDefaultOption(IDLE_STATE.name(), IDLE_STATE);
+        state = IDLE_STATE;
         
         for (MechanismState state : enumClass.getEnumConstants()) {
             stateChooser.addOption(state.name(), state);
@@ -129,13 +99,12 @@ public class StateBaseMechanism extends BaseMechanism {
         // Listener to update the local state variable when dashboard selection changes
         stateChooser.onChange(state -> this.state = state);
         
-        SmartDashboard.putData(getName() + "/State Chooser", stateChooser);
-        SmartDashboard.putString(getName() + "/State", getState().name());
+        SmartDashboard.putData(getName() + "/" + getName() + " State Chooser", stateChooser);
 
         for (int i = 0; i < getState().getValues().length; i++){
             final int index = i;
-            LogManager.addEntry(getName() + ": targetValue " + i, () -> getValue(index))
-            .withLogLevel(LogLevel.LOG_AND_NT).build();
+            LogManager.addEntry(getName() + "/" + motorNames[i] + "/" + motorNames[i] + " targetValue: ", () -> getValue(index))
+            .withIsSeparated(true).withLogLevel(LogLevel.LOG_AND_NT).build();
         }
     }
 
@@ -153,50 +122,13 @@ public class StateBaseMechanism extends BaseMechanism {
     }
 
     /**
-     * Configures all motors in the mechanism as position-controlled motors.
-     * In IDLE state, these motors will hold their current position.
-     */
-    public void setPositionMechanism(){
-        isPosMotors = new boolean[motorArray.length];
-        for (int i = 0; i < isPosMotors.length; i++) {
-            isPosMotors[i] = true;
-        }
-    }
-
-    /**
-     * Configures specific motors in the mechanism as position-controlled motors.
-     * @param indexes The indexes of the motors that should maintain their position during IDLE.
-     */
-    public void setPositionMechanism(int... indexes){
-        if (isPosMotors == null) {
-            isPosMotors = new boolean[motorArray.length];
-        }
-        for (int index : indexes) {
-            if (isValidMotor(index)) {
-                isPosMotors[index] = true;
-            }
-        }
-    }
-
-    /**
-     * Attaches a lookup table and a distance source to the mechanism.
-     * @param lookUpTable The table for interpolation.
-     * @param distance A supplier for the input value (e.g., limelight distance).
-     */
-    @Override
-    public void withLookUpTable(LookUpTable lookUpTable, DoubleSupplier distance){
-        super.lookUpTable = lookUpTable;
-        super.distance = distance;
-        stateChooser.addOption(LOOKUPTABLE_STATE.name(), LOOKUPTABLE_STATE);
-    }
-
-    /**
      * Initializes the Sendable data.
      * Adds the 'Test Values' array property to the dashboard so it can be edited live.
      */
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addDoubleArrayProperty(getName() + "/Test Values", () -> getTestValues(), testValues -> setTestValues(testValues));
+        builder.addDoubleArrayProperty(getName() + " Test Values", () -> getTestValues(), testValues -> setTestValues(testValues));
+        builder.addStringProperty(getName() + " State", () -> (getState() == null)? "" : getState().name(), null);
     }
 
     /**
@@ -205,6 +137,14 @@ public class StateBaseMechanism extends BaseMechanism {
      */
     public void setState(MechanismState state) {
         this.state = state;
+    }
+
+    public void setStateIdle() {
+        state = IDLE_STATE;
+    }
+
+    public void setStateTesting() {
+        state = TESTING_STATE;
     }
 
     /**

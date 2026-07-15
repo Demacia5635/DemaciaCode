@@ -29,9 +29,9 @@ public class LogEntryBuilder<T> {
     } 
 
     private String name;
-    private LogLevel logLevel = LogLevel.LOG_ONLY_NOT_IN_COMP;
+    private LogLevel logLevel = LogLevel.LOG_AND_NT;
     private String metadata = "";
-    private boolean isSeparated = false;
+    private boolean isSeparated = true;
     private Data<T> data;
     private boolean isRio = true;
     

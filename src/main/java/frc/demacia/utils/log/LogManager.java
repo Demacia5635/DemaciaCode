@@ -12,11 +12,13 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.DataLogManager;
 import com.ctre.phoenix6.StatusSignal;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.utils.Data;
 import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
+import frc.demacia.utils.sysid.sysidCommand;
 
 /**
  * Centralized logging system for robot telemetry and diagnostics.
@@ -66,6 +68,8 @@ public class LogManager extends SubsystemBase {
 
     activeConsole = new ArrayList<>();
     log("log manager is ready");
+
+    SmartDashboard.putData("SysID/sysidCommand", new sysidCommand());
   }
 
   /**

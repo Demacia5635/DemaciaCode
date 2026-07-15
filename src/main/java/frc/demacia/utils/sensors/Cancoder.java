@@ -9,7 +9,9 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.Data;
+import frc.demacia.utils.dashboard.ElasticGenerator;
 import frc.demacia.utils.log.LogManager;
 import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
 import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
@@ -80,7 +82,9 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface {
         configCancoder();
         setStatusSignals();
         addLog();
+        SmartDashboard.putData("sensors/" + name, this);
         LogManager.log(name + " cancoder initialized");
+        ElasticGenerator.getInstance().registerSensor(this);
     }
 
     private void configCancoder() {
@@ -129,8 +133,10 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface {
     private void addLog() {
         Data.addSignals(config.canbus.equals(Canbus.Rio), absPositionSignal);
         LogManager.addEntry(name + ": abs Position",
-                () -> absPositionSignal.getValueAsDouble() * 2 * Math.PI).withLogLevel(LogLevel.LOG_ONLY_NOT_IN_COMP)
-                .build();
+                () -> getCurrentAbsPosition()).withLogLevel(LogLevel.LOG_AND_NT)
+                .withIsSeparated(false).build();
+        LogManager.addEntry(name + ": is Connected", () -> isConnected())
+            .withIsSeparated(false).withLogLevel(LogLevel.LOG_AND_NT).build();
     }
 
     /**
@@ -203,10 +209,12 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface {
         }
         return 0;
     }
-
+    
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("CANcoder");
+        builder.addBooleanProperty("is Connected", this::isConnected, null);
+        builder.addDoubleProperty("value", this::getCurrentAbsPosition, null);
         builder.addDoubleProperty("Abs Position", this::getCurrentAbsPosition, null);
         builder.addDoubleProperty("Position", this::getCurrentPosition, null);
         builder.addDoubleProperty("Velocity", this::getCurrentVelocity, null);

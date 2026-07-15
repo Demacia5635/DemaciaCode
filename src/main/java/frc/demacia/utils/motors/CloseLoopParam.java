@@ -23,7 +23,7 @@ public class CloseLoopParam {
     /**
      * Default constructor. Initializes all parameters to zero.
      */
-    CloseLoopParam() {}
+    public CloseLoopParam() {}
 
     /**
      * Constructor with all seven control parameters.

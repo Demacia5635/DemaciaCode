@@ -15,7 +15,7 @@ public interface MotorInterface extends Sendable {
 
     /** Enumeration of supported control modes */
     public static enum ControlMode {
-        DISABLE, DUTYCYCLE, VOLTAGE, VELOCITY, POSITION_VOLTAGE, MOTION, ANGLE
+        DISABLE, DUTYCYCLE, VOLTAGE, VELOCITY, POSITION_VOLTAGE, MAGIC_MOTION, ANGLE
     }
 
     /** @return The name of the motor */
@@ -113,7 +113,10 @@ public interface MotorInterface extends Sendable {
     void setPositionVoltage(double position);
 
     /** @return The integer representation of the current control mode */
-    int getCurrentControlMode();
+    int getCurrentControlModeInteger();
+
+    /** @return The current control mode */
+    ControlMode getCurrentControlMode();
 
     /** @return The current closed-loop setpoint */
     double getCurrentClosedLoopSP();
@@ -138,6 +141,10 @@ public interface MotorInterface extends Sendable {
 
     /** @return The current stator current (Amps) */
     double getCurrentCurrent();
+    
+    double getCurrentValue();
+
+    void updatePid(CloseLoopParam newParams, int slot);
 
     /**
      * Checks for hardware faults and logs them.
@@ -159,6 +166,10 @@ public interface MotorInterface extends Sendable {
      * @return true if stall detection is enabled, false otherwise
      */
     boolean getStallDetection();
+
+    double getWantedValue();
+
+    boolean isReady(double allowedError);
     /**
      * Stops the motor immediately and disables control.
      */

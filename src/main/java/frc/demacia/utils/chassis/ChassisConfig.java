@@ -37,11 +37,10 @@ public class ChassisConfig {
     public double maxDriveVelocity = 5;
     public double maxRotationalVelocity = 4;
 
-    public ChassisConfig(String name, SwerveModuleConfig[] swerveModuleConfigs, PigeonConfig pigeonConfig, TagPose[] tags) {
+    public ChassisConfig(String name, SwerveModuleConfig[] swerveModuleConfigs, PigeonConfig pigeonConfig) {
         this.name = name;
         this.swerveModuleConfig = swerveModuleConfigs;
         this.pigeonConfig = pigeonConfig;
-        this.tags = tags;
     }
 
     /**

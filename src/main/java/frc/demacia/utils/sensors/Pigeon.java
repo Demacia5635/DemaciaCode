@@ -7,7 +7,9 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.Data;
+import frc.demacia.utils.dashboard.ElasticGenerator;
 import frc.demacia.utils.log.LogManager;
 import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
 import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
@@ -89,7 +91,9 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
         configPigeon();
         setStatusSignals();
         addLog();
+        SmartDashboard.putData("sensors/" + config.name, this);
 		LogManager.log(name + " pigeon initialized");
+        ElasticGenerator.getInstance().registerSensor(this);
     }
 
     private void configPigeon() {
@@ -151,7 +155,10 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
             () -> yawSignal.getValueAsDouble() * 2 * Math.PI,
             () -> pitchSignal.getValueAsDouble() * 2 * Math.PI,
             () -> rollSignal.getValueAsDouble() * 2 * Math.PI
-        ).withLogLevel(LogLevel.LOG_ONLY_NOT_IN_COMP).build();
+        ).withLogLevel(LogLevel.LOG_AND_NT)
+        .withIsSeparated(false).build();
+        LogManager.addEntry(name + ": is Connected", () -> isConnected())
+            .withIsSeparated(false).withLogLevel(LogLevel.LOG_AND_NT).build();
     }
 
     /**
@@ -183,6 +190,11 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      */
     public double getYawInZeroTo2Pi() {
         return (getCurrentYaw()% (2* Math.PI) + (2* Math.PI)) % (2* Math.PI);
+    }
+
+    
+    public double getCurrentYawDegree() {
+        return Math.toDegrees(getCurrentYaw());
     }
 
     /**
@@ -319,7 +331,10 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Gyro");
+        builder.addBooleanProperty("is Connected", this::isConnected, null);
+        builder.addDoubleProperty("value", this::getCurrentYaw, null);
         builder.addDoubleProperty("yaw", this::getCurrentYaw, null);
+        builder.addDoubleProperty("yaw Degree", this::getCurrentYawDegree, null);
         builder.addDoubleProperty("pitch", this::getCurrentPitch, null);
         builder.addDoubleProperty("roll", this::getCurrentRoll, null);
         builder.addDoubleProperty("x velocity", this::getXVelocity, null);
