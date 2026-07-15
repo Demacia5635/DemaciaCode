@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.utils.Data;
+import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
 import frc.demacia.utils.sysid.sysidCommand;
 
@@ -70,6 +71,7 @@ public class LogManager extends SubsystemBase {
     log("log manager is ready");
 
     SmartDashboard.putData("SysID/sysidCommand", new sysidCommand());
+    RobotCommon.init();
   }
 
   /**

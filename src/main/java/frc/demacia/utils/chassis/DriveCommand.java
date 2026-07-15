@@ -7,8 +7,8 @@ package frc.demacia.utils.chassis;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.controller.CommandController;
-import frc.robot.RobotCommon;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveCommand extends Command {
@@ -25,15 +25,11 @@ public class DriveCommand extends Command {
     this.chassis = chassis;
     this.controller = controller;
     precisionMode = false;
-    addRequirements(Chassis.getInstance());
+    addRequirements(chassis);
   }
 
   public void invertPrecisionMode() {
     setPrecisionMode(!precisionMode);
-  }
-
-  public void setActiveToHub() {
-    chassis.setRotateToHub();
   }
 
   public void setPrecisionMode(boolean precisionMode) {

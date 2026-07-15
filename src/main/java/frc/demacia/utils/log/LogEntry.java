@@ -23,8 +23,8 @@ import edu.wpi.first.util.datalog.FloatLogEntry;
 import edu.wpi.first.util.datalog.StringArrayLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import frc.demacia.utils.Data;
+import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
-import frc.robot.RobotCommon;
 
 /**
  * Represents a single log entry of a specific type (T).
