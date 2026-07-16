@@ -313,17 +313,35 @@ public class ElasticGenerator {
                     listLayout.append("              },\n");
                 }
 
-                String[] pidffParams = {"KP", "KI", "KD", "KS", "KV", "KA", "KG", "KV2"};
+                String[] pidffParams = {"KP", "KI", "KD", "KS", "KV", "KA", "KG", "KSIN", "KV2"};
                 for (int i = 0; i < pidffParams.length; i++) {
+                    String param = pidffParams[i];
+                    
+                    if (!param.equals("KP") && !param.equals("KI") && !param.equals("KD")) {
+                        listLayout.append("              {\n");
+                        listLayout.append("                \"title\": \"USE_").append(param).append("\",\n");
+                        listLayout.append("                \"x\": 0.0,\n");
+                        listLayout.append("                \"y\": 0.0,\n");
+                        listLayout.append("                \"width\": 128.0,\n");
+                        listLayout.append("                \"height\": 128.0,\n");
+                        listLayout.append("                \"type\": \"Toggle Switch\",\n");
+                        listLayout.append("                \"properties\": {\n");
+                        listLayout.append("                  \"topic\": \"").append(motorPath).append("/PID+FF config/USE_").append(param).append("\",\n");
+                        listLayout.append("                  \"period\": 0.06,\n");
+                        listLayout.append("                  \"data_type\": \"boolean\"\n");
+                        listLayout.append("                }\n");
+                        listLayout.append("              },\n");
+                    }
+
                     listLayout.append("              {\n");
-                    listLayout.append("                \"title\": \"").append(pidffParams[i]).append("\",\n");
+                    listLayout.append("                \"title\": \"").append(param).append("\",\n");
                     listLayout.append("                \"x\": 0.0,\n");
                     listLayout.append("                \"y\": 0.0,\n");
                     listLayout.append("                \"width\": 128.0,\n");
                     listLayout.append("                \"height\": 128.0,\n");
                     listLayout.append("                \"type\": \"Text Display\",\n");
                     listLayout.append("                \"properties\": {\n");
-                    listLayout.append("                  \"topic\": \"").append(motorPath).append("/PID+FF config/").append(pidffParams[i]).append("\",\n");
+                    listLayout.append("                  \"topic\": \"").append(motorPath).append("/PID+FF config/").append(param).append("\",\n");
                     listLayout.append("                  \"period\": 0.06,\n");
                     listLayout.append("                  \"data_type\": \"double\",\n");
                     listLayout.append("                  \"show_submit_button\": true\n");

@@ -34,6 +34,8 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
     private boolean IsDone = false;
     private boolean isStalled = false;
 
+    private boolean[] kFlags = {true, true, true, false, false, false};
+
     /**
      * Creates a new Talon SRX motor wrapper.
      * 
@@ -265,6 +267,10 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
     
 
   public void updatePid(CloseLoopParam newParams, int slot) {}
+
+  public boolean[] getSysidFlags() {
+    return kFlags;
+  }
 
     @Override
     public void setEncoderPosition(double position) {

@@ -52,6 +52,8 @@ public class SparkMaxMotor extends SparkMax implements MotorInterface {
   private boolean IsDone = false;
   private boolean isStalled = false;
 
+  private boolean[] kFlags = {true, true, true, false, false, false};
+
   /**
    * Creates a new Spark Max motor wrapper.
    * @param config The configuration object
@@ -499,6 +501,10 @@ public class SparkMaxMotor extends SparkMax implements MotorInterface {
         .kG(config.pid[slot].kG(), closedLoopSlot);
       configure(cfg, com.revrobotics.ResetMode.kNoResetSafeParameters, com.revrobotics.PersistMode.kNoPersistParameters);
     }
+  }
+
+  public boolean[] getSysidFlags() {
+    return kFlags;
   }
 
   public void updateStallDetection() {

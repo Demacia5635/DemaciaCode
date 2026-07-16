@@ -18,7 +18,6 @@ import org.ejml.simple.SimpleMatrix;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.demacia.sysID.SysidApp;
 import frc.demacia.utils.log.LogManager;
 import frc.demacia.utils.motors.CloseLoopParam;
 import frc.demacia.utils.motors.MotorInterface;
@@ -34,6 +33,8 @@ public class Sysid {
     private static Map<Integer, List<EntryDescription>> entries;
 
     private static final List<MotorInterface> motors = new ArrayList<>();
+
+    private static boolean[] kFlags = {true, true, true, false, false, false};
 
     private static class EntryDescription {
         String name;
@@ -372,6 +373,13 @@ public class Sysid {
 
         allData.sort((p1, p2) -> Long.compare(p1.timestamp, p2.timestamp));
         List<SyncedDataPoint> syncedData = synchronizeData(allData);
+
+        for (MotorInterface m : motors) {
+            if (m.getName().equals(name)) {
+                kFlags = m.getSysidFlags();
+                break;
+            }
+        }
         
         return calculateResult(syncedData, name);
     }
@@ -416,16 +424,15 @@ public class Sysid {
         if (finalModel != null) {
             double sumErr = 0;
             double maxErr = 0;
-            boolean[] flags = SysidApp.kFlags;
 
             for(SyncedDataPoint p : rawData) {
                 double pred = 0;
-                if(flags[0]) pred += finalModel.ks * Math.signum(p.velocity);
-                if(flags[1]) pred += finalModel.kv * p.velocity;
-                if(flags[2]) pred += finalModel.ka * p.acceleration;
-                if(flags[3]) pred += finalModel.kg * 1.0;
-                if(flags[4]) pred += finalModel.ksin * Math.cos(p.position);
-                if(flags[5]) pred += finalModel.kv2 * p.velocity * Math.abs(p.velocity);
+                if(kFlags[0]) pred += finalModel.ks * Math.signum(p.velocity);
+                if(kFlags[1]) pred += finalModel.kv * p.velocity;
+                if(kFlags[2]) pred += finalModel.ka * p.acceleration;
+                if(kFlags[3]) pred += finalModel.kg * 1.0;
+                if(kFlags[4]) pred += finalModel.ksin * Math.cos(p.position);
+                if(kFlags[5]) pred += finalModel.kv2 * p.velocity * Math.abs(p.velocity);
                 
                 double error = Math.abs(p.voltage - pred);
                 sumErr += error;
@@ -469,16 +476,15 @@ public class Sysid {
         double kG = model.kg;
         double kCos = model.ksin;
         double kV2 = model.kv2;
-        boolean[] flags = SysidApp.kFlags;
 
         for (SyncedDataPoint p : data) {
             double pred = 0;
-            if(flags[0]) pred += kS * Math.signum(p.velocity);
-            if(flags[1]) pred += kV * p.velocity;
-            if(flags[2]) pred += kA * p.acceleration;
-            if(flags[3]) pred += kG * 1.0;
-            if(flags[4]) pred += kCos * Math.cos(p.position);
-            if(flags[5]) pred += kV2 * p.velocity * Math.abs(p.velocity);
+            if(kFlags[0]) pred += kS * Math.signum(p.velocity);
+            if(kFlags[1]) pred += kV * p.velocity;
+            if(kFlags[2]) pred += kA * p.acceleration;
+            if(kFlags[3]) pred += kG * 1.0;
+            if(kFlags[4]) pred += kCos * Math.cos(p.position);
+            if(kFlags[5]) pred += kV2 * p.velocity * Math.abs(p.velocity);
             
             p.error = Math.abs(p.voltage - pred);
         }
@@ -494,9 +500,8 @@ public class Sysid {
 
     private static BucketResult solveOLS(List<SyncedDataPoint> data) {
         int n = data.size();
-        boolean[] flags = SysidApp.kFlags;
         int numParams = 0;
-        for(boolean f : flags) if(f) numParams++;
+        for(boolean f : kFlags) if(f) numParams++;
 
         if(numParams == 0) return null;
 
@@ -508,12 +513,12 @@ public class Sysid {
             b.set(i, 0, p.voltage);
 
             int col = 0;
-            if(flags[0]) A.set(i, col++, Math.signum(p.velocity));
-            if(flags[1]) A.set(i, col++, p.velocity);
-            if(flags[2]) A.set(i, col++, p.acceleration);
-            if(flags[3]) A.set(i, col++, 1.0);
-            if(flags[4]) A.set(i, col++, Math.cos(p.position));
-            if(flags[5]) A.set(i, col++, p.velocity * Math.abs(p.velocity));
+            if(kFlags[0]) A.set(i, col++, Math.signum(p.velocity));
+            if(kFlags[1]) A.set(i, col++, p.velocity);
+            if(kFlags[2]) A.set(i, col++, p.acceleration);
+            if(kFlags[3]) A.set(i, col++, 1.0);
+            if(kFlags[4]) A.set(i, col++, Math.cos(p.position));
+            if(kFlags[5]) A.set(i, col++, p.velocity * Math.abs(p.velocity));
         }
 
         SimpleMatrix x;
@@ -526,7 +531,7 @@ public class Sysid {
         double[] k = new double[6];
         int col = 0;
         for(int i=0; i<6; i++) {
-            if(flags[i]) k[i] = x.get(col++);
+            if(kFlags[i]) k[i] = x.get(col++);
         }
 
         double ssTot = 0, ssRes = 0, meanV = 0;
@@ -535,12 +540,12 @@ public class Sysid {
 
         for (SyncedDataPoint p : data) {
             double pred = 0;
-            if(flags[0]) pred += k[0] * Math.signum(p.velocity);
-            if(flags[1]) pred += k[1] * p.velocity;
-            if(flags[2]) pred += k[2] * p.acceleration;
-            if(flags[3]) pred += k[3] * 1.0;
-            if(flags[4]) pred += k[4] * Math.cos(p.position);
-            if(flags[5]) pred += k[5] * p.velocity * Math.abs(p.velocity);
+            if(kFlags[0]) pred += k[0] * Math.signum(p.velocity);
+            if(kFlags[1]) pred += k[1] * p.velocity;
+            if(kFlags[2]) pred += k[2] * p.acceleration;
+            if(kFlags[3]) pred += k[3] * 1.0;
+            if(kFlags[4]) pred += k[4] * Math.cos(p.position);
+            if(kFlags[5]) pred += k[5] * p.velocity * Math.abs(p.velocity);
 
             ssTot += Math.pow(p.voltage - meanV, 2);
             ssRes += Math.pow(p.voltage - pred, 2);

@@ -169,6 +169,11 @@ public interface MotorInterface extends Sendable {
 
     double getWantedValue();
 
+    /**
+     * @return The flags used for Sysid OLS calculation [kS, kV, kA, kG, kCos, kV2]
+     */
+    boolean[] getSysidFlags();
+
     boolean isReady(double allowedError);
     /**
      * Stops the motor immediately and disables control.

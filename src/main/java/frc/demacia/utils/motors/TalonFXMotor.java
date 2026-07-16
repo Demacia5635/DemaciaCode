@@ -74,6 +74,9 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
   ControlMode controlMode = ControlMode.DISABLE;
 
   double testPower;
+
+  private boolean[] kFlags = {true, true, true, false, false, false};
+
   // Motor Stalling
   private final Timer stallTimer = new Timer();
   private boolean conditionActive = false;
@@ -554,11 +557,19 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
         builder.addDoubleProperty("KP", () -> config.pid[slot].kP(), (double newValue) -> config.pid[slot].setKP(newValue));
         builder.addDoubleProperty("KI", () -> config.pid[slot].kI(), (double newValue) -> config.pid[slot].setKI(newValue));
         builder.addDoubleProperty("KD", () -> config.pid[slot].kD(), (double newValue) -> config.pid[slot].setKD(newValue));
+        builder.addBooleanProperty("USE_KS", () -> kFlags[0], (boolean newValue) -> kFlags[0] = newValue);
         builder.addDoubleProperty("KS", () -> config.pid[slot].kS(), (double newValue) -> config.pid[slot].setKS(newValue));
+        builder.addBooleanProperty("USE_KV", () -> kFlags[1], (boolean newValue) -> kFlags[1] = newValue);
         builder.addDoubleProperty("KV", () -> config.pid[slot].kV(), (double newValue) -> config.pid[slot].setKV(newValue));
+        builder.addBooleanProperty("USE_KA", () -> kFlags[2], (boolean newValue) -> kFlags[2] = newValue);
         builder.addDoubleProperty("KA", () -> config.pid[slot].kA(), (double newValue) -> config.pid[slot].setKA(newValue));
+        builder.addBooleanProperty("USE_KG", () -> kFlags[3], (boolean newValue) -> kFlags[3] = newValue);
         builder.addDoubleProperty("KG", () -> config.pid[slot].kG(), (double newValue) -> config.pid[slot].setKG(newValue));
+        builder.addBooleanProperty("USE_KSIN", () -> kFlags[4], (boolean newValue) -> kFlags[4] = newValue);
+        builder.addDoubleProperty("KSIN", () -> config.kSin, (double newValue) -> config.kSin = newValue);
+        builder.addBooleanProperty("USE_KV2", () -> kFlags[5], (boolean newValue) -> kFlags[5] = newValue);
         builder.addDoubleProperty("KV2", () -> config.kv2, (double newValue) -> config.kv2 = newValue);
+        
         builder.addBooleanProperty("Update", () -> configPidFf.isScheduled(),
             value -> {
               if (value) {
@@ -644,6 +655,10 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
       cfg.kG = config.pid[0].kG();
     }
     getConfigurator().apply(cfg);
+  }
+
+  public boolean[] getSysidFlags() {
+    return kFlags;
   }
 
   public double gearRatio() {
