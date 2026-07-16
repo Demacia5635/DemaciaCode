@@ -90,7 +90,7 @@ public class LogManager extends SubsystemBase {
   }
 
   /**
-   * Starts building a new log entry from standard Suppliers.
+   * Starts building a new log entry from standard Suppliers. 
    * 
    * @param <T>       The type of data
    * @param name      The name of the log entry
@@ -102,6 +102,10 @@ public class LogManager extends SubsystemBase {
     return new LogEntryBuilder<T>(name, suppliers);
   }
 
+  public static void addSendable(String name, edu.wpi.first.util.sendable.Sendable sendable) {
+    edu.wpi.first.wpilibj.smartdashboard.SmartDashboard.putData(name, sendable);
+  }
+ 
   /**
    * Removes non-essential log entries when in competition mode.
    * Cleans up both individual and categorized entries based on their LogLevel.

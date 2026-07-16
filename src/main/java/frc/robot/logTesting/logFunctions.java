@@ -1,6 +1,5 @@
 package frc.robot.logTesting;
 
-import java.util.ArrayList;
 
 import frc.demacia.utils.log.LogManager;
 import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
