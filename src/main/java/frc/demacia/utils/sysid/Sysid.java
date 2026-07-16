@@ -444,6 +444,11 @@ public class Sysid {
             finalModel.rawPoints = rawData.size();
         }
 
+        LogManager.log(name + "avg Error: " + finalModel.avgError);
+        LogManager.log(name + "max Error: " + finalModel.maxError);
+        LogManager.log(name + "used Points size: " + finalModel.points);
+        LogManager.log(name + "raw Points size: " + finalModel.rawPoints);
+
         return finalModel;
     }
 
