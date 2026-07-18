@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.vision.Camera;
 
-import static frc.demacia.vision.utils.VisionConstants.*;
+import static frc.demacia.vision.VisionConstants.*;
 
 import java.util.function.Supplier;
 

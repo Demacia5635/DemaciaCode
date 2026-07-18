@@ -4,8 +4,6 @@
 
 package frc.demacia.vision;
 
-import static frc.demacia.vision.utils.VisionConstants.TAG_HEIGHT;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,13 +15,12 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
-import frc.demacia.utils.log.LogManager;
-import frc.demacia.vision.utils.VisionConstants;
 
-public class TagPose {
+import static frc.demacia.vision.VisionConstants.*;
+
+public class TagPose extends SubsystemBase {
   // NetworkTables communication for each camera
   private NetworkTable Table;
 
@@ -60,7 +57,6 @@ public class TagPose {
 
   private boolean isUpsidedown = false;
 
-  @SuppressWarnings("unchecked")
   public TagPose(Camera camera) {
     confidence = 0;
     this.camera = camera;
@@ -101,17 +97,6 @@ public class TagPose {
 
   private void changePipeline(int id) {
     pipeEntry.setDouble(id);
-  }
-
-  public void updateValues() {
-    cropEntry = Table.getEntry("crop");
-    pipeEntry = Table.getEntry("pipeline");
-    camToTagPitch = (isUpsidedown ? -1 : 1) * Table.getEntry("ty").getDouble(0.0);
-    camToTagYaw = (isUpsidedown ? 1 : -1) * Table.getEntry("tx").getDouble(0.0);
-    id = (int) Table.getEntry("tid").getDouble(0.0);
-    // if (camera.getIsOnTurret()) {
-    // }
-
   }
 
   public Pose2d getRobotPose2d() {
@@ -287,4 +272,11 @@ public class TagPose {
         Rotation2d.fromDegrees(camToTagYaw + camera.getYaw()));
   }
 
+  public void periodic() {
+    cropEntry = Table.getEntry("crop");
+    pipeEntry = Table.getEntry("pipeline");
+    camToTagPitch = (isUpsidedown ? -1 : 1) * Table.getEntry("ty").getDouble(0.0);
+    camToTagYaw = (isUpsidedown ? 1 : -1) * Table.getEntry("tx").getDouble(0.0);
+    id = (int) Table.getEntry("tid").getDouble(0.0);
+  }
 }

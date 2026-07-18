@@ -30,6 +30,7 @@ import frc.demacia.kinematics.DemaciaKinematics;
 import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.dashboard.ElasticGenerator;
 import frc.demacia.utils.sensors.Pigeon;
+import frc.demacia.vision.subsystem.Vision;
 
 public class Chassis extends SubsystemBase {
 
@@ -97,6 +98,8 @@ public class Chassis extends SubsystemBase {
 
         field = new Field2d();
 
+        Vision.getInstance();
+
         // SmartDashboard.putData("chassis/field odometry", fieldOdmetry);
         SmartDashboard.putData("chassis/reset gyro",
                 new InstantCommand(() -> setYaw(Rotation2d.kZero)).ignoringDisable(true));
@@ -115,6 +118,10 @@ public class Chassis extends SubsystemBase {
         // headingController.enableContinuousInput(-Math.PI, Math.PI);
 
         ElasticGenerator.getInstance().registerChassisGyro(gyro);
+    }
+
+    public SwerveDrivePoseEstimator getPoseEstimate() {
+        return poseEstimator;
     }
 
     public void addVisionMeasurement(Pose2d visionPose, double timestampSeconds) {

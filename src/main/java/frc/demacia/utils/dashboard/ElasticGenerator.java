@@ -145,15 +145,14 @@ public class ElasticGenerator {
             while (motorIndex < allMotors.size() && row < yMax) {
                 MotorInterface motor = allMotors.get(motorIndex);
                 String motorPath = "/SmartDashboard/motors/" + motor.getName();
-                double xOff = col * motorX;
                 
-                widgets.add(createWidget("Boolean Box", motor.getName(), xOff, row, 1, 1, motorPath + "/Is" + motor.getName() + "Connected", "\"data_type\": \"boolean\""));
-                xOff++;
-                widgets.add(createWidget("Number Slider", "Power", xOff, row, 2, 1, motorPath + "/test Power", "\"data_type\": \"double\""));
-                xOff += 2;
-                widgets.add(createWidget("Command", "Run", xOff, row, 2, 1, motorPath + "/test power command", "\"show_type\": true"));
-                
+                widgets.add(createWidget("Boolean Box", motor.getName(), col, row, 1, 1, motorPath + "/Is" + motor.getName() + "Connected", "\"data_type\": \"boolean\""));
                 col++;
+                widgets.add(createWidget("Number Slider", "Power", col, row, 2, 1, motorPath + "/test Power", "\"data_type\": \"double\""));
+                col += 2;
+                widgets.add(createWidget("Command", "Run", col, row, 2, 1, motorPath + "/test power command", "\"show_type\": true"));
+                col += 2;
+
                 if (col >= motorsPerRow) { 
                     col = 0;
                     row++;
@@ -163,14 +162,13 @@ public class ElasticGenerator {
 
             while (sensorIndex < allSensors.size() && row < yMax) {
                 SensorInterface sensor = allSensors.get(sensorIndex);
-                double xOff = col * sensorX; 
                 String sensorTopic = "/SmartDashboard/sensors/" + sensor.getName() + "/is Connected";
                 
                 if (SmartDashboard.containsKey("sensors/" + sensor.getName() + "/is Connected")) {
-                    widgets.add(createWidget("Boolean Box", sensor.getName(), xOff, row, 1, 1, sensorTopic, "\"data_type\": \"boolean\""));
+                    widgets.add(createWidget("Boolean Box", sensor.getName(), col, row, 1, 1, sensorTopic, "\"data_type\": \"boolean\""));
+                    col++;
                 }
                 
-                col++;
                 if (col >= sensorsPerRow) { 
                     col = 0;
                     row++;

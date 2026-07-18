@@ -26,7 +26,6 @@ public class Camera {
         this.isObjectCamera = isObjectCamera;
     }
 
-
     public Translation3d getRobotToCamPosition() {
         return robotToCamPosition != null? robotToCamPosition  : new Translation3d();
     }
