@@ -88,10 +88,10 @@ public class Vision extends SubsystemBase{
         return null;
     }
 
-    public void addVisionMeasurement(Translation2d PoseEstimation, Matrix<N3, N1> STD , Rotation2d gyroAngle) {
+    public void addVisionMeasurement(Translation2d PoseEstimation, Matrix<N3, N1> STD) {
         Chassis.getInstance().getPoseEstimate().setVisionMeasurementStdDevs(STD);
         Chassis.getInstance().getPoseEstimate().addVisionMeasurement(
-                new Pose2d(PoseEstimation.getX(), PoseEstimation.getY(), gyroAngle),
+                new Pose2d(PoseEstimation.getX(), PoseEstimation.getY(), Chassis.getInstance().getGyroAngle()),
                 Timer.getFPGATimestamp() - 0.05);
     }
 
@@ -113,10 +113,10 @@ public class Vision extends SubsystemBase{
     @Override
     public void periodic() {
         if (hasUpdatedQuestIntialPose && quest.isConnected()) {
-            addVisionMeasurement(quest.getRobotPose2d().getTranslation(), QUEST_STD ,Chassis.getInstance().getGyroAngle());
+            addVisionMeasurement(quest.getRobotPose2d().getTranslation(), QUEST_STD);
         }
         if (isSeeTag()) {
-            addVisionMeasurement(getTagsPoseEstimation().getTranslation(), LIMELIGHT_STD ,Chassis.getInstance().getGyroAngle());
+            addVisionMeasurement(getTagsPoseEstimation().getTranslation(), LIMELIGHT_STD);
             if (hasQuestDisconnected && quest.isConnected()) {
                 setQuestPose();
                 hasQuestDisconnected = false;
