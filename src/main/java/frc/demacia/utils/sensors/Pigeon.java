@@ -3,6 +3,7 @@ package frc.demacia.utils.sensors;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearAcceleration;
@@ -326,6 +327,10 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
         double acceleration = (StatusSignalHelper.getStatusSignalBasic(zVelocitySignal, lastZVelocity)) - lastZVelocity;
         lastZVelocity = zVelocitySignal.getValueAsDouble();
         return acceleration;
+    }
+
+    public Rotation2d getGyroAngle() {
+        return new Rotation2d(getCurrentYaw());
     }
 
     @Override

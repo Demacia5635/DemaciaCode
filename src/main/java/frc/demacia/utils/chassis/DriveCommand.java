@@ -14,11 +14,8 @@ import frc.demacia.utils.controller.CommandController;
 public class DriveCommand extends Command {
   private Chassis chassis;
   private CommandController controller;
-  private double direction;
   private ChassisSpeeds speeds;
-  public boolean precisionMode;
-
-  private double velRot;
+  private boolean precisionMode;
 
   /** Creates a new DriveCommand. */
   public DriveCommand(Chassis chassis, CommandController controller) {
@@ -52,19 +49,16 @@ public class DriveCommand extends Command {
       return;
     }
 
-    direction = RobotCommon.getIsRed() ? 1 : -1;
+    double direction = RobotCommon.getIsRed() ? 1 : -1;
     double joyX = controller.getLeftY() * direction;
     double joyY = controller.getLeftX() * direction;
     
     // Calculate r]otation from trigger axes
-    double rot = Math.abs(controller.getRightX()) < 0.01 ? 
-    controller.getRightTrigger() - controller.getLeftTrigger() : 
-    controller.getRightX();
-    // double rot = controller.getRightTrigger() - controller.getLeftTrigger();
+    double rot = controller.getRightTrigger() - controller.getLeftTrigger();
     
     double velX = Math.pow(joyX, 2) * chassis.getMaxDriveVelocity() * Math.signum(joyX);
     double velY = Math.pow(joyY, 2) * chassis.getMaxDriveVelocity() * Math.signum(joyY);
-      velRot = Math.pow(rot, 2) * chassis.getMaxRotationalVelocity() * Math.signum(rot);
+    double velRot = Math.pow(rot, 2) * chassis.getMaxRotationalVelocity() * Math.signum(rot);
     if(precisionMode){
         velX /= 4;
         velY /= 4;

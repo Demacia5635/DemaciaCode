@@ -30,7 +30,7 @@ public class ElasticGenerator {
     private List<Pair<BaseMechanism, MotorInterface>> autoCalibration = new ArrayList<>();
 
     private Pigeon chassisGyro;
-    private Cancoder[] chassisCancoders = new Cancoder[4];
+    private List<Cancoder> chassisCancoders = new ArrayList<>();
 
     private ElasticGenerator() {
         SmartDashboard.putData("Elastic/Generate Layout", new InstantCommand(this::generateAndPublishLayout).ignoringDisable(true));
@@ -68,11 +68,11 @@ public class ElasticGenerator {
     }
 
     public void registerChassisGyro(Pigeon gyro) {
-        this.chassisGyro = gyro;
+        chassisGyro = gyro;
     }
 
-    public void registerChassisCancoders(Cancoder[] cancoders) {
-        this.chassisCancoders = cancoders;
+    public void registerChassisCancoders(Cancoder cancoder) {
+        chassisCancoders.add(cancoder);
     }
 
     public void registerPowerCommand(BaseMechanism mech, MotorInterface motor) {
@@ -216,22 +216,24 @@ public class ElasticGenerator {
         sb.append(",\n");
         sb.append(createWidget("Command", "Reset Odometry", 8, 0, 2, 1, "/SmartDashboard/chassis/reset odmetry", "\"show_type\": true"));
 
-        if (chassisCancoders != null && chassisCancoders.length == 4) {
-            if (chassisCancoders[0] != null) {
-                sb.append(",\n");
-                sb.append(createWidget("Text Display", "Front Left Abs", 2, 2, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders[0].getName() + "/Abs Position", "\"data_type\": \"double\""));
-            }
-            if (chassisCancoders[1] != null) {
-                sb.append(",\n");
-                sb.append(createWidget("Text Display", "Front Right Abs", 3, 2, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders[1].getName() + "/Abs Position", "\"data_type\": \"double\""));
-            }
-            if (chassisCancoders[2] != null) {
-                sb.append(",\n");
-                sb.append(createWidget("Text Display", "Back Left Abs", 2, 3, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders[2].getName() + "/Abs Position", "\"data_type\": \"double\""));
-            }
-            if (chassisCancoders[3] != null) {
-                sb.append(",\n");
-                sb.append(createWidget("Text Display", "Back Right Abs", 3, 3, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders[3].getName() + "/Abs Position", "\"data_type\": \"double\""));
+        if (chassisCancoders != null) {
+            for (Cancoder cancoder : chassisCancoders) {
+                if (cancoder.getName().contains("Front Left") || cancoder.getName().contains("FrontLeft") || cancoder.getName().contains("FL")) {
+                    sb.append(",\n");
+                    sb.append(createWidget("Text Display", "Front Left Abs", 2, 2, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders.get(0).getName() + "/Abs Position", "\"data_type\": \"double\""));
+                }
+                if (cancoder.getName().contains("Front Right") || cancoder.getName().contains("FrontRight") || cancoder.getName().contains("FR")) {
+                    sb.append(",\n");
+                    sb.append(createWidget("Text Display", "Front Right Abs", 3, 2, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders.get(1).getName() + "/Abs Position", "\"data_type\": \"double\""));
+                }
+                if (cancoder.getName().contains("Back Left") || cancoder.getName().contains("BackLeft") || cancoder.getName().contains("BL")) {
+                    sb.append(",\n");
+                    sb.append(createWidget("Text Display", "Back Left Abs", 2, 3, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders.get(2).getName() + "/Abs Position", "\"data_type\": \"double\""));
+                }
+                if (cancoder.getName().contains("Back Right") || cancoder.getName().contains("BackRight") || cancoder.getName().contains("BR")) {
+                    sb.append(",\n");
+                    sb.append(createWidget("Text Display", "Back Right Abs", 3, 3, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders.get(3).getName() + "/Abs Position", "\"data_type\": \"double\""));
+                }
             }
         }
 
