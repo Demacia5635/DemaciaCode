@@ -36,15 +36,16 @@ public class Quest extends SubsystemBase {
   
   @SuppressWarnings("unchecked")
   private void addLog() {
-    LogManager.addEntry("Quest/X", () -> getRobotPose2d().getX()).build();
-    LogManager.addEntry("Quest/Y", () -> getRobotPose2d().getY()).build();
-    LogManager.addEntry("Quest/is working", () -> isWorking()).build();
-    LogManager.addEntry("Quest/Latency", questNav::getLatency).withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP).build();
-    LogManager.addEntry("Quest/Battery", questNav::getBatteryPercent).withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP).build();
-    LogManager.addEntry("Quest/LibVersion", questNav::getLibVersion).withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP).build();
+    LogManager.addEntry("quest/X", () -> getRobotPose2d().getX()).build();
+    LogManager.addEntry("quest/Y", () -> getRobotPose2d().getY()).build();
+    LogManager.addEntry("quest/is working", () -> isWorking()).build();
+    LogManager.addEntry("quest/is connected", () -> isConnected()).build();
+    LogManager.addEntry("quest/Latency", questNav::getLatency).withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP).build();
+    LogManager.addEntry("quest/Battery", questNav::getBatteryPercent).withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP).build();
+    LogManager.addEntry("quest/LibVersion", questNav::getLibVersion).withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP).build();
 
-    SmartDashboard.putData("Quest/Reset Quest Pose", new InstantCommand(()->setQuestPose(new Pose3d())).ignoringDisable(true));
-    SmartDashboard.putData("Quest/robotField", robotField);
+    SmartDashboard.putData("quest/Reset Quest Pose", new InstantCommand(()->setQuestPose(new Pose3d())).ignoringDisable(true));
+    SmartDashboard.putData("quest/Quest Robot Field", robotField);
   }
 
 

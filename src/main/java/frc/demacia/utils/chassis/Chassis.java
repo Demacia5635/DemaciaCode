@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.kinematics.DemaciaKinematics;
 // import frc.demacia.odometry.DemaciaOdometry;
 import frc.demacia.utils.RobotCommon;
-import frc.demacia.utils.dashboard.ElasticGenerator;
+import frc.demacia.utils.sensors.Cancoder;
 import frc.demacia.utils.sensors.Pigeon;
 import frc.demacia.vision.subsystem.Vision;
 
@@ -116,8 +116,6 @@ public class Chassis extends SubsystemBase {
         SmartDashboard.putData("chassis/reset moduls", new InstantCommand(()-> resetMudolse()).ignoringDisable(true));
 
         // headingController.enableContinuousInput(-Math.PI, Math.PI);
-
-        ElasticGenerator.getInstance().registerChassisGyro(gyro);
     }
 
     public SwerveDrivePoseEstimator getPoseEstimate() {
@@ -373,6 +371,14 @@ public class Chassis extends SubsystemBase {
             res[i] = modules[i].getState();
         }
         return res;
+    }
+
+    public Cancoder[] getCancoders() {
+        Cancoder[] cancoders = new Cancoder[modules.length];
+        for (int i = 0; i < modules.length; i++) {
+            cancoders[i] = modules[i].getCancoder();
+        }
+        return cancoders;
     }
 
     public void setYaw(Rotation2d angle) {

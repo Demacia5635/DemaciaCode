@@ -5,7 +5,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.demacia.utils.dashboard.ElasticGenerator;
 import frc.demacia.utils.motors.MotorInterface;
 import frc.demacia.utils.sensors.Cancoder;
 
@@ -39,8 +38,6 @@ public class SwerveModule {
         name = config.name;
 
         steerMotor.setEncoderPosition(getAbsoluteAngle() - config.steerOffset);
-        
-        ElasticGenerator.getInstance().registerChassisCancoders(cancoder);
     }
 
     /**
@@ -50,6 +47,10 @@ public class SwerveModule {
         driveMotor.checkElectronics();
         steerMotor.checkElectronics();
         cancoder.checkElectronics();
+    }
+
+    public Cancoder getCancoder() {
+        return cancoder;
     }
 
     public void setNeutralMode(boolean isBrake) {

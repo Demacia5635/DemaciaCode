@@ -12,28 +12,29 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.log.LogManager;
 import frc.demacia.utils.mechanisms.BaseMechanism;
 import frc.demacia.utils.mechanisms.StateBaseMechanism;
 import frc.demacia.utils.motors.MotorInterface;
 import frc.demacia.utils.sensors.SensorInterface;
+import frc.demacia.vision.TagPose;
 import frc.demacia.utils.sensors.Cancoder;
-import frc.demacia.utils.sensors.Pigeon;
 
 public class ElasticGenerator {
     private static ElasticGenerator instance;
 
     private List<MotorInterface> allMotors = new ArrayList<>();
     private List<SensorInterface> allSensors = new ArrayList<>();
+    private List<TagPose> allTags = new ArrayList<>();
     private List<BaseMechanism> mechanisms = new ArrayList<>();
     private List<Pair<BaseMechanism, MotorInterface>> powerCmds = new ArrayList<>();
     private List<Pair<BaseMechanism, MotorInterface>> autoCalibration = new ArrayList<>();
 
-    private Pigeon chassisGyro;
-    private List<Cancoder> chassisCancoders = new ArrayList<>();
+    private Cancoder[] chassisCancoders = new Cancoder[4];
 
     private ElasticGenerator() {
-        SmartDashboard.putData("Elastic/Generate Layout", new InstantCommand(this::generateAndPublishLayout).ignoringDisable(true));
+        SmartDashboard.putData("elastic/Generate Layout", new InstantCommand(this::generateAndPublishLayout).ignoringDisable(true));
         
         try {
             WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
@@ -61,18 +62,16 @@ public class ElasticGenerator {
         }
     }
 
+    public void registerTag(TagPose tagPose) {
+        if (!allTags.contains(tagPose)) {
+            allTags.add(tagPose);
+        }
+    }
+
     public void registerMechanism(BaseMechanism mech) {
         if (!mechanisms.contains(mech)) {
             mechanisms.add(mech);
         }
-    }
-
-    public void registerChassisGyro(Pigeon gyro) {
-        chassisGyro = gyro;
-    }
-
-    public void registerChassisCancoders(Cancoder cancoder) {
-        chassisCancoders.add(cancoder);
     }
 
     public void registerPowerCommand(BaseMechanism mech, MotorInterface motor) {
@@ -93,6 +92,7 @@ public class ElasticGenerator {
 
         json.append(buildTunerTabs());
         json.append(buildChassisTab());
+        json.append(buildVisionTab());
         json.append(buildSysidTabs());
         json.append(buildMechanismTabs());
 
@@ -120,12 +120,8 @@ public class ElasticGenerator {
         StringBuilder sb = new StringBuilder();
         int tabIndex = 1;
         boolean firstTab = true;
-        int xMax = 10;
-        int yMax = 5;
-        int motorX = 5;
-        int sensorX = 1;
-        int motorsPerRow = xMax/motorX;
-        int sensorsPerRow = xMax/sensorX;
+        final int MAX_COLS = 10;
+        final int MAX_ROWS = 5;
 
         int motorIndex = 0;
         int sensorIndex = 0;
@@ -142,7 +138,7 @@ public class ElasticGenerator {
             int row = 0;
             int col = 0;
 
-            while (motorIndex < allMotors.size() && row < yMax) {
+            while (motorIndex < allMotors.size() && row < MAX_ROWS) {
                 MotorInterface motor = allMotors.get(motorIndex);
                 String motorPath = "/SmartDashboard/motors/" + motor.getName();
                 
@@ -153,14 +149,14 @@ public class ElasticGenerator {
                 widgets.add(createWidget("Command", "Run", col, row, 2, 1, motorPath + "/test power command", "\"show_type\": true"));
                 col += 2;
 
-                if (col >= motorsPerRow) { 
+                if (col >= MAX_COLS) { 
                     col = 0;
                     row++;
                 }
                 motorIndex++;
             }
 
-            while (sensorIndex < allSensors.size() && row < yMax) {
+            while (sensorIndex < allSensors.size() && row < MAX_ROWS) {
                 SensorInterface sensor = allSensors.get(sensorIndex);
                 String sensorTopic = "/SmartDashboard/sensors/" + sensor.getName() + "/is Connected";
                 
@@ -169,7 +165,7 @@ public class ElasticGenerator {
                     col++;
                 }
                 
-                if (col >= sensorsPerRow) { 
+                if (col >= MAX_COLS) { 
                     col = 0;
                     row++;
                 }
@@ -201,9 +197,10 @@ public class ElasticGenerator {
         
         sb.append(createWidget("Field", "Field", 0, 0, 2, 4, "/SmartDashboard/chassis/field", "\"field_rotation\": 90.0"));
         
-        if (chassisGyro != null) {
+        String gyroName = Chassis.getInstance().gyro.getName();
+        if (Chassis.getInstance().gyro != null) {
             sb.append(",\n");
-            sb.append(createWidget("Large Text Display", chassisGyro.getName(), 2, 0, 2, 2, "/SmartDashboard/sensors/" + chassisGyro.getName() + "/yaw Degree", "\"data_type\": \"double\""));
+            sb.append(createWidget("Large Text Display", gyroName, 2, 0, 2, 2, "/SmartDashboard/sensors/" + gyroName + "/yaw Degree", "\"data_type\": \"double\""));
         }
 
         sb.append(",\n");
@@ -214,23 +211,24 @@ public class ElasticGenerator {
         sb.append(",\n");
         sb.append(createWidget("Command", "Reset Odometry", 8, 0, 2, 1, "/SmartDashboard/chassis/reset odmetry", "\"show_type\": true"));
 
+        chassisCancoders = Chassis.getInstance().getCancoders();
         if (chassisCancoders != null) {
             for (Cancoder cancoder : chassisCancoders) {
                 if (cancoder.getName().contains("Front Left") || cancoder.getName().contains("FrontLeft") || cancoder.getName().contains("FL")) {
                     sb.append(",\n");
-                    sb.append(createWidget("Text Display", "Front Left Abs", 2, 2, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders.get(0).getName() + "/Abs Position", "\"data_type\": \"double\""));
+                    sb.append(createWidget("Text Display", "Front Left Abs", 2, 2, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders[0].getName() + "/Abs Position", "\"data_type\": \"double\""));
                 }
                 if (cancoder.getName().contains("Front Right") || cancoder.getName().contains("FrontRight") || cancoder.getName().contains("FR")) {
                     sb.append(",\n");
-                    sb.append(createWidget("Text Display", "Front Right Abs", 3, 2, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders.get(1).getName() + "/Abs Position", "\"data_type\": \"double\""));
+                    sb.append(createWidget("Text Display", "Front Right Abs", 3, 2, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders[1].getName() + "/Abs Position", "\"data_type\": \"double\""));
                 }
                 if (cancoder.getName().contains("Back Left") || cancoder.getName().contains("BackLeft") || cancoder.getName().contains("BL")) {
                     sb.append(",\n");
-                    sb.append(createWidget("Text Display", "Back Left Abs", 2, 3, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders.get(2).getName() + "/Abs Position", "\"data_type\": \"double\""));
+                    sb.append(createWidget("Text Display", "Back Left Abs", 2, 3, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders[2].getName() + "/Abs Position", "\"data_type\": \"double\""));
                 }
                 if (cancoder.getName().contains("Back Right") || cancoder.getName().contains("BackRight") || cancoder.getName().contains("BR")) {
                     sb.append(",\n");
-                    sb.append(createWidget("Text Display", "Back Right Abs", 3, 3, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders.get(3).getName() + "/Abs Position", "\"data_type\": \"double\""));
+                    sb.append(createWidget("Text Display", "Back Right Abs", 3, 3, 1, 1, "/SmartDashboard/sensors/" + chassisCancoders[3].getName() + "/Abs Position", "\"data_type\": \"double\""));
                 }
             }
         }
@@ -244,13 +242,91 @@ public class ElasticGenerator {
         return sb.toString();
     }
 
+    private String buildVisionTab() {
+        StringBuilder sb = new StringBuilder();
+    
+        sb.append(",\n");
+        sb.append("    {\n");
+        sb.append("      \"name\": \"Vision\",\n");
+        sb.append("      \"grid_layout\": {\n");
+        sb.append("        \"layouts\": [],\n");
+        sb.append("        \"containers\": [\n");
+    
+        List<String> visionWidgets = new ArrayList<>();
+    
+        visionWidgets.add(createWidget("Field", "Quest Robot Field", 0, 0, 2, 3, "/SmartDashboard/quest/Quest Robot Field", "\"field_rotation\": 90.0"));
+        visionWidgets.add(createWidget("Boolean Box", "is quest connected", 0, 3, 1, 1, "/Log/quest/is connected", "\"data_type\": \"boolean\""));
+        visionWidgets.add(createWidget("Boolean Box", "is quest working", 1, 3, 1, 1, "/Log/quest/is working", "\"data_type\": \"boolean\""));
+        visionWidgets.add(createWidget("Command", "Reset Quest Pose", 0, 4, 2, 1, "/SmartDashboard/quest/Reset Quest Pose", "\"show_type\": true"));
+
+        sb.append(String.join(",\n", visionWidgets));
+    
+        if (allTags.isEmpty()) {
+            sb.append("\n");
+            sb.append("        ]\n");
+            sb.append("      }\n");
+            sb.append("    }");
+            return sb.toString();
+        }
+    
+        final int MAX_COLS = 10;
+        final int TAG_WIDTH = 2;
+    
+        int tagIndex = 0;
+        int tabIndex = 1;
+        
+        int col = 2;
+    
+        while (tagIndex < allTags.size()) {
+            if (tabIndex > 1) {
+                sb.append(",\n");
+                sb.append("    {\n");
+                sb.append("      \"name\": \"Vision");
+                sb.append(" ").append(tabIndex);
+                sb.append("\",\n");
+                sb.append("      \"grid_layout\": {\n");
+                sb.append("        \"layouts\": [],\n");
+                sb.append("        \"containers\": [\n");    
+            }        
+    
+            List<String> widgets = new ArrayList<>();
+    
+            while (tagIndex < allTags.size() && col < MAX_COLS) {
+                TagPose tag = allTags.get(tagIndex);
+                String tagPath = "/SmartDashboard/tags/" + tag.getName();
+    
+                widgets.add(createWidget("Field", tag.getName() + " Field", col, 0, 2, 3, tagPath + "/field-tag " + tag.getName(), "\"field_rotation\": 90.0"));
+                widgets.add(createWidget("Boolean Box", "See " + tag.getName(), col, 3, 1, 1, tagPath + "/" + tag.getName() + " see tag", "\"data_type\": \"boolean\""));
+                widgets.add(createWidget("Command", "Reset Gyro by camera" + tag.getName(), col, 4, 2, 1, "/SmartDashboard/chassis/reset gyro by camera " + tag.getName(), "\"show_type\": true"));
+
+                col += TAG_WIDTH;
+                tagIndex++;
+            }
+
+            if (!visionWidgets.isEmpty() && tabIndex == 1) {
+                sb.append(",\n");
+            }
+            sb.append(String.join(",\n", widgets));
+            
+            sb.append("\n");
+            sb.append("        ]\n");
+            sb.append("      }\n");
+            sb.append("    }");
+    
+            col = 0;
+            tabIndex++;
+        }
+    
+        return sb.toString();
+    }
+
     private String buildSysidTabs() {
         StringBuilder sb = new StringBuilder();
         int tabIndex = 1;
         boolean firstTab = true;
-        int xMax = 10;
-        int yMax = 5;
-        int motorX = 2;
+        int MAX_COLS = 10;
+        int MAX_ROWS = 5;
+        int MOTOR_WIDTH = 2;
 
         int motorIndex = 0;
 
@@ -268,7 +344,7 @@ public class ElasticGenerator {
             int row = 0;
             int col = 2;
 
-            while (motorIndex < allMotors.size() && col < xMax) {
+            while (motorIndex < allMotors.size() && col < MAX_COLS) {
                 MotorInterface motor = allMotors.get(motorIndex);
                 
                 String motorPath = "/SmartDashboard/motors/" + motor.getName();
@@ -276,8 +352,8 @@ public class ElasticGenerator {
                 StringBuilder listLayout = new StringBuilder();
                 double xPos = col * 128.0;
                 double yPos = row * 128.0;
-                double w = motorX * 128.0;
-                double h = (yMax - row) * 128.0;
+                double w = MOTOR_WIDTH * 128.0;
+                double h = (MAX_ROWS - row) * 128.0;
 
                 listLayout.append("          {\n");
                 listLayout.append("            \"type\": \"List Layout\",\n");
@@ -369,7 +445,7 @@ public class ElasticGenerator {
                 widgets.add(listLayout.toString());
 
                 row = 0;
-                col += motorX;
+                col += MOTOR_WIDTH;
                 motorIndex++;
             }
 
@@ -382,7 +458,7 @@ public class ElasticGenerator {
             if (allMotors.isEmpty()) {
                 containers.add(createWidget("Text Display", "Status", 0, 0, 4, 1, "", "\"data_type\": \"string\""));
             } else {
-                containers.add(createWidget("Command", "sysid Command", 0, 0, 2, 1, "/SmartDashboard/SysID/sysidCommand", "\"show_type\": true, \"maximize_button_space\": false"));
+                containers.add(createWidget("Command", "sysid Command", 0, 0, 2, 1, "/SmartDashboard/sysID/sysidCommand", "\"show_type\": true, \"maximize_button_space\": false"));
             }
 
             sb.append(String.join(",\n", containers));

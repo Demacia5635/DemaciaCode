@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.utils.chassis.Chassis;
+import frc.demacia.utils.dashboard.ElasticGenerator;
+import frc.demacia.utils.log.LogManager;
 
 import static frc.demacia.vision.VisionConstants.*;
 
@@ -57,6 +59,7 @@ public class TagPose extends SubsystemBase {
 
   private boolean isUpsidedown = false;
 
+  @SuppressWarnings("unchecked")
   public TagPose(Camera camera) {
     confidence = 0;
     this.camera = camera;
@@ -66,11 +69,12 @@ public class TagPose extends SubsystemBase {
     pipeEntry = Table.getEntry("pipeline");
     // LogManager.addEntry(camera.getName()+"dist", this::getDistFromCamera).withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP).build();
     // LogManager.addEntry(camera.getName()+"dist ty", this::getDistanceFromTy).withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP).build();
+    LogManager.addEntry("tags/" + camera.getName() + "/" + camera.getName() + " see tag", () -> isSeeTag()).build();
 
-    SmartDashboard.putData("field-tag " + camera.getName(), field);
-    SmartDashboard.putData("setTo3d " + camera.getName(),
+    SmartDashboard.putData("tags/" + camera.getName() + "/" + "field-tag " + camera.getName(), field);
+    SmartDashboard.putData("tags/" + camera.getName() + "/" + "setTo3d " + camera.getName(),
         new InstantCommand(() -> setDimension(true)).ignoringDisable(true));
-    SmartDashboard.putData("setTo2d " + camera.getName(),
+    SmartDashboard.putData("tags/" + camera.getName() + "/" + "setTo2d " + camera.getName(),
         new InstantCommand(() -> setDimension(false)).ignoringDisable(true));
     SmartDashboard.putData("chassis/reset gyro by camera " + camera.getName(),
         Commands.sequence(
@@ -78,6 +82,11 @@ public class TagPose extends SubsystemBase {
             new InstantCommand(() -> Chassis.getInstance().setYaw(getRobotAngle())).ignoringDisable(true),
             new InstantCommand(() -> changePipeline(0)).ignoringDisable(true)).ignoringDisable(true));
 
+    ElasticGenerator.getInstance().registerTag(this);
+  }
+
+  public String getName() {
+    return camera.getName();
   }
 
   public TagPose(Camera camera, boolean isUpsidedown) {

@@ -70,7 +70,7 @@ public class LogManager extends SubsystemBase {
     activeConsole = new ArrayList<>();
     log("log manager is ready");
 
-    SmartDashboard.putData("SysID/sysidCommand", new sysidCommand());
+    SmartDashboard.putData("sysID/sysidCommand", new sysidCommand());
     RobotCommon.init();
   }
 
