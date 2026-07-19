@@ -32,7 +32,9 @@ public class LogEntryBuilder<T> {
     private LogLevel logLevel = LogLevel.LOG_AND_NT;
     private String metadata = "";
     private boolean isSeparated = true;
-    private Data<T> data;
+    private StatusSignal<T>[] statusSignals;
+    private Supplier<T>[] suppliers;
+    private Data<T>[] data;
     private boolean isRio = true;
     
     /**
@@ -40,9 +42,10 @@ public class LogEntryBuilder<T> {
      * @param name The name of the log entry
      * @param statusSignals Variable arguments of StatusSignals
      */
-    LogEntryBuilder(String name, StatusSignal<T>[] statusSignals, boolean isRio) {
+    @SuppressWarnings("unchecked")
+    LogEntryBuilder(String name, StatusSignal<T>... statusSignals) {
         this.name = name;
-        this.data = new Data<>(statusSignals, isRio);
+        this.statusSignals = statusSignals;
     }
     
     /**
@@ -53,7 +56,28 @@ public class LogEntryBuilder<T> {
     @SafeVarargs
     LogEntryBuilder(String name, Supplier<T>... suppliers) {
         this.name = name;
-        this.data = new Data<>(suppliers);
+        this.suppliers = suppliers;
+    }
+    
+    /**
+     * Creates a builder for data.
+     * @param name The name of the log entry
+     * @param data Variable arguments of Data
+     */
+    @SuppressWarnings("unchecked")
+    LogEntryBuilder(String name, Data<T>... data) {
+        this.name = name;
+        this.data = data;
+    }
+    
+    /**
+     * Sets the log level for this entry.
+     * @param level The desired LogLevel
+     * @return The builder instance
+     */
+    public LogEntryBuilder<T> withIsRio(boolean isRio) {
+        this.isRio = isRio;
+        return this;
     }
     
     /**
@@ -99,6 +123,7 @@ public class LogEntryBuilder<T> {
      * Builds the LogEntry and registers it with the LogManager.
      * @return The created LogEntry, or null if validation fails
      */
+    @SuppressWarnings("unchecked")
     public LogEntry<T> build() {
         if (name == null || name.trim().isEmpty()) {
             LogManager.log("Log entry name cannot be null or empty");
@@ -107,6 +132,20 @@ public class LogEntryBuilder<T> {
         if (logLevel == null) {
             LogManager.log("Log level cannot be null");
             return null;
+        }
+
+        if (statusSignals != null) {
+            data = (Data<T>[]) new Data[statusSignals.length];
+            for (int i = 0; i < statusSignals.length; i++) {
+                data[i] = new Data<>(statusSignals[i], isRio);
+            }
+        }
+
+        if (suppliers != null) { 
+            data = (Data<T>[]) new Data[suppliers.length];
+            for (int i = 0; i < suppliers.length; i++) {
+                data[i] = new Data<>(suppliers[i]);
+            }
         }
 
         LogEntry<T> entry = LogManager.add(name, data, logLevel, metadata, isSeparated, isRio);

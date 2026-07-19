@@ -2,7 +2,6 @@ package frc.demacia.utils.motors;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -27,6 +26,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -71,9 +71,13 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
   Data<Current> currentSignal;
 
   double wantedValue;
+
+  ControlMode notDutyControlMode = ControlMode.DISABLE;
   ControlMode controlMode = ControlMode.DISABLE;
 
-  double testPower;
+  ControlMode valueControlMode = ControlMode.DUTYCYCLE;
+  SendableChooser<ControlMode> valueControlModeChooser = new SendableChooser<>();
+  double testValue;
 
   private boolean[] kFlags = {true, true, true, false, false, false};
 
@@ -242,50 +246,76 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
   }
 
   /** Initializes the data signals for telemetry */
-  @SuppressWarnings("unchecked")
   private void setSignals() {
-    closedLoopSPSignal = new Data<>(new StatusSignal[] { getClosedLoopReference() }, isRio());
-    closedLoopErrorSignal = new Data<>(new StatusSignal[] { getClosedLoopError() }, isRio());
-    positionSignal = new Data<>(new StatusSignal[] { getPosition() }, isRio());
-    velocitySignal = new Data<>(new StatusSignal[] { getVelocity() }, isRio());
-    accelerationSignal = new Data<>(new StatusSignal[] { getAcceleration() }, isRio());
-    voltageSignal = new Data<>(new StatusSignal[] { getMotorVoltage() }, isRio());
-    currentSignal = new Data<>(new StatusSignal[] { getStatorCurrent() }, isRio());
+    closedLoopSPSignal = new Data<>(getClosedLoopReference(), isRio());
+    closedLoopErrorSignal = new Data<>(getClosedLoopError(), isRio());
+    positionSignal = new Data<>(getPosition(), isRio());
+    velocitySignal = new Data<>(getVelocity(), isRio());
+    accelerationSignal = new Data<>(getAcceleration(), isRio());
+    voltageSignal = new Data<>(getMotorVoltage(), isRio());
+    currentSignal = new Data<>(getStatorCurrent(), isRio());
   }
 
   /** Registers the motor's signals with the LogManager */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked" })
   private void addLog() {
-    LogManager
-        .addEntry(name + ": Position, Velocity, Acceleration, Voltage, Current, CloseLoopError, CloseLoopSP",
-            new StatusSignal[] {
-                positionSignal.getSignal(),
-                velocitySignal.getSignal(),
-                accelerationSignal.getSignal(),
-                voltageSignal.getSignal(),
-                currentSignal.getSignal(),
-                closedLoopErrorSignal.getSignal(),
-                closedLoopSPSignal.getSignal(),
-            }, isRio())
-        .withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP)
+    LogManager.addEntry(name + ": Position, Velocity, Acceleration, Voltage, Current, CloseLoopError, CloseLoopSP",
+            new Data[] {
+                positionSignal,
+                velocitySignal,
+                accelerationSignal,
+                voltageSignal,
+                currentSignal,
+                closedLoopErrorSignal,
+                closedLoopSPSignal,
+            })
+        .withIsRio(isRio())
         .withIsMotor()
         .withIsSeparated(false).build();
-    LogManager.addEntry(name + ": ControlMode",
-        () -> getCurrentControlModeInteger())
-        .withLogLevel(LogLevel.LOG_ONLY_NOT_IN_COMP)
-        .withIsSeparated(false).build();
-    LogManager.addEntry(name + ": wanted value", () -> getWantedValue(), 
-      () -> getCurrentValue())
-        .withIsSeparated(false).withLogLevel(LogLevel.LOG_AND_NT).build();
-    LogManager.addEntry(name + ": is Connected", () -> isConnected())
-        .withIsSeparated(false).withLogLevel(LogLevel.LOG_AND_NT).build();
-    
-    SmartDashboard.putData("motors/" + name + "/test power command", new StartEndCommand(
-      () -> setDuty(testPower),
-      () -> stop()));
 
-      configPidFf(0);
-      configMotionMagic();
+    LogManager.addEntry("motors/" + name + "/wanted value", () -> getWantedValue())
+        .withLogLevel(LogLevel.LOG_AND_NT).build();
+    LogManager.addEntry("motors/" + name + "/current value", () -> getCurrentValue())
+        .withLogLevel(LogLevel.LOG_AND_NT).build();
+    LogManager.addEntry("motors/" + name + "/is Connected", () -> isConnected())
+        .withLogLevel(LogLevel.LOG_AND_NT).build();
+
+    SmartDashboard.putData("motors/" + getName() + "/test value command", new StartEndCommand(
+      () -> {
+        switch (valueControlMode) {
+          case VOLTAGE:
+            setVolt(testValue);
+            break;
+          case VELOCITY:
+            setVelocity(testValue);
+            break;
+          case POSITION_VOLTAGE:
+            setPositionVoltage(testValue);
+            break;
+          case MAGIC_MOTION:
+            setMotion(testValue);
+            break;
+          case ANGLE:
+            setAngle(testValue);
+            break;
+          case DUTYCYCLE:
+          default:
+            setDuty(testValue);
+            break;
+        }
+      },
+      () -> stop()));
+    
+    valueControlModeChooser.setDefaultOption(ControlMode.DUTYCYCLE.name(), ControlMode.DUTYCYCLE);
+    for (ControlMode controlMode : ControlMode.class.getEnumConstants()) {
+      if (controlMode == ControlMode.DISABLE) continue;
+      valueControlModeChooser.addOption(controlMode.name(), controlMode);
+    }
+    valueControlModeChooser.onChange(valueControlMode -> this.valueControlMode = valueControlMode);
+    SmartDashboard.putData("motors/" + getName() + "/Value Control Mode Chooser", valueControlModeChooser);
+
+    configPidFf(0);
+    configMotionMagic();
   }
 
   @Override
@@ -322,6 +352,9 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
   public void stop() {
     stopMotor();
     wantedValue = 0;
+    if (controlMode != ControlMode.DISABLE && controlMode != ControlMode.DUTYCYCLE){
+      notDutyControlMode = controlMode;
+    }
     controlMode = ControlMode.DISABLE;
   }
 
@@ -330,8 +363,14 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
     setControl(dutyCycle.withOutput(power));
     wantedValue = power;
     if (power == 0) {
+      if (controlMode != ControlMode.DISABLE && controlMode != ControlMode.DUTYCYCLE){
+        notDutyControlMode = controlMode;
+      }
       controlMode = ControlMode.DISABLE;
     } else {
+      if (controlMode != ControlMode.DISABLE && controlMode != ControlMode.DUTYCYCLE){
+        notDutyControlMode = controlMode;
+      }
       controlMode = ControlMode.DUTYCYCLE;
     }
   }
@@ -482,10 +521,19 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
 
   public double getCurrentValue() {
     switch (controlMode) {
-      case DISABLE:
-        return 0;
-      case DUTYCYCLE:
-        return getDutyCycle().getValueAsDouble();
+      case DISABLE, DUTYCYCLE:
+        switch (notDutyControlMode) {
+          case VOLTAGE:
+            return getCurrentVoltage();
+          case VELOCITY:
+            return getCurrentVelocity();
+          case POSITION_VOLTAGE, MAGIC_MOTION:
+            return getCurrentPosition();
+          case ANGLE:
+            return getCurrentAngle();
+          default:
+            return getDutyCycle().getValueAsDouble();
+          }
       case VOLTAGE:
         return getCurrentVoltage();
       case VELOCITY:
@@ -502,7 +550,7 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
   @Override
   public void initSendable(SendableBuilder builder) {
     builder.setSmartDashboardType("Talon Motor");
-    builder.addBooleanProperty("Is" + name + "Connected", this::isConnected, null);
+    builder.addBooleanProperty("Is Connected", this::isConnected, null);
     builder.addDoubleProperty("CloseLoopError", this::getCurrentClosedLoopError, null);
     builder.addDoubleProperty("Position", this::getCurrentPosition, null);
     builder.addDoubleProperty("Velocity", this::getCurrentVelocity, null);
@@ -514,9 +562,10 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
     }
     builder.addDoubleProperty("Value", this::getCurrentValue, null);
     builder.addDoubleProperty("ControlMode", this::getCurrentControlModeInteger, null);
-    builder.addDoubleProperty(" Wanted Value", this::getWantedValue, null);
-    builder.addDoubleProperty("test Power", () -> testPower, (testPower) -> this.testPower = testPower);
-  }
+    builder.addDoubleProperty("Wanted Value", this::getWantedValue, null);
+
+    builder.addDoubleProperty("test Value", () -> testValue, (value) -> this.testValue = value);
+    }
 
   /**
    * Creates a command to configure PID and FeedForward parameters via the
@@ -702,36 +751,36 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
     return currentSignal;
   }
     
-    /**
-     * Checks if a specific motor has reached its target value within a specified tolerance.
-     * * @param motorName The name of the motor
-     * @param allowedError The allowable tolerance
-     * @return true if the motor is within tolerance, false otherwise
-     */
-    public boolean isReady(double allowedError){
-      switch (getCurrentControlMode()) {
-        case DISABLE:
+  /**
+   * Checks if a specific motor has reached its target value within a specified tolerance.
+   * * @param motorName The name of the motor
+   * @param allowedError The allowable tolerance
+   * @return true if the motor is within tolerance, false otherwise
+   */
+  public boolean isReady(double allowedError){
+    switch (getCurrentControlMode()) {
+      case DISABLE:
+        break;
+      case DUTYCYCLE:
+        break;
+      case VOLTAGE:
+        if (Math.abs(getWantedValue() - getCurrentVoltage()) > allowedError){
+          return false;
+        }
           break;
-        case DUTYCYCLE:
-          break;
-        case VOLTAGE:
-          if (Math.abs(getWantedValue() - getCurrentVoltage()) > allowedError){
-            return false;
-          }
-            break;
-        case VELOCITY:
-          if (Math.abs(getWantedValue() - getCurrentVelocity()) > allowedError){
-            return false;
-          }
-          break;
-        case POSITION_VOLTAGE, MAGIC_MOTION, ANGLE:
-          if (Math.abs(getWantedValue() - getCurrentPosition()) > allowedError){
-            return false;
-          }
-          break;
-        default:
-          break;
-      }
-      return true;
+      case VELOCITY:
+        if (Math.abs(getWantedValue() - getCurrentVelocity()) > allowedError){
+          return false;
+        }
+        break;
+      case POSITION_VOLTAGE, MAGIC_MOTION, ANGLE:
+        if (Math.abs(getWantedValue() - getCurrentPosition()) > allowedError){
+          return false;
+        }
+        break;
+      default:
+        break;
     }
+    return true;
+  }
 }

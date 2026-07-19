@@ -129,7 +129,6 @@ public class SwerveModule {
      */
     public void setState(SwerveModuleState state) {
         double wantedAngle = state.angle.getRadians();
-        // if(state.speedMetersPerSecond != 0) pfrc.demacia.utils.log.LogManager.log(name + " wanted - " + Math.toDegrees(wantedAngle) + " " + state.speedMetersPerSecond);
         double diff = wantedAngle - steerMotor.getCurrentPosition();
         double vel = state.speedMetersPerSecond;
         diff = MathUtil.angleModulus(diff);

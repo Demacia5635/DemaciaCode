@@ -10,11 +10,9 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.demacia.utils.Data;
 import frc.demacia.utils.dashboard.ElasticGenerator;
 import frc.demacia.utils.log.LogManager;
 import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
-import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
 
 /**
  * CTRE CANcoder absolute magnetic encoder wrapper.
@@ -129,9 +127,8 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "unlikely-arg-type" })
+    @SuppressWarnings({ "unchecked" })
     private void addLog() {
-        Data.addSignals(config.canbus.equals(Canbus.Rio), absPositionSignal);
         LogManager.addEntry(name + ": abs Position",
                 () -> getCurrentAbsPosition()).withLogLevel(LogLevel.LOG_AND_NT)
                 .withIsSeparated(false).build();

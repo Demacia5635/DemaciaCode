@@ -122,6 +122,7 @@ public class ElasticGenerator {
         boolean firstTab = true;
         final int MAX_COLS = 10;
         final int MAX_ROWS = 5;
+        final int MOTOR_WIDTH = 5;
 
         int motorIndex = 0;
         int sensorIndex = 0;
@@ -141,15 +142,22 @@ public class ElasticGenerator {
             while (motorIndex < allMotors.size() && row < MAX_ROWS) {
                 MotorInterface motor = allMotors.get(motorIndex);
                 String motorPath = "/SmartDashboard/motors/" + motor.getName();
+                String logManagerMotorPath = "/Log/motors/" + motor.getName();
                 
-                widgets.add(createWidget("Boolean Box", motor.getName(), col, row, 1, 1, motorPath + "/Is" + motor.getName() + "Connected", "\"data_type\": \"boolean\""));
+                widgets.add(createWidget("Boolean Box", motor.getName(), col, row, 1, 1, logManagerMotorPath + "/is Connected", "\"data_type\": \"boolean\""));
                 col++;
-                widgets.add(createWidget("Number Slider", "Power", col, row, 2, 1, motorPath + "/test Power", "\"data_type\": \"double\""));
+                widgets.add(createWidget("ComboBox Chooser", "Value Control", col, row, 1, 1, motorPath + "/Value Control Mode Chooser", ""));
+                col++;
+                widgets.add(createWidget("Text Display", "Values", col, row, 1, 1, motorPath + "/test Value", "\"data_type\": \"double\""));
+                col++;
+                widgets.add(createWidget("Number Slider", "value", col, row, 2, 1, motorPath + "/test Value", "\"data_type\": \"double\", \"update_continuously\": true"));
                 col += 2;
-                widgets.add(createWidget("Command", "Run", col, row, 2, 1, motorPath + "/test power command", "\"show_type\": true"));
-                col += 2;
+                widgets.add(createWidget("Command", "Run", col, row, 1, 1, motorPath + "/test value command", "\"show_type\": true"));
+                col++;
+                widgets.add(createWidget("Text Display", "Current Values", col, row, 1, 1, logManagerMotorPath + "/current value", "\"data_type\": \"double\", \"show_submit_button\": true"));
+                col++;
 
-                if (col >= MAX_COLS) { 
+                if (col > MAX_COLS - MOTOR_WIDTH) { 
                     col = 0;
                     row++;
                 }

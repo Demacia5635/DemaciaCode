@@ -45,12 +45,13 @@ public class LogManager extends SubsystemBase {
   /** List of individual log entries that are not grouped */
   private ArrayList<LogEntry<?>> individualLogEntries = new ArrayList<>();
 
-  /**
-   * * Array of grouped log entries.
-   * Used to optimize logging by combining similar data types and log levels into
-   * single array entries.
-   */
-  private LogEntry<?>[] categoryLogEntries = new LogEntry<?>[24];
+  private LogEntry<float[]> groupFloatEntry;
+  private LogEntry<boolean[]> groupBooleanEntry;
+  private LogEntry<String[]> groupStringEntry;
+  
+  double millis;
+  long count;
+  int warmupCount;
 
   /**
    * Private constructor to enforce Singleton pattern.
@@ -91,12 +92,13 @@ public class LogManager extends SubsystemBase {
    * @param statusSignals The signals to log
    * @return A new LogEntryBuilder
    */
-  public static <T> LogEntryBuilder<T> addEntry(String name, StatusSignal<T>[] statusSignals, boolean isRio) {
-    return new LogEntryBuilder<T>(name, statusSignals, isRio);
+  @SuppressWarnings("unchecked")
+  public static <T> LogEntryBuilder<T> addEntry(String name, StatusSignal<T>... statusSignals) {
+    return new LogEntryBuilder<T>(name, statusSignals);
   }
 
   /**
-   * Starts building a new log entry from standard Suppliers.
+   * Starts building a new log entry from Suppliers.
    * 
    * @param <T>       The type of data
    * @param name      The name of the log entry
@@ -106,6 +108,19 @@ public class LogManager extends SubsystemBase {
   @SuppressWarnings("unchecked")
   public static <T> LogEntryBuilder<T> addEntry(String name, Supplier<T>... suppliers) {
     return new LogEntryBuilder<T>(name, suppliers);
+  }
+
+  /**
+   * Starts building a new log entry from data.
+   * 
+   * @param <T>       The type of data
+   * @param name      The name of the log entry
+   * @param data The data to log
+   * @return A new LogEntryBuilder
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> LogEntryBuilder<T> addEntry(String name, Data<T>... data) {
+    return new LogEntryBuilder<T>(name, data);
   }
 
   /**
@@ -125,16 +140,6 @@ public class LogManager extends SubsystemBase {
         i--;
       }
     }
-
-    for (int i = 0; i < logManager.categoryLogEntries.length; i++) {
-      if (logManager.categoryLogEntries[i] != null) {
-        logManager.categoryLogEntries[i].removeInComp();
-        if (logManager.categoryLogEntries[i].getLogLevel() == LogLevel.LOG_ONLY_NOT_IN_COMP
-            || logManager.categoryLogEntries[i].getLogLevel() == LogLevel.LOG_AND_NT_NOT_IN_COMP) {
-          logManager.categoryLogEntries[i] = null;
-        }
-      }
-    }
   }
 
   /**
@@ -143,9 +148,6 @@ public class LogManager extends SubsystemBase {
   public static void clearEntries() {
     if (logManager != null) {
       logManager.individualLogEntries.clear();
-      for (int i = 0; i < logManager.categoryLogEntries.length; i++) {
-        logManager.categoryLogEntries[i] = null;
-      }
     }
   }
 
@@ -187,7 +189,12 @@ public class LogManager extends SubsystemBase {
    */
   @Override
   public void periodic() {
+    long start = System.nanoTime();
     Data.refreshAll();
+    long end = System.nanoTime();
+    millis += (end - start) / 1e6;
+    count++;
+    SmartDashboard.putNumber("refreshAll Periodic Time ms", millis / count);
 
     for (int i = activeConsole.size() - 1; i >= 0; i--) {
       ConsoleAlert alert = activeConsole.get(i);
@@ -201,10 +208,14 @@ public class LogManager extends SubsystemBase {
       individualLogEntries.get(i).log();
     }
 
-    for (LogEntry<?> e : categoryLogEntries) {
-      if (e != null) {
-        e.log();
-      }
+    if (groupFloatEntry != null) {
+      groupFloatEntry.log();
+    }
+    if (groupBooleanEntry != null) {
+      groupBooleanEntry.log();
+    }
+    if (groupStringEntry != null) {
+      groupStringEntry.log();
     }
   }
 
@@ -219,103 +230,44 @@ public class LogManager extends SubsystemBase {
    * @param isSeparated Whether to force a separate entry
    * @return The created or updated LogEntry
    */
-  public static <T> LogEntry<T> add(String name, Data<T> data, LogLevel logLevel, String metaData, boolean isSeparated,
+  @SuppressWarnings("unchecked")
+  public static <T> LogEntry<T> add(String name, Data<T>[] data, LogLevel logLevel, String metaData, boolean isSeparated,
       boolean isRio) {
     LogEntry<T> entry = null;
 
-    int categoryIndex = logManager.getCategoryIndex(data, logLevel, isSeparated);
-
-    if (categoryIndex == -1) {
-      entry = new LogEntry<T>(name, data, logLevel, metaData);
+    if (isSeparated && data.length == 1) {
+      entry = new LogEntry<T>(name, data[0], logLevel, metaData);
       logManager.individualLogEntries.add(entry);
     } else {
-      entry = logManager.addToEntryArray(categoryIndex, name, logLevel, data, metaData, isRio);
+      if (data[0].isDouble()) {
+        Data.addToGroupFloat(name, metaData, data);
+        if (logManager.groupFloatEntry == null){
+          logManager.groupFloatEntry = new LogEntry<float[]>(Data.getGroupFloatName(), () -> Data.getGroupFloat(), LogLevel.LOG_ONLY, Data.getGroupDoubleMetaData(), true, false);
+        } else {
+          logManager.groupFloatEntry.reInitialize(Data.getGroupFloatName(), () -> Data.getGroupFloat(), LogLevel.LOG_ONLY, Data.getGroupDoubleMetaData(), true, false);
+        }
+        entry = (LogEntry<T>) logManager.groupFloatEntry;
+        
+      } else if (data[0].isBoolean()) {
+        Data.addToGroupBoolean(name, metaData, data);
+        if (logManager.groupBooleanEntry == null){
+          logManager.groupBooleanEntry = new LogEntry<boolean[]>(Data.getGroupBooleanName(), () -> Data.getGroupBoolean(), LogLevel.LOG_ONLY, Data.getGroupBooleanMetaData(), false, true);
+        } else {
+          logManager.groupBooleanEntry.reInitialize(Data.getGroupBooleanName(), () -> Data.getGroupBoolean(), LogLevel.LOG_ONLY, Data.getGroupBooleanMetaData(), false, true);
+        }
+        entry = (LogEntry<T>) logManager.groupBooleanEntry;
+        
+      } else {
+        Data.addToGroupString(name, metaData, data);
+        if (logManager.groupStringEntry == null){
+          logManager.groupStringEntry = new LogEntry<String[]>(Data.getGroupStringName(), () -> Data.getGroupString(), LogLevel.LOG_ONLY, Data.getGroupStringMetaData(), false, false);
+        } else {
+          logManager.groupStringEntry.reInitialize(Data.getGroupStringName(), () -> Data.getGroupString(), LogLevel.LOG_ONLY, Data.getGroupStringMetaData(), false, false);
+        }
+        entry = (LogEntry<T>) logManager.groupStringEntry;
+      }
     }
 
     return entry;
-  }
-
-  public static <T> LogEntry<T> add(String name, Data<T> data, LogLevel logLevel, String metaData,
-      boolean isSeparated) {
-    return add(name, data, logLevel, metaData, isSeparated, true);
-  }
-
-  /**
-   * Adds data to an existing category entry or creates a new one if it doesn't
-   * exist.
-   * Handles type mismatches gracefully by creating a separate entry.
-   * 
-   * @param i        The index in the category array
-   * @param name     Name of the entry
-   * @param logLevel Logging level
-   * @param data     Data wrapper
-   * @param metaData Metadata
-   * @return The LogEntry
-   */
-  @SuppressWarnings("unchecked")
-  private <T> LogEntry<T> addToEntryArray(int i, String name, LogLevel logLevel, Data<T> data, String metaData,
-      boolean isRio) {
-
-    if (categoryLogEntries[i] != null && categoryLogEntries[i].getData() != null) {
-      if ((categoryLogEntries[i].getData().getSignalArray() != null) != (data.getSignalArray() != null)) {
-        LogManager.log("Log Type Mismatch in '" + name + "'. Creating separate entry.", AlertType.kWarning);
-        return add(name, data, LogLevel.LOG_ONLY, metaData, true, isRio);
-      }
-    }
-
-    if (categoryLogEntries[i] == null) {
-      categoryLogEntries[i] = new LogEntry<>(name, data, logLevel, metaData);
-    } else {
-      try {
-
-        ((LogEntry<T>) categoryLogEntries[i]).addData(name, data, metaData, isRio);
-      } catch (Exception e) {
-        LogManager.log("Error combining log entries: " + e.getMessage(), AlertType.kError);
-      }
-    }
-
-    return (LogEntry<T>) categoryLogEntries[i];
-  }
-
-  public <T> LogEntry<T> addToEntryArray(int i, String name, LogLevel logLevel, Data<T> data, String metaData) {
-    return addToEntryArray(i, name, logLevel, data, metaData, true);
-  }
-
-  /**
-   * Calculates the index for the category array based on data type and log level.
-   * 
-   * @param data        The data object
-   * @param logLevel    The log level
-   * @param isSeperated Whether the entry is forced to be separate
-   * @return The index, or -1 if it should be an individual entry
-   */
-  private int getCategoryIndex(Data<?> data, LogLevel logLevel, Boolean isSeperated) {
-    boolean isSignal = data.getSignalArray() != null;
-    boolean isSupplier = data.getSupplierArray() != null;
-    boolean isDouble = data.isDouble();
-    boolean isBoolean = data.isBoolean();
-
-    if (!(isSignal || isSupplier) || isSeperated) {
-      return -1;
-    }
-
-    int baseIndex = (isSignal ? 0 : 3) + (isDouble ? 0 : isBoolean ? 1 : 2);
-    int levelOffset;
-    switch (logLevel) {
-      case LOG_ONLY_NOT_IN_COMP:
-        levelOffset = 0;
-        break;
-      case LOG_ONLY:
-        levelOffset = 6;
-        break;
-      case LOG_AND_NT_NOT_IN_COMP:
-        levelOffset = 12;
-        break;
-      default:
-        levelOffset = 18;
-        break;
-    }
-
-    return baseIndex + levelOffset;
   }
 }
