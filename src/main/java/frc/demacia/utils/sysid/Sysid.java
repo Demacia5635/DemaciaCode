@@ -18,7 +18,7 @@ import org.ejml.simple.SimpleMatrix;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
 import frc.demacia.utils.motors.CloseLoopParam;
 import frc.demacia.utils.motors.MotorInterface;
 
@@ -74,7 +74,7 @@ public class Sysid {
 
         try {
             loadLatestRobotLog();
-            LogManager.log("Performing analysis...");
+            Log.log("Performing analysis...");
         } catch (IOException e) {
             e.printStackTrace();
             return new HashMap<>();
@@ -127,7 +127,7 @@ public class Sysid {
             throw new IOException("SysID Error: No .wpilog files found on the robot!");
         }
 
-        LogManager.log("SysID: Successfully found and loading latest log: " + latestLogFile.getAbsolutePath());
+        Log.log("SysID: Successfully found and loading latest log: " + latestLogFile.getAbsolutePath());
 
         wpilogReader(latestLogFile.getAbsolutePath()); 
     }
@@ -172,10 +172,10 @@ public class Sysid {
             maxTimestamp = 0;
             
             skipHeaderExtra(dataInputStream);
-            LogManager.log("Header read successfully. Starting to read records...");
+            Log.log("Header read successfully. Starting to read records...");
             readRecords(dataInputStream);
-            LogManager.log("File Read Successfully. Total entries: " + entries.size());
-            LogManager.log("Timestamp range: " + minTimestamp + "s to " + maxTimestamp + "s");
+            Log.log("File Read Successfully. Total entries: " + entries.size());
+            Log.log("Timestamp range: " + minTimestamp + "s to " + maxTimestamp + "s");
         }
     }
 
@@ -199,7 +199,7 @@ public class Sysid {
                 readRecord(dataInputStream);
                 n++;
                 if(n%1000 == 0) {
-                    LogManager.log("Read " + n + " records...");
+                    Log.log("Read " + n + " records...");
                 }
             } catch (EOFException e) {
                 break;
@@ -338,13 +338,13 @@ public class Sysid {
         Set<String> groups = findGroups();
         
         for (String group : groups) {
-            LogManager.log("Analyzing group: " + group);
+            Log.log("Analyzing group: " + group);
             BucketResult result = analyzeGroup(group);
             if (result != null) {
                 results.put(group, result);
             }
         }
-        LogManager.log("Analysis complete. Results for " + results.size() + " groups.");
+        Log.log("Analysis complete. Results for " + results.size() + " groups.");
         return results;
     }
 
@@ -368,7 +368,7 @@ public class Sysid {
             }
         }
 
-        LogManager.log("Group: " + name + " | Total data points: " + allData.size());
+        Log.log("Group: " + name + " | Total data points: " + allData.size());
         if (allData.isEmpty()) return null;
 
         allData.sort((p1, p2) -> Long.compare(p1.timestamp, p2.timestamp));
@@ -444,10 +444,10 @@ public class Sysid {
             finalModel.rawPoints = rawData.size();
         }
 
-        LogManager.log(name + "avg Error: " + finalModel.avgError);
-        LogManager.log(name + "max Error: " + finalModel.maxError);
-        LogManager.log(name + "used Points size: " + finalModel.points);
-        LogManager.log(name + "raw Points size: " + finalModel.rawPoints);
+        Log.log(name + "avg Error: " + finalModel.avgError);
+        Log.log(name + "max Error: " + finalModel.maxError);
+        Log.log(name + "used Points size: " + finalModel.points);
+        Log.log(name + "raw Points size: " + finalModel.rawPoints);
 
         return finalModel;
     }

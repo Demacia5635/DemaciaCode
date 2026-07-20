@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.utils.dashboard.ElasticGenerator;
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
 import frc.demacia.utils.motors.MotorInterface;
 import frc.demacia.utils.sensors.SensorInterface;
 
@@ -210,7 +210,7 @@ public class BaseMechanism extends SubsystemBase{
             node.minLimit = min;
             node.maxLimit = max;
         } else {
-            LogManager.log("Invalid motor: " + motorName);
+            Log.log("Invalid motor: " + motorName);
         }
     }
 
@@ -234,7 +234,7 @@ public class BaseMechanism extends SubsystemBase{
         if (node != null) {
             node.maxLimit = max;
         } else {
-            LogManager.log("Invalid motor: " + motorName);
+            Log.log("Invalid motor: " + motorName);
         }
     }
 
@@ -257,7 +257,7 @@ public class BaseMechanism extends SubsystemBase{
         if (node != null) {
             node.minLimit = min;
         } else {
-            LogManager.log("Invalid motor: " + motorName);
+            Log.log("Invalid motor: " + motorName);
         }
     }
 
@@ -279,7 +279,7 @@ public class BaseMechanism extends SubsystemBase{
     public void withAutoCalibration(String motorName, BooleanSupplier atLimit, double resetPos) {
         MotorNode node = motors.get(motorName);
         if (node == null) {
-            LogManager.log("Invalid motor for auto calibration: " + motorName);
+            Log.log("Invalid motor for auto calibration: " + motorName);
             return;
         }
         
@@ -296,7 +296,7 @@ public class BaseMechanism extends SubsystemBase{
         SmartDashboard.putData(getName() + "/" + motorName + "/" + motorName + " manual reset", new InstantCommand(() -> {
             node.motor.setEncoderPosition(resetPos);
             node.hasCalibrated = true;
-            LogManager.log(node.hasCalibrated);
+            Log.log(node.hasCalibrated);
         }).ignoringDisable(true));
         }
 
@@ -319,7 +319,7 @@ public class BaseMechanism extends SubsystemBase{
         if (node != null) {
             node.motor.stop();
         } else {
-            LogManager.log("Invalid motor: " + motorName);
+            Log.log("Invalid motor: " + motorName);
         }
     }
 
@@ -516,7 +516,7 @@ public class BaseMechanism extends SubsystemBase{
      */
     public boolean isReady(double[] allowedErrors){
         if (allowedErrors.length != motorsAmount){
-            LogManager.log("errors amount is not the motors amounts");
+            Log.log("errors amount is not the motors amounts");
             return true;
         }
         for (int i = 0; i < motorsAmount; i++){
@@ -538,7 +538,7 @@ public class BaseMechanism extends SubsystemBase{
     public boolean isReady(String motorName, double allowedError){
         MotorNode node = motors.get(motorName);
         if (node == null){
-            LogManager.log("Invalid motor: " + motorName);
+            Log.log("Invalid motor: " + motorName);
             return false;
         }
         
@@ -612,7 +612,7 @@ public class BaseMechanism extends SubsystemBase{
         if (node != null) {
             node.motor.checkElectronics();
         } else {
-            LogManager.log("Invalid motor: " + motorName);
+            Log.log("Invalid motor: " + motorName);
         }
     }
 
@@ -633,7 +633,7 @@ public class BaseMechanism extends SubsystemBase{
         if (sensor != null){
             sensor.checkElectronics();
         } else {
-            LogManager.log("Invalid sensor: " + sensorName);
+            Log.log("Invalid sensor: " + sensorName);
         }
     }
 
@@ -653,7 +653,7 @@ public class BaseMechanism extends SubsystemBase{
     public MotorInterface getMotor(String motorName) {
         MotorNode node = motors.get(motorName);
         if (node == null){
-            LogManager.log("Invalid motor: " + motorName);
+            Log.log("Invalid motor: " + motorName);
             return null;
         }
         return node.motor;
@@ -688,7 +688,7 @@ public class BaseMechanism extends SubsystemBase{
     public SensorInterface getSensor(String sensorName) {
         SensorInterface sensor = sensors.get(sensorName);
         if (sensor == null){
-            LogManager.log("Invalid sensor: " + sensorName);
+            Log.log("Invalid sensor: " + sensorName);
             return null;
         }
         return sensor;

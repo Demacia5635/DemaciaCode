@@ -9,8 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.demacia.utils.log.LogManager;
-import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
+import frc.demacia.utils.log.Log;
 import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
 
@@ -36,13 +35,13 @@ public class Quest extends SubsystemBase {
   
   @SuppressWarnings("unchecked")
   private void addLog() {
-    LogManager.addEntry("quest/X", () -> getRobotPose2d().getX()).build();
-    LogManager.addEntry("quest/Y", () -> getRobotPose2d().getY()).build();
-    LogManager.addEntry("quest/is working", () -> isWorking()).build();
-    LogManager.addEntry("quest/is connected", () -> isConnected()).build();
-    LogManager.addEntry("quest/Latency", questNav::getLatency).withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP).build();
-    LogManager.addEntry("quest/Battery", questNav::getBatteryPercent).withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP).build();
-    LogManager.addEntry("quest/LibVersion", questNav::getLibVersion).withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP).build();
+    Log.putData("quest/X", () -> getRobotPose2d().getX());
+    Log.putData("quest/Y", () -> getRobotPose2d().getY());
+    Log.putData("quest/is working", () -> isWorking());
+    Log.putData("quest/is connected", () -> isConnected());
+    Log.putData("quest/Latency", questNav::getLatency);
+    Log.putData("quest/Battery", questNav::getBatteryPercent);
+    Log.putData("quest/LibVersion", questNav::getLibVersion);
 
     SmartDashboard.putData("quest/Reset Quest Pose", new InstantCommand(()->setQuestPose(new Pose3d())).ignoringDisable(true));
     SmartDashboard.putData("quest/Quest Robot Field", robotField);

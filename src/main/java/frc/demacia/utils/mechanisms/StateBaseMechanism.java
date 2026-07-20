@@ -3,8 +3,7 @@ package frc.demacia.utils.mechanisms;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.demacia.utils.log.LogManager;
-import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
+import frc.demacia.utils.log.Log;
 import frc.demacia.utils.motors.MotorInterface;
 import frc.demacia.utils.sensors.SensorInterface;
 
@@ -103,8 +102,7 @@ public class StateBaseMechanism extends BaseMechanism {
 
         for (int i = 0; i < getState().getValues().length; i++){
             final int index = i;
-            LogManager.addEntry(getName() + "/" + motorNames[i] + "/" + motorNames[i] + " targetValue: ", () -> getValue(index))
-            .withIsSeparated(true).withLogLevel(LogLevel.LOG_AND_NT).build();
+            Log.putData(getName() + "/" + motorNames[i] + "/" + motorNames[i] + " targetValue: ", () -> getValue(index));
         }
     }
 
@@ -114,7 +112,7 @@ public class StateBaseMechanism extends BaseMechanism {
      */
     public void setStartingOption(MechanismState state){
         if (state == null) {
-            LogManager.log("Starting state cannot be null");
+            Log.log("Starting state cannot be null");
             return;
         }
 

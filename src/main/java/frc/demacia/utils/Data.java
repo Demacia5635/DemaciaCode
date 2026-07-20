@@ -8,8 +8,6 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 /**
  * A generic wrapper class for data sources (StatusSignals or Suppliers).
  * <p>
@@ -58,10 +56,6 @@ public class Data<T> {
     private float floatValue;
     private boolean booleanValue;
     private String stringValue;
-
-    static double millis1;
-    static long count1;
-    static int warmupCount1;
 
     /**
      * Creates a new Data object from Phoenix 6 StatusSignals.
@@ -242,14 +236,9 @@ public class Data<T> {
      * First refreshes all Phoenix signals, then updates local values.
      */
     public static void refreshAll() {
-        long start1 = System.nanoTime();
         if (rioSignalsArray.length > 0) {
             BaseStatusSignal.refreshAll(rioSignalsArray);
         }
-        long end1 = System.nanoTime();
-        millis1 += (end1 - start1) / 1e6;
-        count1++;
-        SmartDashboard.putNumber("rioSignals Periodic Time ms", millis1 / count1);
         
         if (canivoreSignalsArray.length > 0) {
             BaseStatusSignal.refreshAll(canivoreSignalsArray);

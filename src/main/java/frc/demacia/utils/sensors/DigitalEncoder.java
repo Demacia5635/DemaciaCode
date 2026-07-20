@@ -1,10 +1,12 @@
 package frc.demacia.utils.sensors;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
+import frc.demacia.utils.log.Log.LogLevel;
 import frc.demacia.utils.dashboard.ElasticGenerator;
-import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -52,7 +54,7 @@ public class DigitalEncoder extends DutyCycleEncoder implements AnalogSensorInte
         configEncoder();
         addLog();
         SmartDashboard.putData("sensors/" + name, this);
-        LogManager.log(name + " digital encoder initialized");
+        Log.log(name + " digital encoder initialized");
         ElasticGenerator.getInstance().registerSensor(this);
     }
     
@@ -64,8 +66,11 @@ public class DigitalEncoder extends DutyCycleEncoder implements AnalogSensorInte
 
     @SuppressWarnings("unchecked")
     private void addLog() {
-        LogManager.addEntry(name + ": Position", this::get)
-        .withLogLevel(LogLevel.LOG_ONLY_NOT_IN_COMP).build();
+        Log.putData(name + ": Position", 
+            new Supplier[]{
+                this::get
+            }
+            , LogLevel.LOG_ONLY, "", false);
     }
 
     /**
@@ -82,7 +87,7 @@ public class DigitalEncoder extends DutyCycleEncoder implements AnalogSensorInte
      */
     public void checkElectronics() {
         if (!isConnected()) {
-            LogManager.log(name + " encoder disconnected", AlertType.kWarning);
+            Log.log(name + " encoder disconnected", AlertType.kWarning);
         }
     }
     

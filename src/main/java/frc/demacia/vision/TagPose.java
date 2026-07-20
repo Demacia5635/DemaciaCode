@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.dashboard.ElasticGenerator;
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
 
 import static frc.demacia.vision.VisionConstants.*;
 
@@ -69,7 +69,7 @@ public class TagPose extends SubsystemBase {
     pipeEntry = Table.getEntry("pipeline");
     // LogManager.addEntry(camera.getName()+"dist", this::getDistFromCamera).withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP).build();
     // LogManager.addEntry(camera.getName()+"dist ty", this::getDistanceFromTy).withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP).build();
-    LogManager.addEntry("tags/" + camera.getName() + "/" + camera.getName() + " see tag", () -> isSeeTag()).build();
+    Log.putData("tags/" + camera.getName() + "/" + camera.getName() + " see tag", () -> isSeeTag());
 
     SmartDashboard.putData("tags/" + camera.getName() + "/" + "field-tag " + camera.getName(), field);
     SmartDashboard.putData("tags/" + camera.getName() + "/" + "setTo3d " + camera.getName(),

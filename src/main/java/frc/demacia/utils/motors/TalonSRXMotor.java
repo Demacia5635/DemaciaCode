@@ -9,7 +9,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.Timer;
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
 
 /**
  * Wrapper class for the CTRE Talon SRX motor controller using Phoenix 5.
@@ -49,7 +49,7 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
         addLog();
         setName(name);
         // SmartDashboard.putData(name, this);
-        LogManager.log(name + " motor initialized");
+        Log.log(name + " motor initialized");
     }
 
     /**
@@ -98,14 +98,14 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
         com.ctre.phoenix.motorcontrol.Faults faults = new com.ctre.phoenix.motorcontrol.Faults();
         getFaults(faults);
         if (faults.hasAnyFault()) {
-            LogManager.log(name + " have fault num: " + faults.toString(), AlertType.kError);
+            Log.log(name + " have fault num: " + faults.toString(), AlertType.kError);
         }
     }
 
     @Override
     public void changeSlot(int slot) {
         if (slot < 0 || slot > 2) {
-            LogManager.log("slot is not between 0 and 2", AlertType.kError);
+            Log.log("slot is not between 0 and 2", AlertType.kError);
             return;
         }
         this.slot = slot;
@@ -138,7 +138,7 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
 
     @Override
     public void setVelocity(double velocity, double feedForward) {
-        LogManager.log("there is no Velocity");
+        Log.log("there is no Velocity");
     }
 
     @Override
@@ -153,7 +153,7 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
 
     @Override
     public void setMotion(double position, double feedForward) {
-        LogManager.log("there is no motion");
+        Log.log("there is no motion");
     }
 
     @Override
@@ -174,7 +174,7 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
 
     @Override
     public void setPositionVoltage(double position, double feedForward) {
-        LogManager.log("there is no PositionVoltage");
+        Log.log("there is no PositionVoltage");
     }
 
     @Override

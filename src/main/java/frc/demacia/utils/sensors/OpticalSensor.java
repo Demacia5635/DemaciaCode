@@ -1,10 +1,12 @@
 package frc.demacia.utils.sensors;
+import java.util.function.Supplier;
+
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
+import frc.demacia.utils.log.Log.LogLevel;
 import frc.demacia.utils.dashboard.ElasticGenerator;
-import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
 
 /**
  * A wrapper for analog optical sensors that measure voltage levels.
@@ -40,14 +42,17 @@ public class OpticalSensor extends AnalogInput implements SensorInterface {
         setName(name);
         addLog();
         SmartDashboard.putData("sensors/" + config.name, this);
-		LogManager.log(name + " Optical Sensor initialized");
+		Log.log(name + " Optical Sensor initialized");
         ElasticGenerator.getInstance().registerSensor(this);
     }
     
     @SuppressWarnings("unchecked")
     private void addLog() {
-        LogManager.addEntry(name + ": value",  this::get)
-        .withLogLevel(LogLevel.LOG_ONLY_NOT_IN_COMP).build();
+        Log.putData(name + ": value", 
+            new Supplier[]{
+                this::get
+            }
+            , LogLevel.LOG_ONLY, "", false);
 
     }
     

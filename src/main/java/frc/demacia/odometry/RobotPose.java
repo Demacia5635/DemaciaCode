@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Timer;
 
 import frc.demacia.odometry.DemaciaPoseEstimator.OdometryObservation;
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
 import frc.demacia.vision.VisionConstants;
 
 public class RobotPose {

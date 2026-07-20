@@ -25,7 +25,7 @@ import edu.wpi.first.util.datalog.StringArrayLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import frc.demacia.utils.Data;
 import frc.demacia.utils.RobotCommon;
-import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
+import frc.demacia.utils.log.Log.LogLevel;
 
 /**
  * Represents a single log entry of a specific type (T).
@@ -100,11 +100,11 @@ public class LogEntry<T> {
      * Determines if NT publishing is allowed based on competition status.
      */
     private void initializeLogging() {
-        createLogEntry(LogManager.log, name, metaData);
+        createLogEntry(Log.log, name, metaData);
 
         // Check if we should publish to NetworkTables based on LogLevel and Competition state
         if (logLevel == LogLevel.LOG_AND_NT || (logLevel == LogLevel.LOG_AND_NT_NOT_IN_COMP && !RobotCommon.getIsComp())) {
-            createPublisher(LogManager.table, name);
+            createPublisher(Log.table, name);
         } else {
             ntPublisher = null;
             ntStrategy = null;
@@ -128,25 +128,25 @@ public class LogEntry<T> {
         if (entry != null) entry.finish();
         
         if (isDouble) {
-            entry = new FloatArrayLogEntry(LogManager.log, name, metaData);
+            entry = new FloatArrayLogEntry(Log.log, name, metaData);
             logStrategy = (time, d) -> ((FloatArrayLogEntry) entry).append((float[]) supplier.get(), time);
         } else if (isBoolean) {
-            entry = new BooleanArrayLogEntry(LogManager.log, name, metaData);
+            entry = new BooleanArrayLogEntry(Log.log, name, metaData);
             logStrategy = (time, d) -> ((BooleanArrayLogEntry) entry).append((boolean[]) supplier.get(), time);
         } else {
-            entry = new StringArrayLogEntry(LogManager.log, name, metaData);
+            entry = new StringArrayLogEntry(Log.log, name, metaData);
             logStrategy = (time, d) -> ((StringArrayLogEntry) entry).append((String[]) supplier.get(), time);
         }
 
         if (logLevel == LogLevel.LOG_AND_NT || (logLevel == LogLevel.LOG_AND_NT_NOT_IN_COMP && !RobotCommon.getIsComp())) {
             if (isDouble) {
-                ntPublisher = LogManager.table.getFloatArrayTopic(name).publish();
+                ntPublisher = Log.table.getFloatArrayTopic(name).publish();
                 ntStrategy = (d, p) -> ((FloatArrayPublisher) p).set((float[]) supplier.get());
             } else if (isBoolean) {
-                ntPublisher = LogManager.table.getBooleanArrayTopic(name).publish();
+                ntPublisher = Log.table.getBooleanArrayTopic(name).publish();
                 ntStrategy = (d, p) -> ((BooleanArrayPublisher) p).set((boolean[]) supplier.get());
             } else {
-                ntPublisher = LogManager.table.getStringArrayTopic(name).publish();
+                ntPublisher = Log.table.getStringArrayTopic(name).publish();
                 ntStrategy = (d, p) -> ((StringArrayPublisher) p).set((String[]) supplier.get());
             }
         } else {

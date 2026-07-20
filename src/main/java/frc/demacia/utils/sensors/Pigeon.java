@@ -11,9 +11,11 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.Data;
 import frc.demacia.utils.dashboard.ElasticGenerator;
-import frc.demacia.utils.log.LogManager;
-import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
+import frc.demacia.utils.log.Log;
+import frc.demacia.utils.log.Log.LogLevel;
 import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
+
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.StatusSignal;
 
@@ -93,7 +95,7 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
         setStatusSignals();
         addLog();
         SmartDashboard.putData("sensors/" + config.name, this);
-		LogManager.log(name + " pigeon initialized");
+		Log.log(name + " pigeon initialized");
         ElasticGenerator.getInstance().registerSensor(this);
     }
 
@@ -145,21 +147,27 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      */
     public void checkElectronics() {
         if (getFaultField().getValue() != 0) {
-            LogManager.log(name + " have a fault: " + getFaultField().getValue());
+            Log.log(name + " have a fault: " + getFaultField().getValue());
         }
     }
 
     @SuppressWarnings({ "unchecked", "unlikely-arg-type" })
     private void addLog() {
         Data.addSignals(config.canbus.equals(Canbus.Rio), yawSignal, pitchSignal, rollSignal);
-        LogManager.addEntry(name + ": yaw, pitch, roll",
-            () -> yawSignal.getValueAsDouble() * 2 * Math.PI,
-            () -> pitchSignal.getValueAsDouble() * 2 * Math.PI,
-            () -> rollSignal.getValueAsDouble() * 2 * Math.PI
-        ).withLogLevel(LogLevel.LOG_AND_NT)
-        .withIsSeparated(false).build();
-        LogManager.addEntry(name + ": is Connected", () -> isConnected())
-            .withIsSeparated(false).withLogLevel(LogLevel.LOG_AND_NT).build();
+        
+        Log.putData(name + ": yaw, pitch, roll", 
+            new Supplier[]{
+                () -> yawSignal.getValueAsDouble() * 2 * Math.PI,
+                () -> pitchSignal.getValueAsDouble() * 2 * Math.PI,
+                () -> rollSignal.getValueAsDouble() * 2 * Math.PI
+            }
+            , LogLevel.LOG_ONLY, "", false);
+            
+        Log.putData(name + ": is Connected", 
+            new Supplier[]{
+                this::isConnected
+            }
+            , LogLevel.LOG_ONLY, "", false);
     }
 
     /**

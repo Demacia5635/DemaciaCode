@@ -17,8 +17,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.demacia.utils.log.LogManager;
-import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
+import frc.demacia.utils.log.Log;
+import frc.demacia.utils.log.Log.LogLevel;
 
 /**
  * Wrapper class for the REV Spark Flex motor controller.
@@ -63,7 +63,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
     addLog();
     setName(name);
     // SmartDashboard.putData(name, this);
-    LogManager.log(name + " motor initialized");
+    Log.log(name + " motor initialized");
   }
 
   /**
@@ -130,18 +130,17 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
   /** Configures the logging entries for this motor */
   @SuppressWarnings("unchecked")
   private void addLog() {
-    LogManager.addEntry(name + ": Position, Velocity, Acceleration, Voltage, Current, CloseLoopError, CloseLoopSP", 
-        () -> getCurrentPosition(),
-        () -> getCurrentVelocity(),
-        () -> getCurrentAcceleration(),
-        () -> getCurrentVoltage(),
-        () -> getCurrentCurrent(),
-        () -> getCurrentClosedLoopError(),
-        () -> getCurrentClosedLoopSP(),
-        () -> getCurrentControlModeInteger()
-      ).withLogLevel(LogLevel.LOG_ONLY_NOT_IN_COMP)
-      .withIsMotor()
-      .build();
+    Log.putData(name + ": Position, Velocity, Acceleration, Voltage, Current, CloseLoopError, CloseLoopSP", 
+        new Supplier[]{
+          () -> getCurrentPosition(),
+          () -> getCurrentVelocity(),
+          () -> getCurrentAcceleration(),
+          () -> getCurrentVoltage(),
+          () -> getCurrentCurrent(),
+          () -> getCurrentClosedLoopError(),
+          () -> getCurrentClosedLoopSP(),
+          () -> getCurrentControlModeInteger()
+        }, LogLevel.LOG_ONLY, "motor", false);
       
       configPidFf(0);
       configMotionMagic();
@@ -154,7 +153,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
       faults.can || faults.temperature;
 
     if (hasFault) {
-        LogManager.log(name + " Fault Detected: " + faults.toString(), AlertType.kError);
+        Log.log(name + " Fault Detected: " + faults.toString(), AlertType.kError);
     }
   }
 
@@ -164,7 +163,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
    */
   public void changeSlot(int slot) {
     if (slot < 0 || slot > 3) {
-      LogManager.log("slot is not between 0 and 2", AlertType.kError);
+      Log.log("slot is not between 0 and 2", AlertType.kError);
       return;
     }
     this.closedLoopSlot = slot == 0 ? ClosedLoopSlot.kSlot0 : slot == 1 ? ClosedLoopSlot.kSlot1 : ClosedLoopSlot.kSlot2;
@@ -201,7 +200,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
   @Override
   public void setVelocity(double velocity, double feedForward) {
     if (config.maxVelocity == 0) {
-      LogManager.log(name + ": maxVelocity not configured", AlertType.kError);
+      Log.log(name + ": maxVelocity not configured", AlertType.kError);
       return;
     }
     getClosedLoopController().setSetpoint(velocity, ControlType.kMAXMotionVelocityControl, closedLoopSlot, feedForward + velocityFeedForward(velocity) + config.pid[closedLoopSlot.value].kS()*Math.signum(velocity));
@@ -236,7 +235,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
   @Override
   public void setMotion(double position, double feedForward) {
     if (config.maxVelocity == 0) {
-      LogManager.log(name + ": maxVelocity not configured", AlertType.kError);
+      Log.log(name + ": maxVelocity not configured", AlertType.kError);
       return;
     }
     getClosedLoopController().setSetpoint(position, ControlType.kMAXMotionPositionControl, closedLoopSlot, feedForward + config.pid[closedLoopSlot.value].kS() + positionFeedForward(position));

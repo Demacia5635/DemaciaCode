@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.utils.Data;
 import frc.demacia.utils.RobotCommon;
-import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
 import frc.demacia.utils.sysid.sysidCommand;
 
 /**
@@ -29,10 +28,25 @@ import frc.demacia.utils.sysid.sysidCommand;
  * (NetworkTables).
  * </p>
  */
-public class LogManager extends SubsystemBase {
+public class Log extends SubsystemBase {
+
+  /**
+   * Enumeration for different logging levels.
+   * Defines behavior for file logging and NetworkTables updating, both in and out of competition.
+   */
+  public static enum LogLevel { 
+    /** Log to file only, but remove entirely during competition */
+    LOG_ONLY_NOT_IN_COMP, 
+    /** Log to file only */
+    LOG_ONLY, 
+    /** Log to file and NetworkTables only when not in competition */
+    LOG_AND_NT_NOT_IN_COMP, 
+    /** Log to file and NetworkTables */
+    LOG_AND_NT
+  } 
 
   /** Singleton instance of the LogManager */
-  private static LogManager logManager;
+  private static Log logManager;
 
   /** The main DataLog instance for file writing */
   public static DataLog log;
@@ -48,16 +62,12 @@ public class LogManager extends SubsystemBase {
   private LogEntry<float[]> groupFloatEntry;
   private LogEntry<boolean[]> groupBooleanEntry;
   private LogEntry<String[]> groupStringEntry;
-  
-  double millis;
-  long count;
-  int warmupCount;
 
   /**
    * Private constructor to enforce Singleton pattern.
    * Initializes DataLogManager and starts logging.
    */
-  private LogManager() {
+  private Log() {
     if (logManager != null) {
       CommandScheduler.getInstance().unregisterSubsystem(this);
       return;
@@ -80,47 +90,8 @@ public class LogManager extends SubsystemBase {
    */
   static {
     if (logManager == null) {
-      new LogManager();
+      new Log();
     }
-  }
-
-  /**
-   * Starts building a new log entry from Phoenix6 StatusSignals.
-   * 
-   * @param <T>           The type of data
-   * @param name          The name of the log entry
-   * @param statusSignals The signals to log
-   * @return A new LogEntryBuilder
-   */
-  @SuppressWarnings("unchecked")
-  public static <T> LogEntryBuilder<T> addEntry(String name, StatusSignal<T>... statusSignals) {
-    return new LogEntryBuilder<T>(name, statusSignals);
-  }
-
-  /**
-   * Starts building a new log entry from Suppliers.
-   * 
-   * @param <T>       The type of data
-   * @param name      The name of the log entry
-   * @param suppliers The suppliers to log
-   * @return A new LogEntryBuilder
-   */
-  @SuppressWarnings("unchecked")
-  public static <T> LogEntryBuilder<T> addEntry(String name, Supplier<T>... suppliers) {
-    return new LogEntryBuilder<T>(name, suppliers);
-  }
-
-  /**
-   * Starts building a new log entry from data.
-   * 
-   * @param <T>       The type of data
-   * @param name      The name of the log entry
-   * @param data The data to log
-   * @return A new LogEntryBuilder
-   */
-  @SuppressWarnings("unchecked")
-  public static <T> LogEntryBuilder<T> addEntry(String name, Data<T>... data) {
-    return new LogEntryBuilder<T>(name, data);
   }
 
   /**
@@ -189,12 +160,7 @@ public class LogManager extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    long start = System.nanoTime();
     Data.refreshAll();
-    long end = System.nanoTime();
-    millis += (end - start) / 1e6;
-    count++;
-    SmartDashboard.putNumber("refreshAll Periodic Time ms", millis / count);
 
     for (int i = activeConsole.size() - 1; i >= 0; i--) {
       ConsoleAlert alert = activeConsole.get(i);
@@ -203,7 +169,7 @@ public class LogManager extends SubsystemBase {
         activeConsole.remove(i);
       }
     }
-
+    
     for (int i = 0; i < individualLogEntries.size(); i++) {
       individualLogEntries.get(i).log();
     }
@@ -220,6 +186,64 @@ public class LogManager extends SubsystemBase {
   }
 
   /**
+   * Starts building a new log entry from Phoenix6 StatusSignals.
+   * 
+   * @param <T>           The type of data
+   * @param name          The name of the log entry
+   * @param statusSignals The signals to log
+   * @return A new LogEntryBuilder
+   */
+  public static <T> LogEntry<T> putData(String name, StatusSignal<T>[] statusSignals, boolean isRio) {
+    return putData(name, statusSignals, LogLevel.LOG_AND_NT, "", true, isRio);
+  }
+
+  /**
+   * Starts building a new log entry from Suppliers.
+   * 
+   * @param <T>       The type of data
+   * @param name      The name of the log entry
+   * @param suppliers The suppliers to log
+   * @return A new LogEntryBuilder
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> LogEntry<T> putData(String name, Supplier<T>... suppliers) {
+    return putData(name, suppliers, LogLevel.LOG_AND_NT, "", true);
+  }
+
+  /**
+   * Starts building a new log entry from data.
+   * 
+   * @param <T>       The type of data
+   * @param name      The name of the log entry
+   * @param data The data to log
+   * @return A new LogEntryBuilder
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> LogEntry<T> putData(String name, Data<T>... data) {
+    return putData(name, data, LogLevel.LOG_AND_NT, "", true);
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> LogEntry<T> putData(String name, StatusSignal<T>[] statusSignals, LogLevel logLevel, String metaData, boolean isSeparated, boolean isRio) {
+    Data<T>[] data;
+    data = (Data<T>[]) new Data[statusSignals.length];
+    for (int i = 0; i < statusSignals.length; i++) {
+        data[i] = new Data<>(statusSignals[i], isRio);
+    }
+    return putData(name, data, logLevel, metaData, isSeparated);
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> LogEntry<T> putData(String name, Supplier<T>[] suppliers, LogLevel logLevel, String metaData, boolean isSeparated) {
+    Data<T>[] data;
+    data = (Data<T>[]) new Data[suppliers.length];
+    for (int i = 0; i < suppliers.length; i++) {
+        data[i] = new Data<>(suppliers[i]);
+    }
+    return putData(name, data, logLevel, metaData, isSeparated);
+  }
+
+  /**
    * Internal method to add a log entry to the manager.
    * 
    * @param <T>         The data type
@@ -231,8 +255,7 @@ public class LogManager extends SubsystemBase {
    * @return The created or updated LogEntry
    */
   @SuppressWarnings("unchecked")
-  public static <T> LogEntry<T> add(String name, Data<T>[] data, LogLevel logLevel, String metaData, boolean isSeparated,
-      boolean isRio) {
+  public static <T> LogEntry<T> putData(String name, Data<T>[] data, LogLevel logLevel, String metaData, boolean isSeparated) {
     LogEntry<T> entry = null;
 
     if (isSeparated && data.length == 1) {

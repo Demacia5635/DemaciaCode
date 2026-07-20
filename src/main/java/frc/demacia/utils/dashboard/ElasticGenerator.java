@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
 import frc.demacia.utils.mechanisms.BaseMechanism;
 import frc.demacia.utils.mechanisms.StateBaseMechanism;
 import frc.demacia.utils.motors.MotorInterface;
@@ -39,7 +39,7 @@ public class ElasticGenerator {
         try {
             WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
         } catch (Exception e) {
-            frc.demacia.utils.log.LogManager.log("Failed to start WebServer for Elastic: " + e.getMessage());
+            frc.demacia.utils.log.Log.log("Failed to start WebServer for Elastic: " + e.getMessage());
         }
     }
 
@@ -111,7 +111,7 @@ public class ElasticGenerator {
             SmartDashboard.putString("Elastic/Status", "Saved at: " + file.getAbsolutePath());
             
         } catch (IOException e) {
-            LogManager.log("Failed to save Elastic layout: " + e.getMessage());
+            Log.log("Failed to save Elastic layout: " + e.getMessage());
             SmartDashboard.putString("Elastic/Status", "Failed to save: " + e.getMessage());
         }
     }

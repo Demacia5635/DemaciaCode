@@ -1,5 +1,7 @@
 package frc.demacia.utils.sensors;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -11,8 +13,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.dashboard.ElasticGenerator;
-import frc.demacia.utils.log.LogManager;
-import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
+import frc.demacia.utils.log.Log;
+import frc.demacia.utils.log.Log.LogLevel;
 
 /**
  * CTRE CANcoder absolute magnetic encoder wrapper.
@@ -81,7 +83,7 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface {
         setStatusSignals();
         addLog();
         SmartDashboard.putData("sensors/" + name, this);
-        LogManager.log(name + " cancoder initialized");
+        Log.log(name + " cancoder initialized");
         ElasticGenerator.getInstance().registerSensor(this);
     }
 
@@ -123,17 +125,23 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface {
      */
     public void checkElectronics() {
         if (getFaultField().getValue() != 0) {
-            LogManager.log(name + " have a fault: " + getFaultField().getValue());
+            Log.log(name + " have a fault: " + getFaultField().getValue());
         }
     }
 
     @SuppressWarnings({ "unchecked" })
     private void addLog() {
-        LogManager.addEntry(name + ": abs Position",
-                () -> getCurrentAbsPosition()).withLogLevel(LogLevel.LOG_AND_NT)
-                .withIsSeparated(false).build();
-        LogManager.addEntry(name + ": is Connected", () -> isConnected())
-            .withIsSeparated(false).withLogLevel(LogLevel.LOG_AND_NT).build();
+        Log.putData(name + ": abs Position", 
+            new Supplier[]{
+                this::getCurrentAbsPosition
+            }
+            , LogLevel.LOG_ONLY, "", false);
+            
+        Log.putData(name + ": is Connected", 
+            new Supplier[]{
+                this::isConnected
+            }
+            , LogLevel.LOG_ONLY, "", false);
     }
 
     /**

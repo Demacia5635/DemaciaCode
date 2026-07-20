@@ -1,10 +1,12 @@
 package frc.demacia.utils.sensors;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.dashboard.ElasticGenerator;
-import frc.demacia.utils.log.LogManager;
-import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
+import frc.demacia.utils.log.Log;
+import frc.demacia.utils.log.Log.LogLevel;
 
 /**
  * Analog absolute encoder wrapper (e.g., MA3, REV Through Bore).
@@ -49,7 +51,7 @@ public class AnalogEncoder extends edu.wpi.first.wpilibj.AnalogEncoder implement
         configEncoder();
         addLog();
         SmartDashboard.putData("sensors/" + config.name, this);
-        LogManager.log(getName() + " analog encoder initialized");
+        Log.log(getName() + " analog encoder initialized");
         ElasticGenerator.getInstance().registerSensor(this);
     }
 
@@ -60,8 +62,11 @@ public class AnalogEncoder extends edu.wpi.first.wpilibj.AnalogEncoder implement
 
     @SuppressWarnings("unchecked")
     private void addLog() {
-        LogManager.addEntry(getName() + ": Position", this::get)
-        .withLogLevel(LogLevel.LOG_ONLY_NOT_IN_COMP).build();
+        Log.putData(getName() + ": Position", 
+            new Supplier[]{
+                this::get
+            }
+            , LogLevel.LOG_ONLY, "", false);
     }
 
     /**

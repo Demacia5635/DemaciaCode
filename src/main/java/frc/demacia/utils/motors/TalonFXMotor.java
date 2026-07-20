@@ -34,8 +34,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.demacia.utils.Data;
 import frc.demacia.utils.dashboard.ElasticGenerator;
-import frc.demacia.utils.log.LogManager;
-import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
+import frc.demacia.utils.log.Log;
+import frc.demacia.utils.log.Log.LogLevel;
 import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
 import frc.demacia.utils.sysid.Sysid;
 
@@ -102,7 +102,7 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
     addLog();
     setName(name);
     SmartDashboard.putData("motors/" + name,this);
-    LogManager.log(name + " motor initialized");
+    Log.log(name + " motor initialized");
     ElasticGenerator.getInstance().registerMotor(this);
     Sysid.registerMotor(this);
   }
@@ -259,7 +259,7 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
   /** Registers the motor's signals with the LogManager */
   @SuppressWarnings({ "unchecked" })
   private void addLog() {
-    LogManager.addEntry(name + ": Position, Velocity, Acceleration, Voltage, Current, CloseLoopError, CloseLoopSP",
+    Log.putData(name + ": Position, Velocity, Acceleration, Voltage, Current, CloseLoopError, CloseLoopSP",
             new Data[] {
                 positionSignal,
                 velocitySignal,
@@ -268,17 +268,11 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
                 currentSignal,
                 closedLoopErrorSignal,
                 closedLoopSPSignal,
-            })
-        .withIsRio(isRio())
-        .withIsMotor()
-        .withIsSeparated(false).build();
+            }, LogLevel.LOG_AND_NT, "motor", false);
 
-    LogManager.addEntry("motors/" + name + "/wanted value", () -> getWantedValue())
-        .withLogLevel(LogLevel.LOG_AND_NT).build();
-    LogManager.addEntry("motors/" + name + "/current value", () -> getCurrentValue())
-        .withLogLevel(LogLevel.LOG_AND_NT).build();
-    LogManager.addEntry("motors/" + name + "/is Connected", () -> isConnected())
-        .withLogLevel(LogLevel.LOG_AND_NT).build();
+    Log.putData("motors/" + name + "/wanted value", () -> getWantedValue());
+    Log.putData("motors/" + name + "/current value", () -> getCurrentValue());
+    Log.putData("motors/" + name + "/is Connected", () -> isConnected());
 
     SmartDashboard.putData("motors/" + getName() + "/test value command", new StartEndCommand(
       () -> {
@@ -322,14 +316,14 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
   public void checkElectronics() {
     int fault = getFaultField().getValue();
     if (fault != 0) {
-      LogManager.log(name + " have fault num: " + fault, AlertType.kError);
+      Log.log(name + " have fault num: " + fault, AlertType.kError);
     }
   }
 
   @Override
   public void changeSlot(int slot) {
     if (slot < 0 || slot > 2) {
-      LogManager.log("slot is not between 0 and 2", AlertType.kError);
+      Log.log("slot is not between 0 and 2", AlertType.kError);
       return;
     }
     this.slot = slot;
