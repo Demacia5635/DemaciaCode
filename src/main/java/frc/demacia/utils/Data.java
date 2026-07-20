@@ -334,7 +334,7 @@ public class Data<T> {
             groupFloatData.add(d);
         }
         groupFloatDataName += (groupFloatDataName.equals("Float/")) ? name : " | " + name;
-        groupFloatDataMetaData += (groupFloatDataName.equals("")) ? metaData : " | " + metaData;;
+        groupFloatDataMetaData += (groupFloatDataMetaData.isEmpty()) ? "a" + metaData : " | " + metaData;
         groupFloatDataValues = new float[groupFloatData.size()];
     }
 
@@ -343,7 +343,7 @@ public class Data<T> {
             groupBooleanData.add(d);
         }
         groupBooleanDataName += (groupBooleanDataName.equals("Boolean/")) ? name : " | " + name;;
-        groupBooleanDataMetaData += (groupBooleanDataName.equals("")) ? metaData : " | " + metaData;;
+        groupBooleanDataMetaData += (groupBooleanDataMetaData.isEmpty()) ? "a" + metaData : " | " + metaData;
         groupBooleanDataValues = new boolean[groupBooleanData.size()];
     }
 
@@ -352,7 +352,7 @@ public class Data<T> {
             groupStringData.add(d);
         }
         groupStringDataName += (groupStringDataName.equals("String/")) ? name : " | " + name;;
-        groupStringDataMetaData += (groupStringDataName.equals("")) ? metaData : metaData;;
+        groupStringDataMetaData += (groupStringDataMetaData.isEmpty()) ? "a" + metaData : metaData;
         groupStringDataValues = new String[groupStringData.size()];
     }
 

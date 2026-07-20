@@ -30,22 +30,26 @@ public class Sysid {
     private static double minTimestamp;
     private static double maxTimestamp;
 
-    private static Map<Integer, List<EntryDescription>> entries;
+    private static Map<Integer, List<MotorDescription>> entries;
 
     private static final List<MotorInterface> motors = new ArrayList<>();
 
     private static boolean[] kFlags = {true, true, true, false, false, false};
 
-    private static class EntryDescription {
+    private static class MotorDescription {
         String name;
         boolean isFloat;
         boolean isDouble;
         List<DataPoint> data = new ArrayList<>();
+        int size;
+        int skipSize;
 
-        EntryDescription(String name, String type) {
+        MotorDescription(String name, String type, int size, int skipSize) {
             this.name = name;
             isDouble = type.equals("double") || type.equals("double[]");
             isFloat = type.equals("float") || type.equals("float[]");
+            this.size = size;
+            this.skipSize = skipSize;
         }
     }
 
@@ -223,22 +227,23 @@ public class Sysid {
             addEntryFromControlRecord(dataInputStream, payloadSize);
             return false;
         } else {
-            List<EntryDescription> entryList = entries.get(recordId);
+            List<MotorDescription> entryList = entries.get(recordId);
             if (entryList != null && !entryList.isEmpty()) {
-                EntryDescription e = entryList.get(0);
+                MotorDescription e = entryList.get(0);
                 boolean isFloat = e.isFloat;
                 boolean isDouble = e.isDouble;
 
                 if (isFloat || isDouble) {
                     double[] value = null;
 
+                    double[] fullPayload = null;
                     if (isFloat) {
                         if (payloadSize % 4 == 0) {
                             int count = payloadSize / 4;
-                            value = new double[count];
+                            fullPayload = new double[count];
                             for (int i = 0; i < count; i++) {
                                 int raw = Integer.reverseBytes(dataInputStream.readInt());
-                                value[i] = (double) Float.intBitsToFloat(raw);
+                                fullPayload[i] = (double) Float.intBitsToFloat(raw);
                             }
                         } else {
                             dataInputStream.skipBytes(payloadSize);
@@ -246,13 +251,33 @@ public class Sysid {
                     } else if (isDouble) {
                          if (payloadSize % 8 == 0) {
                             int count = payloadSize / 8;
-                            value = new double[count];
+                            fullPayload = new double[count];
                             for (int i = 0; i < count; i++) {
                                 long raw = Long.reverseBytes(dataInputStream.readLong());
-                                value[i] = Double.longBitsToDouble(raw);
+                                fullPayload[i] = Double.longBitsToDouble(raw);
                             }
                         } else {
                             dataInputStream.skipBytes(payloadSize);
+                        }
+                    }
+
+                    if (fullPayload != null) {
+                        value = new double[entryList.size() * 4];
+                        int cursor = 0;
+                        int valIdx = 0;
+                        
+                        for (MotorDescription entry : entryList) {
+                            cursor += entry.skipSize;
+                            
+                            for (int i = 0; i < 4; i++) {
+                                if (cursor + i < fullPayload.length) {
+                                    value[valIdx++] = fullPayload[cursor + i];
+                                } else {
+                                    value[valIdx++] = 0.0;
+                                }
+                            }
+                            
+                            cursor += entry.size;
                         }
                     }
 
@@ -265,7 +290,7 @@ public class Sysid {
                                 entryList.get(i).data.add(new DataPoint(timestamp, slice));
                             }
                         } else {
-                            for (EntryDescription entry : entryList) {
+                            for (MotorDescription entry : entryList) {
                                 entry.data.add(new DataPoint(timestamp, value));
                             }
                         }
@@ -295,13 +320,23 @@ public class Sysid {
             String[] names = name.split(" \\| ");
             String[] metas = metadata.split(" \\| ");
             
+            int skipSize = 0;
             for (int i = 0; i < names.length; i++) {
-                String currentName = names[i].trim().split("\\: ")[0];
+                String[] nameParts = names[i].trim().split("\\: ");
+                String currentName = nameParts[0];
                 String currentMeta = (i < metas.length) ? metas[i].trim() : "";
+
+                int size = 1; 
+                if (nameParts.length > 1) {
+                    size = nameParts[1].split(",").length + 1;
+                }
             
                 if (currentMeta.contains("motor")) {
                     entries.putIfAbsent(entryId, new ArrayList<>());
-                    entries.get(entryId).add(new EntryDescription(currentName, type));
+                    entries.get(entryId).add(new MotorDescription(currentName, type, size, skipSize));
+                    skipSize = 0;
+                } else {
+                    skipSize += size;
                 }
             }
         } else {
@@ -350,8 +385,8 @@ public class Sysid {
 
     private static Set<String> findGroups() {
         Set<String> groups = new HashSet<>();
-        for (List<EntryDescription> list : entries.values()) {
-            for (EntryDescription entry : list) {
+        for (List<MotorDescription> list : entries.values()) {
+            for (MotorDescription entry : list) {
                 groups.add(entry.name);
             }
         }
@@ -360,8 +395,8 @@ public class Sysid {
 
     private static BucketResult analyzeGroup(String name) {
         List<DataPoint> allData = new ArrayList<>();
-        for (List<EntryDescription> list : entries.values()) {
-            for (EntryDescription entry : list) {
+        for (List<MotorDescription> list : entries.values()) {
+            for (MotorDescription entry : list) {
                 if (entry.name.equals(name)) {
                     allData.addAll(entry.data);
                 }

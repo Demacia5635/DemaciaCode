@@ -35,6 +35,7 @@ public class RobotContainer implements Sendable {
   public static DriveCommand driveCommand;
 
   public TalonFXSimState sim;
+  public TalonFXMotor motor;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -43,15 +44,15 @@ public class RobotContainer implements Sendable {
     Chassis.initialize(RobotChassisConstants.CHASSIS_CONFIG);
     // driveCommand = new DriveCommand(Chassis.getInstance(), controller);
     // shootet = Shootet.getInstance();
-    sim = (new TalonFXMotor(new TalonFXConfig(1, HoodConstants.HOOD_CANBUS, "1"))).getSimState();
+    motor = new TalonFXMotor(new TalonFXConfig(30, HoodConstants.HOOD_CANBUS, "front t"));
+    sim = (motor).getSimState();
 
     configureBindings();
     setDefaultCommands();
     setController();
-
     
     SmartDashboard.putData("RC", this);
-    Log.log("ini RC");
+    Log.log("initialize RC");
   }
 
   private void configureBindings() {
@@ -69,10 +70,6 @@ public class RobotContainer implements Sendable {
   @Override
   public void initSendable(SendableBuilder builder) {
     
-  }
-
-  public double getR() {
-    return Math.random();
   }
 
   /**

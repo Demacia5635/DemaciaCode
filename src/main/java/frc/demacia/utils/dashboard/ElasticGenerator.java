@@ -148,7 +148,7 @@ public class ElasticGenerator {
                 col++;
                 widgets.add(createWidget("ComboBox Chooser", "Value Control", col, row, 1, 1, motorPath + "/Value Control Mode Chooser", ""));
                 col++;
-                widgets.add(createWidget("Text Display", "Values", col, row, 1, 1, motorPath + "/test Value", "\"data_type\": \"double\""));
+                widgets.add(createWidget("Text Display", "Values", col, row, 1, 1, motorPath + "/test Value", "\"data_type\": \"double\", \"show_submit_button\": true"));
                 col++;
                 widgets.add(createWidget("Number Slider", "value", col, row, 2, 1, motorPath + "/test Value", "\"data_type\": \"double\", \"update_continuously\": true"));
                 col += 2;

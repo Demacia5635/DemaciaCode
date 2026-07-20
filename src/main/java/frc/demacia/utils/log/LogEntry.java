@@ -54,6 +54,10 @@ public class LogEntry<T> {
     private BiConsumer<Long, Data<T>> logStrategy;
     /** Strategy for updating NetworkTables based on type */
     private BiConsumer<Data<T>, Publisher> ntStrategy;
+
+    private Supplier<T> supplier;
+    private boolean isDouble;
+    private boolean isBoolean;
     
     /**
      * Constructs a new LogEntry.
@@ -66,16 +70,18 @@ public class LogEntry<T> {
         this.name = name;
         this.logLevel = logLevel;
         this.metaData = metaData;
-        
-        initializeLoggingWithSupllier(supplier, isDouble, isBoolean);
+        this.supplier = supplier;
+        this.isDouble = isDouble;
+        this.isBoolean = isBoolean;
     }
 
     public void reInitialize(String name, Supplier<T> supplier, LogLevel logLevel, String metaData, boolean isDouble, boolean isBoolean){
         this.name = name;
         this.logLevel = logLevel;
         this.metaData = metaData;
-        
-        initializeLoggingWithSupllier(supplier, isDouble, isBoolean);
+        this.supplier = supplier;
+        this.isDouble = isDouble;
+        this.isBoolean = isBoolean;
     }
     
     /**
@@ -123,10 +129,7 @@ public class LogEntry<T> {
      * Closes existing publishers if they exist before creating new ones.
      * Determines if NT publishing is allowed based on competition status.
      */
-    private void initializeLoggingWithSupllier(Supplier<T> supplier, boolean isDouble, boolean isBoolean) {
-        if (ntPublisher != null) ntPublisher.close();
-        if (entry != null) entry.finish();
-        
+    private void initializeLoggingWithSupllier() {
         if (isDouble) {
             entry = new FloatArrayLogEntry(Log.log, name, metaData);
             logStrategy = (time, d) -> ((FloatArrayLogEntry) entry).append((float[]) supplier.get(), time);
@@ -153,10 +156,6 @@ public class LogEntry<T> {
             ntPublisher = null;
             ntStrategy = null;
         }
-
-        if (ntPublisher != null && ntStrategy != null) {
-            ntStrategy.accept(null, ntPublisher);
-        }
     }
 
     /**
@@ -169,6 +168,13 @@ public class LogEntry<T> {
     void log() {
         if (data != null && !data.hasChanged()) {
             return;
+        }
+
+        if (data == null && !Log.table.getFloatArrayTopic(name).exists()) {
+            initializeLoggingWithSupllier();
+            if (ntPublisher != null && ntStrategy != null ) {
+                ntStrategy.accept(null, ntPublisher);
+            }
         }
 
         long time = data != null ? data.getTime() : 0;
