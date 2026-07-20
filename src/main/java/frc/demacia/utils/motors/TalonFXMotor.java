@@ -559,7 +559,7 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
     builder.addDoubleProperty("Wanted Value", this::getWantedValue, null);
 
     builder.addDoubleProperty("test Value", () -> testValue, (value) -> this.testValue = value);
-    }
+  }
 
   /**
    * Creates a command to configure PID and FeedForward parameters via the

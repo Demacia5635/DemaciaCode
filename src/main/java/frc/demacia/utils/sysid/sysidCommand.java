@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.demacia.utils.motors.CloseLoopParam;
 import frc.demacia.utils.motors.MotorInterface;
 
-public class sysidCommand extends InstantCommand {
-    public sysidCommand() {
+public class SysidCommand extends InstantCommand {
+    public SysidCommand() {
         super(() -> {
             Map<String, CloseLoopParam> sysidResults = Sysid.getPidParams();
             if (sysidResults == null || sysidResults.isEmpty()) {

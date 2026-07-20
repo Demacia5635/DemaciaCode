@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.utils.Data;
 import frc.demacia.utils.RobotCommon;
-import frc.demacia.utils.sysid.sysidCommand;
+import frc.demacia.utils.sysid.SysidCommand;
 
 /**
  * Centralized logging system for robot telemetry and diagnostics.
@@ -81,7 +81,8 @@ public class Log extends SubsystemBase {
     activeConsole = new ArrayList<>();
     log("log manager is ready");
 
-    SmartDashboard.putData("sysID/sysidCommand", new sysidCommand());
+    SmartDashboard.putData("sysID/sysidCommand", new SysidCommand());
+    SmartDashboard.putData("Replay/LoadLatestLog", new LogReplyCommand());
     RobotCommon.init();
   }
 

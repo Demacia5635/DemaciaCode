@@ -2,6 +2,7 @@ package frc.demacia.utils.log;
 
 import java.io.DataInputStream;
 import java.io.EOFException;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,7 +11,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LogReader {
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.demacia.sysID.LogReader;
+
+public class LogReply implements Sendable{
+
+    private static LogReply instance;
+
+    private long time;
     public static class Group {
         public String rewGroupName;
         public String groupName;
@@ -47,17 +61,125 @@ public class LogReader {
         }
     }
 
+    private static class ReplayEntry {
+        String path;
+        List<DataPoint> points;
+    
+        int currentIndex = 0;
+        double currentValue = 0;
+    
+        ReplayEntry(String path, List<DataPoint> points) {
+            this.path = path;
+            this.points = points;
+    
+            if (!points.isEmpty()) {
+                currentValue = points.get(0).values;
+            }
+        }
+    
+        public double getValue() {
+            return currentValue;
+        }
+    
+        public void update(long time) {
+    
+            if (points.isEmpty())
+                return;
+    
+            while (currentIndex > 0 &&
+                    points.get(currentIndex).timestamp > time) {
+                currentIndex--;
+            }
+    
+            while (currentIndex < points.size() - 1 &&
+                    points.get(currentIndex + 1).timestamp <= time) {
+                currentIndex++;
+            }
+    
+            currentValue = points.get(currentIndex).values;
+        }
+    }
+
+    private List<ReplayEntry> replayEntries = new ArrayList<>();
+
     public static Map<Integer, List<Group>> entries = new HashMap<>();
 
-    public static void loadFile(String fileName) {
+    @SuppressWarnings("unchecked")
+    public static void loadFile() {
         entries.clear();
         try {
-            System.out.println("Reading log file: " + fileName);
-            wpilogReader(fileName);
+            System.out.println("Reading log file: ");
+            
+            loadLatestRobotLog();
+
+            instance = new LogReply();
+
+            for (List<Group> groups : entries.values()) {
+                for (Group group : groups) {
+                    for (Map.Entry<String, List<DataPoint>> entry : group.data.entrySet()) {
+                        ReplayEntry replay = new ReplayEntry(
+                                "reUpload/" + group.groupName + "/" + entry.getKey(),
+                                entry.getValue());
+
+                                instance.replayEntries.add(replay);
+
+                        Log.putData(
+                                replay.path,
+                                replay::getValue);
+                    }
+                }
+            }
+
+            CommandScheduler.getInstance().schedule(
+                Commands.runOnce(() -> 
+                    SmartDashboard.putData("LogReplayControl", instance)
+                )
+            );
         } catch (IOException e) {
             System.err.println("Error reading log file: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public static void loadLatestRobotLog() throws IOException {
+        DataLogManager.getLog().flush();
+
+        File latestLogFile = getLatestLogFile();
+        if (latestLogFile == null) {
+            throw new IOException("SysID Error: No .wpilog files found on the robot!");
+        }
+
+        Log.log("SysID: Successfully found and loading latest log: " + latestLogFile.getAbsolutePath());
+
+        wpilogReader(latestLogFile.getAbsolutePath()); 
+    }
+
+    private static File getLatestLogFile() {
+        File logDir;
+
+        if (RobotBase.isSimulation()) {
+            logDir = new File("logs/");
+        } else {
+            logDir = new File("/home/lvuser/logs/");
+        }
+
+        if (!logDir.exists()) {
+            return null;
+        }
+        
+        File[] files = logDir.listFiles((dir, name) -> name.endsWith(".wpilog"));
+
+        if (files == null || files.length == 0) {
+            return null;
+        }
+
+        File latestFile = files[0];
+        for (File file : files) {
+            if (file.lastModified() > latestFile.lastModified()) {
+                latestFile = file;
+            }
+        }
+        return latestFile;
     }
 
     private static void wpilogReader(String fileName) throws IOException {
@@ -71,6 +193,8 @@ public class LogReader {
 
             skipHeaderExtra(dataInputStream);
             readRecords(dataInputStream);
+
+            
         }
     }
 
@@ -93,8 +217,13 @@ public class LogReader {
         int recordCount = 0;
         int dataRecordsProcessed = 0;
 
+        int n = 0;
         while (true) {
             try {
+                n++;
+                if(n%1000 == 0) {
+                    Log.log("Read " + n + " records...");
+                }
                 if (readRecord(dataInputStream)) {
                     dataRecordsProcessed++;
                 }
@@ -254,4 +383,16 @@ public class LogReader {
         }
         return result;
     }
+
+    public void initSendable(SendableBuilder builder) {
+        builder.addIntegerProperty("time", () -> time, (time) -> {
+            this.time = time;
+
+            for (ReplayEntry replay : replayEntries) {
+                replay.update(time);
+            }
+        });
+    }
+        
+    
 }
