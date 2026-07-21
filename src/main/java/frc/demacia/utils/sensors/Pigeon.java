@@ -2,22 +2,19 @@ package frc.demacia.utils.sensors;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.Data;
 import frc.demacia.utils.dashboard.ElasticGenerator;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.log.Log.LogLevel;
 import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
-
 import java.util.function.Supplier;
-
-import com.ctre.phoenix6.StatusSignal;
 
 /**
  * CTRE Pigeon2 IMU (Inertial Measurement Unit) wrapper.
@@ -61,24 +58,24 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
     String name;
     Pigeon2Configuration pigeonConfig;
 
-    StatusSignal<Angle> yawSignal;
-    StatusSignal<Angle> pitchSignal;
-    StatusSignal<Angle> rollSignal;
-    StatusSignal<AngularVelocity> xVelocitySignal;
-    StatusSignal<AngularVelocity> yVelocitySignal;
-    StatusSignal<AngularVelocity> zVelocitySignal;
-    StatusSignal<LinearAcceleration> xAccelerationSignal;
-    StatusSignal<LinearAcceleration> yAccelerationSignal;
-    StatusSignal<LinearAcceleration> zAccelerationSignal;
+    Data<Angle> yawSignal;
+    Data<Angle> pitchSignal;
+    Data<Angle> rollSignal;
+    Data<AngularVelocity> xVelocitySignal;
+    Data<AngularVelocity> yVelocitySignal;
+    Data<AngularVelocity> zVelocitySignal;
+    Data<LinearAcceleration> xAccelerationSignal;
+    Data<LinearAcceleration> yAccelerationSignal;
+    Data<LinearAcceleration> zAccelerationSignal;
 
-    double lastYaw;
-    double lastPitch;
-    double lastRoll;
     double lastXVelocity;
-    double lastYVelocity;
-    double lastZVelocity;
+    double lastXTimestamp;
     double lastXAcceleration;
+    double lastYVelocity;
+    double lastYTimestamp;
     double lastYAcceleration;
+    double lastZVelocity;
+    double lastZTimestamp;
     double lastZAcceleration;
 
     /**
@@ -87,7 +84,7 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @param config Configuration with CAN ID, bus, and calibration
      */
     public Pigeon(PigeonConfig config){
-        super(config.id, config.canbus);
+        super(config.id, config.canbus.canbus);
         this.config = config;
         name = config.name;
         setName(name);
@@ -114,25 +111,19 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
     }
 
     private void setStatusSignals(){
-        yawSignal = getYaw();
-        pitchSignal = getPitch();
-        rollSignal = getRoll();
-        xVelocitySignal = getAngularVelocityXWorld();
-        yVelocitySignal = getAngularVelocityYWorld();
-        zVelocitySignal = getAngularVelocityZWorld();
-        xAccelerationSignal = getAccelerationX();
-        yAccelerationSignal = getAccelerationY();
-        zAccelerationSignal = getAccelerationZ();
+        yawSignal = new Data<> (getYaw(), config.canbus.equals(Canbus.Rio));
+        pitchSignal = new Data<> (getPitch(), config.canbus.equals(Canbus.Rio));
+        rollSignal = new Data<> (getRoll(), config.canbus.equals(Canbus.Rio));
+        xVelocitySignal = new Data<> (getAngularVelocityXWorld(), config.canbus.equals(Canbus.Rio));
+        yVelocitySignal = new Data<> (getAngularVelocityYWorld(), config.canbus.equals(Canbus.Rio));
+        zVelocitySignal = new Data<> (getAngularVelocityZWorld(), config.canbus.equals(Canbus.Rio));
+        xAccelerationSignal = new Data<> (getAccelerationX(), config.canbus.equals(Canbus.Rio));
+        yAccelerationSignal = new Data<> (getAccelerationY(), config.canbus.equals(Canbus.Rio));
+        zAccelerationSignal = new Data<> (getAccelerationZ(), config.canbus.equals(Canbus.Rio));
 
-        lastYaw = yawSignal.getValueAsDouble();
-        lastPitch = pitchSignal.getValueAsDouble();
-        lastRoll = rollSignal.getValueAsDouble();
-        lastXVelocity = xVelocitySignal.getValueAsDouble();
-        lastYVelocity = yVelocitySignal.getValueAsDouble();
-        lastZVelocity = zVelocitySignal.getValueAsDouble();
-        lastXAcceleration = xAccelerationSignal.getValueAsDouble();
-        lastYAcceleration = yAccelerationSignal.getValueAsDouble();
-        lastZAcceleration = zAccelerationSignal.getValueAsDouble();
+        lastXVelocity = Math.toRadians(xVelocitySignal.getDouble());
+        lastYVelocity = Math.toRadians(yVelocitySignal.getDouble());
+        lastZVelocity = Math.toRadians(zVelocitySignal.getDouble());
     }
 
     /**
@@ -151,15 +142,13 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
         }
     }
 
-    @SuppressWarnings({ "unchecked", "unlikely-arg-type" })
+    @SuppressWarnings({"unchecked"})
     private void addLog() {
-        Data.addSignals(config.canbus.equals(Canbus.Rio), yawSignal, pitchSignal, rollSignal);
-        
         Log.putData(name + ": yaw, pitch, roll", 
-            new Supplier[]{
-                () -> yawSignal.getValueAsDouble() * 2 * Math.PI,
-                () -> pitchSignal.getValueAsDouble() * 2 * Math.PI,
-                () -> rollSignal.getValueAsDouble() * 2 * Math.PI
+            new Data[]{
+                yawSignal,
+                pitchSignal,
+                rollSignal
             }
             , LogLevel.LOG_ONLY, "sensors", false);
             
@@ -188,8 +177,7 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @return Yaw angle in radians (unbounded)
      */
     public double getCurrentYaw() {
-        lastYaw = StatusSignalHelper.getStatusSignalInRad(yawSignal, lastYaw);
-        return lastYaw;
+        return Math.toRadians(getCurrentYawDegree());
     }
 
     /**
@@ -198,12 +186,12 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @return Yaw angle in radians (0 to 2π)
      */
     public double getYawInZeroTo2Pi() {
-        return (getCurrentYaw()% (2* Math.PI) + (2* Math.PI)) % (2* Math.PI);
+        return (getCurrentYaw() % (2* Math.PI) + (2* Math.PI)) % (2* Math.PI);
     }
 
     
     public double getCurrentYawDegree() {
-        return Math.toDegrees(getCurrentYaw());
+        return yawSignal.getDouble();
     }
 
     /**
@@ -212,8 +200,7 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @return Pitch angle in radians
      */
     public double getCurrentPitch() {
-        lastPitch = StatusSignalHelper.getStatusSignalInRad(pitchSignal, lastPitch);
-        return lastPitch;
+        return Math.toRadians(pitchSignal.getDouble());
     }
 
     /**
@@ -222,7 +209,7 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @return Pitch angle in radians (0 to 2π)
      */
     public double getPitchInZeroTo2Pi() {
-        return (getCurrentPitch() % (2* Math.PI) + (2* Math.PI)) % (2* Math.PI);
+        return (getCurrentPitch() % (2 * Math.PI) + (2 * Math.PI)) % (2 * Math.PI);
     }
 
     /**
@@ -231,8 +218,7 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @return Roll angle in radians
      */
     public double getCurrentRoll() {
-        lastRoll = StatusSignalHelper.getStatusSignalInRad(rollSignal, lastRoll);
-        return lastRoll;
+        return Math.toRadians(rollSignal.getDouble());
     }
 
     /**
@@ -241,7 +227,7 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @return Roll angle in radians (0 to 2π)
      */
     public double getRollInZeroTo2Pi() {
-        return (getCurrentRoll()% (2* Math.PI) + (2* Math.PI)) % (2* Math.PI);
+        return (getCurrentRoll() % (2 * Math.PI) + (2 * Math.PI)) % (2 * Math.PI);
     }
 
     /**
@@ -250,8 +236,7 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @return Angular velocity in radians per second
      */
     public double getXVelocity() {
-        lastXVelocity = StatusSignalHelper.getStatusSignalBasic(xVelocitySignal, lastXVelocity);
-        return lastXVelocity;
+        return Math.toRadians(xVelocitySignal.getDouble());
     }
 
     /**
@@ -260,8 +245,7 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @return Angular velocity in radians per second
      */
     public double getYVelocity() {
-        lastYVelocity = StatusSignalHelper.getStatusSignalBasic(yVelocitySignal, lastYVelocity);
-        return lastYVelocity;
+        return Math.toRadians(yVelocitySignal.getDouble());
     }
 
     /**
@@ -270,8 +254,7 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @return Angular velocity in radians per second
      */
     public double getZVelocity() {
-        lastZVelocity = StatusSignalHelper.getStatusSignalBasic(zVelocitySignal, lastZVelocity);
-        return lastZVelocity;
+        return Math.toRadians(zVelocitySignal.getDouble());
     }
 
     /**
@@ -280,8 +263,7 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @return Acceleration in m/s²
      */
     public double getXAcceleration() {
-        lastXAcceleration = StatusSignalHelper.getStatusSignalBasic(xAccelerationSignal, lastXAcceleration);
-        return lastXAcceleration;
+       return xAccelerationSignal.getDouble() * 9.81;
     }
 
     /**
@@ -290,8 +272,7 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @return Acceleration in m/s²
      */
     public double getYAcceleration() {
-        lastYAcceleration = StatusSignalHelper.getStatusSignalBasic(yAccelerationSignal, lastYAcceleration);
-        return lastYAcceleration;
+        return yAccelerationSignal.getDouble() * 9.81;
     }
 
     /**
@@ -300,8 +281,7 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @return Acceleration in m/s² (9.8 when stationary)
      */
     public double getZAcceleration() {
-        lastZAcceleration = StatusSignalHelper.getStatusSignalBasic(zAccelerationSignal, lastZAcceleration);
-        return lastZAcceleration;
+        return zAccelerationSignal.getDouble() * 9.81;
     }
 
     /**
@@ -310,9 +290,21 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @return Angular acceleration in rad/s²
      */
     public double getXAngularAcceleration() {
-        double acceleration = (StatusSignalHelper.getStatusSignalBasic(xVelocitySignal, lastXVelocity)) - lastXVelocity;
-        lastXVelocity = xVelocitySignal.getValueAsDouble();
-        return acceleration;
+        double currentTimestamp = Timer.getFPGATimestamp();
+        double dt = currentTimestamp - lastXTimestamp;
+        
+        if (dt < 0.001) {
+            return lastXAcceleration;
+        }
+        
+        if (lastXTimestamp != 0) {
+            lastXAcceleration = (getXVelocity() - lastXVelocity) / dt;
+        }
+        
+        lastXVelocity = getXVelocity();
+        lastXTimestamp = currentTimestamp;
+        
+        return lastXAcceleration;
     }
 
     /**
@@ -321,9 +313,21 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @return Angular acceleration in rad/s²
      */
     public double getYAngularAcceleration() {
-        double acceleration = (StatusSignalHelper.getStatusSignalBasic(yVelocitySignal, lastYVelocity)) - lastYVelocity;
-        lastYVelocity = yVelocitySignal.getValueAsDouble();
-        return acceleration;
+        double currentTimestamp = Timer.getFPGATimestamp();
+        double dt = currentTimestamp - lastYTimestamp;
+        
+        if (dt < 0.001) {
+            return lastYAcceleration;
+        }
+        
+        if (lastYTimestamp != 0) {
+            lastYAcceleration = (getYVelocity() - lastYVelocity) / dt;
+        }
+        
+        lastYVelocity = getYVelocity();
+        lastYTimestamp = currentTimestamp;
+        
+        return lastYAcceleration;
     }
 
     /**
@@ -332,9 +336,21 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      * @return Angular acceleration in rad/s²
      */
     public double getZAngularAcceleration() {
-        double acceleration = (StatusSignalHelper.getStatusSignalBasic(zVelocitySignal, lastZVelocity)) - lastZVelocity;
-        lastZVelocity = zVelocitySignal.getValueAsDouble();
-        return acceleration;
+        double currentTimestamp = Timer.getFPGATimestamp();
+        double dt = currentTimestamp - lastZTimestamp;
+        
+        if (dt < 0.001) {
+            return lastZAcceleration;
+        }
+        
+        if (lastZTimestamp != 0) {
+            lastZAcceleration = (getZVelocity() - lastZVelocity) / dt;
+        }
+        
+        lastZVelocity = getZVelocity();
+        lastZTimestamp = currentTimestamp;
+        
+        return lastZAcceleration;
     }
 
     public Rotation2d getGyroAngle() {
