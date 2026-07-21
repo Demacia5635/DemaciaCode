@@ -33,7 +33,6 @@ public class Quest extends SubsystemBase {
     addLog();
   }
   
-  @SuppressWarnings("unchecked")
   private void addLog() {
     Log.putData("quest/X", () -> getRobotPose2d().getX());
     Log.putData("quest/Y", () -> getRobotPose2d().getY());

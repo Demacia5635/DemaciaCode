@@ -140,7 +140,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
           () -> getCurrentClosedLoopError(),
           () -> getCurrentClosedLoopSP(),
           () -> getCurrentControlModeInteger()
-        }, LogLevel.LOG_ONLY, "motor", false);
+        }, LogLevel.LOG_ONLY, "motors", false);
       
       configPidFf(0);
       configMotionMagic();

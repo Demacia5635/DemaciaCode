@@ -82,7 +82,7 @@ public class Log extends SubsystemBase {
     log("log manager is ready");
 
     SmartDashboard.putData("sysID/sysidCommand", new SysidCommand());
-    SmartDashboard.putData("Replay/LoadLatestLog", new LogReplyCommand());
+    SmartDashboard.putData("replay/LoadLatestLog", new LogReplayCommand());
     RobotCommon.init();
   }
 
@@ -194,8 +194,9 @@ public class Log extends SubsystemBase {
    * @param statusSignals The signals to log
    * @return A new LogEntryBuilder
    */
-  public static <T> LogEntry<T> putData(String name, StatusSignal<T>[] statusSignals, boolean isRio) {
-    return putData(name, statusSignals, LogLevel.LOG_AND_NT, "", true, isRio);
+  @SuppressWarnings("unchecked")
+  public static <T> LogEntry<T> putData(String name, StatusSignal<T> statusSignal, boolean isRio) {
+    return putData(name, new StatusSignal[] {statusSignal}, LogLevel.LOG_AND_NT, "", true, isRio);
   }
 
   /**
@@ -207,8 +208,8 @@ public class Log extends SubsystemBase {
    * @return A new LogEntryBuilder
    */
   @SuppressWarnings("unchecked")
-  public static <T> LogEntry<T> putData(String name, Supplier<T>... suppliers) {
-    return putData(name, suppliers, LogLevel.LOG_AND_NT, "", true);
+  public static <T> LogEntry<T> putData(String name, Supplier<T> supplier) {
+    return putData(name, new Supplier[] {supplier}, LogLevel.LOG_AND_NT, "", true);
   }
 
   /**
@@ -220,8 +221,8 @@ public class Log extends SubsystemBase {
    * @return A new LogEntryBuilder
    */
   @SuppressWarnings("unchecked")
-  public static <T> LogEntry<T> putData(String name, Data<T>... data) {
-    return putData(name, data, LogLevel.LOG_AND_NT, "", true);
+  public static <T> LogEntry<T> putData(String name, Data<T> data) {
+    return putData(name, new Data[] {data}, LogLevel.LOG_AND_NT, "", true);
   }
 
   @SuppressWarnings("unchecked")

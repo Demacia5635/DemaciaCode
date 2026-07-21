@@ -161,13 +161,13 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
                 () -> pitchSignal.getValueAsDouble() * 2 * Math.PI,
                 () -> rollSignal.getValueAsDouble() * 2 * Math.PI
             }
-            , LogLevel.LOG_ONLY, "", false);
+            , LogLevel.LOG_ONLY, "sensors", false);
             
         Log.putData(name + ": is Connected", 
             new Supplier[]{
                 this::isConnected
             }
-            , LogLevel.LOG_ONLY, "", false);
+            , LogLevel.LOG_ONLY, "sensors", false);
     }
 
     /**

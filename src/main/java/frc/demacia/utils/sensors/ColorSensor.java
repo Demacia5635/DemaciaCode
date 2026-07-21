@@ -79,13 +79,13 @@ public class ColorSensor extends ColorSensorV3 implements ColorSensorInterface {
                 this::get,
                 this::getMatchedColorName
             }
-            , LogLevel.LOG_ONLY, "", false);
+            , LogLevel.LOG_ONLY, "sensors", false);
 
         Log.putData(name + ": Proximity", 
             new Supplier[]{
                 this::getProximity
             }
-            , LogLevel.LOG_ONLY, "", false);
+            , LogLevel.LOG_ONLY, "sensors", false);
     }
 
     /**

@@ -59,7 +59,6 @@ public class TagPose extends SubsystemBase {
 
   private boolean isUpsidedown = false;
 
-  @SuppressWarnings("unchecked")
   public TagPose(Camera camera) {
     confidence = 0;
     this.camera = camera;

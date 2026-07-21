@@ -268,7 +268,7 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
                 currentSignal,
                 closedLoopErrorSignal,
                 closedLoopSPSignal,
-            }, LogLevel.LOG_AND_NT, "motor", false);
+            }, LogLevel.LOG_AND_NT, "motors", false);
 
     Log.putData("motors/" + name + "/wanted value", () -> getWantedValue());
     Log.putData("motors/" + name + "/current value", () -> getCurrentValue());

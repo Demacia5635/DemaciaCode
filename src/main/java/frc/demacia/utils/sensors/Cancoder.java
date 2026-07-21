@@ -135,13 +135,13 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface {
             new Supplier[]{
                 this::getCurrentAbsPosition
             }
-            , LogLevel.LOG_ONLY, "", false);
+            , LogLevel.LOG_ONLY, "sensors", false);
             
         Log.putData(name + ": is Connected", 
             new Supplier[]{
                 this::isConnected
             }
-            , LogLevel.LOG_ONLY, "", false);
+            , LogLevel.LOG_ONLY, "sensors", false);
     }
 
     /**

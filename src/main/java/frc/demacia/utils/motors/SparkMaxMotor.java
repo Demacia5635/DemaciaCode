@@ -143,7 +143,7 @@ public class SparkMaxMotor extends SparkMax implements MotorInterface {
           () -> getCurrentClosedLoopError(),
           () -> getCurrentClosedLoopSP(),
           () -> getCurrentControlModeInteger()
-        }, LogLevel.LOG_ONLY, "motor", false);
+        }, LogLevel.LOG_ONLY, "motors", false);
       
       configPidFf(0);
       configMotionMagic();

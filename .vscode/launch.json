@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "SysidApp",
+      "request": "launch",
+      "mainClass": "frc.demacia.sysID.SysidApp",
+      "projectName": "DemaciaCode"
+    },
+    {
+      "type": "java",
       "name": "LogConverter",
       "request": "launch",
       "mainClass": "frc.demacia.utils.log.LogConverter",

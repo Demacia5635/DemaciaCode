@@ -116,6 +116,12 @@ public class LogEntry<T> {
             ntStrategy = null;
         }
 
+        long time = data != null ? data.getTime() : 0;
+
+        if (logStrategy != null) {
+            logStrategy.accept(time, data);
+        }
+
         // Initial update to NT if applicable
         if (ntPublisher != null && ntStrategy != null) {
             ntStrategy.accept(data, ntPublisher);

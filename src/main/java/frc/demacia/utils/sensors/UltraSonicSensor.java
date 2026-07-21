@@ -79,7 +79,7 @@ public class UltraSonicSensor extends Ultrasonic implements AnalogSensorInterfac
             new Supplier[]{
                 this::getRangeMeters
             }
-        , LogLevel.LOG_ONLY, "", false);
+        , LogLevel.LOG_ONLY, "sensors", false);
     }
 
     /**

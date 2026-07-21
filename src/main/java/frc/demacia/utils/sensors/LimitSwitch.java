@@ -63,7 +63,7 @@ public class LimitSwitch extends DigitalInput implements DigitalSensorInterface{
             new Supplier[]{
                 this::get
             }
-            , LogLevel.LOG_ONLY, "", false);
+            , LogLevel.LOG_ONLY, "sensors", false);
     }
 
     /**

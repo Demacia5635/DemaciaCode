@@ -1,13 +1,10 @@
 package frc.demacia.sysID;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
 import java.util.*;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class SysidApp {
     public static boolean[] kFlags = {true, true, true, false, false, false};
@@ -22,8 +19,8 @@ public class SysidApp {
     }
 }
 
-class SysidMain implements Consumer<File> {
-    JFrame frame = new JFrame("SysID - Pro Version");
+class SysidMain {
+    JFrame frame = new JFrame("SysID");
     
     FileChooserPanel fileChooser = new FileChooserPanel(this);
     DefaultListModel<MotorData> listModel = new DefaultListModel<>();
@@ -33,8 +30,7 @@ class SysidMain implements Consumer<File> {
     JTextArea msgArea = new JTextArea();
     JScrollPane msgPane = new JScrollPane(msgArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     
-    Map<String, LogReader.BucketResult> analysisResults;
-    File currentFile;
+    Map<String, Sysid.BucketResult> analysisResults;
 
     private static SysidMain sysid = null;
 
@@ -107,15 +103,7 @@ class SysidMain implements Consumer<File> {
         }
     }
 
-    @Override
-    public void accept(File file) {
-        msg("File selected: " + file.getName());
-        this.currentFile = file;
-        performFullAnalysis();
-    }
-
     public void performFullAnalysis() {
-        if (currentFile == null) return;
         
         MotorData currentlySelected = motorList.getSelectedValue();
         String selectedName = (currentlySelected != null) ? currentlySelected.fullName : null;
@@ -125,7 +113,7 @@ class SysidMain implements Consumer<File> {
             MotorData.motors.clear();
             listModel.clear();
             
-            analysisResults = LogReader.getResult(currentFile.getAbsolutePath());
+            analysisResults = Sysid.getResult();
             
             msg("Analysis complete. Found " + analysisResults.size() + " motor groups.");
             
@@ -169,12 +157,11 @@ class SysidMain implements Consumer<File> {
 class FileChooserPanel extends JPanel implements ActionListener {
     JButton button;
     JTextField field;
-    JFileChooser chooser;
-    Consumer<File> consumer;
+    SysidMain app;
 
-    public FileChooserPanel(Consumer<File> consumer) {
+    public FileChooserPanel(SysidMain app) {
         super(new BorderLayout(5, 0));
-        this.consumer = consumer;
+        this.app = app;
         
         button = new JButton("Open WPILOG");
         button.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -184,8 +171,6 @@ class FileChooserPanel extends JPanel implements ActionListener {
         field.setBackground(Color.WHITE);
         
         button.addActionListener(this);
-        chooser = new JFileChooser(System.getProperty("user.dir"));
-        chooser.setFileFilter(new FileNameExtensionFilter("WPILOG Files", "wpilog"));
         
         add(button, BorderLayout.WEST);
         add(field, BorderLayout.CENTER);
@@ -193,14 +178,7 @@ class FileChooserPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        int res = chooser.showOpenDialog(this);
-        if(res == JFileChooser.APPROVE_OPTION) {
-            File file = chooser.getSelectedFile();
-            field.setText(file.getAbsolutePath());
-            if(consumer != null) {
-                consumer.accept(file);
-            }
-        }
+        app.performFullAnalysis();
     }
 }
 
@@ -316,7 +294,7 @@ class SysidResultPanel extends JPanel {
             return;
         }
         
-        LogReader.BucketResult r = motorData.bucketResult;
+        Sysid.BucketResult r = motorData.bucketResult;
         
         valueLabels[0].setText(String.format("%.5f", r.ks));
         valueLabels[1].setText(String.format("%.5f", r.kv));
@@ -361,7 +339,7 @@ class MotorData {
     static List<MotorData> motors = new ArrayList<>();
     String fullName = "Motor";
     String displayName = "Motor";
-    LogReader.BucketResult bucketResult;
+    Sysid.BucketResult bucketResult;
 
     @Override
     public String toString() {

@@ -70,7 +70,7 @@ public class DigitalEncoder extends DutyCycleEncoder implements AnalogSensorInte
             new Supplier[]{
                 this::get
             }
-            , LogLevel.LOG_ONLY, "", false);
+            , LogLevel.LOG_ONLY, "sensors", false);
     }
 
     /**

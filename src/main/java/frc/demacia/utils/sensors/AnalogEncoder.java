@@ -66,7 +66,7 @@ public class AnalogEncoder extends edu.wpi.first.wpilibj.AnalogEncoder implement
             new Supplier[]{
                 this::get
             }
-            , LogLevel.LOG_ONLY, "", false);
+            , LogLevel.LOG_ONLY, "sensors", false);
     }
 
     /**

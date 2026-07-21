@@ -13,8 +13,10 @@ public class SysidCommand extends InstantCommand {
                 return;
             }
             for (MotorInterface motor : Sysid.getMotors()) {
-                if (sysidResults.containsKey(motor.getName())) {
-                    CloseLoopParam params = sysidResults.get(motor.getName());
+                String rawName = motor.getName();
+    
+                if (sysidResults.containsKey(rawName)) {
+                    CloseLoopParam params = sysidResults.get(rawName);
                     motor.updatePid(params, 0);
                 }
             }

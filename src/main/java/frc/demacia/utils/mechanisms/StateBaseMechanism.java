@@ -85,7 +85,6 @@ public class StateBaseMechanism extends BaseMechanism {
      * Adds TESTING, IDLE, and all values from the provided Enum.
      * @param enumClass The state Enum class
      */
-    @SuppressWarnings("unchecked")
     private void addNT(Class<? extends MechanismState> enumClass) {
         stateChooser.addOption(TESTING_STATE.name(), TESTING_STATE);
         stateChooser.setDefaultOption(IDLE_STATE.name(), IDLE_STATE);

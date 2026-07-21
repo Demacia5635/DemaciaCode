@@ -43,11 +43,6 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    
-    double random =Math.random();
-    m_robotContainer.sim.setRawRotorPosition(random);
-    m_robotContainer.sim.setRotorVelocity(random*2);
-    m_robotContainer.sim.setRotorAcceleration(random*3);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

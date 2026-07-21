@@ -34,14 +34,17 @@ public class Data<T> {
     private static String groupFloatDataName = "Float/";
     private static String groupFloatDataMetaData = "";
     private static float[] groupFloatDataValues = new float[0];
+    private static boolean isGroupFloatFirst = true;
     private static final ArrayList<Data<?>> groupBooleanData = new ArrayList<>();
     private static String groupBooleanDataName = "Boolean/";
     private static String groupBooleanDataMetaData = "";
     private static boolean[] groupBooleanDataValues = new boolean[0];
+    private static boolean isGroupBooleanFirst = true;
     private static final ArrayList<Data<?>> groupStringData = new ArrayList<>();
     private static String groupStringDataName = "String/";
     private static String groupStringDataMetaData = "";
     private static String[] groupStringDataValues = new String[0];
+    private static boolean isGroupStringFirst = true;
 
     private StatusSignal<T> signal;
     private Supplier<T> supplier;
@@ -333,8 +336,16 @@ public class Data<T> {
         for (Data<?> d : data) {
             groupFloatData.add(d);
         }
-        groupFloatDataName += (groupFloatDataName.equals("Float/")) ? name : " | " + name;
-        groupFloatDataMetaData += (groupFloatDataMetaData.isEmpty()) ? "a" + metaData : " | " + metaData;
+
+        if (isGroupFloatFirst) {
+            groupFloatDataName += name;
+            groupFloatDataMetaData += metaData;
+            isGroupFloatFirst = false;
+        } else {
+            groupFloatDataName += " | " + name;
+            groupFloatDataMetaData += " | " + metaData;
+        }
+
         groupFloatDataValues = new float[groupFloatData.size()];
     }
 
@@ -342,8 +353,16 @@ public class Data<T> {
         for (Data<?> d : data) {
             groupBooleanData.add(d);
         }
-        groupBooleanDataName += (groupBooleanDataName.equals("Boolean/")) ? name : " | " + name;;
-        groupBooleanDataMetaData += (groupBooleanDataMetaData.isEmpty()) ? "a" + metaData : " | " + metaData;
+
+        if (isGroupBooleanFirst) {
+            groupBooleanDataName += name;
+            groupBooleanDataMetaData += metaData;
+            isGroupBooleanFirst = false;
+        } else {
+            groupBooleanDataName += " | " + name;
+            groupBooleanDataMetaData += " | " + metaData;
+        }
+        
         groupBooleanDataValues = new boolean[groupBooleanData.size()];
     }
 
@@ -351,8 +370,16 @@ public class Data<T> {
         for (Data<?> d : data) {
             groupStringData.add(d);
         }
-        groupStringDataName += (groupStringDataName.equals("String/")) ? name : " | " + name;;
-        groupStringDataMetaData += (groupStringDataMetaData.isEmpty()) ? "a" + metaData : metaData;
+
+        if (isGroupStringFirst) {
+            groupStringDataName += name;
+            groupStringDataMetaData += metaData;
+            isGroupStringFirst = false;
+        } else {
+            groupStringDataName += " | " + name;
+            groupStringDataMetaData += " | " + metaData;
+        }
+        
         groupStringDataValues = new String[groupStringData.size()];
     }
 
