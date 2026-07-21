@@ -18,7 +18,7 @@ import frc.demacia.utils.mechanisms.BaseMechanism;
 import frc.demacia.utils.mechanisms.StateBaseMechanism;
 import frc.demacia.utils.motors.MotorInterface;
 import frc.demacia.utils.sensors.SensorInterface;
-import frc.demacia.vision.TagPose;
+import frc.demacia.vision.subsystem.Camera;
 import frc.demacia.utils.sensors.Cancoder;
 
 public class ElasticGenerator {
@@ -26,7 +26,7 @@ public class ElasticGenerator {
 
     private List<MotorInterface> allMotors = new ArrayList<>();
     private List<SensorInterface> allSensors = new ArrayList<>();
-    private List<TagPose> allTags = new ArrayList<>();
+    private List<Camera> allTags = new ArrayList<>();
     private List<BaseMechanism> mechanisms = new ArrayList<>();
     private List<Pair<BaseMechanism, MotorInterface>> powerCmds = new ArrayList<>();
     private List<Pair<BaseMechanism, MotorInterface>> autoCalibration = new ArrayList<>();
@@ -62,7 +62,7 @@ public class ElasticGenerator {
         }
     }
 
-    public void registerTag(TagPose tagPose) {
+    public void registerTag(Camera tagPose) {
         if (!allTags.contains(tagPose)) {
             allTags.add(tagPose);
         }
@@ -91,7 +91,9 @@ public class ElasticGenerator {
         json.append("  \"tabs\": [\n");
 
         json.append(buildTunerTabs());
-        json.append(buildChassisTab());
+        if (Chassis.getInstance() != null) {
+            json.append(buildChassisTab());
+        }
         json.append(buildVisionTab());
         json.append(buildSysidTabs());
         json.append(buildMechanismTabs());
@@ -300,7 +302,7 @@ public class ElasticGenerator {
             List<String> widgets = new ArrayList<>();
     
             while (tagIndex < allTags.size() && col < MAX_COLS) {
-                TagPose tag = allTags.get(tagIndex);
+                Camera tag = allTags.get(tagIndex);
                 String tagPath = "/SmartDashboard/tags/" + tag.getName();
     
                 widgets.add(createWidget("Field", tag.getName() + " Field", col, 0, 2, 3, tagPath + "/field-tag " + tag.getName(), "\"field_rotation\": 90.0"));

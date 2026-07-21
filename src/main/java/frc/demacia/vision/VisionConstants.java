@@ -12,15 +12,9 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
 public class VisionConstants {
-  public static final TagPose[] TAGS = {
-    new TagPose(new Camera("name 1", new Translation3d(0, 0, 0), 0, 0.0, false, false)),
-    new TagPose(new Camera("name 2", new Translation3d(0, 0, 0), 0, 0.0, false, false)),
-    new TagPose(new Camera("name 3", new Translation3d(0, 0, 0), 0, 0.0, false, false)),
-    new TagPose(new Camera("name 4", new Translation3d(0, 0, 0), 0, 0.0, false, false)),
-    new TagPose(new Camera("name 5", new Translation3d(0, 0, 0), 0, 0.0, false, false)),
-    new TagPose(new Camera("name 6", new Translation3d(0, 0, 0), 0, 0.0, false, false)),
-    new TagPose(new Camera("name 7", new Translation3d(0, 0, 0), 0, 0.0, false, false)),
-    new TagPose(new Camera("name 8", new Translation3d(0, 0, 0), 0, 0.0, false, false)),
+  public static final CameraConfig[] CAMERA_CONFIGS = {
+    new CameraConfig("name 1", new Translation3d(0, 0, 0), 0, 0.0, false, false),
+    new CameraConfig("name 2", new Translation3d(0, 0, 0), 0, 0.0, false, false),
   };
   
   public static final Matrix<N3, N1> LIMELIGHT_STD = new Matrix<>(

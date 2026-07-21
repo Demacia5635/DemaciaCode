@@ -1,4 +1,4 @@
-package frc.demacia.sysID;
+package frc.demacia.sysid;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,9 +13,7 @@ public class Sysid {
     private static final int SMOOTH_WINDOW = 3;
     private static final double OUTLIER_PERCENTAGE = 0.15;
 
-    public static Map<String, BucketResult> getResult() {
-        Map<String, List<LogReader.Entry>> groupedEntries = LogReader.getGroups(false, info -> info.metadata().contains("motor"));
-        
+    public static Map<String, BucketResult> getResult(Map<String, List<LogReader.Entry>> groupedEntries) {
         return performAnalysis(groupedEntries);
     }
 
@@ -178,8 +176,6 @@ public class Sysid {
             }
             current.acceleration = sumAccel / count;
             
-            if (current.voltage != 0)
-            System.out.println(current.voltage);
             if (Math.abs(current.voltage) > voltageThresh) {
                 filtered.add(current);
             }

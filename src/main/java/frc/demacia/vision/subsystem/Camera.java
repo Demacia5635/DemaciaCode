@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.demacia.vision;
+package frc.demacia.vision.subsystem;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -19,10 +19,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.dashboard.ElasticGenerator;
 import frc.demacia.utils.log.Log;
+import frc.demacia.vision.CameraConfig;
+import frc.demacia.vision.VisionConstants;
 
 import static frc.demacia.vision.VisionConstants.*;
 
-public class TagPose extends SubsystemBase {
+public class Camera extends SubsystemBase {
   // NetworkTables communication for each camera
   private NetworkTable Table;
 
@@ -35,7 +37,7 @@ public class TagPose extends SubsystemBase {
   private double camToTagYaw;
   private double camToTagPitch;
   private double id;
-  private Camera camera;
+  private CameraConfig camera;
   private double confidence;
 
   private double dist;
@@ -59,23 +61,23 @@ public class TagPose extends SubsystemBase {
 
   private boolean isUpsidedown = false;
 
-  public TagPose(Camera camera) {
+  public Camera(CameraConfig cameraConfig) {
     confidence = 0;
-    this.camera = camera;
-    Table = NetworkTableInstance.getDefault().getTable(camera.getTableName());
+    this.camera = cameraConfig;
+    Table = NetworkTableInstance.getDefault().getTable(cameraConfig.getTableName());
     latency = 0;
     field = new Field2d();
     pipeEntry = Table.getEntry("pipeline");
     // LogManager.addEntry(camera.getName()+"dist", this::getDistFromCamera).withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP).build();
     // LogManager.addEntry(camera.getName()+"dist ty", this::getDistanceFromTy).withLogLevel(LogLevel.LOG_AND_NT_NOT_IN_COMP).build();
-    Log.putData("tags/" + camera.getName() + "/" + camera.getName() + " see tag", () -> isSeeTag());
+    Log.putData("tags/" + cameraConfig.getName() + "/" + cameraConfig.getName() + " see tag", () -> isSeeTag());
 
-    SmartDashboard.putData("tags/" + camera.getName() + "/" + "field-tag " + camera.getName(), field);
-    SmartDashboard.putData("tags/" + camera.getName() + "/" + "setTo3d " + camera.getName(),
+    SmartDashboard.putData("tags/" + cameraConfig.getName() + "/" + "field-tag " + cameraConfig.getName(), field);
+    SmartDashboard.putData("tags/" + cameraConfig.getName() + "/" + "setTo3d " + cameraConfig.getName(),
         new InstantCommand(() -> setDimension(true)).ignoringDisable(true));
-    SmartDashboard.putData("tags/" + camera.getName() + "/" + "setTo2d " + camera.getName(),
+    SmartDashboard.putData("tags/" + cameraConfig.getName() + "/" + "setTo2d " + cameraConfig.getName(),
         new InstantCommand(() -> setDimension(false)).ignoringDisable(true));
-    SmartDashboard.putData("chassis/reset gyro by camera " + camera.getName(),
+    SmartDashboard.putData("chassis/reset gyro by camera " + cameraConfig.getName(),
         Commands.sequence(
             new InstantCommand(() -> changePipeline(5)).ignoringDisable(true),
             new InstantCommand(() -> Chassis.getInstance().setYaw(getRobotAngle())).ignoringDisable(true),
@@ -88,7 +90,7 @@ public class TagPose extends SubsystemBase {
     return camera.getName();
   }
 
-  public TagPose(Camera camera, boolean isUpsidedown) {
+  public Camera(CameraConfig camera, boolean isUpsidedown) {
     this(camera);
     this.isUpsidedown = isUpsidedown;
   }
@@ -242,7 +244,7 @@ public class TagPose extends SubsystemBase {
     return this.confidence;
   }
 
-  public Camera getCamera() {
+  public CameraConfig getCamera() {
     return camera;
   }
 

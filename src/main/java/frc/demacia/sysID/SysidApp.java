@@ -1,6 +1,10 @@
-package frc.demacia.sysID;
+package frc.demacia.sysid;
 
 import javax.swing.*;
+
+import frc.demacia.utils.log.LogReader;
+import frc.demacia.utils.log.LogReader.Entry;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -30,6 +34,8 @@ class SysidMain {
     JTextArea msgArea = new JTextArea();
     JScrollPane msgPane = new JScrollPane(msgArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     
+    Map<String, List<Entry>> cachedLogData = null;
+
     Map<String, Sysid.BucketResult> analysisResults;
 
     private static SysidMain sysid = null;
@@ -90,6 +96,19 @@ class SysidMain {
         pane.add(msgPane, gbc);
     }
 
+    public void loadLogFile() {
+        try {
+            msg("Opening file explorer...");
+            cachedLogData = LogReader.getGroups(false, info -> info.metadata().contains("motor"));
+            msg("File loaded successfully. Starting analysis...");
+            
+            performFullAnalysis(); 
+        } catch (Exception e) {
+            msg("Error loading file: " + e.getMessage());
+            fileChooser.field.setText("Error loading file");
+        }
+    }
+
     public void show() {
         frame.setVisible(true);
     }
@@ -104,6 +123,10 @@ class SysidMain {
     }
 
     public void performFullAnalysis() {
+        if (cachedLogData == null || cachedLogData.isEmpty()) {
+            msg("No data loaded. Please open a WPILOG file first.");
+            return;
+        }
         
         MotorData currentlySelected = motorList.getSelectedValue();
         String selectedName = (currentlySelected != null) ? currentlySelected.fullName : null;
@@ -113,7 +136,7 @@ class SysidMain {
             MotorData.motors.clear();
             listModel.clear();
             
-            analysisResults = Sysid.getResult();
+            analysisResults = Sysid.getResult(cachedLogData);
             
             msg("Analysis complete. Found " + analysisResults.size() + " motor groups.");
             
@@ -178,7 +201,7 @@ class FileChooserPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        app.performFullAnalysis();
+        app.loadLogFile();
     }
 }
 

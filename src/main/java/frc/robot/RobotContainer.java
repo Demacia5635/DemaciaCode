@@ -7,10 +7,6 @@ import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
 import frc.demacia.utils.log.Log;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.utils.chassis.DriveCommand;
-import frc.robot.chassis.RobotChassisConstants;
-import frc.robot.shootet.subsystems.Shootet;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -25,18 +21,11 @@ public class RobotContainer implements Sendable {
 
   public static CommandController controller = new CommandController(0, ControllerType.kPS5);
 
-  private Shootet shootet;
-  public static DriveCommand driveCommand;
-
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // Chassis.initialize(RobotChassisConstants.CHASSIS_CONFIG);
-    // driveCommand = new DriveCommand(Chassis.getInstance(), controller);
-    // shootet = Shootet.getInstance();
-    
+
     configureBindings();
     setDefaultCommands();
     setController();
@@ -50,7 +39,7 @@ public class RobotContainer implements Sendable {
   }
 
   private void setDefaultCommands() {
-    // Chassis.getInstance().setDefaultCommand(driveCommand);
+    
   }
 
   private void setController() {

@@ -12,22 +12,22 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.vision.TagPose;
+import frc.demacia.vision.CameraConfig;
 
 import static frc.demacia.vision.VisionConstants.*;
 
 public class Vision extends SubsystemBase{
     private static Vision vision;
 
-    private ArrayList<TagPose> tags;
+    private ArrayList<Camera> tags;
     private Quest quest;
     private boolean hasUpdatedQuestIntialPose;
     private boolean hasQuestDisconnected;
 
     private Vision() {
         this.tags = new ArrayList<>();
-        for (TagPose pose : TAGS) {
-            tags.add(pose);
+        for (CameraConfig cameraConfig : CAMERA_CONFIGS) {
+            tags.add(new Camera(cameraConfig));
         }
         quest = new Quest(QUEST_OFFSET);
         hasUpdatedQuestIntialPose = false;
@@ -41,11 +41,11 @@ public class Vision extends SubsystemBase{
         return vision;
     }
 
-    public void addTag(TagPose tag) {
+    public void addTag(Camera tag) {
         tags.add(tag);
     }
 
-    public ArrayList<TagPose> getTags() {
+    public ArrayList<Camera> getTags() {
         return tags;
     }
 
@@ -54,7 +54,7 @@ public class Vision extends SubsystemBase{
     }
 
     public boolean isSeeTag() {
-        for(TagPose t : tags){
+        for(Camera t : tags){
             if(t.isSeeTag()) return true;
         }
         return false;
@@ -67,7 +67,7 @@ public class Vision extends SubsystemBase{
 
     private double getCollectedConfidence() {
         double confidence = 0;
-        for (TagPose tag : tags) {
+        for (Camera tag : tags) {
             if (tag.getRobotPose2d() != null) {
                 confidence += tag.getPoseEstemationConfidence();
             }
@@ -80,7 +80,7 @@ public class Vision extends SubsystemBase{
     }
     
     public Rotation2d getRobotAngle(){
-        for (TagPose tag : tags) {
+        for (Camera tag : tags) {
             if (tag.getRobotPose2d() != null) {
                 return Rotation2d.fromDegrees(tag.getAngle());
             }
@@ -99,7 +99,7 @@ public class Vision extends SubsystemBase{
         double x = 0;
         double y = 0;
         double confidence = 0;
-        for (TagPose tag : tags) {
+        for (Camera tag : tags) {
             Pose2d pose2d = tag.getRobotPose2d();
             if (pose2d == null)
                 continue;
