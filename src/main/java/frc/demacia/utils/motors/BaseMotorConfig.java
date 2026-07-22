@@ -72,7 +72,6 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
     public double maxVelocity = 0;
     public double maxAcceleration = 0;
     public double maxJerk = 0;
-    public double maxPositionError = 0.5;
 
     public CloseLoopParam[] pid = {new CloseLoopParam(), new CloseLoopParam(), new CloseLoopParam(), new CloseLoopParam()};
 
@@ -200,17 +199,6 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
     }
 
     /**
-     * Sets the maximum allowable position error.
-     * @param maxPositionError The error threshold
-     * @return this configuration for chaining
-     */
-    @SuppressWarnings("unchecked")
-    public T withMaxPositionError(double maxPositionError) {
-        this.maxPositionError = maxPositionError;
-        return (T) this;
-    }
-
-    /**
      * Sets the supply current limit.
      * @param maxCurrent Maximum current in Amps
      * @return this configuration for chaining
@@ -328,7 +316,6 @@ public T withDetectStallInMotor(double current, double velocity, double seconds,
         this.pid[1] = (other.pid[1]);
         this.pid[2] = (other.pid[2]);
         this.pid[3] = (other.pid[3]);
-        this.maxPositionError = other.maxPositionError;
         this.isMeterMotor = other.isMeterMotor;
         this.isRadiansMotor = other.isRadiansMotor;
    }

@@ -7,7 +7,6 @@ package frc.demacia.odometry;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -17,7 +16,6 @@ import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Timer;
 
 import frc.demacia.odometry.DemaciaPoseEstimator.OdometryObservation;
-import frc.demacia.utils.log.Log;
 import frc.demacia.vision.VisionConstants;
 
 public class RobotPose {
@@ -25,17 +23,12 @@ public class RobotPose {
     private static RobotPose instance;
 
     private DemaciaPoseEstimator poseEstimator;
-
-    private boolean hasUpdatedQuestIntialPose;
-    private boolean hasQuestDisconnected;
     
     private BuiltInAccelerometer accelerometer;
 
     private RobotPose(Translation2d[] modulePositions, Matrix<N3, N1> stateSTD,
             Matrix<N3, N1> questSTD) {
 
-        this.hasUpdatedQuestIntialPose = false;
-        this.hasQuestDisconnected = false;
         this.poseEstimator = new DemaciaPoseEstimator(modulePositions, stateSTD, VisionConstants.LIMELIGHT_STD);
         this.accelerometer = new BuiltInAccelerometer(); 
     }
