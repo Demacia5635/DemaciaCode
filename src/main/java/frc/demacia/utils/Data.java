@@ -130,7 +130,7 @@ public class Data<T> {
      * Refreshes the local data from the source.
      * If using signals, assumes the master refresh has already been called.
      */
-    public void refresh() {
+    private void refresh() {
         if (signal != null) {
             StatusSignal.refreshAll(signal);
             updateSignalValue();
@@ -190,7 +190,7 @@ public class Data<T> {
                 booleanValue = (Boolean) signal.getValue();
             }
         } else {
-            if (stringValue.equals((signal.getValue() == null) ? "null" : signal.getValue().toString())) {
+            if (!Objects.equals(stringValue, ((signal.getValue() == null) ? "null" : signal.getValue().toString()))) {
                 changed = true;
                 stringValue = (signal.getValue() == null) ? "null" : signal.getValue().toString();;
             }

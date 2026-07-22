@@ -2,14 +2,20 @@ package frc.demacia.utils.motors;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.demacia.utils.dashboard.ElasticGenerator;
 import frc.demacia.utils.log.Log;
+import frc.demacia.utils.log.Log.LogLevel;
+import frc.demacia.utils.sysid.Sysid;
 
 /**
  * Wrapper class for the CTRE Talon SRX motor controller using Phoenix 5.
@@ -27,19 +33,30 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
     int slot = 0;
 
     double wantedValue = 0.0;
+    double testValue = 0.0;
+
+    private double lastVelocity = 0;
+    private double lastAcceleration = 0;
+    private double lastTime = 0;
+
+    ControlMode notDutyControlMode = ControlMode.DISABLE;
     ControlMode controlMode = ControlMode.DISABLE;
+    ControlMode valueControlMode = ControlMode.DUTYCYCLE;
+    SendableChooser<ControlMode> valueControlModeChooser = new SendableChooser<>();
+
     // Motor Stalling
     private final Timer stallTimer = new Timer();
     private boolean conditionActive = false;
-    private boolean IsDone = false;
+    private boolean isDone = false;
     private boolean isStalled = false;
 
     private boolean[] kFlags = {true, true, true, false, false, false};
 
+    private final double TICKS_PER_REV = 4096.0; 
+
     /**
      * Creates a new Talon SRX motor wrapper.
-     * 
-     * @param config The configuration object
+     * * @param config The configuration object
      */
     public TalonSRXMotor(TalonSRXConfig config) {
         super(config.id);
@@ -48,8 +65,10 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
         configMotor();
         addLog();
         setName(name);
-        // SmartDashboard.putData(name, this);
+        SmartDashboard.putData("motors/" + name, this);
         Log.log(name + " motor initialized");
+        ElasticGenerator.getInstance().registerMotor(this);
+        Sysid.registerMotor(this);
     }
 
     /**
@@ -73,24 +92,49 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
     }
 
     @Override
+    public boolean isConnected() {
+        return getFirmwareVersion() >= 0;
+    }
+
+    @Override
     public void setName(String name) {
         MotorInterface.super.setName(name);
         this.name = name;
     }
 
     /** Configures the logging entries for this motor */
+    @SuppressWarnings("unchecked")
     private void addLog() {
-        // LogManager.addEntry(name + ": position, Velocity, Acceleration, Voltage,
-        // Current, CloseLoopError, CloseLoopSP",
-        // () -> getCurrentPosition(),
-        // () -> getCurrentVelocity(),
-        // () -> getCurrentAcceleration(),
-        // () -> getCurrentVoltage(),
-        // () -> getCurrentCurrent(),
-        // () -> getCurrentClosedLoopError(),
-        // () -> getCurrentClosedLoopSP()
-        // ).withLogLevel(LogLevel.LOG_ONLY_NOT_IN_COMP)
-        // .withIsMotor().build();
+        Log.putData(name + ": Position, Velocity, Acceleration, Voltage, Current, CloseLoopError, CloseLoopSP", 
+            new Supplier[]{
+            () -> getCurrentPosition(),
+            () -> getCurrentVelocity(),
+            () -> getCurrentAcceleration(),
+            () -> getCurrentVoltage(),
+            () -> getCurrentCurrent(),
+            () -> getCurrentClosedLoopError(),
+            () -> getCurrentClosedLoopSP(),
+            () -> getCurrentControlModeInteger()
+            }, LogLevel.LOG_ONLY, "motors", false);
+
+        Log.putData("motors/" + name + "/wanted value", this::getWantedValue);
+        Log.putData("motors/" + name + "/current value", this::getCurrentValue);
+        Log.putData("motors/" + name + "/is Connected", this::isConnected);
+
+        SmartDashboard.putData("motors/" + getName() + "/test value command", 
+            new RunCommand(() -> applyControlModeValue(valueControlMode, testValue))
+                .finallyDo(interrupted -> stop()));
+        
+        valueControlModeChooser.setDefaultOption(ControlMode.DUTYCYCLE.name(), ControlMode.DUTYCYCLE);
+        for (ControlMode mode : ControlMode.class.getEnumConstants()) {
+        if (mode == ControlMode.DISABLE) continue;
+        valueControlModeChooser.addOption(mode.name(), mode);
+        }
+        valueControlModeChooser.onChange(mode -> this.valueControlMode = mode);
+        SmartDashboard.putData("motors/" + getName() + "/Value Control Mode Chooser", valueControlModeChooser);
+
+        configPidFf(0);
+        configMotionMagic();
     }
 
     @Override
@@ -109,6 +153,7 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
             return;
         }
         this.slot = slot;
+        selectProfileSlot(slot, 0);
     }
 
     @Override
@@ -116,6 +161,7 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
         setNeutralMode(isBrake ? NeutralMode.Brake : NeutralMode.Coast);
     }
 
+    @Override
     public double getWantedValue() {
       return wantedValue;
     }
@@ -123,6 +169,7 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
     @Override
     public void setDuty(double power) {
         set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, power);
+        wantedValue = power;
         if (power == 0) {
             controlMode = ControlMode.DISABLE;
         } else {
@@ -131,14 +178,21 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
     }
 
     @Override
-    public void setVoltage(double voltage) {
-        set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, voltage / 12.0);
+    public void setVolt(double voltage) {
+        set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, voltage / config.maxVolt);
+        wantedValue = voltage;
         controlMode = ControlMode.VOLTAGE;
+        notDutyControlMode = controlMode;
     }
 
     @Override
     public void setVelocity(double velocity, double feedForward) {
-        Log.log("there is no Velocity");
+        double nativeVelocity = (velocity * getTicksPerUnit()) / 10.0; 
+        set(com.ctre.phoenix.motorcontrol.ControlMode.Velocity, nativeVelocity, 
+            DemandType.ArbitraryFeedForward, feedForward / config.maxVolt);
+        wantedValue = velocity;
+        controlMode = ControlMode.VELOCITY;
+        notDutyControlMode = controlMode;
     }
 
     @Override
@@ -153,7 +207,12 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
 
     @Override
     public void setMotion(double position, double feedForward) {
-        Log.log("there is no motion");
+        double nativePosition = position * getTicksPerUnit();
+        set(com.ctre.phoenix.motorcontrol.ControlMode.MotionMagic, nativePosition, 
+            DemandType.ArbitraryFeedForward, feedForward / config.maxVolt);
+        wantedValue = position;
+        controlMode = ControlMode.MAGIC_MOTION;
+        notDutyControlMode = controlMode;
     }
 
     @Override
@@ -164,7 +223,9 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
     @Override
     public void setAngle(double angle, double feedForward) {
         setMotion(getCurrentPosition() + MathUtil.angleModulus(angle - getCurrentAngle()), feedForward);
+        wantedValue = angle;
         controlMode = ControlMode.ANGLE;
+        notDutyControlMode = controlMode;
     }
 
     @Override
@@ -174,7 +235,10 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
 
     @Override
     public void setPositionVoltage(double position, double feedForward) {
-        Log.log("there is no PositionVoltage");
+        Log.log("there is no PositionVoltage in SRX right now");
+        wantedValue = position;
+        controlMode = ControlMode.POSITION_VOLTAGE;
+        notDutyControlMode = controlMode;
     }
 
     @Override
@@ -204,17 +268,17 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
 
     @Override
     public double getCurrentClosedLoopSP() {
-        return getClosedLoopTarget(0) / config.motorRatio;
+        return getClosedLoopTarget(0) / getTicksPerUnit();
     }
 
     @Override
     public double getCurrentClosedLoopError() {
-        return getClosedLoopError(0) / config.motorRatio;
+        return getClosedLoopError(0) / getTicksPerUnit();
     }
 
     @Override
     public double getCurrentPosition() {
-        return getSelectedSensorPosition() / config.motorRatio;
+        return getSelectedSensorPosition() / getTicksPerUnit();
     }
 
     @Override
@@ -227,12 +291,26 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
 
     @Override
     public double getCurrentVelocity() {
-        return (getSelectedSensorVelocity() * 10.0) / config.motorRatio;
+        return (getSelectedSensorVelocity() * 10.0) / getTicksPerUnit();
     }
 
     @Override
     public double getCurrentAcceleration() {
-        return 0; // Phoenix 5 SRX doesn't have direct acceleration
+        double currentTimestamp = Timer.getFPGATimestamp();
+        double dt = currentTimestamp - lastTime;
+
+        if (dt < 0.001) { 
+            return lastAcceleration;
+        }
+
+        double currentVelocity = getCurrentVelocity();
+        
+        lastAcceleration = (currentVelocity - lastVelocity) / dt;
+        
+        lastVelocity = currentVelocity;
+        lastTime = currentTimestamp;
+
+        return lastAcceleration;
     }
 
     @Override
@@ -245,50 +323,72 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
         return getStatorCurrent();
     }
 
-    public double getCurrentValue() {
-      switch (controlMode) {
-        case DISABLE:
-          return 0;
-        case DUTYCYCLE:
-          return 0;
-        case VOLTAGE:
-          return getCurrentVoltage();
-        case VELOCITY:
-          return getCurrentVelocity();
-        case POSITION_VOLTAGE, MAGIC_MOTION:
-          return getCurrentPosition();
-        case ANGLE:
-          return getCurrentAngle();
-        default:
-          return 0;
-      }
+    @Override
+    public void updatePid(CloseLoopParam newParams, int slot) {
+        config.pid[slot].setKP(newParams.kP());
+        config.pid[slot].setKI(newParams.kI());
+        config.pid[slot].setKD(newParams.kD());
+        config.pid[slot].setKS(newParams.kS());
+        config.pid[slot].setKV(newParams.kV());
+        config.pid[slot].setKA(newParams.kA());
+        config.pid[slot].setKG(newParams.kG());
+        
+        applyPidHardware(slot);
     }
 
-    
-
-  public void updatePid(CloseLoopParam newParams, int slot) {}
-
-  public boolean[] getSysidFlags() {
-    return kFlags;
-  }
+    @Override
+    public boolean[] getSysidFlags() {
+        return kFlags;
+    }
 
     @Override
     public void setEncoderPosition(double position) {
-        setSelectedSensorPosition(position * config.motorRatio);
+        setSelectedSensorPosition(position * getTicksPerUnit());
     }
 
     @Override
-    public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("Talon SRX Motor");
-        builder.addDoubleProperty("ControlMode", this::getCurrentControlModeInteger, null);
-        builder.addDoubleProperty("Position", this::getCurrentPosition, null);
-        builder.addDoubleProperty("Velocity", this::getCurrentVelocity, null);
-        builder.addDoubleProperty("Voltage", this::getCurrentVoltage, null);
-        builder.addDoubleProperty("Current", this::getCurrentCurrent, null);
-        builder.addDoubleProperty("CloseLoop Error", this::getCurrentClosedLoopError, null);
-        if (config.isRadiansMotor) {
-            builder.addDoubleProperty("Angle", this::getCurrentAngle, null);
-        }
+    public ControlMode getLastControlMode() {
+        return notDutyControlMode;
+    }
+
+    @Override
+    public CloseLoopParam getPidParam(int slot) {
+        return config.pid[slot];
+    }
+
+    @Override
+    public void applyPidHardware(int slot) {
+        double maxOutputNative = 1023.0;
+        double voltageScale = config.maxVolt;
+        double ticksPerUnit = getTicksPerUnit();
+
+        double kP_SI = config.pid[slot].kP();
+        double kI_SI = config.pid[slot].kI();
+        double kD_SI = config.pid[slot].kD();
+        double kV_SI = config.pid[slot].kV(); 
+
+        double kP_Native = (kP_SI * maxOutputNative) / (voltageScale * ticksPerUnit);
+        double kI_Native = (kI_SI * maxOutputNative) / (voltageScale * ticksPerUnit);
+        double kD_Native = (kD_SI * 10.0 * maxOutputNative) / (voltageScale * ticksPerUnit);
+        double kF_Native = (kV_SI * 10.0 * maxOutputNative) / (voltageScale * ticksPerUnit);
+
+        config_kP(slot, kP_Native);
+        config_kI(slot, kI_Native);
+        config_kD(slot, kD_Native);
+        config_kF(slot, kF_Native); 
+    }
+
+    private double getTicksPerUnit() {
+        return config.motorRatio * TICKS_PER_REV;
+    }
+
+    @Override
+    public void applyMotionMagicHardware() {
+        double nativeCruiseVelocity = (config.maxVelocity * getTicksPerUnit()) / 10.0;
+        double nativeAcceleration = (config.maxAcceleration * getTicksPerUnit()) / 10.0;
+        
+        configMotionCruiseVelocity(nativeCruiseVelocity);
+        configMotionAcceleration(nativeAcceleration);
     }
 
     @Override
@@ -309,18 +409,18 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
             if (!conditionActive) {
                 stallTimer.restart();
                 conditionActive = true;
-                IsDone = false;
+                isDone = false;
                 isStalled = true;
             }
-            if (stallTimer.hasElapsed(config.secondsThreshold) && !IsDone) {
+            if (stallTimer.hasElapsed(config.secondsThreshold) && !isDone) {
                 config.conditionIsTrue.accept(config);
-                IsDone = true;
+                isDone = true;
             }
         } else if (conditionActive) {
             stallTimer.stop();
             stallTimer.reset();
             conditionActive = false;
-            IsDone = false;
+            isDone = false;
             isStalled = false;
         }
     }
@@ -329,40 +429,46 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
         return isStalled;
     }
 
+    @Override
     public void stop() {
         setDuty(0);
     }
-    
-    /**
-     * Checks if a specific motor has reached its target value within a specified tolerance.
-     * * @param motorName The name of the motor
-     * @param allowedError The allowable tolerance
-     * @return true if the motor is within tolerance, false otherwise
-     */
-    public boolean isReady(double allowedError){
-      switch (getCurrentControlMode()) {
-        case DISABLE:
-          break;
-        case DUTYCYCLE:
-          break;
-        case VOLTAGE:
-          if (Math.abs(getWantedValue() - getCurrentVoltage()) > allowedError){
-            return false;
-          }
-            break;
-        case VELOCITY:
-          if (Math.abs(getWantedValue() - getCurrentVelocity()) > allowedError){
-            return false;
-          }
-          break;
-        case POSITION_VOLTAGE, MAGIC_MOTION, ANGLE:
-          if (Math.abs(getWantedValue() - getCurrentPosition()) > allowedError){
-            return false;
-          }
-          break;
-        default:
-          break;
-      }
-      return true;
+
+    @Override
+    public double getMaxVelocity() { return config.maxVelocity; }
+
+    @Override
+    public void setMaxVelocity(double velocity) { config.maxVelocity = velocity; }
+
+    @Override
+    public double getMaxAcceleration() { return config.maxAcceleration; }
+
+    @Override
+    public void setMaxAcceleration(double acceleration) { config.maxAcceleration = acceleration; }
+
+    @Override
+    public double getKSin() { return config.kSin; }
+
+    @Override
+    public void setKSin(double kSin) { config.kSin = kSin; }
+
+    @Override
+    public double getKV2() { return config.kv2; }
+
+    @Override
+    public void setKV2(double kV2) { config.kv2 = kV2; }
+
+    @Override
+    public boolean isRadiansMotor() { return config.isRadiansMotor; }
+
+    @Override
+    public double getTestValue() { return testValue; }
+
+    @Override
+    public void setTestValue(double testValue) { this.testValue = testValue; }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        initCommonSendable(builder);
     }
 }

@@ -56,7 +56,7 @@ public class Sysid {
             double kp = 0;
 
             if (r.ka > 0){
-                double kaSafe = Math.max(Math.abs(r.ka), 0.01);
+                double kaSafe = Math.max(r.ka, 0.01);
             
                 kp = r.kv / kaSafe;
             }
@@ -189,13 +189,22 @@ public class Sysid {
 
     private static BucketResult calculateResult(List<SyncedDataPoint> rawData, String name) {
         List<SyncedDataPoint> cleanData = filterAndSmooth(rawData, VOLTAGE_THRESHOLD, SMOOTH_WINDOW);
-        if (cleanData.size() < 10) return null;
+        if (cleanData.size() < 10) {
+            System.out.println("DEBUG: Failed because cleanData.size() < 10");
+            return null;
+        }
 
         BucketResult initialResult = solveOLS(cleanData);
-        if (initialResult == null) return null;
+        if (initialResult == null) {
+            System.out.println("DEBUG: Failed because initial solveOLS returned null");
+            return null;
+        }
 
         List<SyncedDataPoint> refinedData = removeOutliers(cleanData, initialResult, OUTLIER_PERCENTAGE);
-        if (refinedData.size() < 10) return null;
+        if (refinedData.size() < 10) {
+            System.out.println("DEBUG: Failed because refinedData.size() < 10");
+            return null;
+        }
 
         BucketResult finalModel = solveOLS(refinedData);
         
@@ -308,6 +317,7 @@ public class Sysid {
         try {
             x = A.solve(b);
         } catch(Exception e) {
+            System.out.println("DEBUG: OLS solve failed: " + e.getMessage());
             return null;
         }
 

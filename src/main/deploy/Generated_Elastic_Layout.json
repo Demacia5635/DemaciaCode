@@ -9,13 +9,13 @@
         "containers": [
           {
             "type": "Boolean Box",
-            "title": "Unnamed Motor 1",
+            "title": "simMotor",
             "x": 0.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/Log/motors/Unnamed Motor 1/is Connected",
+              "topic": "/Log/motors/simMotor/is Connected",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -28,7 +28,7 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/Unnamed Motor 1/Value Control Mode Chooser",
+              "topic": "/SmartDashboard/motors/simMotor/Value Control Mode Chooser",
               "period": 0.06
             }
           },
@@ -40,7 +40,7 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/Unnamed Motor 1/test Value",
+              "topic": "/SmartDashboard/motors/simMotor/test Value",
               "period": 0.06,
               "data_type": "double", "show_submit_button": true
             }
@@ -53,7 +53,7 @@
             "width": 256.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/Unnamed Motor 1/test Value",
+              "topic": "/SmartDashboard/motors/simMotor/test Value",
               "period": 0.06,
               "data_type": "double", "update_continuously": true
             }
@@ -66,7 +66,7 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/Unnamed Motor 1/test value command",
+              "topic": "/SmartDashboard/motors/simMotor/test value command",
               "period": 0.06,
               "show_type": true
             }
@@ -79,176 +79,9 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/Log/motors/Unnamed Motor 1/current value",
+              "topic": "/Log/motors/simMotor/current value",
               "period": 0.06,
               "data_type": "double", "show_submit_button": true
-            }
-          },
-          {
-            "type": "Boolean Box",
-            "title": "hood",
-            "x": 0.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/Log/motors/hood/is Connected",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "type": "ComboBox Chooser",
-            "title": "Value Control",
-            "x": 128.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/motors/hood/Value Control Mode Chooser",
-              "period": 0.06
-            }
-          },
-          {
-            "type": "Text Display",
-            "title": "Values",
-            "x": 256.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/motors/hood/test Value",
-              "period": 0.06,
-              "data_type": "double", "show_submit_button": true
-            }
-          },
-          {
-            "type": "Number Slider",
-            "title": "value",
-            "x": 384.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/motors/hood/test Value",
-              "period": 0.06,
-              "data_type": "double", "update_continuously": true
-            }
-          },
-          {
-            "type": "Command",
-            "title": "Run",
-            "x": 640.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/motors/hood/test value command",
-              "period": 0.06,
-              "show_type": true
-            }
-          },
-          {
-            "type": "Text Display",
-            "title": "Current Values",
-            "x": 768.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/Log/motors/hood/current value",
-              "period": 0.06,
-              "data_type": "double", "show_submit_button": true
-            }
-          },
-          {
-            "type": "Boolean Box",
-            "title": "Unnamed Motor 3",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/Log/motors/Unnamed Motor 3/is Connected",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "type": "ComboBox Chooser",
-            "title": "Value Control",
-            "x": 128.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/motors/Unnamed Motor 3/Value Control Mode Chooser",
-              "period": 0.06
-            }
-          },
-          {
-            "type": "Text Display",
-            "title": "Values",
-            "x": 256.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/motors/Unnamed Motor 3/test Value",
-              "period": 0.06,
-              "data_type": "double", "show_submit_button": true
-            }
-          },
-          {
-            "type": "Number Slider",
-            "title": "value",
-            "x": 384.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/motors/Unnamed Motor 3/test Value",
-              "period": 0.06,
-              "data_type": "double", "update_continuously": true
-            }
-          },
-          {
-            "type": "Command",
-            "title": "Run",
-            "x": 640.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/motors/Unnamed Motor 3/test value command",
-              "period": 0.06,
-              "show_type": true
-            }
-          },
-          {
-            "type": "Text Display",
-            "title": "Current Values",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/Log/motors/Unnamed Motor 3/current value",
-              "period": 0.06,
-              "data_type": "double", "show_submit_button": true
-            }
-          },
-          {
-            "type": "Boolean Box",
-            "title": "Unnamed Sensor 1 Cancoder",
-            "x": 0.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/sensors/Unnamed Sensor 1 Cancoder/is Connected",
-              "period": 0.06,
-              "data_type": "boolean"
             }
           }
         ]
@@ -320,7 +153,7 @@
         "layouts": [
           {
             "type": "List Layout",
-            "title": "Unnamed Motor 1",
+            "title": "simMotor",
             "x": 256.0,
             "y": 0.0,
             "width": 256.0,
@@ -330,19 +163,6 @@
             },
             "children": [
               {
-                "title": "shootet Power Command",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Command",
-                "properties": {
-                  "topic": "/SmartDashboard/shootet Power Command",
-                  "show_type": true,
-                  "maximize_button_space": false
-                }
-              },
-              {
                 "title": "KP",
                 "x": 0.0,
                 "y": 0.0,
@@ -350,7 +170,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/KP",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/KP",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -364,7 +184,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/KI",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/KI",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -378,7 +198,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/KD",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/KD",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -392,7 +212,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/USE_KS",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/USE_KS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -405,7 +225,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/KS",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/KS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -419,7 +239,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/USE_KV",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/USE_KV",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -432,7 +252,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/KV",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/KV",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -446,7 +266,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/USE_KA",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/USE_KA",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -459,7 +279,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/KA",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/KA",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -473,7 +293,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/USE_KG",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/USE_KG",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -486,7 +306,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/KG",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/KG",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -500,7 +320,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/USE_KSIN",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -513,7 +333,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/KSIN",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/KSIN",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -527,7 +347,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/USE_KV2",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/USE_KV2",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -540,7 +360,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/KV2",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/KV2",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -554,480 +374,7 @@
                 "height": 128.0,
                 "type": "Toggle Button",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 1/PID+FF config/Update",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              }
-            ]
-          },
-          {
-            "type": "List Layout",
-            "title": "hood",
-            "x": 512.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 640.0,
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "shootet Power Command",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Command",
-                "properties": {
-                  "topic": "/SmartDashboard/shootet Power Command",
-                  "show_type": true,
-                  "maximize_button_space": false
-                }
-              },
-              {
-                "title": "KP",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/KP",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "KI",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/KI",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "KD",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/KD",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "USE_KS",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/USE_KS",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "KS",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/KS",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "USE_KV",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/USE_KV",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "KV",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/KV",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "USE_KA",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/USE_KA",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "KA",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/KA",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "USE_KG",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/USE_KG",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "KG",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/KG",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "USE_KSIN",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/USE_KSIN",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "KSIN",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/KSIN",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "USE_KV2",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/USE_KV2",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "KV2",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/KV2",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "Update",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Button",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/hood/PID+FF config/Update",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              }
-            ]
-          },
-          {
-            "type": "List Layout",
-            "title": "Unnamed Motor 3",
-            "x": 768.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 640.0,
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "KP",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/KP",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "KI",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/KI",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "KD",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/KD",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "USE_KS",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/USE_KS",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "KS",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/KS",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "USE_KV",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/USE_KV",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "KV",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/KV",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "USE_KA",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/USE_KA",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "KA",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/KA",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "USE_KG",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/USE_KG",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "KG",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/KG",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "USE_KSIN",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/USE_KSIN",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "KSIN",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/KSIN",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "USE_KV2",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Switch",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/USE_KV2",
-                  "period": 0.06,
-                  "data_type": "boolean"
-                }
-              },
-              {
-                "title": "KV2",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/KV2",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": true
-                }
-              },
-              {
-                "title": "Update",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Toggle Button",
-                "properties": {
-                  "topic": "/SmartDashboard/motors/Unnamed Motor 3/PID+FF config/Update",
+                  "topic": "/SmartDashboard/motors/simMotor/PID+FF config/Update",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1047,248 +394,6 @@
               "topic": "/SmartDashboard/sysID/sysidCommand",
               "period": 0.06,
               "show_type": true, "maximize_button_space": false
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "shootet",
-      "grid_layout": {
-        "layouts": [],
-        "containers": [
-          {
-            "type": "Text Display",
-            "title": "Unnamed Motor 1 wanted",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/Unnamed Motor 1/Unnamed Motor 1 wanted value",
-              "period": 0.06,
-              "data_type": "double", "show_submit_button": false
-            }
-          },
-          {
-            "type": "Text Display",
-            "title": "Unnamed Motor 1 current",
-            "x": 128.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/Unnamed Motor 1/Unnamed Motor 1 current Value",
-              "period": 0.06,
-              "data_type": "double", "show_submit_button": false
-            }
-          },
-          {
-            "type": "Command",
-            "title": "Coast Unnamed Motor 1",
-            "x": 0.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/Unnamed Motor 1/set coast Unnamed Motor 1",
-              "period": 0.06,
-              "show_type": true
-            }
-          },
-          {
-            "type": "Command",
-            "title": "Brake Unnamed Motor 1",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/Unnamed Motor 1/set brake Unnamed Motor 1",
-              "period": 0.06,
-              "show_type": true
-            }
-          },
-          {
-            "type": "Command",
-            "title": "Power Unnamed Motor 1",
-            "x": 0.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/Unnamed Motor 1/set power command Unnamed Motor 1",
-              "period": 0.06,
-              "show_type": true
-            }
-          },
-          {
-            "type": "Boolean Box",
-            "title": "Calibrated",
-            "x": 0.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/Unnamed Motor 1/Unnamed Motor 1 has Calibrated",
-              "period": 0.06,
-              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
-            }
-          },
-          {
-            "type": "Text Display",
-            "title": "hood wanted",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/hood/hood wanted value",
-              "period": 0.06,
-              "data_type": "double", "show_submit_button": false
-            }
-          },
-          {
-            "type": "Text Display",
-            "title": "hood current",
-            "x": 384.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/hood/hood current Value",
-              "period": 0.06,
-              "data_type": "double", "show_submit_button": false
-            }
-          },
-          {
-            "type": "Command",
-            "title": "Coast hood",
-            "x": 256.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/hood/set coast hood",
-              "period": 0.06,
-              "show_type": true
-            }
-          },
-          {
-            "type": "Command",
-            "title": "Brake hood",
-            "x": 256.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/hood/set brake hood",
-              "period": 0.06,
-              "show_type": true
-            }
-          },
-          {
-            "type": "Command",
-            "title": "Power hood",
-            "x": 256.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/hood/set power command hood",
-              "period": 0.06,
-              "show_type": true
-            }
-          },
-          {
-            "type": "Boolean Box",
-            "title": "Calibrated",
-            "x": 256.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/hood/hood has Calibrated",
-              "period": 0.06,
-              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
-            }
-          },
-          {
-            "type": "Text Display",
-            "title": "Unnamed Motor 3 wanted",
-            "x": 512.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/Unnamed Motor 3/Unnamed Motor 3 wanted value",
-              "period": 0.06,
-              "data_type": "double", "show_submit_button": false
-            }
-          },
-          {
-            "type": "Text Display",
-            "title": "Unnamed Motor 3 current",
-            "x": 640.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/Unnamed Motor 3/Unnamed Motor 3 current Value",
-              "period": 0.06,
-              "data_type": "double", "show_submit_button": false
-            }
-          },
-          {
-            "type": "Command",
-            "title": "Coast Unnamed Motor 3",
-            "x": 512.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/Unnamed Motor 3/set coast Unnamed Motor 3",
-              "period": 0.06,
-              "show_type": true
-            }
-          },
-          {
-            "type": "Command",
-            "title": "Brake Unnamed Motor 3",
-            "x": 512.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/Unnamed Motor 3/set brake Unnamed Motor 3",
-              "period": 0.06,
-              "show_type": true
-            }
-          },
-          {
-            "type": "Boolean Box",
-            "title": "Calibrated",
-            "x": 512.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/shootet/Unnamed Motor 3/Unnamed Motor 3 has Calibrated",
-              "period": 0.06,
-              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
-            }
-          },
-          {
-            "type": "Text Display",
-            "title": "Unnamed Sensor 1 Cancoder",
-            "x": 768.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/sensors/Unnamed Sensor 1 Cancoder/value",
-              "period": 0.06,
-              "data_type": "double", "show_submit_button": false
             }
           }
         ]
