@@ -45,7 +45,7 @@ public class RobotContainer implements Sendable{
   private List<Translation2d> demaciaPathPoints = new ArrayList<>();
   // The robot's subsystems and commands are defined here...
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  public CommandController controller = new CommandController(0, ControllerType.kXbox);
+  public CommandController controller = new CommandController(0, ControllerType.kPS5);
   public DemaciaTrapezoid trapezoid = new DemaciaTrapezoid(1, 3);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
