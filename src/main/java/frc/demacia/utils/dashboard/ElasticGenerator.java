@@ -110,11 +110,11 @@ public class ElasticGenerator {
             writer.write(json.toString());
             writer.close();
             
-            SmartDashboard.putString("Elastic/Status", "Saved at: " + file.getAbsolutePath());
+            SmartDashboard.putString("elastic/Status", "Saved at: " + file.getAbsolutePath());
             
         } catch (IOException e) {
             Log.log("Failed to save Elastic layout: " + e.getMessage());
-            SmartDashboard.putString("Elastic/Status", "Failed to save: " + e.getMessage());
+            SmartDashboard.putString("elastic/Status", "Failed to save: " + e.getMessage());
         }
     }
 
