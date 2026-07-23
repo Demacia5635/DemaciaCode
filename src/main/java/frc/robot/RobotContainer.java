@@ -11,6 +11,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.demacia.utils.DemaciaUtils;
+import frc.demacia.utils.chassis.Chassis;
+import frc.demacia.utils.chassis.DriveCommand;
+import frc.demacia.utils.controller.CommandController;
+import frc.demacia.utils.controller.CommandController.ControllerType;
 import frc.demacia.utils.log.LogManager;
 
 /**
@@ -24,17 +28,17 @@ public class RobotContainer implements Sendable{
   public static boolean isComp = false;
   private static boolean hasRemovedFromLog = false;
   public static boolean isRed = false;
-
   // The robot's subsystems and commands are defined here...
-
-
+  public static Chassis chassis;
+  
   // Replace with CommandPS4Controller or CommandJoystick if needed
-
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  private final CommandController controller = new CommandController(0, ControllerType.kPS5);
+  /** The container for the root. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
-    
+    chassis = Chassis.getInstance();
+    chassis.setDefaultCommand(new DriveCommand(Chassis.getInstance(), controller));
     // Configure the trigger bindings
     configureBindings();
   }

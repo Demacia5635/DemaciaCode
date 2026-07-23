@@ -4,8 +4,6 @@
 
 package frc.demacia.utils.chassis;
 
-import java.security.PublicKey;
-
 import org.ejml.simple.SimpleMatrix;
 
 import com.ctre.phoenix6.StatusCode;
@@ -138,7 +136,7 @@ public class Chassis extends SubsystemBase {
         Translation2d[] modulePositions = new Translation2d[4];
         for (int i = 0; i < 4; i++) {
             modules[i] = new SwerveModule(chassisConfig.swerveModuleConfig[i]);
-            // modulePositions[i] = chassisConfig.swerveModuleConfig[i].position;
+            modulePositions[i] = chassisConfig.swerveModuleConfig[i].position;
         }
 
         gyro = new Pigeon(chassisConfig.pigeonConfig);
@@ -173,37 +171,6 @@ public class Chassis extends SubsystemBase {
         LogManager.log(chassisConfig.name + " initalize");
     }
 
-    public void followTrajectory(SwerveSample sample) {
-
-
-        Pose2d pose = getPose();
-
-        ChassisSpeeds speeds = new ChassisSpeeds(
-                sample.vx + xController.calculate(pose.getX(), sample.x),
-                sample.vy + yController.calculate(pose.getY(), sample.y),
-                -sample.omega + headingController.calculate(pose.getRotation().getRadians(), -sample.heading));
-
-
-        
-
-        SmartDashboard.putNumber("traj/current heading", pose.getRotation().getDegrees());
-        SmartDashboard.putNumber("traj/heading error", sample.heading - pose.getRotation().getRadians());
-        SmartDashboard.putNumber("traj/speeds omega", speeds.omegaRadiansPerSecond);
-        SmartDashboard.putNumber("traj/sample time", sample.getTimestamp());
-
-        field.getObject("trajectory point #" + index).setPose(sample.getPose());
-        index++;
-
-        setVelocities(speeds);
-    }
-
-    public void resetTrajectory() {
-        for (int i = index; i >= 0; i--) {
-            field.getObject("trajectory point #" + i).setPose(Pose2d.kZero);
-        }
-        index = 0;
-    }
-
     public void setDrivePower(double pow, int id) {
         modules[id].setDrivePower(pow);
     }
@@ -211,14 +178,6 @@ public class Chassis extends SubsystemBase {
     public void setDrivePower(double pow) {
         for (int i = 0; i < 4; i++)
             setDrivePower(pow, i);
-    }
-
-    public double getMaxDriveVelocity(){
-        return chassisConfig.maxDriveVelocity;
-    }
-
-    public double getMaxRotationalVelocity(){
-        return chassisConfig.maxRotationalVelocity;
     }
 
     /**
@@ -279,8 +238,12 @@ public class Chassis extends SubsystemBase {
 
     public void setVelocities(ChassisSpeeds speeds) {
 
-        SwerveModuleState[] states = demaciaKinematics.toSwerveModuleStates(speeds);
-
+        SwerveModuleState[] states = demaciaKinematics
+                .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getGyroAngle()));
+        // SwerveModuleState[] states = demaciaKinematics.toSwerveModuleStatesWithLimit(
+        // speeds,
+        // getChassisSpeedsFieldRel(),
+        // getGyroAngle());
         setModuleStates(states);
     }
 
@@ -375,8 +338,8 @@ public class Chassis extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // updateCommon();
-        //TODO: RETORN IT 
+        // updateCommon(); TODO: ROBOT COMOON
+
         observation = new OdometryObservation(
                 Timer.getFPGATimestamp(),
                 getGyroAngle(),
@@ -388,16 +351,15 @@ public class Chassis extends SubsystemBase {
         //         .plus(TurretConstants.TURRET_POSITION_ON_ROBOT.rotateBy(RobotCommon.getRobotAngle())),
         //         Rotation2d.fromRadians(RobotCommon.getRobotAngle().getRadians()
         //                 + MathUtil.angleModulus(Turret.getInstance().getTurretAngle()))));
-        // field.getObject("estimation").setPose(ShooterUtils.computeFuturePosition(getChassisSpeedsFieldRel(), getPose(), 0.1));
+        // field.getObject("estimation").setPose(ShooterUtils.computeFuturePosition(getChassisSpeedsFieldRel(), RobotCommon.getCurrentRobotPose(), 0.1));
     }
-
+    //TODO: ROBOT COMMON
     // public void updateCommon() {
     //     RobotCommon.setRobotAngle(getGyroAngle());
     //     RobotCommon.setCurrentRobotPose(getPose());
     //     RobotCommon.setFieldRelativeSpeeds(getChassisSpeedsFieldRel());
     //     RobotCommon.setFutureRobotPose(getFuturePose(0.2));
-    // } 
-    //TODO: reotrn it
+    // }
 
     public Pose2d getFuturePose(double dtSeconds) {
         return getPose().exp(new Twist2d(
