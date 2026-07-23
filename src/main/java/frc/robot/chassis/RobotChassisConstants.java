@@ -12,21 +12,21 @@ public class RobotChassisConstants {
 
   public static final String NAME = "robot Chassis";
 
-  public static final int PIGEON_ID = 0; 
+  public static final int PIGEON_ID = 14; 
   public static final Canbus CAN_BUS = Canbus.CANIvore; 
-  public static final Canbus PIGEON_CAN_BUS = Canbus.CANIvore; 
-  public static final double STEER_GEAR_RATIO = 26.09090909090909; 
+  public static final Canbus PIGEON_CAN_BUS = Canbus.Rio; 
+  public static final double STEER_GEAR_RATIO = 287d / 11d; 
   public static final double DRIVE_GEAR_RATIO = 6.03; 
   public static final double WHEEL_DIAMETER = 0.1016; 
 
-  public static final double STEER_KP = 0.0; 
+  public static final double STEER_KP = 3; 
   public static final double STEER_KI = 0.0; 
   public static final double STEER_KD = 0.0; 
   public static final double STEER_KS = 0.0; 
   public static final double STEER_KV = 0.0; 
   public static final double STEER_KA = 0.0; 
 
-  public static final double DRIVE_KP = 0.0; 
+  public static final double DRIVE_KP = 3; 
   public static final double DRIVE_KI = 0.0; 
   public static final double DRIVE_KD = 0.0; 
   public static final double DRIVE_KS = 0.0; 
@@ -41,18 +41,18 @@ public class RobotChassisConstants {
   public static final double RAMP_TIME_STEER = 0.25; 
 
   public static final Translation2d[] MODULE_LOCATIONS = {
-    new Translation2d(0.0, 0.0), //FRONT LEFT  // TODO
-    new Translation2d(0.0, 0.0), //FRONT RIGHT  // TODO
-    new Translation2d(0.0, 0.0), //BACK LEFT  // TODO
-    new Translation2d(0.0, 0.0), //BACK RIGHT  // TODO
+    new Translation2d(0.295, 0.395), //FRONT LEFT  // TODO
+    new Translation2d(0.295, -0.395), //FRONT RIGHT  // TODO
+    new Translation2d(-0.295, 0.395), //BACK LEFT  // TODO
+    new Translation2d(-0.295, -0.395), //BACK RIGHT  // TODO
   };
 
   public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        0.0, //FRONT LEFT  // TODO
-        0.0, //FRONT RIGHT  // TODO
-        0.0, //BACK LEFT  // TODO
-        0.0 //BACK RIGHT  // TODO
+        0.494 * 2 * Math.PI, //FRONT LEFT  // TODO
+        -0.448 * 2 * Math.PI, //FRONT RIGHT  // TODO
+        -0.33 * 2 * Math.PI, //BACK LEFT  // TODO
+        -0.407 * 2 * Math.PI //BACK RIGHT  // TODO
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(PIGEON_ID, PIGEON_CAN_BUS, NAME + " pigeon");

@@ -1,8 +1,9 @@
 package frc.demacia.utils.dashboard;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,17 +102,24 @@ public class ElasticGenerator {
         json.append("\n  ]\n");
         json.append("}\n");
 
-        File dir = Filesystem.getDeployDirectory();
-        dir.mkdirs(); 
+        File dir = new File("/home/lvuser/elastic_layouts");
         File file = new File(dir, "Generated_Elastic_Layout.json");
 
         try {
-            FileWriter writer = new FileWriter(file);
-            writer.write(json.toString());
-            writer.close();
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            Files.writeString(
+                file.toPath(), 
+                json.toString(), 
+                StandardOpenOption.CREATE, 
+                StandardOpenOption.TRUNCATE_EXISTING, 
+                StandardOpenOption.WRITE
+            );
             
             SmartDashboard.putString("elastic/Status", "Saved at: " + file.getAbsolutePath());
-            
+            Log.log("Elastic layout saved successfully at: " + file.getAbsolutePath());  
         } catch (IOException e) {
             Log.log("Failed to save Elastic layout: " + e.getMessage());
             SmartDashboard.putString("elastic/Status", "Failed to save: " + e.getMessage());
@@ -123,7 +131,7 @@ public class ElasticGenerator {
         int tabIndex = 1;
         boolean firstTab = true;
         final int MAX_COLS = 10;
-        final int MAX_ROWS = 5;
+        final int MAX_ROWS = 4;
         final int MOTOR_WIDTH = 5;
 
         int motorIndex = 0;
@@ -335,7 +343,7 @@ public class ElasticGenerator {
         int tabIndex = 1;
         boolean firstTab = true;
         int MAX_COLS = 10;
-        int MAX_ROWS = 5;
+        int MAX_ROWS = 4;
         int MOTOR_WIDTH = 2;
 
         int motorIndex = 0;
@@ -486,7 +494,7 @@ public class ElasticGenerator {
         if (mechanisms.isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
 
-        final int MAX_ROWS = 5;
+        final int MAX_ROWS = 4;
         final int MAX_COLS = 10;
         final int WIDGET_WIDTH = 2;
 
