@@ -6,16 +6,16 @@ package frc.demacia.path.commands;
 
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.demacia.path.DemaciaTrajectoryGood;
+import frc.demacia.path.DemaciaTrajectory;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.log.LogManager;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PathCommand extends Command {
   /** Creates a new PathCommand. */
-  DemaciaTrajectoryGood trajectory;
+  DemaciaTrajectory trajectory;
   Chassis chassis;
-  public PathCommand(DemaciaTrajectoryGood trajectory) {
+  public PathCommand(DemaciaTrajectory trajectory) {
     this.chassis = Chassis.getInstance();
     this.trajectory = trajectory;
     addRequirements(chassis);

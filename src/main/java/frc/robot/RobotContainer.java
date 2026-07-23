@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.demacia.path.DemaciaTrajectoryGood;
+import frc.demacia.path.DemaciaTrajectory;
 import frc.demacia.path.commands.PathCommand;
 import frc.demacia.path.trapzoid.DemaciaTrapezoid;
 import frc.demacia.utils.DemaciaUtils;
@@ -22,8 +22,9 @@ import frc.demacia.utils.chassis.DriveCommand;
 import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
 import frc.demacia.utils.log.LogManager;
-import frc.robot.chassis.RobotBChassisConstants;
-import frc.robot.chassis.chackDriveng;
+// import frc.robot.chassis.RobotBChassisConstants;
+// import frc.robot.chassis.chackDriveng;
+import frc.robot.chassis.MK5nChassisConstansRobotC;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +52,7 @@ public class RobotContainer implements Sendable{
     SmartDashboard.putData("RC", this);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
     // checkPigen.schedule();
-    Chassis.initialize(RobotBChassisConstants.CHASSIS_CONFIG);
+    Chassis.initialize(MK5nChassisConstansRobotC.CHASSIS_CONFIG);
     DriveCommand driveCommand = new DriveCommand(controller);
     driveCommand.invertPrecisionMode();
     Chassis.getInstance().setDefaultCommand(driveCommand);
@@ -73,11 +74,10 @@ public class RobotContainer implements Sendable{
 
   private void configPoint() {
     demaciaPathPoints.add(new Translation2d(0, 0));
-    demaciaPathPoints.add(new Translation2d(2, -0.5));
-    demaciaPathPoints.add(new Translation2d(3, -0.5));
-    demaciaPathPoints.add(new Translation2d(3, -3));
-    demaciaPathPoints.add(new Translation2d(2, -0.5));
-    demaciaPathPoints.add(new Translation2d(-0.5, 0));
+    demaciaPathPoints.add(new Translation2d(2, 0));
+    demaciaPathPoints.add(new Translation2d(2, 2));
+    demaciaPathPoints.add(new Translation2d(1, 1));
+    demaciaPathPoints.add(new Translation2d(0, 0));
   }
 
   private void configureBindings() {
@@ -117,7 +117,7 @@ public class RobotContainer implements Sendable{
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return new PathCommand(new DemaciaTrajectoryGood(demaciaPathPoints));
+    return new PathCommand(new DemaciaTrajectory(demaciaPathPoints));
     // return new chackDriveng();
   }
 }

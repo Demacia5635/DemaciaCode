@@ -18,7 +18,7 @@ import frc.demacia.path.utils.PathUtils;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.log.LogManager;
 
-public class DemaciaTrajectoryGood {
+public class DemaciaTrajectory {
 
     private List<Translation2d> demaciaPathPoints;
     private List<Translation2d> pathPoints;
@@ -32,7 +32,7 @@ public class DemaciaTrajectoryGood {
     private SegmantBase currentSegment;
     public boolean isFinishedTrajectory;
 
-    public DemaciaTrajectoryGood(List<Translation2d> demaciaPoints) {
+    public DemaciaTrajectory(List<Translation2d> demaciaPoints) {
         this.demaciaPathPoints = demaciaPoints;
         this.pathPoints = new ArrayList<Translation2d>();
         this.lineSegments = new ArrayList<LineSegment>();
@@ -93,10 +93,6 @@ public class DemaciaTrajectoryGood {
             segments.add(arc);
         }
         segments.add(new LineSegment(pathPoints.get(pathPoints.size() - 2), pathPoints.get(pathPoints.size() - 1)));
-        // LogManager.log("----------------------------------start-----------------------------"
-        //  + "path point" + pathPoints + "current pose" + Chassis.getInstance().getPose() + "current segment" + currentSegment +
-        //  "--------------------------end------------------------");
-        
     }
 
     public ChassisSpeeds calculateSpeeds(ChassisSpeeds currentSpeeds, Pose2d currentPose) {
