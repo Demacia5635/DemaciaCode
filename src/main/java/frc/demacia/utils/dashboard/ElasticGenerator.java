@@ -26,6 +26,8 @@ import frc.demacia.utils.sensors.Cancoder;
 public class ElasticGenerator {
     private static ElasticGenerator instance;
 
+    private static final String pathOnRobot = "/home/lvuser/elastic_layouts";
+
     private static final int MAX_COLS = 10;
     private static final int MAX_ROWS = 4;
 
@@ -41,10 +43,16 @@ public class ElasticGenerator {
     private ElasticGenerator() {
         SmartDashboard.putData("elastic/Generate Layout", new InstantCommand(this::generateAndPublishLayout).ignoringDisable(true));
         
+        File dir;
+        if (RobotBase.isSimulation()) {
+            dir = Filesystem.getDeployDirectory();
+        } else {
+            dir = new File(pathOnRobot);
+        }
         try {
-            WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+            WebServer.start(5800, dir.getPath());
         } catch (Exception e) {
-            frc.demacia.utils.log.Log.log("Failed to start WebServer for Elastic: " + e.getMessage());
+            Log.log("Failed to start WebServer for Elastic: " + e.getMessage());
         }
     }
 
@@ -110,7 +118,7 @@ public class ElasticGenerator {
         if (RobotBase.isSimulation()) {
             dir = Filesystem.getDeployDirectory();
         } else {
-            dir = new File("/home/lvuser/elastic_layouts");
+            dir = new File(pathOnRobot);
         }
         File file = new File(dir, "Generated_Elastic_Layout.json");
 
