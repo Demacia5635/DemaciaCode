@@ -78,8 +78,6 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
     public boolean isMeterMotor = false;
     public boolean isRadiansMotor = false;
 
-    public double kv2 = 0;
-    public double kSin = 0;
     public double posToRad = 0;
 
     public double highCurrentThreshold = 0;    
@@ -225,50 +223,36 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
     }
 
     /**
-     * Sets custom feedforward parameters.
-     * @param kv2 Velocity squared constant
-     * @param ksin Sine term constant (for gravity/arms)
-     * @param posToRad Conversion factor for position to radians
-     * @return this configuration for chaining
-     */
-    @SuppressWarnings("unchecked")
-    public T withFeedForward(double kv2, double ksin) {
-        this.kv2 = kv2;
-        this.kSin = ksin;
-        return (T) this;
-    }
-
-    /**
      * Sets the PID parameters for Slot 0.
-     * @param kp Proportional gain
-     * @param ki Integral gain
-     * @param kd Derivative gain
-     * @param ks Static friction feedforward
-     * @param kv Velocity feedforward
-     * @param ka Acceleration feedforward
-     * @param kg Gravity feedforward
+     * @param kP Proportional gain
+     * @param kI Integral gain
+     * @param kD Derivative gain
+     * @param kS Static friction feedforward
+     * @param kV Velocity feedforward
+     * @param kA Acceleration feedforward
+     * @param kG Gravity feedforward
      * @return this configuration for chaining
      */
-    public T withPID(double kp, double ki, double kd, double ks, double kv, double ka, double kg) {
-        return withPID(0, kp, ki, kd, ks, kv, ka, kg);
+    public T withPID(double kP, double kI, double kD, double kS, double kV, double kA, double kG, double kSin, double kV2) {
+        return withPID(0, kP, kI, kD, kS, kV, kA, kG, kSin, kV2);
     }
     
     /**
      * Sets the PID parameters for a specific slot.
      * @param slot The PID slot index
-     * @param kp Proportional gain
-     * @param ki Integral gain
-     * @param kd Derivative gain
-     * @param ks Static friction feedforward
-     * @param kv Velocity feedforward
-     * @param ka Acceleration feedforward
-     * @param kg Gravity feedforward
+     * @param kP Proportional gain
+     * @param kI Integral gain
+     * @param kD Derivative gain
+     * @param kS Static friction feedforward
+     * @param kV Velocity feedforward
+     * @param kA Acceleration feedforward
+     * @param kG Gravity feedforward
      * @return this configuration for chaining
      */
     @SuppressWarnings("unchecked")
-    public T withPID(int slot, double kp, double ki, double kd, double ks, double kv, double ka, double kg) {
+    public T withPID(int slot, double kP, double kI, double kD, double kS, double kV, double kA, double kG, double kSin, double kV2) {
         if (slot >= 0 && slot < pid.length) {
-            pid[slot] = new CloseLoopParam(kp, ki, kd, ks, kv, ka, kg);
+            pid[slot] = new CloseLoopParam(kP, kI, kD, kS, kV, kA, kG, kSin, kV2);
         }
         return (T) this;
     }
@@ -306,8 +290,6 @@ public T withDetectStallInMotor(double current, double velocity, double seconds,
         this.brake = other.brake;
         this.motorRatio = other.motorRatio;
         this.inverted = other.inverted;
-        this.kv2 = other.kv2;
-        this.kSin = other.kSin;
         this.posToRad = other.posToRad;
         this.maxAcceleration = other.maxAcceleration;
         this.maxVelocity = other.maxVelocity;

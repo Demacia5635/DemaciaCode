@@ -244,15 +244,6 @@ public interface MotorInterface extends Sendable {
     double getMaxAcceleration();
 
     void setMaxAcceleration(double acceleration);
-    
-    // Feedforward Getters/Setters
-    double getKSin();
-
-    void setKSin(double kSin);
-
-    double getKV2();
-
-    void setKV2(double kV2);
 
     void updatePid(CloseLoopParam newParams, int slot);
 
@@ -284,9 +275,9 @@ public interface MotorInterface extends Sendable {
                 builder.addBooleanProperty("USE_KG", () -> flags[3], (v) -> flags[3] = v);
                 builder.addDoubleProperty("KG", pid::kG, pid::setKG);
                 builder.addBooleanProperty("USE_KSIN", () -> flags[4], (v) -> flags[4] = v);
-                builder.addDoubleProperty("KSIN", MotorInterface.this::getKSin, MotorInterface.this::setKSin);
+                builder.addDoubleProperty("KSIN", pid::kSin, pid::setKSin);
                 builder.addBooleanProperty("USE_KV2", () -> flags[5], (v) -> flags[5] = v);
-                builder.addDoubleProperty("KV2", MotorInterface.this::getKV2, MotorInterface.this::setKV2);
+                builder.addDoubleProperty("KV2", pid::kV2, pid::setKV2);
                 
                 builder.addBooleanProperty("Update", () -> configPidCmd.isScheduled(),
                     value -> {

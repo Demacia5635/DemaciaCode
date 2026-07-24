@@ -11,6 +11,7 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.demacia.utils.chassis.Chassis;
@@ -24,6 +25,9 @@ import frc.demacia.utils.sensors.Cancoder;
 
 public class ElasticGenerator {
     private static ElasticGenerator instance;
+
+    private static final int MAX_COLS = 10;
+    private static final int MAX_ROWS = 4;
 
     private List<MotorInterface> allMotors = new ArrayList<>();
     private List<SensorInterface> allSensors = new ArrayList<>();
@@ -102,7 +106,12 @@ public class ElasticGenerator {
         json.append("\n  ]\n");
         json.append("}\n");
 
-        File dir = new File("/home/lvuser/elastic_layouts");
+        File dir;
+        if (RobotBase.isSimulation()) {
+            dir = Filesystem.getDeployDirectory();
+        } else {
+            dir = new File("/home/lvuser/elastic_layouts");
+        }
         File file = new File(dir, "Generated_Elastic_Layout.json");
 
         try {
@@ -130,8 +139,6 @@ public class ElasticGenerator {
         StringBuilder sb = new StringBuilder();
         int tabIndex = 1;
         boolean firstTab = true;
-        final int MAX_COLS = 10;
-        final int MAX_ROWS = 4;
         final int MOTOR_WIDTH = 5;
 
         int motorIndex = 0;
@@ -287,7 +294,6 @@ public class ElasticGenerator {
             return sb.toString();
         }
     
-        final int MAX_COLS = 10;
         final int TAG_WIDTH = 2;
     
         int tagIndex = 0;
@@ -342,8 +348,6 @@ public class ElasticGenerator {
         StringBuilder sb = new StringBuilder();
         int tabIndex = 1;
         boolean firstTab = true;
-        int MAX_COLS = 10;
-        int MAX_ROWS = 4;
         int MOTOR_WIDTH = 2;
 
         int motorIndex = 0;
@@ -494,8 +498,6 @@ public class ElasticGenerator {
         if (mechanisms.isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
 
-        final int MAX_ROWS = 4;
-        final int MAX_COLS = 10;
         final int WIDGET_WIDTH = 2;
 
         for (int i = 0; i < mechanisms.size(); i++) {

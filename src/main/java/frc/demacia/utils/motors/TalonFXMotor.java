@@ -412,11 +412,11 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
   }
 
   private double velocityFeedForward(double velocity) {
-    return velocity * velocity * Math.signum(velocity) * config.kv2;
+    return velocity * velocity * Math.signum(velocity) * config.pid[0].kV2();
   }
 
   private double positionFeedForward(double position) {
-    return Math.cos(position * config.posToRad) * config.kSin;
+    return Math.cos(position * config.posToRad) * config.pid[0].kSin();
   }
 
   @Override
@@ -550,18 +550,6 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
   public void setMaxAcceleration(double acceleration) { config.maxAcceleration = acceleration; }
 
   @Override
-  public double getKSin() { return config.kSin; }
-
-  @Override
-  public void setKSin(double kSin) { config.kSin = kSin; }
-
-  @Override
-  public double getKV2() { return config.kv2; }
-
-  @Override
-  public void setKV2(double kV2) { config.kv2 = kV2; }
-
-  @Override
   public void updatePid(CloseLoopParam newParams, int slot) {
     config.pid[slot].setKP(newParams.kP());
     config.pid[slot].setKI(newParams.kI());
@@ -570,6 +558,8 @@ public class TalonFXMotor extends TalonFX implements MotorInterface {
     config.pid[slot].setKV(newParams.kV());
     config.pid[slot].setKA(newParams.kA());
     config.pid[slot].setKG(newParams.kG());
+    config.pid[slot].setKSin(newParams.kSin());
+    config.pid[slot].setKV2(newParams.kV2());
     applyPidHardware(slot);
   }
 

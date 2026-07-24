@@ -127,8 +127,8 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface {
     @SuppressWarnings({ "unchecked" })
     private void addLog() {
         Log.putData(name + ": abs Position", 
-            new Data[]{
-                absPositionSignal
+            new Supplier[]{
+                this::getCurrentAbsPosition
             }
             , LogLevel.LOG_ONLY, "sensors", false);
             
@@ -151,7 +151,7 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface {
     /**
      * Gets current position.
      * 
-     * @return Current relative position in Rotations
+     * @return Current relative position in Radians
      */
     public double get() {
         return getCurrentPosition();
@@ -160,39 +160,39 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface {
     /**
      * Gets the relative position since power-on.
      * 
-     * @return Relative position in Rotations
+     * @return Relative position in Radians
      */
     public double getCurrentPosition() {
-        return positionSignal.getDouble();
+        return positionSignal.getDouble() * 2 * Math.PI;
     }
 
     /**
      * Gets the absolute position (persists through power cycles).
      * 
      * <p>
-     * Value is in Rotations and includes configured offset.
+     * Value is in Radians and includes configured offset.
      * This is exactly the value you can copy-paste into the offset config.
      * </p>
      * 
-     * @return Absolute position in Rotations
+     * @return Absolute position in Radians
      */
     public double getCurrentAbsPosition() {
-        return absPositionSignal.getDouble();
+        return absPositionSignal.getDouble() * 2 * Math.PI;
     }
 
     /**
      * Gets the current velocity.
      * 
-     * @return Velocity in Rotations per second (RPS)
+     * @return Velocity in Radians per second (RPS)
      */
     public double getCurrentVelocity() {
-        return velocitySignal.getDouble();
+        return velocitySignal.getDouble() * 2 * Math.PI;
     }
 
     /**
      * Gets the current acceleration.
      * 
-     * @return Acceleration in Rotations per second² (RPS²)
+     * @return Acceleration in Radians per second² (RPS²)
      */
     public double getCurrentAcceleration() {
         double currentTimestamp = Timer.getFPGATimestamp();
