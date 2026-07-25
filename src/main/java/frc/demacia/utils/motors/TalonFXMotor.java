@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.demacia.utils.Data;
-import frc.demacia.utils.dashboard.ElasticGenerator;
+import frc.demacia.utils.elastic.ElasticGenerator;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.log.Log.LogLevel;
 import frc.demacia.utils.motors.BaseMotorConfig.Canbus;

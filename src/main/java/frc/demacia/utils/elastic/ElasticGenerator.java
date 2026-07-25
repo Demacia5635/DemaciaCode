@@ -1,4 +1,4 @@
-package frc.demacia.utils.dashboard;
+package frc.demacia.utils.elastic;
 
 import java.io.File;
 import java.io.IOException;

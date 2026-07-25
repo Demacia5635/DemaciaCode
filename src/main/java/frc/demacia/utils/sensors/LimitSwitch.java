@@ -5,9 +5,9 @@ import java.util.function.Supplier;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.demacia.utils.elastic.ElasticGenerator;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.log.Log.LogLevel;
-import frc.demacia.utils.dashboard.ElasticGenerator;
 
 /**
  * Digital limit switch sensor wrapper.
