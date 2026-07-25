@@ -16,7 +16,7 @@ package frc.demacia.utils.motors;
  */
 public class CloseLoopParam {
 
-    private double kP, kI, kD, kS, kV, kA, kG, kSin, kV2;
+    private double kP, kI, kD, kS, kV, kA, kG, kCos, kV2;
 
     /**
      * Default constructor. Initializes all parameters to zero.
@@ -34,8 +34,8 @@ public class CloseLoopParam {
      * @param kA Acceleration feed-forward (volts per unit/sec²)
      * @param kG Gravity feed-forward (volts)
      */
-    CloseLoopParam(double kP, double kI, double kD, double kS, double kV, double kA, double kG, double kSin, double kV2) {
-        set(kP, kI, kD, kS, kV, kA, kG, kSin, kV2);
+    CloseLoopParam(double kP, double kI, double kD, double kS, double kV, double kA, double kG, double kCos, double kV2) {
+        set(kP, kI, kD, kS, kV, kA, kG, kCos, kV2);
     }
 
     /**
@@ -50,7 +50,7 @@ public class CloseLoopParam {
         set(kP, kI, kD, 0, kf, 0, 0, 0, 0);
     }
 
-    public void set (double kP, double kI, double kD, double kS, double kV, double kA, double kG, double kSin, double kV2) {
+    public void set (double kP, double kI, double kD, double kS, double kV, double kA, double kG, double kCos, double kV2) {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
@@ -58,7 +58,7 @@ public class CloseLoopParam {
         this.kV = kV;
         this.kA = kA;
         this.kG = kG;
-        this.kSin = kSin;
+        this.kCos = kCos;
         this.kV2 = kV2;
     }
 
@@ -70,7 +70,7 @@ public class CloseLoopParam {
         this.kV = other.kV;
         this.kA = other.kA;
         this.kG = other.kG;
-        this.kSin = other.kSin;
+        this.kCos = other.kCos;
         this.kV2 = other.kV2;
     }
 
@@ -130,12 +130,12 @@ public class CloseLoopParam {
         this.kG = kG;
     }
 
-    public double kSin() {
-        return kSin;
+    public double kCos() {
+        return kCos;
     }
     
-    public void setKSin(double kSin) {
-        this.kSin = kSin;
+    public void setKCos(double kCos) {
+        this.kCos = kCos;
     }
 
     public double kV2() {

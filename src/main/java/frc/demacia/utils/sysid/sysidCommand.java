@@ -33,15 +33,24 @@ public class SysidCommand extends InstantCommand {
                 if (motorEntries != null && !motorEntries.isEmpty()) {
                     Log.log("Starting SysID for motor: " + rawName);
                     
-                    Sysid analyzer = new Sysid();
+                    Sysid analyzer = new Sysid(rawName, motorEntries, motor.getSysidFlags());
 
-                    CloseLoopParam params = analyzer.getPidParams(rawName, motorEntries, motor.getSysidFlags());
+                    CloseLoopParam params = analyzer.getParams();
+                    double maxVelocity = analyzer.getMaxVelocity();
+                    double maxAcceleration = analyzer.getMaxAcceleration();
+                    double maxJerk = analyzer.getMaxJerk();
 
                     if (params != null) {
                         motor.updatePid(params, 0);
                         Log.log("Successfully updated PID for: " + rawName);
                     } else {
                         Log.log("Failed to calculate valid PID for: " + rawName);
+                    }
+
+                    if (maxVelocity > 0) {
+                        motor.setMaxVelocity(maxVelocity);
+                        motor.setMaxAcceleration(maxAcceleration);
+                        motor.setMaxJerk(maxJerk);
                     }
                 } else {
                     Log.log("Skipping " + rawName + " - no log entries found.");

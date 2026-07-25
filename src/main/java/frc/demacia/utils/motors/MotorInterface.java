@@ -243,7 +243,11 @@ public interface MotorInterface extends Sendable {
 
     double getMaxAcceleration();
 
-    void setMaxAcceleration(double acceleration);
+    void setMaxAcceleration(double jerk);
+
+    double getMaxJerk();
+
+    void setMaxJerk(double jerk);
 
     void updatePid(CloseLoopParam newParams, int slot);
 
@@ -274,8 +278,8 @@ public interface MotorInterface extends Sendable {
                 builder.addDoubleProperty("KA", pid::kA, pid::setKA);
                 builder.addBooleanProperty("USE_KG", () -> flags[3], (v) -> flags[3] = v);
                 builder.addDoubleProperty("KG", pid::kG, pid::setKG);
-                builder.addBooleanProperty("USE_KSIN", () -> flags[4], (v) -> flags[4] = v);
-                builder.addDoubleProperty("KSIN", pid::kSin, pid::setKSin);
+                builder.addBooleanProperty("USE_KCOS", () -> flags[4], (v) -> flags[4] = v);
+                builder.addDoubleProperty("KCOS", pid::kCos, pid::setKCos);
                 builder.addBooleanProperty("USE_KV2", () -> flags[5], (v) -> flags[5] = v);
                 builder.addDoubleProperty("KV2", pid::kV2, pid::setKV2);
                 
@@ -303,6 +307,7 @@ public interface MotorInterface extends Sendable {
                 builder.setSmartDashboardType("Motion Magic Config");
                 builder.addDoubleProperty("Vel", MotorInterface.this::getMaxVelocity, MotorInterface.this::setMaxVelocity);
                 builder.addDoubleProperty("Acc", MotorInterface.this::getMaxAcceleration, MotorInterface.this::setMaxAcceleration);
+                builder.addDoubleProperty("Jerk", MotorInterface.this::getMaxJerk, MotorInterface.this::setMaxJerk);
                 builder.addBooleanProperty("Update", () -> configMotionMagicCmd.isScheduled(),
                     value -> {
                         if (value && !configMotionMagicCmd.isScheduled()) {

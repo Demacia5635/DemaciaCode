@@ -170,7 +170,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
   }
 
   private double positionFeedForward(double position) {
-    return Math.cos(position * config.posToRad) * config.pid[0].kSin();
+    return Math.cos(position * config.posToRad) * config.pid[0].kCos();
   }
 
   // --- MotorInterface Implementations ---
@@ -467,6 +467,12 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
   public void setMaxAcceleration(double acceleration) { config.maxAcceleration = acceleration; }
 
   @Override
+  public double getMaxJerk() { return config.maxJerk; }
+
+  @Override
+  public void setMaxJerk(double jerk) { config.maxJerk = jerk; }
+
+  @Override
   public void updatePid(CloseLoopParam newParams, int slot) {
     config.pid[slot].setKP(newParams.kP());
     config.pid[slot].setKI(newParams.kI());
@@ -475,7 +481,7 @@ public class SparkFlexMotor extends SparkFlex implements MotorInterface {
     config.pid[slot].setKV(newParams.kV());
     config.pid[slot].setKA(newParams.kA());
     config.pid[slot].setKG(newParams.kG());
-    config.pid[slot].setKSin(newParams.kSin());
+    config.pid[slot].setKCos(newParams.kCos());
     config.pid[slot].setKV2(newParams.kV2());
     applyPidHardware(slot);
   }

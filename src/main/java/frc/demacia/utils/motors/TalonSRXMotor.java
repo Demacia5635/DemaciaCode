@@ -253,7 +253,7 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
 
     @SuppressWarnings("unused")
     private double positionFeedForward(double position) {
-        return Math.cos(position * config.posToRad) * config.pid[0].kSin();
+        return Math.cos(position * config.posToRad) * config.pid[0].kCos();
     }
 
     @Override
@@ -332,7 +332,7 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
         config.pid[slot].setKV(newParams.kV());
         config.pid[slot].setKA(newParams.kA());
         config.pid[slot].setKG(newParams.kG());
-        config.pid[slot].setKSin(newParams.kSin());
+        config.pid[slot].setKCos(newParams.kCos());
         config.pid[slot].setKV2(newParams.kV2());
         
         applyPidHardware(slot);
@@ -447,6 +447,12 @@ public class TalonSRXMotor extends TalonSRX implements MotorInterface {
 
     @Override
     public void setMaxAcceleration(double acceleration) { config.maxAcceleration = acceleration; }
+
+    @Override
+    public double getMaxJerk() { return config.maxJerk; }
+  
+    @Override
+    public void setMaxJerk(double jerk) { config.maxJerk = jerk; }
 
     @Override
     public boolean isRadiansMotor() { return config.isRadiansMotor; }

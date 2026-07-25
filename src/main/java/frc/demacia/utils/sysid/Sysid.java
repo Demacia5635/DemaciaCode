@@ -1,8 +1,13 @@
 package frc.demacia.utils.sysid;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
+
 import org.ejml.simple.SimpleMatrix;
+
+import edu.wpi.first.math.MathUtil;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.log.LogReader.Entry;
 import frc.demacia.utils.log.LogReader.EntryPoint;
@@ -16,13 +21,29 @@ public class Sysid {
     private static final int[] SMOOTH_WINDOWS = {1, 2, 3, 4, 5};
     private static final double[] Z_SCORE_THRESHOLDS = {1.5, 2.0, 2.5, 3.0};
 
-    private KFlags kFlags = new KFlags(true, true, true, false, false, false);
+    private static final double MAX_VOLT = 12;
+    private static final double MIN_TIME_TO_MAX_VEL = 0.2;
+    private static final double MAX_TIME_TO_MAX_VEL = 1;
+    private static final double MAX_VEL_TIME_SCALAR = 1.2;
+    private static final double TIME_TO_MAX_ACCEL = 0.1;
+
+    private KFlags kFlags;
 
     private String name;
     private List<Entry> motorEntries;
+    private List<SyncedDataPoint> rawData;
+    private BucketResult result;
 
-    private class SyncedDataPoint {
-        double velocity, position, acceleration, rawAcceleration, voltage;
+    private CloseLoopParam param;
+    private double kP;
+    private double maxVelocity;
+    private double maxAcceleration;
+    private double maxJerk;
+
+    private boolean isCos;
+
+    private class SyncedDataPoint{
+        double velocity, position, acceleration, voltage;
         long timestamp;
         double error;
         
@@ -30,22 +51,27 @@ public class Sysid {
             this.velocity = velocity;
             this.position = position;
             this.acceleration = acceleration;
-            this.rawAcceleration = acceleration;
             this.voltage = voltage;
             this.timestamp = timestamp;
+        }
+
+        SyncedDataPoint copy() {
+            SyncedDataPoint c = new SyncedDataPoint(velocity, position, acceleration, voltage, timestamp);
+            c.error = error;
+            return c;
         }
     }
 
     private class BucketResult {
-        double kS, kV, kA, kG, kSin, kV2, avgError, maxError, rSquared;
+        double kS, kV, kA, kG, kCos, kV2, avgError, maxError, rSquared;
         int points, rawPoints;
 
-        BucketResult(double kS, double kV, double kA, double kG, double kSin, double kV2, double avgError, double maxError, int points, double rSquared) {
+        BucketResult(double kS, double kV, double kA, double kG, double kCos, double kV2, double avgError, double maxError, int points, double rSquared) {
             this.kS = kS;
             this.kV = kV;
             this.kA = kA;
             this.kG = kG;
-            this.kSin = kSin;
+            this.kCos = kCos;
             this.kV2 = kV2;
             this.avgError = avgError;
             this.maxError = maxError;
@@ -54,16 +80,67 @@ public class Sysid {
         }
     }
 
-    private class KFlags {
-        boolean useKS, useKV, useKA, useKG, useKSin, useKV2;
+    private class KFlags implements Iterable<Boolean>{
+        boolean useKS, useKV, useKA, useKG, useKCos, useKV2;
         
-        KFlags(boolean useKS, boolean useKV, boolean useKA, boolean useKG, boolean useKSin, boolean useKV2) {
+        KFlags(boolean useKS, boolean useKV, boolean useKA, boolean useKG, boolean useKCos, boolean useKV2) {
             this.useKS = useKS;
             this.useKV = useKV;
             this.useKA = useKA;
             this.useKG = useKG;
-            this.useKSin = useKSin;
+            this.useKCos = useKCos;
             this.useKV2 = useKV2;
+        }
+
+        @Override
+        public Iterator<Boolean> iterator() {
+            return new Iterator<Boolean>() {
+                private int currentIndex = 0;
+
+                @Override
+                public boolean hasNext() {
+                    return currentIndex < 6;
+                }
+
+                @Override
+                public Boolean next() {
+                    switch (currentIndex++) {
+                        case 0: return useKS;
+                        case 1: return useKV;
+                        case 2: return useKA;
+                        case 3: return useKG;
+                        case 4: return useKCos;
+                        case 5: return useKV2;
+                        default: throw new NoSuchElementException("No more flags available.");
+                    }
+                }
+            };
+        }
+    }
+
+    private static class KFunctions {
+        public static double sFunction(double vel) {
+            return Math.signum(vel);
+        }
+        
+        public static double vFunction(double vel) {
+            return vel;
+        }
+        
+        public static double aFunction(double accel) {
+            return accel;
+        }
+        
+        public static double gFunction() {
+            return 1;
+        }
+        
+        public static double cosFunction(double pos, boolean isCos) {
+            return isCos ? Math.cos(pos) : Math.sin(pos);
+        }
+        
+        public static double v2Function(double vel) {
+            return vel * Math.abs(vel);
         }
     }
 
@@ -77,49 +154,75 @@ public class Sysid {
         return motors;
     }
 
-    public CloseLoopParam getPidParams(String name, List<Entry> motorEntries, boolean[] kFlags) {
+    public Sysid(String name, List<Entry> motorEntries, boolean[] kFlags) {
         Log.log("Performing analysis...");
 
         this.name = name;
         this.motorEntries = motorEntries;
-        this.kFlags = new KFlags(kFlags[0], kFlags[1], kFlags[2], kFlags[3], kFlags[4], kFlags[5]);;
+        if (kFlags.length == 6){
+            this.kFlags = new KFlags(kFlags[0], kFlags[1], kFlags[2], kFlags[3], kFlags[4], kFlags[5]);
+        } else {
+            this.kFlags = new KFlags(true, true, true, false, false, false);
+            Log.log("kFlags shuold have 6 flags for kS, kV, kA, kG, kCos, kV2");
+        }
+        rawData = new ArrayList<>();
+        isCos = true;
 
-        BucketResult result = analyzeGroup();
+        analyzeGroup();
 
-        CloseLoopParam param = new CloseLoopParam();
+        param = new CloseLoopParam();
 
         if (result == null) {
-            return null;
+            return;
         }
-
-        double kp = 0;
 
         if (result.kA > 0){
             double kASafe = Math.max(result.kA, 0.01);
         
-            kp = result.kV / kASafe;
+            kP = result.kV / kASafe;
         }
         
         param.set(
-            kp,
+            kP,
             0.0,
             0.0,
             result.kS,
             result.kV,
             result.kA,
             result.kG,
-            result.kSin,
+            result.kCos,
             result.kV2
         );
 
+        if (result.kV != 0) {
+            maxVelocity = (MAX_VOLT - result.kS) / result.kV;
+            double timeToMaxVel = result.kA / result.kV * MAX_VEL_TIME_SCALAR;
+            timeToMaxVel = MathUtil.clamp(timeToMaxVel, MIN_TIME_TO_MAX_VEL, MAX_TIME_TO_MAX_VEL);
+            maxAcceleration = maxVelocity / timeToMaxVel;
+            maxJerk = maxAcceleration / TIME_TO_MAX_ACCEL;
+        }
+
         Log.log(name + " analysis complete.");
+    }
+
+    public CloseLoopParam getParams() {
         return param;
     }
 
-    private BucketResult analyzeGroup() {
-        List<SyncedDataPoint> syncedData = new ArrayList<>();
+    public double getMaxVelocity() {
+        return maxVelocity;
+    }
 
-        if (motorEntries == null || motorEntries.isEmpty()) return null;
+    public double getMaxAcceleration() {
+        return maxAcceleration;
+    }
+
+    public double getMaxJerk() {
+        return maxJerk;
+    }
+
+    private void analyzeGroup() {
+        if (motorEntries == null || motorEntries.isEmpty()) return;
 
         Entry posEntry = null;
         Entry velEntry = null;
@@ -163,39 +266,38 @@ public class Sysid {
                     double volt = ((Number) voltVal).doubleValue();
                     long time = posEntry.data.get(i).time;
 
-                    syncedData.add(new SyncedDataPoint(vel, pos, accel, volt, time));
+                    rawData.add(new SyncedDataPoint(vel, pos, accel, volt, time));
                 }
             }
         }
 
-        if (syncedData.isEmpty()) {
+        if (rawData.isEmpty()) {
             for (Entry entry : motorEntries) {
                 for (EntryPoint dp : entry.data) {
                     if (dp.value instanceof double[]) {
                         double[] vals = (double[]) dp.value;
                         if (vals.length >= 4) {
-                            syncedData.add(new SyncedDataPoint(vals[1], vals[0], vals[2], vals[3], dp.time));
+                            rawData.add(new SyncedDataPoint(vals[1], vals[0], vals[2], vals[3], dp.time));
                         }
                     } else if (dp.value instanceof float[]) {
                         float[] vals = (float[]) dp.value;
                         if (vals.length >= 4) {
-                            syncedData.add(new SyncedDataPoint(vals[1], vals[0], vals[2], vals[3], dp.time));
+                            rawData.add(new SyncedDataPoint(vals[1], vals[0], vals[2], vals[3], dp.time));
                         }
                     }
                 }
             }
         }
 
-        System.out.println("Group: " + name + " | Total data points: " + syncedData.size());
-        if (syncedData.isEmpty()) return null;
+        System.out.println("Group: " + name + " | Total data points: " + rawData.size());
+        if (rawData.isEmpty()) return;
 
-        syncedData.sort((p1, p2) -> Long.compare(p1.timestamp, p2.timestamp));
+        rawData.sort((p1, p2) -> Long.compare(p1.timestamp, p2.timestamp));
         
-        return calculateResult(syncedData, name);
+        calculateResult();
     }
 
-    private BucketResult calculateResult(List<SyncedDataPoint> rawData, String name) {
-        BucketResult model = null;
+    private void calculateResult() {
         double bestAvgError = Double.MAX_VALUE;
 
         for (double voltageThreshold : VOLTAGE_THRESHOLDS) {
@@ -211,88 +313,61 @@ public class Sysid {
                     if (refinedData.size() < 10) continue;
 
                     BucketResult candidateModel = solveOLS(refinedData);
-
-                    double currentKS = kFlags.useKS ? candidateModel.kS : 0;
-                    double currentKA = kFlags.useKA ? candidateModel.kA : 0;
-
-                    if (currentKA < 0 || currentKS < 0) {
-                        continue;
-                    }
                     
                     if (candidateModel != null) {
-                        double sumErr = 0;
-                        double maxErr = 0;
-
-                        for(SyncedDataPoint p : rawData) {
-                            double pred = 0;
-                            if(kFlags.useKS) pred += candidateModel.kS * Math.signum(p.velocity);
-                            if(kFlags.useKV) pred += candidateModel.kV * p.velocity;
-                            if(kFlags.useKA) pred += candidateModel.kA * p.acceleration;
-                            if(kFlags.useKG) pred += candidateModel.kG * 1.0;
-                            if(kFlags.useKSin) pred += candidateModel.kSin * Math.cos(p.position);
-                            if(kFlags.useKV2) pred += candidateModel.kV2 * p.velocity * Math.abs(p.velocity);
-                            
-                            double error = Math.abs(p.voltage - pred);
-                            sumErr += error;
-                            if(error > maxErr) maxErr = error;
+                        double currentKS = kFlags.useKS ? candidateModel.kS : 0;
+                        double currentKA = kFlags.useKA ? candidateModel.kA : 0;
+                        double currentKV = kFlags.useKV ? candidateModel.kV : 0;
+    
+                        if (currentKA < 0 || currentKS < 0|| currentKV < 0) {
+                            continue;
                         }
 
-                        candidateModel.avgError = sumErr / rawData.size();
-                        candidateModel.maxError = maxErr;
                         candidateModel.rawPoints = rawData.size();
 
                         if (candidateModel.avgError < bestAvgError) {
                             bestAvgError = candidateModel.avgError;
-                            model = candidateModel;
+                            result = candidateModel;
                         }
                     }
                 }
             }
         }
         
-        if (model == null) {
-            return null;
-        }
+        if (result == null) return;
+
+        checkZeroPos(result);
         
         double sumErr = 0;
         double maxErr = 0;
 
-        for(SyncedDataPoint p : rawData) {
-            double pred = 0;
-            if(kFlags.useKS) pred += model.kS * Math.signum(p.velocity);
-            if(kFlags.useKV) pred += model.kV * p.velocity;
-            if(kFlags.useKA) pred += model.kA * p.acceleration;
-            if(kFlags.useKG) pred += model.kG * 1.0;
-            if(kFlags.useKSin) pred += model.kSin * Math.cos(p.position);
-            if(kFlags.useKV2) pred += model.kV2 * p.velocity * Math.abs(p.velocity);
-            
+        for (SyncedDataPoint p : rawData) {
+            double pred = calculatePredictedVoltage(p, result);
             double error = Math.abs(p.voltage - pred);
             sumErr += error;
             if(error > maxErr) maxErr = error;
         }
 
-        model.avgError = sumErr / rawData.size();
-        model.maxError = maxErr;
-        model.rawPoints = rawData.size();
+        result.avgError = sumErr / rawData.size();
+        result.maxError = maxErr;
+        result.rawPoints = rawData.size();
 
-        Log.log(name + " avg Error: " + model.avgError);
-        Log.log(name + " max Error: " + model.maxError);
-        Log.log(name + " used Points size: " + model.points);
-        Log.log(name + " raw Points size: " + model.rawPoints);
-        Log.log(name + " r Squared: " + model.rSquared);
-    
-        return model;
+        Log.log(name + " avg Error: " + result.avgError);
+        Log.log(name + " max Error: " + result.maxError);
+        Log.log(name + " used Points size: " + result.points);
+        Log.log(name + " raw Points size: " + result.rawPoints);
+        Log.log(name + " r Squared: " + result.rSquared);
     }
 
-    private List<SyncedDataPoint> filterAndSmooth(List<SyncedDataPoint> rawData, double voltageThresh, int windowSize) {
+    private List<SyncedDataPoint> filterAndSmooth(List<SyncedDataPoint> data, double voltageThresh, int windowSize) {
         List<SyncedDataPoint> filtered = new ArrayList<>();
-        for (int i = 0; i < rawData.size(); i++) {
-            SyncedDataPoint current = rawData.get(i);
+        for (int i = 0; i < data.size(); i++) {
+            SyncedDataPoint current = data.get(i).copy();
             
             double sumAccel = 0;
             int count = 0;
-            for (int j = Math.max(0, i - windowSize/2); j < Math.min(rawData.size(), i + windowSize/2 + 1); j++) {
-                sumAccel += rawData.get(j).rawAcceleration;
+            for (int j = Math.max(0, i - windowSize/2); j < Math.min(data.size(), i + windowSize/2 + 1); j++) {
+                sumAccel += data.get(j).acceleration;
                 count++;
             }
             current.acceleration = sumAccel / count;
@@ -307,24 +382,10 @@ public class Sysid {
     private List<SyncedDataPoint> removeOutliers(List<SyncedDataPoint> data, BucketResult model, double zScoreThreshold) {
         if (zScoreThreshold <= 0) return data;
 
-        double kS = model.kS;
-        double kV = model.kV;
-        double kA = model.kA;
-        double kG = model.kG;
-        double kCos = model.kSin;
-        double kV2 = model.kV2;
-
         double sumError = 0;
 
         for (SyncedDataPoint p : data) {
-            double pred = 0;
-            if(kFlags.useKS) pred += kS * Math.signum(p.velocity);
-            if(kFlags.useKV) pred += kV * p.velocity;
-            if(kFlags.useKA) pred += kA * p.acceleration;
-            if(kFlags.useKG) pred += kG * 1.0;
-            if(kFlags.useKSin) pred += kCos * Math.cos(p.position);
-            if(kFlags.useKV2) pred += kV2 * p.velocity * Math.abs(p.velocity);
-            
+            double pred = calculatePredictedVoltage(p, model);
             p.error = Math.abs(p.voltage - pred);
             sumError += p.error;
         }
@@ -352,12 +413,9 @@ public class Sysid {
     private BucketResult solveOLS(List<SyncedDataPoint> data) {
         int n = data.size();
         int numParams = 0;
-        if(kFlags.useKS) numParams++;
-        if(kFlags.useKV) numParams++;
-        if(kFlags.useKA) numParams++;
-        if(kFlags.useKG) numParams++;
-        if(kFlags.useKSin) numParams++;
-        if(kFlags.useKV2) numParams++;
+        for (boolean kFlag : kFlags) {
+            if(kFlag) numParams++;
+        }
 
         if(numParams == 0) return null;
 
@@ -369,12 +427,12 @@ public class Sysid {
             b.set(i, 0, p.voltage);
 
             int col = 0;
-            if(kFlags.useKS) A.set(i, col++, Math.signum(p.velocity));
-            if(kFlags.useKV) A.set(i, col++, p.velocity);
-            if(kFlags.useKA) A.set(i, col++, p.acceleration);
-            if(kFlags.useKG) A.set(i, col++, 1.0);
-            if(kFlags.useKSin) A.set(i, col++, Math.cos(p.position));
-            if(kFlags.useKV2) A.set(i, col++, p.velocity * Math.abs(p.velocity));
+            if(kFlags.useKS) A.set(i, col++, KFunctions.sFunction(p.velocity));
+            if(kFlags.useKV) A.set(i, col++, KFunctions.vFunction(p.velocity));
+            if(kFlags.useKA) A.set(i, col++, KFunctions.aFunction(p.acceleration));
+            if(kFlags.useKG) A.set(i, col++, KFunctions.gFunction());
+            if(kFlags.useKCos) A.set(i, col++, KFunctions.cosFunction(p.position, isCos));
+            if(kFlags.useKV2) A.set(i, col++, KFunctions.v2Function(p.velocity));
         }
 
         SimpleMatrix x;
@@ -386,32 +444,70 @@ public class Sysid {
 
         double[] k = new double[6];
         int col = 0;
-        if(kFlags.useKS) k[0] = x.get(col++);
-        if(kFlags.useKV) k[1] = x.get(col++);
-        if(kFlags.useKA) k[2] = x.get(col++);
-        if(kFlags.useKG) k[3] = x.get(col++);
-        if(kFlags.useKSin) k[4] = x.get(col++);
-        if(kFlags.useKV2) k[5] = x.get(col++);
+        int index = 0;
+        
+        for (boolean kFlag : kFlags) {
+            if(kFlag) k[index] = x.get(col++);
+            index++;
+        }
 
         double ssTot = 0, ssRes = 0, meanV = 0;
         for(SyncedDataPoint p : data) meanV += p.voltage;
         meanV /= n;
 
+        BucketResult olsResult = new BucketResult(k[0], k[1], k[2], k[3], k[4], k[5], 0, 0, 0, 0);
+        
         for (SyncedDataPoint p : data) {
-            double pred = 0;
-            if(kFlags.useKS) pred += k[0] * Math.signum(p.velocity);
-            if(kFlags.useKV) pred += k[1] * p.velocity;
-            if(kFlags.useKA) pred += k[2] * p.acceleration;
-            if(kFlags.useKG) pred += k[3] * 1.0;
-            if(kFlags.useKSin) pred += k[4] * Math.cos(p.position);
-            if(kFlags.useKV2) pred += k[5] * p.velocity * Math.abs(p.velocity);
+            double pred = calculatePredictedVoltage(p, olsResult);
 
             ssTot += Math.pow(p.voltage - meanV, 2);
             ssRes += Math.pow(p.voltage - pred, 2);
         }
 
-        double r2 = 1 - (ssRes / ssTot);
+        double sumErr = 0;
+        double maxErr = 0;
 
-        return new BucketResult(k[0], k[1], k[2], k[3], k[4], k[5], 0, 0, n, r2);
+        for(SyncedDataPoint p : rawData) {
+            double pred = calculatePredictedVoltage(p, olsResult);
+            double error = Math.abs(p.voltage - pred);
+            sumErr += error;
+            if(error > maxErr) maxErr = error;
+        }
+
+        double avgError = sumErr / rawData.size();
+        double maxError = maxErr;
+        double r2 = 0;
+
+        if (ssTot != 0) r2 = 1 - (ssRes / ssTot);
+
+        return new BucketResult(k[0], k[1], k[2], k[3], k[4], k[5], avgError, maxError, n, r2);
+    }
+
+    private double calculatePredictedVoltage(SyncedDataPoint p, BucketResult model) {
+        double pred = 0;
+        if(kFlags.useKS) pred += model.kS * KFunctions.sFunction(p.velocity);
+        if(kFlags.useKV) pred += model.kV * KFunctions.vFunction(p.velocity);
+        if(kFlags.useKA) pred += model.kA * KFunctions.aFunction(p.acceleration);
+        if(kFlags.useKG) pred += model.kG * KFunctions.gFunction();
+        if(kFlags.useKCos) pred += model.kCos * KFunctions.cosFunction(p.position, isCos);
+        if(kFlags.useKV2) pred += model.kV2 * KFunctions.v2Function(p.velocity);
+        return pred;
+    }
+
+    private void checkZeroPos(BucketResult result) {
+        boolean prevIsCos = isCos;
+        isCos = false;
+
+        try {
+            List<SyncedDataPoint> cleanData = filterAndSmooth(rawData, VOLTAGE_THRESHOLDS[0], SMOOTH_WINDOWS[0]);
+            BucketResult sinResult = solveOLS(cleanData);
+
+            if (sinResult != null && sinResult.avgError < result.avgError) {
+                Log.log("its seems " + name
+                        + " zero is not Supported by the code, the zero should be forward like Unit Circle");
+            }
+        } finally {
+            isCos = prevIsCos;
+        }
     }
 }
