@@ -3,16 +3,21 @@ package frc.demacia.utils.motors;
 /**
  * Container class for closed-loop control parameters (PID + feed-forward).
  * 
- * <p>Stores seven control parameters used for precise motor control:</p>
+ * <p>
+ * Stores seven control parameters used for precise motor control:
+ * </p>
  * <ul>
- *   <li>kP, kI, kD - PID gains</li>
- *   <li>kS - Static friction compensation</li>
- *   <li>kV - Velocity feed-forward</li>
- *   <li>kA - Acceleration feed-forward</li>
- *   <li>kG - Gravity feed-forward</li>
+ * <li>kP, kI, kD - PID gains</li>
+ * <li>kS - Static friction compensation</li>
+ * <li>kV - Velocity feed-forward</li>
+ * <li>kA - Acceleration feed-forward</li>
+ * <li>kG - Gravity feed-forward</li>
  * </ul>
  * 
- * <p><b>Note:</b> This class calculates output in <i>volts</i>, not normalized [-1, 1].</p>
+ * <p>
+ * <b>Note:</b> This class calculates output in <i>volts</i>, not normalized
+ * [-1, 1].
+ * </p>
  */
 public class CloseLoopParam {
 
@@ -21,7 +26,8 @@ public class CloseLoopParam {
     /**
      * Default constructor. Initializes all parameters to zero.
      */
-    public CloseLoopParam() {}
+    public CloseLoopParam() {
+    }
 
     /**
      * Constructor with all seven control parameters.
@@ -34,7 +40,8 @@ public class CloseLoopParam {
      * @param kA Acceleration feed-forward (volts per unit/sec²)
      * @param kG Gravity feed-forward (volts)
      */
-    CloseLoopParam(double kP, double kI, double kD, double kS, double kV, double kA, double kG, double kCos, double kV2) {
+    CloseLoopParam(double kP, double kI, double kD, double kS, double kV, double kA, double kG, double kCos,
+            double kV2) {
         set(kP, kI, kD, kS, kV, kA, kG, kCos, kV2);
     }
 
@@ -50,7 +57,8 @@ public class CloseLoopParam {
         set(kP, kI, kD, 0, kf, 0, 0, 0, 0);
     }
 
-    public void set (double kP, double kI, double kD, double kS, double kV, double kA, double kG, double kCos, double kV2) {
+    public void set(double kP, double kI, double kD, double kS, double kV, double kA, double kG, double kCos,
+            double kV2) {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
@@ -77,7 +85,7 @@ public class CloseLoopParam {
     public double kP() {
         return kP;
     }
-    
+
     public void setKP(double kP) {
         this.kP = kP;
     }
@@ -85,7 +93,7 @@ public class CloseLoopParam {
     public double kI() {
         return kI;
     }
-    
+
     public void setKI(double kI) {
         this.kI = kI;
     }
@@ -93,7 +101,7 @@ public class CloseLoopParam {
     public double kD() {
         return kD;
     }
-    
+
     public void setKD(double kD) {
         this.kD = kD;
     }
@@ -101,7 +109,7 @@ public class CloseLoopParam {
     public double kS() {
         return kS;
     }
-    
+
     public void setKS(double kS) {
         this.kS = kS;
     }
@@ -109,7 +117,7 @@ public class CloseLoopParam {
     public double kV() {
         return kV;
     }
-    
+
     public void setKV(double kV) {
         this.kV = kV;
     }
@@ -117,7 +125,7 @@ public class CloseLoopParam {
     public double kA() {
         return kA;
     }
-    
+
     public void setKA(double kA) {
         this.kA = kA;
     }
@@ -125,7 +133,7 @@ public class CloseLoopParam {
     public double kG() {
         return kG;
     }
-    
+
     public void setKG(double kG) {
         this.kG = kG;
     }
@@ -133,7 +141,7 @@ public class CloseLoopParam {
     public double kCos() {
         return kCos;
     }
-    
+
     public void setKCos(double kCos) {
         this.kCos = kCos;
     }
@@ -141,7 +149,7 @@ public class CloseLoopParam {
     public double kV2() {
         return kV2;
     }
-    
+
     public void setKV2(double kV2) {
         this.kV2 = kV2;
     }

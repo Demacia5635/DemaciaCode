@@ -41,16 +41,14 @@ public class SysidCommand extends InstantCommand {
                     double maxJerk = analyzer.getMaxJerk();
 
                     if (params != null) {
-                        motor.updatePid(params, 0);
+                        motor.setConfigPidFf(params, 0);
                         Log.log("Successfully updated PID for: " + rawName);
                     } else {
                         Log.log("Failed to calculate valid PID for: " + rawName);
                     }
 
                     if (maxVelocity > 0) {
-                        motor.setMaxVelocity(maxVelocity);
-                        motor.setMaxAcceleration(maxAcceleration);
-                        motor.setMaxJerk(maxJerk);
+                        motor.setConfigMotionParam(maxVelocity, maxAcceleration, maxJerk);
                     }
                 } else {
                     Log.log("Skipping " + rawName + " - no log entries found.");

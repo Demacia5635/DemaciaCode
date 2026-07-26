@@ -371,7 +371,7 @@ public class BaseMechanism extends SubsystemBase{
     public void setVoltage(String motorName, double voltage){
         MotorNode node = motors.get(motorName);
         if (node != null) {
-            node.motor.setVolt(voltage);
+            node.motor.setVoltage(voltage);
         }
     }
 
