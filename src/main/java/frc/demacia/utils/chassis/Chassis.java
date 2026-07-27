@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -216,6 +217,10 @@ public class Chassis extends SubsystemBase {
     public void setSpeedsFieldRel(ChassisSpeeds speeds) {
         SwerveModuleState[] states = demaciaKinematics.toSwerveModuleStates(speeds);
         setModuleStates(states);
+
+        if (RobotBase.isSimulation()) {
+            gyro.getSimState().setRawYaw(Math.toDegrees(gyro.getCurrentYaw() + speeds.omegaRadiansPerSecond * 0.02));
+        }
     }
 
     public void setSpeedsRobotRel(ChassisSpeeds speeds) {
