@@ -79,7 +79,7 @@ public class RobotChassisConstants {
               .withPID(STEER_KP, STEER_KI, STEER_KD, STEER_KS, STEER_KV, STEER_KA, 0, 0, 0)
               .withMotionParam(STEER_MOTION_MAGIC_VEL, STEER_MOTION_MAGIC_ACCEL, STEER_MOTION_MAGIC_JERK)
               .withBrake(true)
-              .withInvert(true)
+              .withInvert(false)
               .withRadiansMotor(STEER_GEAR_RATIO)
               .withRampTime(RAMP_TIME_STEER),
           new TalonFXConfig(i * 3 + 1, CAN_BUS, name + " Drive")

@@ -374,7 +374,8 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setConfigPidFf(CloseLoopParam newParams, int Slot) {
-    config.pidFfParams[slot] = new CloseLoopParam();
+    config.pidFfParams[slot] = newParams;
+    configPidFf(config.pidFfParams);
     applyPidFfConfigs(slot);
   }
 
@@ -401,24 +402,23 @@ public abstract class BaseMotor implements MotorInterface {
       @Override
       public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("PID+FF Config");
-        CloseLoopParam pidFf = config.pidFfParams[slot];
         boolean[] flags = getSysidFlags();
 
-        builder.addDoubleProperty("KP", pidFf::kP, pidFf::setKP);
-        builder.addDoubleProperty("KI", pidFf::kI, pidFf::setKI);
-        builder.addDoubleProperty("KD", pidFf::kD, pidFf::setKD);
+        builder.addDoubleProperty("KP", () -> config.pidFfParams[slot].kP(), (v) -> config.pidFfParams[slot].setKP(v));
+        builder.addDoubleProperty("KI", () -> config.pidFfParams[slot].kI(), (v) -> config.pidFfParams[slot].setKI(v));
+        builder.addDoubleProperty("KD", () -> config.pidFfParams[slot].kD(), (v) -> config.pidFfParams[slot].setKD(v));
         builder.addBooleanProperty("USE_KS", () -> flags[0], (v) -> flags[0] = v);
-        builder.addDoubleProperty("KS", pidFf::kS, pidFf::setKS);
+        builder.addDoubleProperty("KS", () -> config.pidFfParams[slot].kS(), (v) -> config.pidFfParams[slot].setKS(v));
         builder.addBooleanProperty("USE_KV", () -> flags[1], (v) -> flags[1] = v);
-        builder.addDoubleProperty("KV", pidFf::kV, pidFf::setKV);
+        builder.addDoubleProperty("KV", () -> config.pidFfParams[slot].kV(), (v) -> config.pidFfParams[slot].setKV(v));
         builder.addBooleanProperty("USE_KA", () -> flags[2], (v) -> flags[2] = v);
-        builder.addDoubleProperty("KA", pidFf::kA, pidFf::setKA);
+        builder.addDoubleProperty("KA", () -> config.pidFfParams[slot].kA(), (v) -> config.pidFfParams[slot].setKA(v));
         builder.addBooleanProperty("USE_KG", () -> flags[3], (v) -> flags[3] = v);
-        builder.addDoubleProperty("KG", pidFf::kG, pidFf::setKG);
+        builder.addDoubleProperty("KG", () -> config.pidFfParams[slot].kG(), (v) -> config.pidFfParams[slot].setKG(v));
         builder.addBooleanProperty("USE_KCOS", () -> flags[4], (v) -> flags[4] = v);
-        builder.addDoubleProperty("KCOS", pidFf::kCos, pidFf::setKCos);
+        builder.addDoubleProperty("KCOS", () -> config.pidFfParams[slot].kCos(), (v) -> config.pidFfParams[slot].setKCos(v));
         builder.addBooleanProperty("USE_KV2", () -> flags[5], (v) -> flags[5] = v);
-        builder.addDoubleProperty("KV2", pidFf::kV2, pidFf::setKV2);
+        builder.addDoubleProperty("KV2", () -> config.pidFfParams[slot].kV2(), (v) -> config.pidFfParams[slot].setKV2(v));
 
         builder.addBooleanProperty("Update", () -> configPidFfCmd.isScheduled(),
             value -> {

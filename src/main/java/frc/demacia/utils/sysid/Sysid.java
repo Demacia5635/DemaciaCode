@@ -173,6 +173,7 @@ public class Sysid {
         param = new CloseLoopParam();
 
         if (result == null) {
+            param = null;
             return;
         }
 
@@ -336,7 +337,9 @@ public class Sysid {
         
         if (result == null) return;
 
-        checkZeroPos(result);
+        if (kFlags.useKCos) {
+            checkZeroPos(result);
+        }
         
         double sumErr = 0;
         double maxErr = 0;
