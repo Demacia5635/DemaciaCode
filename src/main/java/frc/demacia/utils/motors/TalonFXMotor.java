@@ -10,6 +10,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.demacia.utils.Data;
 import frc.demacia.utils.log.Log;
@@ -37,6 +39,7 @@ public class TalonFXMotor extends BaseMotor {
    * 
    * @param config The configuration object for this motor
    */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   public TalonFXMotor(TalonFXConfig config) {
     super(config);
 
@@ -45,6 +48,21 @@ public class TalonFXMotor extends BaseMotor {
     velocityVoltage = new VelocityVoltage(0).withSlot(getSlot());
     motionMagicVoltage = new MotionMagicVoltage(0).withSlot(getSlot());
     positionVoltage = new PositionVoltage(0).withSlot(getSlot());
+
+    if (RobotBase.isSimulation()) {
+      motor.getSimState().setSupplyVoltage(12);
+      
+      new Data(() -> {
+        double vel = getCurrentVelocity();
+        double pos = getCurrentPosition();
+    
+        double newPos = pos + vel * 0.02;
+        double newPosRot = newPos * config.motorRatio * (config.inverted ? -1 : 1);
+
+        motor.getSimState().setRawRotorPosition(newPosRot);
+        return 0;
+      });
+    }
   }
 
   protected void createMotor() {
@@ -69,8 +87,8 @@ public class TalonFXMotor extends BaseMotor {
   }
 
   protected void configIsInverted(boolean isInverted) {
-    cfg.MotorOutput.Inverted = isInverted ? InvertedValue.CounterClockwise_Positive
-        : InvertedValue.Clockwise_Positive;
+    cfg.MotorOutput.Inverted = isInverted ? InvertedValue.Clockwise_Positive
+        : InvertedValue.CounterClockwise_Positive;
   }
 
   protected void configNeutralMode(boolean isBrake) {
@@ -162,26 +180,51 @@ public class TalonFXMotor extends BaseMotor {
 
   protected void stopMotor() {
     motor.stopMotor();
+
+    if (RobotBase.isSimulation()) {
+      motor.getSimState().setRotorVelocity(0);
+    }
   }
 
   protected void setMotorDuty(double power) {
     motor.setControl(dutyCycle.withOutput(power));
+
+    if (RobotBase.isSimulation()) {
+      motor.getSimState().setRotorVelocity(power * MAX_SIM_VEL * config.motorRatio * (config.inverted ? -1 : 1));
+    }
   }
 
   protected void setMotorVoltage(double voltage) {
     motor.setControl(voltageOut.withOutput(voltage));
+
+    if (RobotBase.isSimulation()) {
+      double power = voltage / 12.0;
+      motor.getSimState().setRotorVelocity(power * MAX_SIM_VEL * config.motorRatio * (config.inverted ? -1 : 1));
+    }
   }
 
   protected void setMotorVelocity(double velocity, double feedForward) {
     motor.setControl(velocityVoltage.withVelocity(velocity).withFeedForward(feedForward));
+
+    if (RobotBase.isSimulation()) {
+      motor.getSimState().setRotorVelocity(velocity * config.motorRatio * (config.inverted ? -1 : 1));
+    }
   }
 
   protected void setMotorPositionVoltage(double position, double feedForward) {
     motor.setControl(positionVoltage.withPosition(position).withFeedForward(feedForward));
+
+    if (RobotBase.isSimulation()) {
+      motor.getSimState().setRawRotorPosition(position * config.motorRatio * (config.inverted ? -1 : 1));
+    }
   }
 
   protected void setMotorMotionMagic(double position, double feedForward) {
     motor.setControl(motionMagicVoltage.withPosition(position).withFeedForward(feedForward));
+
+    if (RobotBase.isSimulation()) {
+      motor.getSimState().setRawRotorPosition(position * config.motorRatio * (config.inverted ? -1 : 1));
+    }
   }
 
   @Override

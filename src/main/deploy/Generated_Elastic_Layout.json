@@ -641,9 +641,86 @@
         "containers": [
           {
             "type": "Boolean Box",
-            "title": "Front Left Cancoder",
+            "title": "test motor",
             "x": 0.0,
             "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/test motor/is Connected",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "type": "ComboBox Chooser",
+            "title": "Value Control",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/test motor/Value Control Mode Chooser",
+              "period": 0.06
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Values",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/test motor/test Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Number Slider",
+            "title": "value",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/test motor/test Value",
+              "period": 0.06,
+              "data_type": "double", "update_continuously": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Run",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/test motor/test value command",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Current Values",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/test motor/current value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "Front Left Cancoder",
+            "x": 0.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
@@ -656,7 +733,7 @@
             "type": "Boolean Box",
             "title": "Front Right Cancoder",
             "x": 128.0,
-            "y": 0.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
@@ -669,7 +746,7 @@
             "type": "Boolean Box",
             "title": "Back Left Cancoder",
             "x": 256.0,
-            "y": 0.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
@@ -682,7 +759,7 @@
             "type": "Boolean Box",
             "title": "Back Right Cancoder",
             "x": 384.0,
-            "y": 0.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
@@ -695,7 +772,7 @@
             "type": "Boolean Box",
             "title": "robot Chassis pigeon",
             "x": 512.0,
-            "y": 0.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
@@ -877,10 +954,23 @@
             }
           },
           {
+            "type": "Command",
+            "title": "Reset Quest Pose",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/quest/Reset Quest Pose",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
             "type": "Boolean Box",
             "title": "is quest connected",
             "x": 0.0,
-            "y": 384.0,
+            "y": 512.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
@@ -893,26 +983,13 @@
             "type": "Boolean Box",
             "title": "is quest working",
             "x": 128.0,
-            "y": 384.0,
+            "y": 512.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
               "topic": "/Log/quest/is working",
               "period": 0.06,
               "data_type": "boolean"
-            }
-          },
-          {
-            "type": "Command",
-            "title": "Reset Quest Pose",
-            "x": 0.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/quest/Reset Quest Pose",
-              "period": 0.06,
-              "show_type": true
             }
           },
           {
@@ -942,19 +1019,6 @@
             }
           },
           {
-            "type": "Command",
-            "title": "Reset Gyro by cameraname 1",
-            "x": 256.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/chassis/reset gyro by camera name 1",
-              "period": 0.06,
-              "show_type": true
-            }
-          },
-          {
             "type": "Field",
             "title": "name 2 Field",
             "x": 512.0,
@@ -978,19 +1042,6 @@
               "topic": "/SmartDashboard/tags/name 2/name 2 see tag",
               "period": 0.06,
               "data_type": "boolean"
-            }
-          },
-          {
-            "type": "Command",
-            "title": "Reset Gyro by cameraname 2",
-            "x": 512.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "properties": {
-              "topic": "/SmartDashboard/chassis/reset gyro by camera name 2",
-              "period": 0.06,
-              "show_type": true
             }
           }
         ]
@@ -1019,7 +1070,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/KP",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/KP",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1033,7 +1084,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/KI",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/KI",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1047,7 +1098,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/KD",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/KD",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1061,7 +1112,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/USE_KS",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/USE_KS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1074,7 +1125,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/KS",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/KS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1088,7 +1139,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/USE_KV",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/USE_KV",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1101,7 +1152,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/KV",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/KV",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1115,7 +1166,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/USE_KA",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/USE_KA",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1128,7 +1179,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/KA",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/KA",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1142,7 +1193,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/USE_KG",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/USE_KG",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1155,7 +1206,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/KG",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/KG",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1169,7 +1220,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/USE_KSIN",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1182,7 +1233,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/KSIN",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/KSIN",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1196,7 +1247,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/USE_KV2",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/USE_KV2",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1209,7 +1260,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/KV2",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/KV2",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1223,7 +1274,7 @@
                 "height": 128.0,
                 "type": "Toggle Button",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config/Update",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/Update",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1249,7 +1300,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/KP",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/KP",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1263,7 +1314,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/KI",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/KI",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1277,7 +1328,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/KD",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/KD",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1291,7 +1342,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/USE_KS",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/USE_KS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1304,7 +1355,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/KS",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/KS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1318,7 +1369,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/USE_KV",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/USE_KV",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1331,7 +1382,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/KV",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/KV",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1345,7 +1396,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/USE_KA",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/USE_KA",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1358,7 +1409,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/KA",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/KA",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1372,7 +1423,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/USE_KG",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/USE_KG",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1385,7 +1436,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/KG",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/KG",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1399,7 +1450,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/USE_KSIN",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1412,7 +1463,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/KSIN",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/KSIN",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1426,7 +1477,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/USE_KV2",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/USE_KV2",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1439,7 +1490,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/KV2",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/KV2",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1453,7 +1504,7 @@
                 "height": 128.0,
                 "type": "Toggle Button",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config/Update",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/Update",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1479,7 +1530,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/KP",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/KP",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1493,7 +1544,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/KI",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/KI",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1507,7 +1558,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/KD",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/KD",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1521,7 +1572,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/USE_KS",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/USE_KS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1534,7 +1585,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/KS",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/KS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1548,7 +1599,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/USE_KV",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/USE_KV",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1561,7 +1612,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/KV",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/KV",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1575,7 +1626,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/USE_KA",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/USE_KA",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1588,7 +1639,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/KA",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/KA",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1602,7 +1653,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/USE_KG",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/USE_KG",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1615,7 +1666,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/KG",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/KG",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1629,7 +1680,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/USE_KSIN",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1642,7 +1693,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/KSIN",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/KSIN",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1656,7 +1707,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/USE_KV2",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/USE_KV2",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1669,7 +1720,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/KV2",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/KV2",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1683,7 +1734,7 @@
                 "height": 128.0,
                 "type": "Toggle Button",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config/Update",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/Update",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1709,7 +1760,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/KP",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/KP",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1723,7 +1774,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/KI",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/KI",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1737,7 +1788,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/KD",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/KD",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1751,7 +1802,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/USE_KS",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/USE_KS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1764,7 +1815,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/KS",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/KS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1778,7 +1829,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/USE_KV",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/USE_KV",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1791,7 +1842,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/KV",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/KV",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1805,7 +1856,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/USE_KA",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/USE_KA",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1818,7 +1869,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/KA",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/KA",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1832,7 +1883,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/USE_KG",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/USE_KG",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1845,7 +1896,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/KG",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/KG",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1859,7 +1910,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/USE_KSIN",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1872,7 +1923,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/KSIN",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/KSIN",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1886,7 +1937,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/USE_KV2",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/USE_KV2",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1899,7 +1950,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/KV2",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/KV2",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1913,7 +1964,7 @@
                 "height": 128.0,
                 "type": "Toggle Button",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config/Update",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/Update",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -1961,7 +2012,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/KP",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/KP",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1975,7 +2026,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/KI",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/KI",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1989,7 +2040,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/KD",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/KD",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2003,7 +2054,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/USE_KS",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/USE_KS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2016,7 +2067,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/KS",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/KS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2030,7 +2081,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/USE_KV",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/USE_KV",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2043,7 +2094,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/KV",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/KV",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2057,7 +2108,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/USE_KA",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/USE_KA",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2070,7 +2121,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/KA",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/KA",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2084,7 +2135,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/USE_KG",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/USE_KG",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2097,7 +2148,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/KG",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/KG",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2111,7 +2162,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/USE_KSIN",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2124,7 +2175,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/KSIN",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/KSIN",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2138,7 +2189,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/USE_KV2",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/USE_KV2",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2151,7 +2202,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/KV2",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/KV2",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2165,7 +2216,7 @@
                 "height": 128.0,
                 "type": "Toggle Button",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config/Update",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/Update",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2191,7 +2242,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/KP",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/KP",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2205,7 +2256,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/KI",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/KI",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2219,7 +2270,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/KD",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/KD",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2233,7 +2284,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/USE_KS",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/USE_KS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2246,7 +2297,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/KS",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/KS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2260,7 +2311,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/USE_KV",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/USE_KV",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2273,7 +2324,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/KV",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/KV",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2287,7 +2338,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/USE_KA",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/USE_KA",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2300,7 +2351,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/KA",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/KA",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2314,7 +2365,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/USE_KG",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/USE_KG",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2327,7 +2378,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/KG",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/KG",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2341,7 +2392,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/USE_KSIN",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2354,7 +2405,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/KSIN",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/KSIN",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2368,7 +2419,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/USE_KV2",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/USE_KV2",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2381,7 +2432,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/KV2",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/KV2",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2395,7 +2446,7 @@
                 "height": 128.0,
                 "type": "Toggle Button",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config/Update",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/Update",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2421,7 +2472,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/KP",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/KP",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2435,7 +2486,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/KI",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/KI",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2449,7 +2500,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/KD",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/KD",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2463,7 +2514,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/USE_KS",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/USE_KS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2476,7 +2527,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/KS",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/KS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2490,7 +2541,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/USE_KV",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/USE_KV",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2503,7 +2554,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/KV",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/KV",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2517,7 +2568,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/USE_KA",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/USE_KA",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2530,7 +2581,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/KA",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/KA",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2544,7 +2595,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/USE_KG",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/USE_KG",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2557,7 +2608,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/KG",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/KG",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2571,7 +2622,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/USE_KSIN",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2584,7 +2635,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/KSIN",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/KSIN",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2598,7 +2649,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/USE_KV2",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/USE_KV2",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2611,7 +2662,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/KV2",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/KV2",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2625,7 +2676,7 @@
                 "height": 128.0,
                 "type": "Toggle Button",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config/Update",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/Update",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2651,7 +2702,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/KP",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/KP",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2665,7 +2716,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/KI",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/KI",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2679,7 +2730,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/KD",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/KD",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2693,7 +2744,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/USE_KS",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/USE_KS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2706,7 +2757,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/KS",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/KS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2720,7 +2771,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/USE_KV",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/USE_KV",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2733,7 +2784,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/KV",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/KV",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2747,7 +2798,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/USE_KA",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/USE_KA",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2760,7 +2811,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/KA",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/KA",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2774,7 +2825,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/USE_KG",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/USE_KG",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2787,7 +2838,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/KG",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/KG",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2801,7 +2852,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/USE_KSIN",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2814,7 +2865,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/KSIN",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/KSIN",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2828,7 +2879,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/USE_KV2",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/USE_KV2",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -2841,7 +2892,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/KV2",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/KV2",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2855,7 +2906,259 @@
                 "height": 128.0,
                 "type": "Toggle Button",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config/Update",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/Update",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              }
+            ]
+          }
+        ],
+        "containers": [
+          {
+            "type": "Command",
+            "title": "sysid Command",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/sysID/sysidCommand",
+              "period": 0.06,
+              "show_type": true, "maximize_button_space": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Sysid 3",
+      "grid_layout": {
+        "layouts": [
+          {
+            "type": "List Layout",
+            "title": "test motor",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 512.0,
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "KP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/USE_KS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/USE_KV",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/USE_KA",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/USE_KG",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KG",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KSIN",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/USE_KSIN",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KSIN",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KSIN",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/USE_KV2",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KV2",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Update",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Button",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/Update",
                   "period": 0.06,
                   "data_type": "boolean"
                 }

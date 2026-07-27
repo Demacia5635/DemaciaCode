@@ -4,6 +4,13 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
+import frc.demacia.utils.motors.TalonFXConfig;
+import frc.demacia.utils.motors.TalonFXMotor;
+import frc.demacia.utils.motors.TalonSRXConfig;
+import frc.demacia.utils.motors.TalonSRXMotor;
+import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
+import frc.demacia.utils.motors.SparkMaxConfig;
+import frc.demacia.utils.motors.SparkMaxMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
@@ -35,6 +42,28 @@ public class RobotContainer implements Sendable {
     configureBindings();
     setDefaultCommands();
     setController();
+
+    new SparkMaxMotor(
+      new SparkMaxConfig(20, "test motor")
+        .withPID(0, 0, 0, 0, 0, 0, 0, 0, 0)
+        .withInvert(false)
+        .withRadiansMotor(2)
+    );
+
+    new TalonFXMotor(
+      new TalonFXConfig(20, Canbus.Rio, "talon test motor")
+        .withPID(0, 0, 0, 0, 0, 0, 0, 0, 0)
+        .withInvert(false)
+        .withRadiansMotor(2)
+    );
+
+    new TalonSRXMotor(
+      new TalonSRXConfig(20, "talonSRX test motor")
+        .withPID(0, 0, 0, 0, 0, 0, 0, 0, 0)
+        .withInvert(false)
+        .withRadiansMotor(2)
+    );
+
   }
 
   private void configureBindings() {
@@ -42,7 +71,7 @@ public class RobotContainer implements Sendable {
   }
 
   private void setDefaultCommands() {
-    Chassis.getInstance().setDefaultCommand(driveCommand);
+    // Chassis.getInstance().setDefaultCommand(driveCommand);
   }
 
   private void setController() {

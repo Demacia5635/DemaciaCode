@@ -85,6 +85,7 @@ public class RobotChassisConstants {
           new TalonFXConfig(i * 3 + 1, CAN_BUS, name + " Drive")
               .withPID(DRIVE_KP, DRIVE_KI, DRIVE_KD, DRIVE_KS, DRIVE_KV, DRIVE_KA, 0, 0, 0)
               .withBrake(true)
+              .withInvert(true)
               .withMeterMotor(DRIVE_GEAR_RATIO, WHEEL_DIAMETER),
           new CancoderConfig(i * 3 + 3, CAN_BUS, name + " Cancoder"))
           .withPosion(MODULE_LOCATIONS[i])

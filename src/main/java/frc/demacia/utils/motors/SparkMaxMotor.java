@@ -2,6 +2,7 @@ package frc.demacia.utils.motors;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.sim.SparkRelativeEncoderSim;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.Faults;
@@ -10,9 +11,9 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.demacia.utils.Data;
 import frc.demacia.utils.log.Log;
-import static edu.wpi.first.units.Units.*;
 
 /**
  * Wrapper class for the REV Spark Max motor controller.
@@ -32,15 +33,33 @@ public class SparkMaxMotor extends BaseMotor {
 
   ClosedLoopSlot closedLoopSlot;
 
+  private SparkRelativeEncoderSim encoderSim;
+
   /**
    * Creates a new TalonFX motor wrapper.
    * 
    * @param config The configuration object for this motor
    */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   public SparkMaxMotor(SparkMaxConfig config) {
     super(config);
 
     closedLoopSlot = ClosedLoopSlot.kSlot0;
+
+    if (RobotBase.isSimulation()) {
+      encoderSim = new SparkRelativeEncoderSim(motor);
+      
+      new Data(() -> {
+        double vel = getCurrentVelocity();
+        double pos = getCurrentPosition();
+    
+        double newPos = pos + vel * 0.02;
+
+        encoderSim.setPosition(newPos);
+        
+        return 0;
+      });
+    }
   }
 
   protected void createMotor() {
@@ -133,14 +152,14 @@ public class SparkMaxMotor extends BaseMotor {
   }
 
   protected void setSignals() {
-    positionSignal = new Data<>(() -> Rotations.of(motor.getEncoder().getPosition()));
-    velocitySignal = new Data<>(() -> RPM.of(motor.getEncoder().getVelocity()));
+    positionSignal = new Data<>(() -> motor.getEncoder().getPosition());
+    velocitySignal = new Data<>(() -> motor.getEncoder().getVelocity());
     accelerationSignal = new Data<>(() -> {
       double currentTimestamp = Timer.getFPGATimestamp();
       double dt = currentTimestamp - lastTime;
 
       if (dt < 0.001) {
-        return RotationsPerSecondPerSecond.of(lastAcceleration);
+        return lastAcceleration;
       }
 
       double currentVelocity = getCurrentVelocity();
@@ -149,12 +168,12 @@ public class SparkMaxMotor extends BaseMotor {
       lastVelocity = currentVelocity;
       lastTime = currentTimestamp;
 
-      return RotationsPerSecondPerSecond.of(lastAcceleration);
+      return lastAcceleration;
     });
-    voltageSignal = new Data<>(() -> Volts.of(motor.getAppliedOutput() * 12.0));
-    currentSignal = new Data<>(() -> Amps.of(motor.getOutputCurrent()));
-    closedLoopSPSignal = new Data<>(() -> getCurrentClosedLoopSP());
-    closedLoopErrorSignal = new Data<>(() -> getCurrentClosedLoopError());
+    voltageSignal = new Data<>(() -> motor.getAppliedOutput() * 12.0);
+    currentSignal = new Data<>(() -> motor.getOutputCurrent());
+    closedLoopSPSignal = new Data<>(() -> getWantedValue());
+    closedLoopErrorSignal = new Data<>(() -> getCalculatedError());
   }
 
   protected void changeMotorSlot(int slot) {
@@ -164,28 +183,53 @@ public class SparkMaxMotor extends BaseMotor {
 
   protected void stopMotor() {
     motor.stopMotor();
+
+    if (RobotBase.isSimulation()) {
+      encoderSim.setVelocity(0);
+    }
   }
 
   protected void setMotorDuty(double power) {
     motor.set(power);
+
+    if (RobotBase.isSimulation()) {
+      encoderSim.setVelocity(power * MAX_SIM_VEL);
+    }
   }
 
   protected void setMotorVoltage(double voltage) {
     motor.setVoltage(voltage);
+
+    if (RobotBase.isSimulation()) {
+      double power = voltage / 12.0;
+      encoderSim.setVelocity(power * MAX_SIM_VEL);
+    }
   }
 
   protected void setMotorVelocity(double velocity, double feedForward) {
     motor.getClosedLoopController().setSetpoint(velocity, ControlType.kMAXMotionVelocityControl, closedLoopSlot,
         feedForward);
+
+    if (RobotBase.isSimulation()) {
+      encoderSim.setVelocity(velocity);
+    }
   }
 
   protected void setMotorPositionVoltage(double position, double feedForward) {
     motor.getClosedLoopController().setSetpoint(position, ControlType.kPosition, closedLoopSlot, feedForward);
+  
+    if (RobotBase.isSimulation()) {
+      encoderSim.setPosition(position);
+    }
   }
 
   protected void setMotorMotionMagic(double position, double feedForward) {
     motor.getClosedLoopController().setSetpoint(position, ControlType.kMAXMotionPositionControl, closedLoopSlot,
         feedForward);
+
+    if (RobotBase.isSimulation()) {
+      encoderSim.setPosition(position);
+    }
   }
 
   @Override

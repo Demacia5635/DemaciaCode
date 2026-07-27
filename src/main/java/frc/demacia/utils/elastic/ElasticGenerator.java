@@ -288,9 +288,9 @@ public class ElasticGenerator {
         List<String> visionWidgets = new ArrayList<>();
     
         visionWidgets.add(createWidget("Field", "Quest Robot Field", 0, 0, 2, 3, "/SmartDashboard/quest/Quest Robot Field", "\"field_rotation\": 90.0"));
-        visionWidgets.add(createWidget("Boolean Box", "is quest connected", 0, 3, 1, 1, "/Log/quest/is connected", "\"data_type\": \"boolean\""));
-        visionWidgets.add(createWidget("Boolean Box", "is quest working", 1, 3, 1, 1, "/Log/quest/is working", "\"data_type\": \"boolean\""));
-        visionWidgets.add(createWidget("Command", "Reset Quest Pose", 0, 4, 2, 1, "/SmartDashboard/quest/Reset Quest Pose", "\"show_type\": true"));
+        visionWidgets.add(createWidget("Command", "Reset Quest Pose", 0, 3, 2, 1, "/SmartDashboard/quest/Reset Quest Pose", "\"show_type\": true"));
+        visionWidgets.add(createWidget("Boolean Box", "is quest connected", 0, 4, 1, 1, "/Log/quest/is connected", "\"data_type\": \"boolean\""));
+        visionWidgets.add(createWidget("Boolean Box", "is quest working", 1, 4, 1, 1, "/Log/quest/is working", "\"data_type\": \"boolean\""));
 
         sb.append(String.join(",\n", visionWidgets));
     
@@ -329,7 +329,6 @@ public class ElasticGenerator {
     
                 widgets.add(createWidget("Field", tag.getName() + " Field", col, 0, 2, 3, tagPath + "/field-tag " + tag.getName(), "\"field_rotation\": 90.0"));
                 widgets.add(createWidget("Boolean Box", "See " + tag.getName(), col, 3, 1, 1, tagPath + "/" + tag.getName() + " see tag", "\"data_type\": \"boolean\""));
-                widgets.add(createWidget("Command", "Reset Gyro by camera" + tag.getName(), col, 4, 2, 1, "/SmartDashboard/chassis/reset gyro by camera " + tag.getName(), "\"show_type\": true"));
 
                 col += TAG_WIDTH;
                 tagIndex++;
@@ -432,7 +431,7 @@ public class ElasticGenerator {
                         listLayout.append("                \"height\": 128.0,\n");
                         listLayout.append("                \"type\": \"Toggle Switch\",\n");
                         listLayout.append("                \"properties\": {\n");
-                        listLayout.append("                  \"topic\": \"").append(motorPath).append("/PID+FF config/USE_").append(param).append("\",\n");
+                        listLayout.append("                  \"topic\": \"").append(motorPath).append("/PID+FF config slot 0/USE_").append(param).append("\",\n");
                         listLayout.append("                  \"period\": 0.06,\n");
                         listLayout.append("                  \"data_type\": \"boolean\"\n");
                         listLayout.append("                }\n");
@@ -447,7 +446,7 @@ public class ElasticGenerator {
                     listLayout.append("                \"height\": 128.0,\n");
                     listLayout.append("                \"type\": \"Text Display\",\n");
                     listLayout.append("                \"properties\": {\n");
-                    listLayout.append("                  \"topic\": \"").append(motorPath).append("/PID+FF config/").append(param).append("\",\n");
+                    listLayout.append("                  \"topic\": \"").append(motorPath).append("/PID+FF config slot 0/").append(param).append("\",\n");
                     listLayout.append("                  \"period\": 0.06,\n");
                     listLayout.append("                  \"data_type\": \"double\",\n");
                     listLayout.append("                  \"show_submit_button\": true\n");
@@ -463,7 +462,7 @@ public class ElasticGenerator {
                 listLayout.append("                \"height\": 128.0,\n");
                 listLayout.append("                \"type\": \"Toggle Button\",\n");
                 listLayout.append("                \"properties\": {\n");
-                listLayout.append("                  \"topic\": \"").append(motorPath).append("/PID+FF config/Update\",\n");
+                listLayout.append("                  \"topic\": \"").append(motorPath).append("/PID+FF config slot 0/Update\",\n");
                 listLayout.append("                  \"period\": 0.06,\n");
                 listLayout.append("                  \"data_type\": \"boolean\"\n");
                 listLayout.append("                }\n");

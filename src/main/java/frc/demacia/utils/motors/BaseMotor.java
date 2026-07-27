@@ -2,11 +2,6 @@ package frc.demacia.utils.motors;
 
 import java.util.function.Supplier;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -29,13 +24,13 @@ public abstract class BaseMotor implements MotorInterface {
 
   private int slot = 0;
 
-  protected Data<Angle> positionSignal;
-  protected Data<AngularVelocity> velocitySignal;
-  protected Data<AngularAcceleration> accelerationSignal;
-  protected Data<Voltage> voltageSignal;
-  protected Data<Current> currentSignal;
-  protected Data<Double> closedLoopSPSignal;
-  protected Data<Double> closedLoopErrorSignal;
+  protected Data<?> positionSignal;
+  protected Data<?> velocitySignal;
+  protected Data<?> accelerationSignal;
+  protected Data<?> voltageSignal;
+  protected Data<?> currentSignal;
+  protected Data<?> closedLoopSPSignal;
+  protected Data<?> closedLoopErrorSignal;
 
   private double wantedValue;
   private double testValue;
@@ -47,6 +42,8 @@ public abstract class BaseMotor implements MotorInterface {
   private SendableChooser<ControlMode> valueControlModeChooser = new SendableChooser<>();
 
   private boolean[] kFlags = { true, true, true, false, false, false };
+
+  protected static final double MAX_SIM_VEL = 50;
 
   /**
    * Creates a new TalonFX motor wrapper.
@@ -113,10 +110,9 @@ public abstract class BaseMotor implements MotorInterface {
             velocitySignal,
             accelerationSignal,
             voltageSignal,
-            currentSignal,
             closedLoopErrorSignal,
-            closedLoopSPSignal,
-        }, LogLevel.LOG_ONLY, "motors", false);
+            closedLoopSPSignal },
+        LogLevel.LOG_ONLY, "motors", false);
 
     Log.putData("motors/" + name + "/wanted value", this::getWantedValue);
     Log.putData("motors/" + name + "/current value", this::getCurrentValue);
@@ -157,6 +153,7 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setNeutralMode(boolean isBrake) {
+    config.brake = isBrake;
     configNeutralMode(isBrake);
     applyNeutralModeConfigs();
   }
@@ -243,9 +240,14 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setAngle(double angle, double feedForward) {
-    setMotion(getCurrentPosition() + MathUtil.angleModulus(angle - getCurrentAngle()), feedForward);
-    wantedValue = MathUtil.angleModulus(angle);
-    controlMode = ControlMode.ANGLE;
+    if (config.isRadiansMotor) {
+      setMotion(getCurrentPosition() + MathUtil.angleModulus(angle - getCurrentAngle()), feedForward);
+      wantedValue = MathUtil.angleModulus(angle);
+      controlMode = ControlMode.ANGLE;
+    } else {
+      setMotion(angle, feedForward);
+      Log.log(name + " cant use setAngle without being in Radians");
+    }
   }
 
   @Override
@@ -274,39 +276,6 @@ public abstract class BaseMotor implements MotorInterface {
   @Override
   public ControlMode getLastControlMode() {
     return notDutyControlMode;
-  }
-
-  @Override
-  public double getCurrentClosedLoopSP() {
-    return closedLoopSPSignal.getDouble();
-  }
-
-  /**
-   * Calculates the software-based closed-loop error.
-   */
-  private double getCalculatedError() {
-    ControlMode mode = getCurrentControlMode();
-
-    if (mode == ControlMode.VOLTAGE || mode == ControlMode.DUTYCYCLE || mode == ControlMode.DISABLE) {
-      return 0.0;
-    }
-
-    double error = getWantedValue() - getCurrentValue();
-
-    if (mode == ControlMode.ANGLE) {
-      return MathUtil.angleModulus(error);
-    }
-
-    return error;
-  }
-
-  @Override
-  public double getCurrentClosedLoopError() {
-    double hardwareError = closedLoopErrorSignal.getDouble();
-    if (hardwareError != 0) {
-      return hardwareError;
-    }
-    return getCalculatedError();
   }
 
   @Override
@@ -361,6 +330,41 @@ public abstract class BaseMotor implements MotorInterface {
       default:
         return 0.0;
     }
+  }
+
+  @Override
+  public double getCurrentClosedLoopSP() {
+    return closedLoopSPSignal.getDouble();
+  }
+
+  /**
+   * Calculates the software-based closed-loop error.
+   */
+  protected double getCalculatedError() {
+    ControlMode mode = getCurrentControlMode();
+
+    if (mode == ControlMode.VOLTAGE || mode == ControlMode.DUTYCYCLE || mode == ControlMode.DISABLE) {
+      return 0.0;
+    }
+
+    double error = getWantedValue() - getCurrentValue();
+
+    if (mode == ControlMode.ANGLE) {
+      return MathUtil.angleModulus(error);
+    }
+
+    return error;
+  }
+
+  @Override
+  public double getCurrentClosedLoopError() {
+    if (getCurrentControlMode() == ControlMode.ANGLE) {
+      return getCalculatedError();
+    }
+
+    double hardwareError = closedLoopErrorSignal.getDouble();
+
+    return hardwareError;
   }
 
   @Override
@@ -524,31 +528,31 @@ public abstract class BaseMotor implements MotorInterface {
   }
 
   // Raw data Accessors
-  public Data<Double> getClosedLoopErrorSignal() {
+  public Data<?> getClosedLoopErrorSignal() {
     return closedLoopErrorSignal;
   }
 
-  public Data<Double> getClosedLoopSPSignal() {
+  public Data<?> getClosedLoopSPSignal() {
     return closedLoopSPSignal;
   }
 
-  public Data<Angle> getPositionSignal() {
+  public Data<?> getPositionSignal() {
     return positionSignal;
   }
 
-  public Data<AngularVelocity> getVelocitySignal() {
+  public Data<?> getVelocitySignal() {
     return velocitySignal;
   }
 
-  public Data<AngularAcceleration> getAccelerationSignal() {
+  public Data<?> getAccelerationSignal() {
     return accelerationSignal;
   }
 
-  public Data<Voltage> getVoltageSignal() {
+  public Data<?> getVoltageSignal() {
     return voltageSignal;
   }
 
-  public Data<Current> getCurrentSignal() {
+  public Data<?> getCurrentSignal() {
     return currentSignal;
   }
 

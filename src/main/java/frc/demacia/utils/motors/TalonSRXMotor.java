@@ -6,9 +6,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.demacia.utils.Data;
 import frc.demacia.utils.log.Log;
-import static edu.wpi.first.units.Units.*;
 
 /**
  * Wrapper class for the CTRE Talon SRX motor controller using Phoenix 5.
@@ -28,8 +28,23 @@ public class TalonSRXMotor extends BaseMotor {
    * 
    * @param config The configuration object
    */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   public TalonSRXMotor(TalonSRXConfig config) {
     super(config);
+
+    if (RobotBase.isSimulation()) {
+      new Data(() -> {
+        double vel = getCurrentVelocity();
+        double pos = getCurrentPosition();
+    
+        double newPos = pos + vel * 0.02;
+
+        double nativePosition = (newPos * getTicksPerUnit());
+        motor.getSimCollection().setQuadratureRawPosition((int) nativePosition);
+      
+        return 0;
+      });
+    }
   }
 
   @Override
@@ -135,15 +150,14 @@ public class TalonSRXMotor extends BaseMotor {
 
   @Override
   protected void setSignals() {
-    positionSignal = new Data<>(() -> Rotations.of(motor.getSelectedSensorPosition() / getTicksPerUnit()));
-    velocitySignal = new Data<>(
-        () -> RotationsPerSecond.of((motor.getSelectedSensorVelocity() * 10.0) / getTicksPerUnit()));
+    positionSignal = new Data<>(() -> motor.getSelectedSensorPosition() / getTicksPerUnit());
+    velocitySignal = new Data<>(() -> (motor.getSelectedSensorVelocity() * 10.0) / getTicksPerUnit());
     accelerationSignal = new Data<>(() -> {
       double currentTimestamp = Timer.getFPGATimestamp();
       double dt = currentTimestamp - lastTime;
 
       if (dt < 0.001) {
-        return RotationsPerSecondPerSecond.of(lastAcceleration);
+        return lastAcceleration;
       }
 
       double currentVelocity = (motor.getSelectedSensorVelocity() * 10.0) / getTicksPerUnit();
@@ -152,10 +166,10 @@ public class TalonSRXMotor extends BaseMotor {
       lastVelocity = currentVelocity;
       lastTime = currentTimestamp;
 
-      return RotationsPerSecondPerSecond.of(lastAcceleration);
+      return lastAcceleration;
     });
-    voltageSignal = new Data<>(() -> Volts.of(motor.getMotorOutputVoltage()));
-    currentSignal = new Data<>(() -> Amps.of(motor.getStatorCurrent()));
+    voltageSignal = new Data<>(() -> motor.getMotorOutputVoltage());
+    currentSignal = new Data<>(() -> motor.getStatorCurrent());
     closedLoopSPSignal = new Data<>(() -> motor.getClosedLoopTarget(0) / getTicksPerUnit());
     closedLoopErrorSignal = new Data<>(() -> motor.getClosedLoopError(0) / getTicksPerUnit());
   }
@@ -173,11 +187,21 @@ public class TalonSRXMotor extends BaseMotor {
   @Override
   protected void setMotorDuty(double power) {
     motor.set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, power);
+
+    if (RobotBase.isSimulation()) {
+      double nativeVelocity = (power * MAX_SIM_VEL * getTicksPerUnit()) / 10.0;
+      motor.getSimCollection().setQuadratureVelocity((int) nativeVelocity);
+    }
   }
 
   @Override
   protected void setMotorVoltage(double voltage) {
     motor.set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, voltage / config.maxVolt);
+
+    if (RobotBase.isSimulation()) {
+      double nativeVelocity = (voltage / config.maxVolt * MAX_SIM_VEL * getTicksPerUnit()) / 10.0;
+      motor.getSimCollection().setQuadratureVelocity((int) nativeVelocity);
+    }
   }
 
   @Override
@@ -185,11 +209,21 @@ public class TalonSRXMotor extends BaseMotor {
     double nativeVelocity = (velocity * getTicksPerUnit()) / 10.0;
     motor.set(com.ctre.phoenix.motorcontrol.ControlMode.Velocity, nativeVelocity,
         DemandType.ArbitraryFeedForward, feedForward / config.maxVolt);
+
+    if (RobotBase.isSimulation()) {
+      motor.getSimCollection().setQuadratureVelocity((int) nativeVelocity);
+    }
   }
 
   @Override
   protected void setMotorPositionVoltage(double position, double feedForward) {
-    Log.log("there is no PositionVoltage in SRX right now");
+    double nativePosition = position * getTicksPerUnit();
+    motor.set(com.ctre.phoenix.motorcontrol.ControlMode.Position, nativePosition,
+        DemandType.ArbitraryFeedForward, feedForward / config.maxVolt);
+        
+    if (RobotBase.isSimulation()) {
+      motor.getSimCollection().setQuadratureRawPosition((int) nativePosition);
+    }
   }
 
   @Override
@@ -197,6 +231,10 @@ public class TalonSRXMotor extends BaseMotor {
     double nativePosition = position * getTicksPerUnit();
     motor.set(com.ctre.phoenix.motorcontrol.ControlMode.MotionMagic, nativePosition,
         DemandType.ArbitraryFeedForward, feedForward / config.maxVolt);
+        
+    if (RobotBase.isSimulation()) {
+      motor.getSimCollection().setQuadratureRawPosition((int) nativePosition);
+    }
   }
 
   @Override
