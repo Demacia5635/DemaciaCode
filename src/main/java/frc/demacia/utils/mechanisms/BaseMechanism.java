@@ -593,10 +593,24 @@ public class BaseMechanism extends SubsystemBase{
      * Triggers the electronics check for all motors and sensors.
      */
     public void checkElectronics() {
+        checkElectronicsMotors();
+        checkElectronicsSensors();
+    }
+
+    /**
+     * Triggers the electronics check for all motors and sensors.
+     */
+    public void checkElectronicsMotors() {
         if (motors == null) return;
         for (MotorNode node : motors.values()) {
             if (node.motor != null) node.motor.checkElectronics();
         }
+    }
+
+    /**
+     * Triggers the electronics check for all motors and sensors.
+     */
+    public void checkElectronicsSensors() {
         if (sensors == null) return;
         for (SensorInterface sensor : sensors.values()) {
             if (sensor != null) sensor.checkElectronics();
