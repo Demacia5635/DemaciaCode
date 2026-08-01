@@ -162,7 +162,7 @@ public class Log extends SubsystemBase {
   @Override
   public void periodic() {
     Data.refreshAll();
-
+    Dashboard.periodic();
     for (int i = activeConsole.size() - 1; i >= 0; i--) {
       ConsoleAlert alert = activeConsole.get(i);
       if (alert.isTimerOver()) {
@@ -184,6 +184,7 @@ public class Log extends SubsystemBase {
     if (groupStringEntry != null) {
       groupStringEntry.log();
     }
+    
   }
 
   /**
