@@ -5,10 +5,15 @@
 package frc.demacia.utils.log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
+
+import edu.wpi.first.networktables.NTSendable;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DataLogManager;
 import com.ctre.phoenix6.StatusSignal;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -44,6 +49,8 @@ public class Log extends SubsystemBase {
     /** Log to file and NetworkTables */
     LOG_AND_NT
   } 
+
+  private static final Map<String, DashboardBuilder> builders = new HashMap<>();
 
   /** Singleton instance of the LogManager */
   private static Log logManager;
@@ -162,7 +169,6 @@ public class Log extends SubsystemBase {
   @Override
   public void periodic() {
     Data.refreshAll();
-    Dashboard.periodic();
     for (int i = activeConsole.size() - 1; i >= 0; i--) {
       ConsoleAlert alert = activeConsole.get(i);
       if (alert.isTimerOver()) {
@@ -184,8 +190,20 @@ public class Log extends SubsystemBase {
     if (groupStringEntry != null) {
       groupStringEntry.log();
     }
+    for (DashboardBuilder builder : builders.values()) {
+            builder.pollInputs();
+            builder.update();
+        }
     
   }
+    public static void putData(String key, Sendable sendable) {
+        DashboardBuilder builder = builders.computeIfAbsent(key, DashboardBuilder::new);
+        if (sendable instanceof NTSendable ntSendable) {
+            ntSendable.initSendable(builder);
+        } else {
+            sendable.initSendable(builder);
+        }
+    }
 
   /**
    * Starts building a new log entry from Phoenix6 StatusSignals.

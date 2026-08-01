@@ -184,7 +184,7 @@ public class DashboardBuilder implements NTSendableBuilder {
     }
 
     @Override
-    public void addStringProperty(String key, java.util.function.Supplier<String> getter, Consumer<String> setter) {
+    public void addStringProperty(String key, Supplier<String> getter, Consumer<String> setter) {
         String fullKey = m_basePath + "/" + key;
         var topic = m_table.getStringTopic(key);
         if (getter != null) {
@@ -203,7 +203,7 @@ public class DashboardBuilder implements NTSendableBuilder {
     }
 
     @Override
-    public void addBooleanArrayProperty(String key, java.util.function.Supplier<boolean[]> getter, Consumer<boolean[]> setter) {
+    public void addBooleanArrayProperty(String key, Supplier<boolean[]> getter, Consumer<boolean[]> setter) {
         if (getter != null) {
             Log.putData(m_basePath + "/" + key, getter);
         }
