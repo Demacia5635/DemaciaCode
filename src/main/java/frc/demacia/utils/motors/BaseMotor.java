@@ -395,6 +395,7 @@ public abstract class BaseMotor implements MotorInterface {
    */
   private void configPidFf(int slot) {
     Command configPidFfCmd = new InstantCommand(() -> {
+      configPidFf(config.pidFfParams);
       applyPidFfConfigs(slot);
     }).ignoringDisable(true);
 
@@ -436,7 +437,10 @@ public abstract class BaseMotor implements MotorInterface {
    * Creates a command to configure Motion Magic parameters via the Dashboard.
    */
   private void configMotionMagic() {
-    Command configMotionMagicCmd = new InstantCommand(this::applyMotionMagicConfigs).ignoringDisable(true);
+    Command configMotionMagicCmd = new InstantCommand(()-> {
+      configMotionMagic(testValue, slot, MAX_SIM_VEL);
+      applyMotionMagicConfigs();
+  }).ignoringDisable(true);
 
     SmartDashboard.putData("motors/" + getName() + "/Motion Magic Config", new Sendable() {
       @Override

@@ -42,7 +42,7 @@ public class RobotContainer implements Sendable {
   }
 
   private void setDefaultCommands() {
-    // Chassis.getInstance().setDefaultCommand(driveCommand);
+    Chassis.getInstance().setDefaultCommand(driveCommand);
   }
 
   private void setController() {

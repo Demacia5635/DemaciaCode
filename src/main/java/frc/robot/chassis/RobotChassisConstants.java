@@ -19,19 +19,19 @@ public class RobotChassisConstants {
   public static final double DRIVE_GEAR_RATIO = 6.03; 
   public static final double WHEEL_DIAMETER = 0.1016; 
 
-  public static final double STEER_KP = 3; 
+  public static final double STEER_KP = 4; 
   public static final double STEER_KI = 0.0; 
   public static final double STEER_KD = 0.0; 
-  public static final double STEER_KS = 0.0; 
-  public static final double STEER_KV = 0.0; 
-  public static final double STEER_KA = 0.0; 
+  public static final double STEER_KS = 0.15; 
+  public static final double STEER_KV = 0.4; 
+  public static final double STEER_KA = 0.021; 
 
-  public static final double DRIVE_KP = 3; 
+  public static final double DRIVE_KP = 1; 
   public static final double DRIVE_KI = 0.0; 
   public static final double DRIVE_KD = 0.0; 
-  public static final double DRIVE_KS = 0.0; 
-  public static final double DRIVE_KV = 0.0; 
-  public static final double DRIVE_KA = 0.0; 
+  public static final double DRIVE_KS = 0.035; 
+  public static final double DRIVE_KV = 0.09; 
+  public static final double DRIVE_KA = 0.0126; 
 
   public static final double STEER_MOTION_MAGIC_VEL = 100.0; 
   public static final double STEER_MOTION_MAGIC_ACCEL = 50.0; 
@@ -49,10 +49,10 @@ public class RobotChassisConstants {
 
   public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        0, //FRONT LEFT  // TODO
-        0, //FRONT RIGHT  // TODO
-        0, //BACK LEFT  // TODO
-        0 //BACK RIGHT  // TODO
+        1.526, //FRONT LEFT  // TODO
+        1.899 - Math.PI, //FRONT RIGHT  // TODO
+        1.34, //BACK LEFT  // TODO
+        -2.129 //BACK RIGHT  // TODO
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);

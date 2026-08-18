@@ -17,9 +17,9 @@ import frc.demacia.utils.motors.MotorInterface;
 public class Sysid {
     private static final List<MotorInterface> motors = new ArrayList<>();
 
-    private static final double[] VOLTAGE_THRESHOLDS = {0.1, 0.2, 0.3, 0.4};
-    private static final int[] SMOOTH_WINDOWS = {1, 2, 3, 4, 5};
-    private static final double[] Z_SCORE_THRESHOLDS = {1.5, 2.0, 2.5, 3.0};
+    private static final double[] VOLTAGE_THRESHOLDS = {0.15, 0.2, 0.3};
+    private static final int[] SMOOTH_WINDOWS = {3};
+    private static final double[] Z_SCORE_THRESHOLDS = {-1};
 
     private static final double MAX_VOLT = 12;
     private static final double MIN_TIME_TO_MAX_VEL = 0.2;
@@ -316,13 +316,13 @@ public class Sysid {
                     BucketResult candidateModel = solveOLS(refinedData);
                     
                     if (candidateModel != null) {
-                        double currentKS = kFlags.useKS ? candidateModel.kS : 0;
-                        double currentKA = kFlags.useKA ? candidateModel.kA : 0;
-                        double currentKV = kFlags.useKV ? candidateModel.kV : 0;
+                        // double currentKS = kFlags.useKS ? candidateModel.kS : 0;
+                        // double currentKA = kFlags.useKA ? candidateModel.kA : 0;
+                        // double currentKV = kFlags.useKV ? candidateModel.kV : 0;
     
-                        if (currentKA < 0 || currentKS < 0|| currentKV < 0) {
-                            continue;
-                        }
+                        // if (currentKA < -0.03 || currentKS < -0.03|| currentKV < 0) {
+                        //     continue;
+                        // }
 
                         candidateModel.rawPoints = rawData.size();
 
