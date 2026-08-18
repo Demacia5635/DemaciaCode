@@ -13,8 +13,8 @@ public class TalonFXConfig extends BaseMotorConfig<TalonFXConfig> {
    * @param canbus The name of the CAN bus
    * @param name   The name of motor for logging and dashboard
    */
-  public TalonFXConfig(int id, Canbus canbus, String name) {
-    super(id, name, canbus);
+  public TalonFXConfig(String name, int id, Canbus canbus) {
+    super(name, id, canbus);
     motorClass = MotorControllerType.TalonFX;
   }
 
@@ -25,8 +25,8 @@ public class TalonFXConfig extends BaseMotorConfig<TalonFXConfig> {
    * @param name   The new name
    * @param config The existing configuration to copy from
    */
-  public TalonFXConfig(int id, String name, BaseMotorConfig<?> config) {
-    super(id, name);
+  public TalonFXConfig(String name, int id, BaseMotorConfig<?> config) {
+    super(name, id);
     copyBaseFields(config);
   }
 

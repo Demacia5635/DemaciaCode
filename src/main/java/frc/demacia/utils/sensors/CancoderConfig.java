@@ -35,8 +35,8 @@ public class CancoderConfig extends BaseSensorConfig<CancoderConfig>{
      * @param canbus Canbus instance (typically CANivore for swerve)
      * @param name Descriptive name for logging
      */
-    public CancoderConfig(int id, Canbus canbus, String name) {
-        super(id, canbus, name);
+    public CancoderConfig(String name, int id, Canbus canbus) {
+        super(name, id, canbus);
         sensorType = Cancoder.class;
     }
 

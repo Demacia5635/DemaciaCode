@@ -418,7 +418,7 @@ public class ElasticGenerator {
                     listLayout.append("              },\n");
                 }
 
-                String[] pidffParams = {"KP", "KI", "KD", "KS", "KV", "KA", "KG", "KSIN", "KV2"};
+                String[] pidffParams = {"KP", "KI", "KD", "KS", "KV", "KA", "KG", "KCOS", "KV2"};
                 for (int i = 0; i < pidffParams.length; i++) {
                     String param = pidffParams[i];
                     

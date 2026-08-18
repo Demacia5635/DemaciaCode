@@ -94,7 +94,7 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
      * @param id   The CAN ID
      * @param name The name of the motor
      */
-    public BaseMotorConfig(int id, String name) {
+    public BaseMotorConfig(String name, int id) {
         this.id = id;
         this.name = name;
     }
@@ -106,8 +106,8 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
      * @param name   The name of the motor
      * @param canbus The CAN bus instance
      */
-    public BaseMotorConfig(int id, String name, Canbus canbus) {
-        this(id, name);
+    public BaseMotorConfig(String name, int id, Canbus canbus) {
+        this(name, id);
         this.canbus = canbus;
     }
 
@@ -249,9 +249,9 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
      * @param kG Gravity feedforward
      * @return this configuration for chaining
      */
-    public T withPID(double kP, double kI, double kD, double kS, double kV, double kA, double kG, double kSin,
+    public T withPID(double kP, double kI, double kD, double kS, double kV, double kA, double kG, double kCos,
             double kV2) {
-        return withPID(0, kP, kI, kD, kS, kV, kA, kG, kSin, kV2);
+        return withPID(0, kP, kI, kD, kS, kV, kA, kG, kCos, kV2);
     }
 
     /**
@@ -268,10 +268,10 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
      * @return this configuration for chaining
      */
     @SuppressWarnings("unchecked")
-    public T withPID(int slot, double kP, double kI, double kD, double kS, double kV, double kA, double kG, double kSin,
+    public T withPID(int slot, double kP, double kI, double kD, double kS, double kV, double kA, double kG, double kCos,
             double kV2) {
         if (slot >= 0 && slot < pidFfParams.length) {
-            pidFfParams[slot] = new CloseLoopParam(kP, kI, kD, kS, kV, kA, kG, kSin, kV2);
+            pidFfParams[slot] = new CloseLoopParam(kP, kI, kD, kS, kV, kA, kG, kCos, kV2);
         }
         return (T) this;
     }

@@ -14,8 +14,8 @@ public class SparkMaxConfig extends BaseMotorConfig<SparkMaxConfig> {
      * @param id   The CAN bus ID of the motor
      * @param name The name of the motor for logging and dashboard
      */
-    public SparkMaxConfig(int id, String name) {
-        super(id, name);
+    public SparkMaxConfig(String name, int id) {
+        super(name, id);
         motorClass = MotorControllerType.SparkMax;
     }
 
@@ -26,8 +26,8 @@ public class SparkMaxConfig extends BaseMotorConfig<SparkMaxConfig> {
      * @param name   The new name
      * @param config The existing configuration to copy from
      */
-    public SparkMaxConfig(int id, String name, BaseMotorConfig<?> config) {
-        this(id, name);
+    public SparkMaxConfig(String name, int id, BaseMotorConfig<?> config) {
+        this(name, id);
         copyBaseFields(config);
     }
 }

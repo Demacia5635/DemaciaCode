@@ -18,8 +18,8 @@ public abstract class AnalogSensorConfig<T extends AnalogSensorConfig<T>> extend
      * @param channel Analog input port (0-3 on RoboRIO)
      * @param name Descriptive name for logging
      */
-    public AnalogSensorConfig(int channel, String name) {
-        super(channel, name);
+    public AnalogSensorConfig(String name, int channel) {
+        super(name, channel);
     }
 
     /**
@@ -29,8 +29,8 @@ public abstract class AnalogSensorConfig<T extends AnalogSensorConfig<T>> extend
      * @param canbus CAN bus instance
      * @param name Descriptive name for logging
      */
-    public AnalogSensorConfig(int id, Canbus canbus, String name) {
-        super(id, canbus, name);
+    public AnalogSensorConfig(String name, int id, Canbus canbus) {
+        super(name, id, canbus);
     }
 
     /**

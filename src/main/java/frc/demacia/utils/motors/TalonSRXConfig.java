@@ -12,8 +12,8 @@ public class TalonSRXConfig extends BaseMotorConfig<TalonSRXConfig> {
      * @param id   The CAN bus ID of the motor
      * @param name The name of the motor for logging and dashboard
      */
-    public TalonSRXConfig(int id, String name) {
-        super(id, name);
+    public TalonSRXConfig(String name, int id) {
+        super(name, id);
         motorClass = MotorControllerType.TalonSRX;
     }
 
@@ -24,8 +24,8 @@ public class TalonSRXConfig extends BaseMotorConfig<TalonSRXConfig> {
      * @param name   The new name
      * @param config The existing configuration to copy from
      */
-    public TalonSRXConfig(int id, String name, BaseMotorConfig<?> config) {
-        super(id, name);
+    public TalonSRXConfig(String name, int id, BaseMotorConfig<?> config) {
+        super(name, id);
         copyBaseFields(config);
     }
 }

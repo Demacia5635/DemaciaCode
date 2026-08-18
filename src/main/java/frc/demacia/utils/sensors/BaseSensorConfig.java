@@ -44,7 +44,7 @@ public abstract class BaseSensorConfig<T extends BaseSensorConfig<T>> {
      * @param channel DIO or Analog port number (0-9 typical)
      * @param name Descriptive name for logging (e.g., "FrontLimitSwitch")
      */
-    public BaseSensorConfig(int channel, String name){
+    public BaseSensorConfig(String name, int channel){
         this.echoChannel = channel;
         this.name = name;
     }
@@ -56,7 +56,7 @@ public abstract class BaseSensorConfig<T extends BaseSensorConfig<T>> {
      * @param canbus CAN bus instance (Rio or CANivore)
      * @param name Descriptive name for logging
      */
-    public BaseSensorConfig(int id, Canbus canbus, String name){
+    public BaseSensorConfig(String name, int id, Canbus canbus){
         this.id = id;
         this.canbus = canbus;
         this.name = name;

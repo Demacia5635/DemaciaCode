@@ -14,8 +14,8 @@ public class SparkFlexConfig extends BaseMotorConfig<SparkFlexConfig> {
      * @param id   The CAN bus ID of the motor
      * @param name The name of the motor for logging and dashboard
      */
-    public SparkFlexConfig(int id, String name) {
-        super(id, name);
+    public SparkFlexConfig(String name, int id) {
+        super(name, id);
         motorClass = MotorControllerType.SparkFlex;
     }
 
@@ -26,8 +26,8 @@ public class SparkFlexConfig extends BaseMotorConfig<SparkFlexConfig> {
      * @param name   The new name
      * @param config The existing configuration to copy from
      */
-    public SparkFlexConfig(int id, String name, BaseMotorConfig<?> config) {
-        this(id, name);
+    public SparkFlexConfig(String name, int id, BaseMotorConfig<?> config) {
+        this(name, id);
         copyBaseFields(config);
     }
 }
