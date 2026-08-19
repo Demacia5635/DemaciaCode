@@ -19,7 +19,7 @@ public class MK5nChassisConstansRobotC {
 
   public static final int PIGEON_ID = 14;
   public static final Canbus CAN_BUS = Canbus.CANIvore;
-  public static final Canbus PIGEON_CAN_BUS = Canbus.CANIvore;
+  public static final Canbus PIGEON_CAN_BUS = Canbus.Rio;
   public static final double STEER_GEAR_RATIO = 287.0 / 11.0;
   public static final double DRIVE_GEAR_RATIO = 6.03;
   public static final double WHEEL_DIAMETER = 4 * 0.0254;
@@ -89,11 +89,11 @@ public class MK5nChassisConstansRobotC {
               .withRampTime(RAMP_TIME_STEER),
           new TalonFXConfig(i * 3 + 1, CAN_BUS, name + " Drive")
               .withPID(DRIVE_KP, DRIVE_KI, DRIVE_KD, DRIVE_KS, DRIVE_KV, DRIVE_KA, 0)
-            .withBrake(true)
+              .withBrake(true)
               .withMeterMotor(DRIVE_GEAR_RATIO, WHEEL_DIAMETER),
           new CancoderConfig(i * 3 + 3, CAN_BUS, name + " Cancoder"))
-          .withPosion(MODULE_LOCATIONS[i])
-          .withSteerOffset(offsets[i]);
+              .withPosion(MODULE_LOCATIONS[i])
+              .withSteerOffset(offsets[i]);
     }
     for(var a : ans) {
       // LogManager.log(" module " + a.name + " " + a.position + " " + a.driveConfig.id);
@@ -103,10 +103,10 @@ public class MK5nChassisConstansRobotC {
 
   public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        /* Front Left Offset: */ -0.497803 * 2 * Math.PI,
-        /* Front Right Offset: */  -0.38501 * 2 * Math.PI,
-        /* Back Left Offset: */  -0.478271 * 2 * Math.PI,
-        /* Back Right Offset: */  0.316895 * 2 * Math.PI
+        /* Front Left Offset: */ -0.256104 * 2 * Math.PI,
+        /* Front Right Offset: */  -0.202148 * 2 * Math.PI,
+        /* Back Left Offset: */  0.213379 * 2 * Math.PI,
+        /* Back Right Offset: */  -0.334961 * 2 * Math.PI
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(PIGEON_ID, PIGEON_CAN_BUS, NAME + "/pigeon");

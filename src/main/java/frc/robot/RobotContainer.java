@@ -54,9 +54,9 @@ public class RobotContainer implements Sendable{
     // checkPigen.schedule();
     Chassis.initialize(MK5nChassisConstansRobotC.CHASSIS_CONFIG);
     DriveCommand driveCommand = new DriveCommand(controller);
-    driveCommand.invertPrecisionMode();
+    // driveCommand.invertPrecisionMode();
     Chassis.getInstance().setDefaultCommand(driveCommand);
-    // Configure the trigger רםנםאbindings
+    // Configure the trigger bindings
     configureBindings();
     configPoint();
     SmartDashboard.putData("Commands", CommandScheduler.getInstance());
