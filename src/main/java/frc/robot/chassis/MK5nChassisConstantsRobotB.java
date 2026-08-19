@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import frc.demacia.utils.motors.TalonFXConfig;
 import frc.demacia.utils.chassis.ChassisConfig;
 import frc.demacia.utils.chassis.SwerveModuleConfig;
-import frc.demacia.utils.log.LogManager;
 import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
 import frc.demacia.utils.sensors.CancoderConfig;
 import frc.demacia.utils.sensors.PigeonConfig;
@@ -12,14 +11,14 @@ import frc.demacia.vision.TagPose;
 
 
 
-public class MK5nChassisConstansRobotC {
+public class MK5nChassisConstantsRobotB {
 
   
-  public static final String NAME = "robot c Chassis";
+  public static final String NAME = "Robot B Chassis";
 
   public static final int PIGEON_ID = 14;
   public static final Canbus CAN_BUS = Canbus.CANIvore;
-  public static final Canbus PIGEON_CAN_BUS = Canbus.CANIvore;
+  public static final Canbus PIGEON_CAN_BUS = Canbus.Rio;
   public static final double STEER_GEAR_RATIO = 287.0 / 11.0;
   public static final double DRIVE_GEAR_RATIO = 6.03;
   public static final double WHEEL_DIAMETER = 4 * 0.0254;
@@ -95,18 +94,18 @@ public class MK5nChassisConstansRobotC {
               .withPosion(MODULE_LOCATIONS[i])
               .withSteerOffset(offsets[i]);
     }
-    for(var a : ans) {
-      // LogManager.log(" module " + a.name + " " + a.position + " " + a.driveConfig.id);
-    }
+    // for(var a : ans) {
+    //   LogManager.log(" module " + a.name + " " + a.position + " " + a.driveConfig.id);
+    // }
     return ans;
   }
 
   public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        /* Front Left Offset: */ -0.497803 * 2 * Math.PI,
-        /* Front Right Offset: */  -0.38501 * 2 * Math.PI,
-        /* Back Left Offset: */  -0.478271 * 2 * Math.PI,
-        /* Back Right Offset: */  0.316895 * 2 * Math.PI
+        /* Front Left Offset: */ -0.256104 * 2 * Math.PI,
+        /* Front Right Offset: */  -0.202148 * 2 * Math.PI,
+        /* Back Left Offset: */  0.213379 * 2 * Math.PI,
+        /* Back Right Offset: */  -0.334961 * 2 * Math.PI
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(PIGEON_ID, PIGEON_CAN_BUS, NAME + "/pigeon");

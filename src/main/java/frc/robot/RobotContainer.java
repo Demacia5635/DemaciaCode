@@ -25,6 +25,7 @@ import frc.demacia.utils.log.LogManager;
 // import frc.robot.chassis.RobotBChassisConstants;
 // import frc.robot.chassis.chackDriveng;
 import frc.robot.chassis.MK5nChassisConstansRobotC;
+import frc.robot.chassis.MK5nChassisConstantsRobotB;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,13 +53,13 @@ public class RobotContainer implements Sendable{
     SmartDashboard.putData("RC", this);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
     // checkPigen.schedule();
-    Chassis.initialize(MK5nChassisConstansRobotC.CHASSIS_CONFIG);
+    Chassis.initialize(MK5nChassisConstantsRobotB.CHASSIS_CONFIG);
     DriveCommand driveCommand = new DriveCommand(controller);
     // driveCommand.invertPrecisionMode();
     Chassis.getInstance().setDefaultCommand(driveCommand);
     // Configure the trigger bindings
     configureBindings();
-    configPoint();
+    configurePoints();
     SmartDashboard.putData("Commands", CommandScheduler.getInstance());
   }
 
@@ -72,7 +73,7 @@ public class RobotContainer implements Sendable{
    * joysticks}.
    */
 
-  private void configPoint() {
+  private void configurePoints() {
     demaciaPathPoints.add(new Translation2d(0, 0));
     demaciaPathPoints.add(new Translation2d(2, 0));
     demaciaPathPoints.add(new Translation2d(2, 2));
