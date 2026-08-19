@@ -1,6 +1,7 @@
 package frc.demacia.utils.sysid;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -18,8 +19,9 @@ public class Sysid {
     private static final List<MotorInterface> motors = new ArrayList<>();
 
     private static final double[] VOLTAGE_THRESHOLDS = {0.15, 0.2, 0.3};
-    private static final int[] SMOOTH_WINDOWS = {3};
-    private static final double[] Z_SCORE_THRESHOLDS = {-1};
+    private static final int[] SMOOTH_WINDOWS = {1, 3};
+    private static final double[] Z_SCORE_THRESHOLDS = {-1, 3, 4};
+    private static final double[] OUTLIER_PERCENTAGE = {0, 0.05, 0.15};
 
     private static final double MAX_VOLT = 12;
     private static final double MIN_TIME_TO_MAX_VEL = 0.2;
@@ -303,32 +305,32 @@ public class Sysid {
 
         for (double voltageThreshold : VOLTAGE_THRESHOLDS) {
             for (int smoothWindow : SMOOTH_WINDOWS) {
-                for (double zScoreThresholds :Z_SCORE_THRESHOLDS) {
-                    List<SyncedDataPoint> cleanData = filterAndSmooth(rawData, voltageThreshold, smoothWindow);
-                    if (cleanData.size() < 10) continue;
+                for (double zScoreThreshold :Z_SCORE_THRESHOLDS) {
+                    for (double outlierPercentage :OUTLIER_PERCENTAGE) {
+                        List<SyncedDataPoint> cleanData = filterAndSmooth(rawData, voltageThreshold, smoothWindow);
+                        if (cleanData.size() < 10) continue;
 
-                    BucketResult initialResult = solveOLS(cleanData);
-                    if (initialResult == null) continue;
+                        BucketResult initialResult = solveOLS(cleanData);
+                        if (initialResult == null) continue;
 
-                    List<SyncedDataPoint> refinedData = removeOutliers(cleanData, initialResult, zScoreThresholds);
-                    if (refinedData.size() < 10) continue;
+                        List<SyncedDataPoint> refinedData = removeOutliers(cleanData, initialResult, zScoreThreshold);
+                        if (refinedData.size() < 10) continue;
 
-                    BucketResult candidateModel = solveOLS(refinedData);
-                    
-                    if (candidateModel != null) {
-                        // double currentKS = kFlags.useKS ? candidateModel.kS : 0;
-                        // double currentKA = kFlags.useKA ? candidateModel.kA : 0;
-                        // double currentKV = kFlags.useKV ? candidateModel.kV : 0;
-    
-                        // if (currentKA < -0.03 || currentKS < -0.03|| currentKV < 0) {
-                        //     continue;
-                        // }
+                        BucketResult initialResult2 = solveOLS(refinedData);
+                        if (initialResult2 == null) continue;
 
-                        candidateModel.rawPoints = rawData.size();
+                        List<SyncedDataPoint> refinedData2 = removeOutlierspercentage(cleanData, initialResult2, outlierPercentage);
+                        if (refinedData2.size() < 10) continue;
 
-                        if (candidateModel.avgError < bestAvgError) {
-                            bestAvgError = candidateModel.avgError;
-                            result = candidateModel;
+                        BucketResult candidateModel = solveOLS(refinedData2);
+                        
+                        if (candidateModel != null) {
+                            candidateModel.rawPoints = rawData.size();
+
+                            if (candidateModel.avgError < bestAvgError) {
+                                bestAvgError = candidateModel.avgError;
+                                result = candidateModel;
+                            }
                         }
                     }
                 }
@@ -411,6 +413,24 @@ public class Sysid {
         }
 
         return filteredData;
+    }
+
+    private List<SyncedDataPoint> removeOutlierspercentage(List<SyncedDataPoint> data, BucketResult model, double percentage) {
+        if (percentage <= 0.001) return data;
+
+        for (SyncedDataPoint p : data) {
+            double pred = calculatePredictedVoltage(p, model);
+            
+            p.error = Math.abs(p.voltage - pred);
+        }
+
+        Collections.sort(data, (p1, p2) -> Double.compare(p1.error, p2.error));
+
+        int removeCount = (int)(data.size() * percentage);
+        int keepCount = data.size() - removeCount;
+        
+        if (keepCount < 1) return new ArrayList<>();
+        return new ArrayList<>(data.subList(0, keepCount));
     }
 
     private BucketResult solveOLS(List<SyncedDataPoint> data) {
