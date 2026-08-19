@@ -15,7 +15,6 @@ import frc.demacia.path.segments.LineSegment;
 import frc.demacia.path.segments.SegmantBase;
 import frc.demacia.path.segments.SegmantFollow;
 import frc.demacia.path.utils.PathUtils;
-import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.log.LogManager;
 
 public class DemaciaTrajectory {

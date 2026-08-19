@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.utils.log.LogEntryBuilder.LogLevel;
 import frc.demacia.vision.utils.VisionConstants;
 
 public class TagPose {
