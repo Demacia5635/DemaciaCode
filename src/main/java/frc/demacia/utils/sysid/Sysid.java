@@ -18,8 +18,8 @@ import frc.demacia.utils.motors.MotorInterface;
 public class Sysid {
     private static final List<MotorInterface> motors = new ArrayList<>();
 
-    private static final double[] VOLTAGE_THRESHOLDS = {0.15, 0.2, 0.3};
-    private static final int[] SMOOTH_WINDOWS = {1, 3};
+    private static final double[] VOLTAGE_THRESHOLDS = {0.1, 0.2, 0.3};
+    private static final int[] SMOOTH_WINDOWS = {-1, 4};
     private static final double[] Z_SCORE_THRESHOLDS = {-1, 3, 4};
     private static final double[] OUTLIER_PERCENTAGE = {0, 0.05, 0.15};
 
@@ -365,20 +365,23 @@ public class Sysid {
     }
 
     private List<SyncedDataPoint> filterAndSmooth(List<SyncedDataPoint> data, double voltageThresh, int windowSize) {
+        
         List<SyncedDataPoint> filtered = new ArrayList<>();
         for (int i = 0; i < data.size(); i++) {
             SyncedDataPoint current = data.get(i).copy();
             
-            double sumAccel = 0;
-            int count = 0;
-            for (int j = Math.max(0, i - windowSize/2); j < Math.min(data.size(), i + windowSize/2 + 1); j++) {
-                sumAccel += data.get(j).acceleration;
-                count++;
-            }
-            current.acceleration = sumAccel / count;
-            
             if (Math.abs(current.voltage) > voltageThresh) {
                 filtered.add(current);
+            }
+            
+            if (windowSize >= 0) {
+                double sumAccel = 0;
+                int count = 0;
+                for (int j = Math.max(0, i - windowSize/2); j < Math.min(data.size(), i + windowSize/2 + 1); j++) {
+                    sumAccel += data.get(j).acceleration;
+                    count++;
+                }
+                current.acceleration = sumAccel / count;
             }
         }
         return filtered;
