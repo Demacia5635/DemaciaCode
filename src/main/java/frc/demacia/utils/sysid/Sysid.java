@@ -24,8 +24,8 @@ public class Sysid {
     private static final double[] OUTLIER_PERCENTAGE = {0, 0.05, 0.15};
     private static final double MIN_R_SQUARED_THRESHOLD = 0.9;
     private static final double R2_PENALTY_MULTIPLIER = 1;
-    private static final double R2_BIG_PENALTY_MULTIPLIER = 3;
-    private static final double NEGATIVE_PARAM_PENALTY_BASE = 0.3;
+    private static final double R2_BIG_PENALTY_MULTIPLIER = 6;
+    private static final double NEGATIVE_PARAM_PENALTY_BASE = 1;
 
     private static final double MAX_VOLT = 12;
     private static final double MIN_TIME_TO_MAX_VEL = 0.2;
@@ -331,6 +331,15 @@ public class Sysid {
                         if (candidateModel != null) {
                             candidateModel.rawPoints = rawData.size();
 
+                            Log.log(" voltageThreshold " + voltageThreshold + 
+                            " smoothWindow " + smoothWindow + 
+                            " zScoreThreshold " + zScoreThreshold + 
+                            " outlierPercentage " + outlierPercentage + 
+                            " ks " + candidateModel.kS + 
+                            " kv " + candidateModel.kV + 
+                            " avgError " + candidateModel.avgError + 
+                            " rSquared " + candidateModel.rSquared + 
+                            " score " + calculateResultScore(candidateModel));
                             if (calculateResultScore(candidateModel) < bestScore) {
                                 bestScore = calculateResultScore(candidateModel);
                                 result = candidateModel;
