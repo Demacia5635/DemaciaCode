@@ -22,9 +22,9 @@ public class RobotChassisConstants {
   public static final double STEER_KP = 10; 
   public static final double STEER_KI = 0.0; 
   public static final double STEER_KD = 0.0; 
-  public static final double STEER_KS = 0.3; 
-  public static final double STEER_KV = 0.4; 
-  public static final double STEER_KA = 0.0; 
+  public static final double STEER_KS = 0.313; 
+  public static final double STEER_KV = 0.392; 
+  public static final double STEER_KA = 0.0173; 
 
   public static final double DRIVE_KP = 1; 
   public static final double DRIVE_KI = 0.0; 
