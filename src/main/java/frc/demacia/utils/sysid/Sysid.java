@@ -22,6 +22,10 @@ public class Sysid {
     private static final int[] SMOOTH_WINDOWS = {-1, 4};
     private static final double[] Z_SCORE_THRESHOLDS = {-1, 3, 4};
     private static final double[] OUTLIER_PERCENTAGE = {0, 0.05, 0.15};
+    private static final double MIN_R_SQUARED_THRESHOLD = 0.9;
+    private static final double R2_PENALTY_MULTIPLIER = 1;
+    private static final double R2_BIG_PENALTY_MULTIPLIER = 3;
+    private static final double NEGATIVE_PARAM_PENALTY_BASE = 0.3;
 
     private static final double MAX_VOLT = 12;
     private static final double MIN_TIME_TO_MAX_VEL = 0.2;
@@ -301,7 +305,7 @@ public class Sysid {
     }
 
     private void calculateResult() {
-        double bestAvgError = Double.MAX_VALUE;
+        double bestScore = Double.MAX_VALUE;
 
         for (double voltageThreshold : VOLTAGE_THRESHOLDS) {
             for (int smoothWindow : SMOOTH_WINDOWS) {
@@ -327,8 +331,8 @@ public class Sysid {
                         if (candidateModel != null) {
                             candidateModel.rawPoints = rawData.size();
 
-                            if (candidateModel.avgError < bestAvgError) {
-                                bestAvgError = candidateModel.avgError;
+                            if (calculateResultScore(candidateModel) < bestScore) {
+                                bestScore = calculateResultScore(candidateModel);
                                 result = candidateModel;
                             }
                         }
@@ -518,6 +522,36 @@ public class Sysid {
         if(kFlags.useKCos) pred += model.kCos * KFunctions.cosFunction(p.position, isCos);
         if(kFlags.useKV2) pred += model.kV2 * KFunctions.v2Function(p.velocity);
         return pred;
+    }
+
+    private double calculateResultScore(BucketResult model) {
+        double cost = model.avgError;
+        double r2 = model.rSquared;
+        
+        if (r2 < MIN_R_SQUARED_THRESHOLD) {
+            cost += (1.0 - r2) * R2_BIG_PENALTY_MULTIPLIER;
+        } else {
+            cost += (1.0 - r2) * R2_PENALTY_MULTIPLIER;
+        }
+        
+        double negativePenalty = 0.0;
+        
+        if (kFlags.useKS && model.kS < 0) {
+            negativePenalty += NEGATIVE_PARAM_PENALTY_BASE;
+        }
+        if (kFlags.useKV && model.kV < 0) {
+            negativePenalty += NEGATIVE_PARAM_PENALTY_BASE;
+        }
+        if (kFlags.useKA && model.kA < 0) {
+            negativePenalty += NEGATIVE_PARAM_PENALTY_BASE;
+        }
+        if (kFlags.useKV2 && model.kV2 < 0) {
+            negativePenalty += NEGATIVE_PARAM_PENALTY_BASE;
+        }
+        
+        cost += negativePenalty;
+        
+        return cost;
     }
 
     private void checkZeroPos(BucketResult result) {
