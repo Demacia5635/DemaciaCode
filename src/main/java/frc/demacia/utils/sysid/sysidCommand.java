@@ -3,6 +3,7 @@ package frc.demacia.utils.sysid;
 import java.util.List;
 import java.util.Map;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.demacia.sysid.Sysid;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.log.LogReader;
 import frc.demacia.utils.log.LogReader.Entry;

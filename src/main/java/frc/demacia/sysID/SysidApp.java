@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import frc.demacia.utils.log.LogReader;
 import frc.demacia.utils.log.LogReader.Entry;
+import frc.demacia.utils.motors.CloseLoopParam;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -34,9 +35,7 @@ class SysidMain {
     JTextArea msgArea = new JTextArea();
     JScrollPane msgPane = new JScrollPane(msgArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     
-    Map<String, List<Entry>> cachedLogData = null;
-
-    Map<String, Sysid.BucketResult> analysisResults;
+    Map<String, List<Entry>> groupedEntries = null;
 
     private static SysidMain sysid = null;
 
@@ -97,14 +96,83 @@ class SysidMain {
     }
 
     public void loadLogFile() {
+        new Thread(() -> {
+            try {
+                msg("Opening file explorer...");
+                
+                groupedEntries = LogReader.getGroups(false, info -> info.metadata().contains("motor"));
+                
+                SwingUtilities.invokeLater(() -> {
+                    fileChooser.field.setText("WPILOG File Loaded");
+                    msg("File loaded successfully. Starting analysis...");
+                    performFullAnalysis(); 
+                });
+            } catch (Exception e) {
+                SwingUtilities.invokeLater(() -> {
+                    msg("Error loading file: " + e.getMessage());
+                    fileChooser.field.setText("Error loading file");
+                });
+            }
+        }).start();
+    }
+
+    public void performFullAnalysis() {
+        if (groupedEntries == null || groupedEntries.isEmpty()) {
+            msg("No data loaded. Please open a WPILOG file first.");
+            return;
+        }
+        
+        MotorData currentlySelected = motorList.getSelectedValue();
+        String selectedName = (currentlySelected != null) ? currentlySelected.fullName : null;
+
         try {
-            msg("Opening file explorer...");
-            cachedLogData = LogReader.getGroups(false, info -> info.metadata().contains("motor"));
-            msg("File loaded successfully. Starting analysis...");
+            msg("Starting analysis...");
+            MotorData.motors.clear();
+            listModel.clear();
             
-            performFullAnalysis(); 
+            List<String> sortedNames = new ArrayList<>(groupedEntries.keySet());
+            Collections.sort(sortedNames);
+
+            int indexToSelect = 0;
+            int i = 0;
+            
+            for(String groupName : sortedNames) {
+                MotorData motorData = new MotorData();
+                motorData.fullName = groupName;
+                
+                String[] parts = groupName.split(":");
+                motorData.displayName = parts.length > 0 ? parts[0] : groupName;
+                
+                Sysid analyzer = new Sysid(groupName, groupedEntries.get(groupName), SysidApp.kFlags);
+                motorData.params = analyzer.getParams();
+                motorData.points = analyzer.getPoints();
+                motorData.rawPoints = analyzer.getRawPoints();
+                motorData.rSquared = analyzer.getRSquared();
+                motorData.avgError = analyzer.getAvgError();
+                motorData.maxError = analyzer.getMaxError();
+                MotorData.motors.add(motorData);
+
+                listModel.addElement(motorData);
+                
+                if(selectedName != null && selectedName.equals(groupName)) {
+                    indexToSelect = i;
+                }
+                i++;
+            }
+            
+            msg("Analysis complete. Found " + groupedEntries.size() + " motor groups.");
+            
+            if (!listModel.isEmpty()) {
+                motorList.setSelectedIndex(indexToSelect);
+                result.updateDisplay(motorList.getSelectedValue());
+            } else {
+                result.clearDisplay();
+                msg("No valid motor data found in file.");
+            }
+            
         } catch (Exception e) {
-            msg("Error loading file: " + e.getMessage());
+            msg("Error during analysis: " + e.getMessage());
+            e.printStackTrace();
             fileChooser.field.setText("Error loading file");
         }
     }
@@ -119,60 +187,6 @@ class SysidMain {
                 sysid.msgArea.append(message + "\n");
                 sysid.msgArea.setCaretPosition(sysid.msgArea.getDocument().getLength());
             });
-        }
-    }
-
-    public void performFullAnalysis() {
-        if (cachedLogData == null || cachedLogData.isEmpty()) {
-            msg("No data loaded. Please open a WPILOG file first.");
-            return;
-        }
-        
-        MotorData currentlySelected = motorList.getSelectedValue();
-        String selectedName = (currentlySelected != null) ? currentlySelected.fullName : null;
-
-        try {
-            msg("Starting analysis...");
-            MotorData.motors.clear();
-            listModel.clear();
-            
-            analysisResults = Sysid.getResult(cachedLogData);
-            
-            msg("Analysis complete. Found " + analysisResults.size() + " motor groups.");
-            
-            List<String> sortedNames = new ArrayList<>(analysisResults.keySet());
-            Collections.sort(sortedNames);
-
-            int indexToSelect = 0;
-            int i = 0;
-            
-            for(String groupName : sortedNames) {
-                MotorData motorData = new MotorData();
-                motorData.fullName = groupName;
-                
-                String[] parts = groupName.split(":");
-                motorData.displayName = parts.length > 0 ? parts[0] : groupName;
-                
-                motorData.bucketResult = analysisResults.get(groupName);
-                MotorData.motors.add(motorData);
-                listModel.addElement(motorData);
-                
-                if(selectedName != null && selectedName.equals(groupName)) {
-                    indexToSelect = i;
-                }
-                i++;
-            }
-            
-            if (!listModel.isEmpty()) {
-                motorList.setSelectedIndex(indexToSelect);
-            } else {
-                msg("No valid motor data found in file.");
-            }
-            
-        } catch (Exception e) {
-            msg("Error during analysis: " + e.getMessage());
-            e.printStackTrace();
-            fileChooser.field.setText("Error loading file");
         }
     }
 }
@@ -312,43 +326,32 @@ class SysidResultPanel extends JPanel {
     }
     
     public void updateDisplay(MotorData motorData) {
-        if (motorData == null || motorData.bucketResult == null) {
+        if (motorData == null || motorData.params == null) {
             clearDisplay();
             return;
         }
         
-        Sysid.BucketResult r = motorData.bucketResult;
+        CloseLoopParam param = motorData.params;
         
-        valueLabels[0].setText(String.format("%.5f", r.ks));
-        valueLabels[1].setText(String.format("%.5f", r.kv));
-        valueLabels[2].setText(String.format("%.5f", r.ka));
-        valueLabels[3].setText(String.format("%.5f", r.kg));
-        valueLabels[4].setText(String.format("%.5f", r.ksin));
-        valueLabels[5].setText(String.format("%.5f", r.kv2));
+        valueLabels[0].setText(String.format("%.5f", param.kS()));
+        valueLabels[1].setText(String.format("%.5f", param.kV()));
+        valueLabels[2].setText(String.format("%.5f", param.kA()));
+        valueLabels[3].setText(String.format("%.5f", param.kG()));
+        valueLabels[4].setText(String.format("%.5f", param.kCos()));
+        valueLabels[5].setText(String.format("%.5f", param.kV2()));
         
-        countLabel.setText(r.points + " / " + r.rawPoints);
-        r2Label.setText(String.format("%.4f", r.rSquared));
+        countLabel.setText(motorData.points + " / " + motorData.rawPoints);
+        r2Label.setText(String.format("%.4f", motorData.rSquared));
         
-        avgErrLabel.setText(String.format("%.4f V", r.avgError));
-        maxErrLabel.setText(String.format("%.4f V", r.maxError));
+        avgErrLabel.setText(String.format("%.4f V", motorData.avgError));
+        maxErrLabel.setText(String.format("%.4f V", motorData.maxError));
         
-        double kp = 0;
-        double kaSafe = Math.max(Math.abs(r.ka), 0.0001);
-        
-        String type = (String) kpTypeCombo.getSelectedItem();
-        
-        if ("Position".equals(type)) {
-            kp = (2.0 * r.kv) / kaSafe; 
-        } else {
-            kp = r.kv / kaSafe;
-        }
-        
-        kpLabel.setText(String.format("%.4f", kp));
+        kpLabel.setText(String.format("%.4f", param.kP()));
         
         SysidMain.msg("Results for: " + motorData.displayName);
     }
 
-    private void clearDisplay() {
+    public void clearDisplay() {
         for(JLabel l : valueLabels) l.setText("0.0000");
         countLabel.setText("0 / 0");
         r2Label.setText("0.0000");
@@ -362,7 +365,12 @@ class MotorData {
     static List<MotorData> motors = new ArrayList<>();
     String fullName = "Motor";
     String displayName = "Motor";
-    Sysid.BucketResult bucketResult;
+    CloseLoopParam params;
+    int points;
+    int rawPoints;
+    double rSquared;
+    double avgError;
+    double maxError;
 
     @Override
     public String toString() {

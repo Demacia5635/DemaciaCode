@@ -11,12 +11,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.demacia.sysid.Sysid;
 import frc.demacia.utils.Data;
 import frc.demacia.utils.elastic.ElasticGenerator;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.log.Log.LogLevel;
 import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
-import frc.demacia.utils.sysid.Sysid;
 
 public abstract class BaseMotor implements MotorInterface {
   protected BaseMotorConfig<?> config;

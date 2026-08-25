@@ -2,46 +2,260 @@ package frc.demacia.sysid;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.NoSuchElementException;
+
 import org.ejml.simple.SimpleMatrix;
-import frc.demacia.utils.log.LogReader;
+
+import edu.wpi.first.math.MathUtil;
+import frc.demacia.utils.log.LogReader.Entry;
+import frc.demacia.utils.log.LogReader.EntryPoint;
+import frc.demacia.utils.motors.CloseLoopParam;
+import frc.demacia.utils.motors.MotorInterface;
 
 public class Sysid {
-    private static final double VOLTAGE_THRESHOLD = 0.5;
-    private static final int SMOOTH_WINDOW = 3;
-    private static final double OUTLIER_PERCENTAGE = 0.15;
+    private static final List<MotorInterface> motors = new ArrayList<>();
 
-    public static Map<String, BucketResult> getResult(Map<String, List<LogReader.Entry>> groupedEntries) {
-        return performAnalysis(groupedEntries);
-    }
+    private static final double[] VOLTAGE_THRESHOLDS = {0.1, 0.2, 0.3};
+    private static final int[] SMOOTH_WINDOWS = {-1, 2, 4, 8, 12, 16};
+    private static final double[] Z_SCORE_THRESHOLDS = {-1, 1, 4, 7, 10};
+    private static final double[] OUTLIER_PERCENTAGE = {0, 0.05, 0.15, 0.2, 0.25};
+    private static final double MIN_R_SQUARED_THRESHOLD = 0.9;
+    private static final double R2_PENALTY_MULTIPLIER = 1;
+    private static final double R2_BIG_PENALTY_MULTIPLIER = 6;
+    private static final double NEGATIVE_PARAM_PENALTY_BASE = 1;
 
-    private static Map<String, BucketResult> performAnalysis(Map<String, List<LogReader.Entry>> groupedEntries) {
-        Map<String, BucketResult> results = new HashMap<>();
+    private static final double MAX_VOLT = 12;
+    private static final double MIN_TIME_TO_MAX_VEL = 0.2;
+    private static final double MAX_TIME_TO_MAX_VEL = 1;
+    private static final double MAX_VEL_TIME_SCALAR = 1.2;
+    private static final double TIME_TO_MAX_ACCEL = 0.1;
 
-        for (Map.Entry<String, List<LogReader.Entry>> group : groupedEntries.entrySet()) {
-            System.out.println("Analyzing group: " + group.getKey());
-            BucketResult result = analyzeGroup(group.getKey(), group.getValue());
-            if (result != null) {
-                results.put(group.getKey(), result);
-            }
+    private KFlags kFlags;
+
+    private String name;
+    private List<Entry> motorEntries;
+    private List<SyncedDataPoint> rawData;
+    private BucketResult result;
+
+    private CloseLoopParam param;
+    private double kP;
+    private double maxVelocity;
+    private double maxAcceleration;
+    private double maxJerk;
+
+    private boolean isCos;
+
+    private class SyncedDataPoint{
+        double velocity, position, acceleration, voltage;
+        long timestamp;
+        double error;
+        
+        SyncedDataPoint(double velocity, double position, double acceleration, double voltage, long timestamp) {
+            this.velocity = velocity;
+            this.position = position;
+            this.acceleration = acceleration;
+            this.voltage = voltage;
+            this.timestamp = timestamp;
         }
-        System.out.println("Analysis complete. Results for " + results.size() + " groups.");
-        return results;
+
+        SyncedDataPoint copy() {
+            SyncedDataPoint c = new SyncedDataPoint(velocity, position, acceleration, voltage, timestamp);
+            c.error = error;
+            return c;
+        }
     }
 
-    private static BucketResult analyzeGroup(String name, List<LogReader.Entry> groupEntries) {
-        List<SyncedDataPoint> syncedData = new ArrayList<>();
+    private class BucketResult {
+        double kS, kV, kA, kG, kCos, kV2, avgError, maxError, rSquared;
+        int points, rawPoints;
 
-        if (groupEntries == null || groupEntries.isEmpty()) return null;
+        BucketResult(double kS, double kV, double kA, double kG, double kCos, double kV2, double avgError, double maxError, int points, double rSquared) {
+            this.kS = kS;
+            this.kV = kV;
+            this.kA = kA;
+            this.kG = kG;
+            this.kCos = kCos;
+            this.kV2 = kV2;
+            this.avgError = avgError;
+            this.maxError = maxError;
+            this.points = points;
+            this.rSquared = rSquared;
+        }
+    }
 
-        LogReader.Entry posEntry = null;
-        LogReader.Entry velEntry = null;
-        LogReader.Entry accelEntry = null;
-        LogReader.Entry voltEntry = null;
+    private class KFlags implements Iterable<Boolean>{
+        boolean useKS, useKV, useKA, useKG, useKCos, useKV2;
+        
+        KFlags(boolean useKS, boolean useKV, boolean useKA, boolean useKG, boolean useKCos, boolean useKV2) {
+            this.useKS = useKS;
+            this.useKV = useKV;
+            this.useKA = useKA;
+            this.useKG = useKG;
+            this.useKCos = useKCos;
+            this.useKV2 = useKV2;
+        }
 
-        for (LogReader.Entry entry : groupEntries) {
+        @Override
+        public Iterator<Boolean> iterator() {
+            return new Iterator<Boolean>() {
+                private int currentIndex = 0;
+
+                @Override
+                public boolean hasNext() {
+                    return currentIndex < 6;
+                }
+
+                @Override
+                public Boolean next() {
+                    switch (currentIndex++) {
+                        case 0: return useKS;
+                        case 1: return useKV;
+                        case 2: return useKA;
+                        case 3: return useKG;
+                        case 4: return useKCos;
+                        case 5: return useKV2;
+                        default: throw new NoSuchElementException("No more flags available.");
+                    }
+                }
+            };
+        }
+    }
+
+    private static class KFunctions {
+        public static double sFunction(double vel) {
+            return Math.signum(vel);
+        }
+        
+        public static double vFunction(double vel) {
+            return vel;
+        }
+        
+        public static double aFunction(double accel) {
+            return accel;
+        }
+        
+        public static double gFunction() {
+            return 1;
+        }
+        
+        public static double cosFunction(double pos, boolean isCos) {
+            return isCos ? Math.cos(pos) : Math.sin(pos);
+        }
+        
+        public static double v2Function(double vel) {
+            return vel * Math.abs(vel);
+        }
+    }
+
+    public static void registerMotor(MotorInterface motor) {
+        if (!motors.contains(motor)) {
+            motors.add(motor);
+        }
+    }
+    
+    public static List<MotorInterface> getMotors() {
+        return motors;
+    }
+
+    public Sysid(String name, List<Entry> motorEntries, boolean[] kFlags) {
+        System.out.println("Performing analysis...");
+
+        this.name = name;
+        this.motorEntries = motorEntries;
+        if (kFlags.length == 6){
+            this.kFlags = new KFlags(kFlags[0], kFlags[1], kFlags[2], kFlags[3], kFlags[4], kFlags[5]);
+        } else {
+            this.kFlags = new KFlags(true, true, true, false, false, false);
+            System.out.println("kFlags shuold have 6 flags for kS, kV, kA, kG, kCos, kV2");
+        }
+        rawData = new ArrayList<>();
+        isCos = true;
+
+        analyzeGroup();
+
+        param = new CloseLoopParam();
+
+        if (result == null) {
+            param = null;
+            return;
+        }
+
+        if (result.kA > 0){
+            double kASafe = Math.max(result.kA, 0.01);
+        
+            kP = result.kV / kASafe;
+        }
+        
+        param.set(
+            kP,
+            0.0,
+            0.0,
+            result.kS,
+            result.kV,
+            result.kA,
+            result.kG,
+            result.kCos,
+            result.kV2
+        );
+
+        if (result.kV != 0) {
+            maxVelocity = (MAX_VOLT - result.kS) / result.kV;
+            double timeToMaxVel = result.kA / result.kV * MAX_VEL_TIME_SCALAR;
+            timeToMaxVel = MathUtil.clamp(timeToMaxVel, MIN_TIME_TO_MAX_VEL, MAX_TIME_TO_MAX_VEL);
+            maxAcceleration = maxVelocity / timeToMaxVel;
+            maxJerk = maxAcceleration / TIME_TO_MAX_ACCEL;
+        }
+
+        System.out.println(name + " analysis complete.");
+    }
+
+    public CloseLoopParam getParams() {
+        return param;
+    }
+
+    public double getMaxVelocity() {
+        return maxVelocity;
+    }
+
+    public double getMaxAcceleration() {
+        return maxAcceleration;
+    }
+
+    public double getMaxJerk() {
+        return maxJerk;
+    }
+
+    public int getPoints() {
+        return (result == null) ? 0 : result.points;
+    }
+
+    public int getRawPoints() {
+        return (result == null) ? 0 : result.rawPoints;
+    }
+
+    public double getRSquared() {
+        return (result == null) ? 0 : result.rSquared;
+    }
+
+    public double getAvgError() {
+        return (result == null) ? 0 : result.avgError;
+    }
+
+    public double getMaxError() {
+        return (result == null) ? 0 : result.maxError;
+    }
+
+    private void analyzeGroup() {
+        if (motorEntries == null || motorEntries.isEmpty()) return;
+
+        Entry posEntry = null;
+        Entry velEntry = null;
+        Entry accelEntry = null;
+        Entry voltEntry = null;
+
+        for (Entry entry : motorEntries) {
             String entryName = entry.name.toLowerCase();
             if (entryName.contains("pos")) {
                 if (posEntry == null) posEntry = entry;
@@ -54,10 +268,10 @@ public class Sysid {
             }
         }
 
-        if (posEntry == null && groupEntries.size() > 0) posEntry = groupEntries.get(0);
-        if (velEntry == null && groupEntries.size() > 1) velEntry = groupEntries.get(1);
-        if (accelEntry == null && groupEntries.size() > 2) accelEntry = groupEntries.get(2);
-        if (voltEntry == null && groupEntries.size() > 3) voltEntry = groupEntries.get(3);
+        if (posEntry == null && motorEntries.size() > 0) posEntry = motorEntries.get(0);
+        if (velEntry == null && motorEntries.size() > 1) velEntry = motorEntries.get(1);
+        if (accelEntry == null && motorEntries.size() > 2) accelEntry = motorEntries.get(2);
+        if (voltEntry == null && motorEntries.size() > 3) voltEntry = motorEntries.get(3);
 
         if (posEntry != null && velEntry != null && accelEntry != null && voltEntry != null) {
             int minSize = Math.min(Math.min(posEntry.data.size(), velEntry.data.size()),
@@ -78,130 +292,189 @@ public class Sysid {
                     double volt = ((Number) voltVal).doubleValue();
                     long time = posEntry.data.get(i).time;
 
-                    syncedData.add(new SyncedDataPoint(vel, pos, accel, volt, time));
+                    rawData.add(new SyncedDataPoint(vel, pos, accel, volt, time));
                 }
             }
         }
 
-        if (syncedData.isEmpty()) {
-            for (LogReader.Entry entry : groupEntries) {
-                for (LogReader.EntryPoint dp : entry.data) {
+        if (rawData.isEmpty()) {
+            for (Entry entry : motorEntries) {
+                for (EntryPoint dp : entry.data) {
                     if (dp.value instanceof double[]) {
                         double[] vals = (double[]) dp.value;
                         if (vals.length >= 4) {
-                            syncedData.add(new SyncedDataPoint(vals[1], vals[0], vals[2], vals[3], dp.time));
+                            rawData.add(new SyncedDataPoint(vals[1], vals[0], vals[2], vals[3], dp.time));
                         }
                     } else if (dp.value instanceof float[]) {
                         float[] vals = (float[]) dp.value;
                         if (vals.length >= 4) {
-                            syncedData.add(new SyncedDataPoint(vals[1], vals[0], vals[2], vals[3], dp.time));
+                            rawData.add(new SyncedDataPoint(vals[1], vals[0], vals[2], vals[3], dp.time));
                         }
                     }
                 }
             }
         }
 
-        System.out.println("Group: " + name + " | Total data points: " + syncedData.size());
-        if (syncedData.isEmpty()) return null;
+        System.out.println("Group: " + name + " | Total data points: " + rawData.size());
+        if (rawData.isEmpty()) return;
 
-        syncedData.sort((p1, p2) -> Long.compare(p1.timestamp, p2.timestamp));
+        rawData.sort((p1, p2) -> Long.compare(p1.timestamp, p2.timestamp));
         
-        return calculateResult(syncedData, name);
+        calculateResult();
     }
 
-    public static class SyncedDataPoint {
-        double velocity, position, acceleration, rawAcceleration, voltage;
-        long timestamp;
-        double error;
-        
-        SyncedDataPoint(double velocity, double position, double acceleration, double voltage, long timestamp) {
-            this.velocity = velocity;
-            this.position = position;
-            this.acceleration = acceleration;
-            this.rawAcceleration = acceleration;
-            this.voltage = voltage;
-            this.timestamp = timestamp;
-        }
-    }
+    private void calculateResult() {
+        double bestScore = Double.MAX_VALUE;
 
-    private static BucketResult calculateResult(List<SyncedDataPoint> rawData, String name) {
-        List<SyncedDataPoint> cleanData = filterAndSmooth(rawData, VOLTAGE_THRESHOLD, SMOOTH_WINDOW);
-        if (cleanData.size() < 10) return null;
+        double voltageThresholdR = 0;
+        double smoothWindowR = 0;
+        double zScoreThresholdR = 0;
+        double outlierPercentageR = 0;
 
-        BucketResult initialResult = solveOLS(cleanData);
-        if (initialResult == null) return null;
+        for (double voltageThreshold : VOLTAGE_THRESHOLDS) {
+            for (int smoothWindow : SMOOTH_WINDOWS) {
+                for (double zScoreThreshold :Z_SCORE_THRESHOLDS) {
+                    for (double outlierPercentage :OUTLIER_PERCENTAGE) {
+                        List<SyncedDataPoint> cleanData = filterAndSmooth(rawData, voltageThreshold, smoothWindow);
+                        if (cleanData.size() < 10) continue;
 
-        List<SyncedDataPoint> refinedData = removeOutliers(cleanData, initialResult, OUTLIER_PERCENTAGE);
-        if (refinedData.size() < 10) return null;
+                        BucketResult initialResult = solveOLS(cleanData);
+                        if (initialResult == null) continue;
 
-        BucketResult finalModel = solveOLS(refinedData);
-        
-        if (finalModel != null) {
-            double sumErr = 0;
-            double maxErr = 0;
-            boolean[] flags = SysidApp.kFlags;
+                        List<SyncedDataPoint> refinedData = removeOutliers(cleanData, initialResult, zScoreThreshold);
+                        if (refinedData.size() < 10) continue;
 
-            for(SyncedDataPoint p : rawData) {
-                double pred = 0;
-                if(flags[0]) pred += finalModel.ks * Math.signum(p.velocity);
-                if(flags[1]) pred += finalModel.kv * p.velocity;
-                if(flags[2]) pred += finalModel.ka * p.acceleration;
-                if(flags[3]) pred += finalModel.kg * 1.0;
-                if(flags[4]) pred += finalModel.ksin * Math.cos(p.position);
-                if(flags[5]) pred += finalModel.kv2 * p.velocity * Math.abs(p.velocity);
-                
-                double error = Math.abs(p.voltage - pred);
-                sumErr += error;
-                if(error > maxErr) maxErr = error;
+                        BucketResult initialResult2 = solveOLS(refinedData);
+                        if (initialResult2 == null) continue;
+
+                        List<SyncedDataPoint> refinedData2 = removeOutlierspercentage(cleanData, initialResult2, outlierPercentage);
+                        if (refinedData2.size() < 10) continue;
+
+                        BucketResult candidateModel = solveOLS(refinedData2);
+                        
+                        if (candidateModel != null) {
+                            candidateModel.rawPoints = rawData.size();
+
+                            // System.out.println(" voltageThreshold " + voltageThreshold + 
+                            // " smoothWindow " + smoothWindow + 
+                            // " zScoreThreshold " + zScoreThreshold + 
+                            // " outlierPercentage " + outlierPercentage + 
+                            // " ks " + candidateModel.kS + 
+                            // " kv " + candidateModel.kV + 
+                            // " avgError " + candidateModel.avgError + 
+                            // " rSquared " + candidateModel.rSquared + 
+                            // " score " + calculateResultScore(candidateModel));
+                            if (calculateResultScore(candidateModel) < bestScore) {
+                                bestScore = calculateResultScore(candidateModel);
+                                result = candidateModel;
+
+                                voltageThresholdR = voltageThreshold;
+                                smoothWindowR = smoothWindow;
+                                zScoreThresholdR = zScoreThreshold;
+                                outlierPercentageR = outlierPercentage;
+                            }
+                        }
+                    }
+                }
             }
+        }
+        
+        if (result == null) return;
 
-            finalModel.avgError = sumErr / rawData.size();
-            finalModel.maxError = maxErr;
-            finalModel.rawPoints = rawData.size();
+        if (kFlags.useKCos) {
+            checkZeroPos(result);
         }
 
-        return finalModel;
+
+        System.out.println(" voltageThreshold " + voltageThresholdR + 
+                            " smoothWindow " + smoothWindowR + 
+                            " zScoreThreshold " + zScoreThresholdR + 
+                            " outlierPercentage " + outlierPercentageR + 
+                            " ks " + result.kS + 
+                            " kv " + result.kV + 
+                            " avgError " + result.avgError + 
+                            " rSquared " + result.rSquared + 
+                            " score " + calculateResultScore(result));
+        double sumErr = 0;
+        double maxErr = 0;
+
+        for (SyncedDataPoint p : rawData) {
+            double pred = calculatePredictedVoltage(p, result);
+            double error = Math.abs(p.voltage - pred);
+            sumErr += error;
+            if(error > maxErr) maxErr = error;
+        }
+
+        result.avgError = sumErr / rawData.size();
+        result.maxError = maxErr;
+        result.rawPoints = rawData.size();
+
+        System.out.println(name + " avg Error: " + result.avgError);
+        System.out.println(name + " max Error: " + result.maxError);
+        System.out.println(name + " used Points size: " + result.points);
+        System.out.println(name + " raw Points size: " + result.rawPoints);
+        System.out.println(name + " r Squared: " + result.rSquared);
     }
 
-    private static List<SyncedDataPoint> filterAndSmooth(List<SyncedDataPoint> rawData, double voltageThresh, int windowSize) {
+    private List<SyncedDataPoint> filterAndSmooth(List<SyncedDataPoint> data, double voltageThresh, int windowSize) {
+        
         List<SyncedDataPoint> filtered = new ArrayList<>();
-        for (int i = 0; i < rawData.size(); i++) {
-            SyncedDataPoint current = rawData.get(i);
-            
-            double sumAccel = 0;
-            int count = 0;
-            for (int j = Math.max(0, i - windowSize/2); j < Math.min(rawData.size(), i + windowSize/2 + 1); j++) {
-                sumAccel += rawData.get(j).rawAcceleration;
-                count++;
-            }
-            current.acceleration = sumAccel / count;
+        for (int i = 0; i < data.size(); i++) {
+            SyncedDataPoint current = data.get(i).copy();
             
             if (Math.abs(current.voltage) > voltageThresh) {
                 filtered.add(current);
+            }
+            
+            if (windowSize >= 0) {
+                double sumAccel = 0;
+                int count = 0;
+                for (int j = Math.max(0, i - windowSize/2); j < Math.min(data.size(), i + windowSize/2 + 1); j++) {
+                    sumAccel += data.get(j).acceleration;
+                    count++;
+                }
+                current.acceleration = sumAccel / count;
             }
         }
         return filtered;
     }
 
-    private static List<SyncedDataPoint> removeOutliers(List<SyncedDataPoint> data, BucketResult model, double percentage) {
-        if (percentage <= 0.001) return data;
+    private List<SyncedDataPoint> removeOutliers(List<SyncedDataPoint> data, BucketResult model, double zScoreThreshold) {
+        if (zScoreThreshold <= 0) return data;
 
-        double kS = model.ks;
-        double kV = model.kv;
-        double kA = model.ka;
-        double kG = model.kg;
-        double kCos = model.ksin;
-        double kV2 = model.kv2;
-        boolean[] flags = SysidApp.kFlags;
+        double sumError = 0;
 
         for (SyncedDataPoint p : data) {
-            double pred = 0;
-            if(flags[0]) pred += kS * Math.signum(p.velocity);
-            if(flags[1]) pred += kV * p.velocity;
-            if(flags[2]) pred += kA * p.acceleration;
-            if(flags[3]) pred += kG * 1.0;
-            if(flags[4]) pred += kCos * Math.cos(p.position);
-            if(flags[5]) pred += kV2 * p.velocity * Math.abs(p.velocity);
+            double pred = calculatePredictedVoltage(p, model);
+            p.error = Math.abs(p.voltage - pred);
+            sumError += p.error;
+        }
+
+        double meanError = sumError / data.size();
+        double sumSqDiff = 0;
+
+        for (SyncedDataPoint p : data) {
+            sumSqDiff += Math.pow(p.error - meanError, 2);
+        }
+        double stdDev = Math.sqrt(sumSqDiff / data.size());
+
+        List<SyncedDataPoint> filteredData = new ArrayList<>();
+        double maxAllowedError = meanError + (zScoreThreshold * stdDev);
+
+        for (SyncedDataPoint p : data) {
+            if (p.error <= maxAllowedError) {
+                filteredData.add(p);
+            }
+        }
+
+        return filteredData;
+    }
+
+    private List<SyncedDataPoint> removeOutlierspercentage(List<SyncedDataPoint> data, BucketResult model, double percentage) {
+        if (percentage <= 0.001) return data;
+
+        for (SyncedDataPoint p : data) {
+            double pred = calculatePredictedVoltage(p, model);
             
             p.error = Math.abs(p.voltage - pred);
         }
@@ -215,11 +488,12 @@ public class Sysid {
         return new ArrayList<>(data.subList(0, keepCount));
     }
 
-    private static BucketResult solveOLS(List<SyncedDataPoint> data) {
+    private BucketResult solveOLS(List<SyncedDataPoint> data) {
         int n = data.size();
-        boolean[] flags = SysidApp.kFlags;
         int numParams = 0;
-        for(boolean f : flags) if(f) numParams++;
+        for (boolean kFlag : kFlags) {
+            if(kFlag) numParams++;
+        }
 
         if(numParams == 0) return null;
 
@@ -231,12 +505,12 @@ public class Sysid {
             b.set(i, 0, p.voltage);
 
             int col = 0;
-            if(flags[0]) A.set(i, col++, Math.signum(p.velocity));
-            if(flags[1]) A.set(i, col++, p.velocity);
-            if(flags[2]) A.set(i, col++, p.acceleration);
-            if(flags[3]) A.set(i, col++, 1.0);
-            if(flags[4]) A.set(i, col++, Math.cos(p.position));
-            if(flags[5]) A.set(i, col++, p.velocity * Math.abs(p.velocity));
+            if(kFlags.useKS) A.set(i, col++, KFunctions.sFunction(p.velocity));
+            if(kFlags.useKV) A.set(i, col++, KFunctions.vFunction(p.velocity));
+            if(kFlags.useKA) A.set(i, col++, KFunctions.aFunction(p.acceleration));
+            if(kFlags.useKG) A.set(i, col++, KFunctions.gFunction());
+            if(kFlags.useKCos) A.set(i, col++, KFunctions.cosFunction(p.position, isCos));
+            if(kFlags.useKV2) A.set(i, col++, KFunctions.v2Function(p.velocity));
         }
 
         SimpleMatrix x;
@@ -248,50 +522,100 @@ public class Sysid {
 
         double[] k = new double[6];
         int col = 0;
-        for(int i=0; i<6; i++) {
-            if(flags[i]) k[i] = x.get(col++);
+        int index = 0;
+        
+        for (boolean kFlag : kFlags) {
+            if(kFlag) k[index] = x.get(col++);
+            index++;
         }
 
         double ssTot = 0, ssRes = 0, meanV = 0;
         for(SyncedDataPoint p : data) meanV += p.voltage;
         meanV /= n;
 
+        BucketResult olsResult = new BucketResult(k[0], k[1], k[2], k[3], k[4], k[5], 0, 0, 0, 0);
+        
         for (SyncedDataPoint p : data) {
-            double pred = 0;
-            if(flags[0]) pred += k[0] * Math.signum(p.velocity);
-            if(flags[1]) pred += k[1] * p.velocity;
-            if(flags[2]) pred += k[2] * p.acceleration;
-            if(flags[3]) pred += k[3] * 1.0;
-            if(flags[4]) pred += k[4] * Math.cos(p.position);
-            if(flags[5]) pred += k[5] * p.velocity * Math.abs(p.velocity);
+            double pred = calculatePredictedVoltage(p, olsResult);
 
             ssTot += Math.pow(p.voltage - meanV, 2);
             ssRes += Math.pow(p.voltage - pred, 2);
         }
 
-        double r2 = 1 - (ssRes / ssTot);
+        double sumErr = 0;
+        double maxErr = 0;
 
-        return new BucketResult(k[0], k[1], k[5], k[2], k[3], k[4], 0, 0, n, r2);
-    }
-
-    public static class BucketResult {
-        double ks, kv, kv2, ka, kg, ksin, avgError, maxError, rSquared;
-        int points, rawPoints;
-
-        BucketResult(double ks, double kv, double kv2, double ka, double kg, double ksin, double avgError, double maxError, int points, double rSquared) {
-            this.ks = ks;
-            this.kv = kv;
-            this.kv2 = kv2;
-            this.ka = ka;
-            this.kg = kg;
-            this.ksin = ksin;
-            this.avgError = avgError;
-            this.maxError = maxError;
-            this.points = points;
-            this.rSquared = rSquared;
+        for(SyncedDataPoint p : rawData) {
+            double pred = calculatePredictedVoltage(p, olsResult);
+            double error = Math.abs(p.voltage - pred);
+            sumErr += error;
+            if(error > maxErr) maxErr = error;
         }
+
+        double avgError = sumErr / rawData.size();
+        double maxError = maxErr;
+        double r2 = 0;
+
+        if (ssTot != 0) r2 = 1 - (ssRes / ssTot);
+
+        return new BucketResult(k[0], k[1], k[2], k[3], k[4], k[5], avgError, maxError, n, r2);
     }
 
-    public class Entry {
+    private double calculatePredictedVoltage(SyncedDataPoint p, BucketResult model) {
+        double pred = 0;
+        if(kFlags.useKS) pred += model.kS * KFunctions.sFunction(p.velocity);
+        if(kFlags.useKV) pred += model.kV * KFunctions.vFunction(p.velocity);
+        if(kFlags.useKA) pred += model.kA * KFunctions.aFunction(p.acceleration);
+        if(kFlags.useKG) pred += model.kG * KFunctions.gFunction();
+        if(kFlags.useKCos) pred += model.kCos * KFunctions.cosFunction(p.position, isCos);
+        if(kFlags.useKV2) pred += model.kV2 * KFunctions.v2Function(p.velocity);
+        return pred;
+    }
+
+    private double calculateResultScore(BucketResult model) {
+        double cost = model.avgError;
+        double r2 = model.rSquared;
+        
+        if (r2 < MIN_R_SQUARED_THRESHOLD) {
+            cost += (1.0 - r2) * R2_BIG_PENALTY_MULTIPLIER;
+        } else {
+            cost += (1.0 - r2) * R2_PENALTY_MULTIPLIER;
+        }
+        
+        double negativePenalty = 0.0;
+        
+        if (kFlags.useKS && model.kS < 0) {
+            negativePenalty += NEGATIVE_PARAM_PENALTY_BASE;
+        }
+        if (kFlags.useKV && model.kV < 0) {
+            negativePenalty += NEGATIVE_PARAM_PENALTY_BASE;
+        }
+        if (kFlags.useKA && model.kA < 0) {
+            negativePenalty += NEGATIVE_PARAM_PENALTY_BASE;
+        }
+        if (kFlags.useKV2 && model.kV2 < 0) {
+            negativePenalty += NEGATIVE_PARAM_PENALTY_BASE;
+        }
+        
+        cost += negativePenalty;
+        
+        return cost;
+    }
+
+    private void checkZeroPos(BucketResult result) {
+        boolean prevIsCos = isCos;
+        isCos = false;
+
+        try {
+            List<SyncedDataPoint> cleanData = filterAndSmooth(rawData, VOLTAGE_THRESHOLDS[0], SMOOTH_WINDOWS[0]);
+            BucketResult sinResult = solveOLS(cleanData);
+
+            if (sinResult != null && sinResult.avgError < result.avgError) {
+                System.out.println("its seems " + name
+                        + " zero is not Supported by the code, the zero should be forward like Unit Circle");
+            }
+        } finally {
+            isCos = prevIsCos;
+        }
     }
 }
