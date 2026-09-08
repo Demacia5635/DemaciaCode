@@ -177,15 +177,12 @@ public abstract class BaseMotor implements MotorInterface {
   public void setDuty(double power) {
     setMotorDuty(power);
     wantedValue = power;
+    if (controlMode != ControlMode.DISABLE && controlMode != ControlMode.DUTYCYCLE) {
+      notDutyControlMode = controlMode;
+    }
     if (power == 0) {
-      if (controlMode != ControlMode.DISABLE && controlMode != ControlMode.DUTYCYCLE) {
-        notDutyControlMode = controlMode;
-      }
       controlMode = ControlMode.DISABLE;
     } else {
-      if (controlMode != ControlMode.DISABLE && controlMode != ControlMode.DUTYCYCLE) {
-        notDutyControlMode = controlMode;
-      }
       controlMode = ControlMode.DUTYCYCLE;
     }
   }
@@ -314,7 +311,7 @@ public abstract class BaseMotor implements MotorInterface {
   public double getCurrentValue() {
     ControlMode mode = getCurrentControlMode();
 
-    if (mode == ControlMode.DISABLE || mode == ControlMode.DUTYCYCLE) {
+    if ((mode == ControlMode.DISABLE || mode == ControlMode.DUTYCYCLE) && mode != ControlMode.VOLTAGE) {
       mode = getLastControlMode();
     }
 

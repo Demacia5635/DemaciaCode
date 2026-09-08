@@ -5481,7 +5481,7 @@
           },
           {
             "type": "Text Display",
-            "title": "intake roller current",
+            "title": "intake roller value",
             "x": 384.0,
             "y": 0.0,
             "width": 128.0,
@@ -5546,7 +5546,7 @@
           },
           {
             "type": "Text Display",
-            "title": "intake deploy current",
+            "title": "intake deploy value",
             "x": 640.0,
             "y": 0.0,
             "width": 128.0,
@@ -5710,7 +5710,7 @@
           },
           {
             "type": "Text Display",
-            "title": "mechanom current",
+            "title": "mechanom value",
             "x": 384.0,
             "y": 0.0,
             "width": 128.0,
@@ -5775,7 +5775,7 @@
           },
           {
             "type": "Text Display",
-            "title": "shinua rollers current",
+            "title": "shinua rollers value",
             "x": 640.0,
             "y": 0.0,
             "width": 128.0,
@@ -5887,7 +5887,7 @@
           },
           {
             "type": "Text Display",
-            "title": "turret motor current",
+            "title": "turret motor value",
             "x": 384.0,
             "y": 0.0,
             "width": 128.0,
@@ -6051,7 +6051,7 @@
           },
           {
             "type": "Text Display",
-            "title": "flywheel current",
+            "title": "flywheel value",
             "x": 384.0,
             "y": 0.0,
             "width": 128.0,
@@ -6129,7 +6129,7 @@
           },
           {
             "type": "Text Display",
-            "title": "hood current",
+            "title": "hood value",
             "x": 896.0,
             "y": 0.0,
             "width": 128.0,
@@ -6241,7 +6241,7 @@
           },
           {
             "type": "Text Display",
-            "title": "feeder current",
+            "title": "feeder value",
             "x": 128.0,
             "y": 0.0,
             "width": 128.0,

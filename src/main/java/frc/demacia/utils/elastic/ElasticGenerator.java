@@ -555,7 +555,7 @@ public class ElasticGenerator {
                     String baseTopic = mechPath + "/" + motorName + "/";
                     
                     widgets.add(createWidget("Text Display", motorName + " wanted", xOffset, yOffset, 1, 1, baseTopic + motorName + " wanted value", "\"data_type\": \"double\", \"show_submit_button\": false"));
-                    widgets.add(createWidget("Text Display", motorName + " current", xOffset + 1, yOffset, 1, 1, baseTopic + motorName + " current Value", "\"data_type\": \"double\", \"show_submit_button\": false"));
+                    widgets.add(createWidget("Text Display", motorName + " value", xOffset + 1, yOffset, 1, 1, baseTopic + motorName + " current Value", "\"data_type\": \"double\", \"show_submit_button\": false"));
                     yOffset++;
                     
                     if (yOffset >= MAX_ROWS) { yOffset = 0; xOffset += WIDGET_WIDTH; }

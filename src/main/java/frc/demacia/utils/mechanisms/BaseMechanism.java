@@ -774,7 +774,7 @@ public class BaseMechanism extends SubsystemBase{
         for (int i = 0; i < motorsAmount; i++){
             SmartDashboard.putBoolean(getName() + "/" + motorNames[i] + "/" + motorNames[i] + " has Calibrated", getIsCalibration(i));
             SmartDashboard.putNumber(getName() + "/" + motorNames[i] + "/" + motorNames[i] + " wanted value", motors.get(motorNames[i]).motor.getWantedValue());
-            SmartDashboard.putNumber(getName() + "/" + motorNames[i] + "/" + motorNames[i] + " current Value", motors.get(motorNames[i]).motor.getCurrentVoltage());
+            SmartDashboard.putNumber(getName() + "/" + motorNames[i] + "/" + motorNames[i] + " current Value", motors.get(motorNames[i]).motor.getCurrentValue());
         }
     }
 }

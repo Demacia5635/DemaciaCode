@@ -44,8 +44,8 @@ public class IntakeConstants {
             .withRadiansMotor(INTAKE_DEPLOY_GEAR_RATIO)
             .withPID(INTAKE_DEPLOY_KP, INTAKE_DEPLOY_KI, INTAKE_DEPLOY_KD, INTAKE_DEPLOY_KS, INTAKE_DEPLOY_KV, INTAKE_DEPLOY_KA, INTAKE_DEPLOY_KG, INTAKE_DEPLOY_KCOS, INTAKE_DEPLOY_KV2);
 
-        public static final double INTAKE_DEPLOY_MIN_LIMIT = 0.0; // TODO
-        public static final double INTAKE_DEPLOY_MAX_LIMIT = 0.0; // TODO
+        public static final double INTAKE_DEPLOY_MIN_LIMIT = -1000.0; // TODO
+        public static final double INTAKE_DEPLOY_MAX_LIMIT = 1000.0; // TODO
         public static final double INTAKE_DEPLOY_CALIBRATION_POWER = 0.2;
         public static final double INTAKE_DEPLOY_CMD_CALIBRATION_RESET_POS = 0.0; // TODO
         public static final double INTAKE_DEPLOY_AUTO_CALIBRATION_RESET_POS = 0.0; // TODO

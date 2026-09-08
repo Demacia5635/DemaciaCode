@@ -62,8 +62,8 @@ public class ShooterConstants {
             .withPID(HOOD_KP, HOOD_KI, HOOD_KD, HOOD_KS, HOOD_KV, HOOD_KA, HOOD_KG, HOOD_KCOS, HOOD_KV2)
             .withMotionParam(HOOD_MAX_VELOCITY, HOOD_MAX_ACCELERATION, HOOD_MAX_JERK);
 
-        public static final double HOOD_MIN_LIMIT = 0.0; // TODO
-        public static final double HOOD_MAX_LIMIT = 0.0; // TODO
+        public static final double HOOD_MIN_LIMIT = -1000.0; // TODO
+        public static final double HOOD_MAX_LIMIT = 1000.0; // TODO
         public static final double HOOD_CALIBRATION_POWER = -0.1; // TODO
         public static final double HOOD_CMD_CALIBRATION_RESET_POS = 0.0; // TODO
         public static final double HOOD_AUTO_CALIBRATION_RESET_POS = 0.0; // TODO
