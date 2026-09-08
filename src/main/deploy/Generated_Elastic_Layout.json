@@ -641,13 +641,13 @@
         "containers": [
           {
             "type": "Boolean Box",
-            "title": "test motor",
+            "title": "intake roller",
             "x": 0.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/Log/motors/test motor/is Connected",
+              "topic": "/Log/motors/intake roller/is Connected",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -660,7 +660,7 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/test motor/Value Control Mode Chooser",
+              "topic": "/SmartDashboard/motors/intake roller/Value Control Mode Chooser",
               "period": 0.06
             }
           },
@@ -672,7 +672,7 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/test motor/test Value",
+              "topic": "/SmartDashboard/motors/intake roller/test Value",
               "period": 0.06,
               "data_type": "double", "show_submit_button": true
             }
@@ -685,7 +685,7 @@
             "width": 256.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/test motor/test Value",
+              "topic": "/SmartDashboard/motors/intake roller/test Value",
               "period": 0.06,
               "data_type": "double", "update_continuously": true
             }
@@ -698,7 +698,7 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/test motor/test value command",
+              "topic": "/SmartDashboard/motors/intake roller/test value command",
               "period": 0.06,
               "show_type": true
             }
@@ -711,20 +711,20 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/Log/motors/test motor/current value",
+              "topic": "/Log/motors/intake roller/current value",
               "period": 0.06,
               "data_type": "double", "show_submit_button": true
             }
           },
           {
             "type": "Boolean Box",
-            "title": "talon test motor",
+            "title": "intake deploy",
             "x": 0.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/Log/motors/talon test motor/is Connected",
+              "topic": "/Log/motors/intake deploy/is Connected",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -737,7 +737,7 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/talon test motor/Value Control Mode Chooser",
+              "topic": "/SmartDashboard/motors/intake deploy/Value Control Mode Chooser",
               "period": 0.06
             }
           },
@@ -749,7 +749,7 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/talon test motor/test Value",
+              "topic": "/SmartDashboard/motors/intake deploy/test Value",
               "period": 0.06,
               "data_type": "double", "show_submit_button": true
             }
@@ -762,7 +762,7 @@
             "width": 256.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/talon test motor/test Value",
+              "topic": "/SmartDashboard/motors/intake deploy/test Value",
               "period": 0.06,
               "data_type": "double", "update_continuously": true
             }
@@ -775,7 +775,7 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/talon test motor/test value command",
+              "topic": "/SmartDashboard/motors/intake deploy/test value command",
               "period": 0.06,
               "show_type": true
             }
@@ -788,20 +788,20 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/Log/motors/talon test motor/current value",
+              "topic": "/Log/motors/intake deploy/current value",
               "period": 0.06,
               "data_type": "double", "show_submit_button": true
             }
           },
           {
             "type": "Boolean Box",
-            "title": "talonSRX test motor",
+            "title": "mechanom",
             "x": 0.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/Log/motors/talonSRX test motor/is Connected",
+              "topic": "/Log/motors/mechanom/is Connected",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -814,7 +814,7 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/talonSRX test motor/Value Control Mode Chooser",
+              "topic": "/SmartDashboard/motors/mechanom/Value Control Mode Chooser",
               "period": 0.06
             }
           },
@@ -826,7 +826,7 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/talonSRX test motor/test Value",
+              "topic": "/SmartDashboard/motors/mechanom/test Value",
               "period": 0.06,
               "data_type": "double", "show_submit_button": true
             }
@@ -839,7 +839,7 @@
             "width": 256.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/talonSRX test motor/test Value",
+              "topic": "/SmartDashboard/motors/mechanom/test Value",
               "period": 0.06,
               "data_type": "double", "update_continuously": true
             }
@@ -852,7 +852,7 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/motors/talonSRX test motor/test value command",
+              "topic": "/SmartDashboard/motors/mechanom/test value command",
               "period": 0.06,
               "show_type": true
             }
@@ -865,16 +865,417 @@
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/Log/motors/talonSRX test motor/current value",
+              "topic": "/Log/motors/mechanom/current value",
               "period": 0.06,
               "data_type": "double", "show_submit_button": true
             }
           },
+          {
+            "type": "Boolean Box",
+            "title": "shinua rollers",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/shinua rollers/is Connected",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "type": "ComboBox Chooser",
+            "title": "Value Control",
+            "x": 128.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/shinua rollers/Value Control Mode Chooser",
+              "period": 0.06
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Values",
+            "x": 256.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/shinua rollers/test Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Number Slider",
+            "title": "value",
+            "x": 384.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/shinua rollers/test Value",
+              "period": 0.06,
+              "data_type": "double", "update_continuously": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Run",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/shinua rollers/test value command",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Current Values",
+            "x": 768.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/shinua rollers/current value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Tuner 4",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "type": "Boolean Box",
+            "title": "turret motor",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/turret motor/is Connected",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "type": "ComboBox Chooser",
+            "title": "Value Control",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/turret motor/Value Control Mode Chooser",
+              "period": 0.06
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Values",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/turret motor/test Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Number Slider",
+            "title": "value",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/turret motor/test Value",
+              "period": 0.06,
+              "data_type": "double", "update_continuously": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Run",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/turret motor/test value command",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Current Values",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/turret motor/current value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "flywheel",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/flywheel/is Connected",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "type": "ComboBox Chooser",
+            "title": "Value Control",
+            "x": 128.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/flywheel/Value Control Mode Chooser",
+              "period": 0.06
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Values",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/flywheel/test Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Number Slider",
+            "title": "value",
+            "x": 384.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/flywheel/test Value",
+              "period": 0.06,
+              "data_type": "double", "update_continuously": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Run",
+            "x": 640.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/flywheel/test value command",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Current Values",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/flywheel/current value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "hood",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/hood/is Connected",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "type": "ComboBox Chooser",
+            "title": "Value Control",
+            "x": 128.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/hood/Value Control Mode Chooser",
+              "period": 0.06
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Values",
+            "x": 256.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/hood/test Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Number Slider",
+            "title": "value",
+            "x": 384.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/hood/test Value",
+              "period": 0.06,
+              "data_type": "double", "update_continuously": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Run",
+            "x": 640.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/hood/test value command",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Current Values",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/hood/current value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "feeder",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/feeder/is Connected",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "type": "ComboBox Chooser",
+            "title": "Value Control",
+            "x": 128.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/feeder/Value Control Mode Chooser",
+              "period": 0.06
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Values",
+            "x": 256.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/feeder/test Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Number Slider",
+            "title": "value",
+            "x": 384.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/feeder/test Value",
+              "period": 0.06,
+              "data_type": "double", "update_continuously": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Run",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/feeder/test value command",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Current Values",
+            "x": 768.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/feeder/current value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Tuner 5",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
           {
             "type": "Boolean Box",
             "title": "Front Left Cancoder",
             "x": 0.0,
-            "y": 384.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
@@ -887,7 +1288,7 @@
             "type": "Boolean Box",
             "title": "Front Right Cancoder",
             "x": 128.0,
-            "y": 384.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
@@ -900,7 +1301,7 @@
             "type": "Boolean Box",
             "title": "Back Left Cancoder",
             "x": 256.0,
-            "y": 384.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
@@ -913,7 +1314,7 @@
             "type": "Boolean Box",
             "title": "Back Right Cancoder",
             "x": 384.0,
-            "y": 384.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
@@ -926,7 +1327,7 @@
             "type": "Boolean Box",
             "title": "robot Chassis pigeon",
             "x": 512.0,
-            "y": 384.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
@@ -1367,27 +1768,27 @@
                 }
               },
               {
-                "title": "USE_KSIN",
+                "title": "USE_KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/USE_KCOS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
               },
               {
-                "title": "KSIN",
+                "title": "KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/KSIN",
+                  "topic": "/SmartDashboard/motors/Front Left Steer/PID+FF config slot 0/KCOS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1597,27 +1998,27 @@
                 }
               },
               {
-                "title": "USE_KSIN",
+                "title": "USE_KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/USE_KCOS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
               },
               {
-                "title": "KSIN",
+                "title": "KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/KSIN",
+                  "topic": "/SmartDashboard/motors/Front Left Drive/PID+FF config slot 0/KCOS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -1827,27 +2228,27 @@
                 }
               },
               {
-                "title": "USE_KSIN",
+                "title": "USE_KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/USE_KCOS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
               },
               {
-                "title": "KSIN",
+                "title": "KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/KSIN",
+                  "topic": "/SmartDashboard/motors/Front Right Steer/PID+FF config slot 0/KCOS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2057,27 +2458,27 @@
                 }
               },
               {
-                "title": "USE_KSIN",
+                "title": "USE_KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/USE_KCOS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
               },
               {
-                "title": "KSIN",
+                "title": "KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/KSIN",
+                  "topic": "/SmartDashboard/motors/Front Right Drive/PID+FF config slot 0/KCOS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2309,27 +2710,27 @@
                 }
               },
               {
-                "title": "USE_KSIN",
+                "title": "USE_KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/USE_KCOS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
               },
               {
-                "title": "KSIN",
+                "title": "KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/KSIN",
+                  "topic": "/SmartDashboard/motors/Back Left Steer/PID+FF config slot 0/KCOS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2539,27 +2940,27 @@
                 }
               },
               {
-                "title": "USE_KSIN",
+                "title": "USE_KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/USE_KCOS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
               },
               {
-                "title": "KSIN",
+                "title": "KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/KSIN",
+                  "topic": "/SmartDashboard/motors/Back Left Drive/PID+FF config slot 0/KCOS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2769,27 +3170,27 @@
                 }
               },
               {
-                "title": "USE_KSIN",
+                "title": "USE_KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/USE_KCOS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
               },
               {
-                "title": "KSIN",
+                "title": "KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/KSIN",
+                  "topic": "/SmartDashboard/motors/Back Right Steer/PID+FF config slot 0/KCOS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -2999,27 +3400,27 @@
                 }
               },
               {
-                "title": "USE_KSIN",
+                "title": "USE_KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/USE_KCOS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
               },
               {
-                "title": "KSIN",
+                "title": "KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/KSIN",
+                  "topic": "/SmartDashboard/motors/Back Right Drive/PID+FF config slot 0/KCOS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3091,7 +3492,7 @@
         "layouts": [
           {
             "type": "List Layout",
-            "title": "test motor",
+            "title": "intake roller",
             "x": 256.0,
             "y": 0.0,
             "width": 256.0,
@@ -3108,7 +3509,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KP",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/KP",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3122,7 +3523,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KI",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/KI",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3136,7 +3537,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KD",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/KD",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3150,7 +3551,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/USE_KS",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/USE_KS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3163,7 +3564,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KS",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/KS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3177,7 +3578,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/USE_KV",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/USE_KV",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3190,7 +3591,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KV",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/KV",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3204,7 +3605,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/USE_KA",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/USE_KA",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3217,7 +3618,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KA",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/KA",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3231,7 +3632,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/USE_KG",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/USE_KG",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3244,34 +3645,34 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KG",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/KG",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
                 }
               },
               {
-                "title": "USE_KSIN",
+                "title": "USE_KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/USE_KCOS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
               },
               {
-                "title": "KSIN",
+                "title": "KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KSIN",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/KCOS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3285,7 +3686,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/USE_KV2",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/USE_KV2",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3298,7 +3699,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/KV2",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/KV2",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3312,7 +3713,7 @@
                 "height": 128.0,
                 "type": "Toggle Button",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/test motor/PID+FF config slot 0/Update",
+                  "topic": "/SmartDashboard/motors/intake roller/PID+FF config slot 0/Update",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3321,7 +3722,7 @@
           },
           {
             "type": "List Layout",
-            "title": "talon test motor",
+            "title": "intake deploy",
             "x": 512.0,
             "y": 0.0,
             "width": 256.0,
@@ -3331,6 +3732,19 @@
             },
             "children": [
               {
+                "title": "intake Power Command",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Command",
+                "properties": {
+                  "topic": "/SmartDashboard/intake Power Command",
+                  "show_type": true,
+                  "maximize_button_space": false
+                }
+              },
+              {
                 "title": "KP",
                 "x": 0.0,
                 "y": 0.0,
@@ -3338,7 +3752,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/KP",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/KP",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3352,7 +3766,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/KI",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/KI",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3366,7 +3780,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/KD",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/KD",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3380,7 +3794,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/USE_KS",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/USE_KS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3393,7 +3807,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/KS",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/KS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3407,7 +3821,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/USE_KV",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/USE_KV",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3420,7 +3834,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/KV",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/KV",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3434,7 +3848,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/USE_KA",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/USE_KA",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3447,7 +3861,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/KA",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/KA",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3461,7 +3875,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/USE_KG",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/USE_KG",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3474,34 +3888,34 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/KG",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/KG",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
                 }
               },
               {
-                "title": "USE_KSIN",
+                "title": "USE_KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/USE_KCOS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
               },
               {
-                "title": "KSIN",
+                "title": "KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/KSIN",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/KCOS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3515,7 +3929,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/USE_KV2",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/USE_KV2",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3528,7 +3942,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/KV2",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/KV2",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3542,7 +3956,7 @@
                 "height": 128.0,
                 "type": "Toggle Button",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talon test motor/PID+FF config slot 0/Update",
+                  "topic": "/SmartDashboard/motors/intake deploy/PID+FF config slot 0/Update",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3551,7 +3965,7 @@
           },
           {
             "type": "List Layout",
-            "title": "talonSRX test motor",
+            "title": "mechanom",
             "x": 768.0,
             "y": 0.0,
             "width": 256.0,
@@ -3568,7 +3982,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/KP",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/KP",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3582,7 +3996,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/KI",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/KI",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3596,7 +4010,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/KD",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/KD",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3610,7 +4024,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/USE_KS",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/USE_KS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3623,7 +4037,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/KS",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/KS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3637,7 +4051,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/USE_KV",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/USE_KV",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3650,7 +4064,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/KV",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/KV",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3664,7 +4078,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/USE_KA",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/USE_KA",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3677,7 +4091,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/KA",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/KA",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3691,7 +4105,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/USE_KG",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/USE_KG",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3704,34 +4118,34 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/KG",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/KG",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
                 }
               },
               {
-                "title": "USE_KSIN",
+                "title": "USE_KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/USE_KSIN",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/USE_KCOS",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
               },
               {
-                "title": "KSIN",
+                "title": "KCOS",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/KSIN",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/KCOS",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3745,7 +4159,7 @@
                 "height": 128.0,
                 "type": "Toggle Switch",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/USE_KV2",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/USE_KV2",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3758,7 +4172,7 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/KV2",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/KV2",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": true
@@ -3772,7 +4186,237 @@
                 "height": 128.0,
                 "type": "Toggle Button",
                 "properties": {
-                  "topic": "/SmartDashboard/motors/talonSRX test motor/PID+FF config slot 0/Update",
+                  "topic": "/SmartDashboard/motors/mechanom/PID+FF config slot 0/Update",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              }
+            ]
+          },
+          {
+            "type": "List Layout",
+            "title": "shinua rollers",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 512.0,
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "KP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/KP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/KI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/KD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/USE_KS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/KS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/USE_KV",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/KV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/USE_KA",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/KA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/USE_KG",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/KG",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/USE_KCOS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/KCOS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/USE_KV2",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/KV2",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Update",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Button",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/shinua rollers/PID+FF config slot 0/Update",
                   "period": 0.06,
                   "data_type": "boolean"
                 }
@@ -3792,6 +4436,1872 @@
               "topic": "/SmartDashboard/sysID/sysidCommand",
               "period": 0.06,
               "show_type": true, "maximize_button_space": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Sysid 4",
+      "grid_layout": {
+        "layouts": [
+          {
+            "type": "List Layout",
+            "title": "turret motor",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 512.0,
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "turret Power Command",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Command",
+                "properties": {
+                  "topic": "/SmartDashboard/turret Power Command",
+                  "show_type": true,
+                  "maximize_button_space": false
+                }
+              },
+              {
+                "title": "KP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/KP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/KI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/KD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/USE_KS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/KS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/USE_KV",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/KV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/USE_KA",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/KA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/USE_KG",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/KG",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/USE_KCOS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/KCOS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/USE_KV2",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/KV2",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Update",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Button",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/turret motor/PID+FF config slot 0/Update",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              }
+            ]
+          },
+          {
+            "type": "List Layout",
+            "title": "flywheel",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 512.0,
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "shooter Power Command",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Command",
+                "properties": {
+                  "topic": "/SmartDashboard/shooter Power Command",
+                  "show_type": true,
+                  "maximize_button_space": false
+                }
+              },
+              {
+                "title": "KP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/KP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/KI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/KD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/USE_KS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/KS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/USE_KV",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/KV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/USE_KA",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/KA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/USE_KG",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/KG",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/USE_KCOS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/KCOS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/USE_KV2",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/KV2",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Update",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Button",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/flywheel/PID+FF config slot 0/Update",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              }
+            ]
+          },
+          {
+            "type": "List Layout",
+            "title": "hood",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 512.0,
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "shooter Power Command",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Command",
+                "properties": {
+                  "topic": "/SmartDashboard/shooter Power Command",
+                  "show_type": true,
+                  "maximize_button_space": false
+                }
+              },
+              {
+                "title": "KP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/KP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/KI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/KD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/USE_KS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/KS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/USE_KV",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/KV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/USE_KA",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/KA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/USE_KG",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/KG",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/USE_KCOS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/KCOS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/USE_KV2",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/KV2",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Update",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Button",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/hood/PID+FF config slot 0/Update",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              }
+            ]
+          },
+          {
+            "type": "List Layout",
+            "title": "feeder",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 512.0,
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "KP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/KP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/KI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/KD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/USE_KS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/KS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/USE_KV",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/KV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/USE_KA",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/KA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/USE_KG",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/KG",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/USE_KCOS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/KCOS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/USE_KV2",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/KV2",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Update",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Button",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/Update",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              }
+            ]
+          }
+        ],
+        "containers": [
+          {
+            "type": "Command",
+            "title": "sysid Command",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/sysID/sysidCommand",
+              "period": 0.06,
+              "show_type": true, "maximize_button_space": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "intake",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "type": "ComboBox Chooser",
+            "title": "intake State Chooser",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake State Chooser",
+              "period": 0.06,
+              "sort_options": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "State",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake State",
+              "period": 0.06,
+              "data_type": "string", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Test Values",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake Test Values",
+              "period": 0.06,
+              "data_type": "double[]", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "intake roller wanted",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake roller/intake roller wanted value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "intake roller current",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake roller/intake roller current Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Coast intake roller",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake roller/set coast intake roller",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Brake intake roller",
+            "x": 256.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake roller/set brake intake roller",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "Calibrated",
+            "x": 256.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake roller/intake roller has Calibrated",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "intake deploy wanted",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake deploy/intake deploy wanted value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "intake deploy current",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake deploy/intake deploy current Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Coast intake deploy",
+            "x": 512.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake deploy/set coast intake deploy",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Brake intake deploy",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake deploy/set brake intake deploy",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Power intake deploy",
+            "x": 512.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake deploy/set power command intake deploy",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Calibration Command intake deploy",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake deploy/intake deploy Calibration Command",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Reset intake deploy",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake deploy/intake deploy manual reset",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "Calibrated",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake deploy/intake deploy has Calibrated",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "intake deploy max Limit Switch",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/sensors/intake deploy max Limit Switch/value",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "shinua",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "type": "ComboBox Chooser",
+            "title": "shinua State Chooser",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/shinua State Chooser",
+              "period": 0.06,
+              "sort_options": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "State",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/shinua State",
+              "period": 0.06,
+              "data_type": "string", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Test Values",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/shinua Test Values",
+              "period": 0.06,
+              "data_type": "double[]", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "mechanom wanted",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/mechanom/mechanom wanted value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "mechanom current",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/mechanom/mechanom current Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Coast mechanom",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/mechanom/set coast mechanom",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Brake mechanom",
+            "x": 256.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/mechanom/set brake mechanom",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "Calibrated",
+            "x": 256.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/mechanom/mechanom has Calibrated",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "shinua rollers wanted",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/shinua rollers/shinua rollers wanted value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "shinua rollers current",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/shinua rollers/shinua rollers current Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Coast shinua rollers",
+            "x": 512.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/shinua rollers/set coast shinua rollers",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Brake shinua rollers",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/shinua rollers/set brake shinua rollers",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "Calibrated",
+            "x": 512.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/shinua rollers/shinua rollers has Calibrated",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "turret",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "type": "ComboBox Chooser",
+            "title": "turret State Chooser",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/turret/turret State Chooser",
+              "period": 0.06,
+              "sort_options": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "State",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/turret/turret State",
+              "period": 0.06,
+              "data_type": "string", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Test Values",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/turret/turret Test Values",
+              "period": 0.06,
+              "data_type": "double[]", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "turret motor wanted",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/turret/turret motor/turret motor wanted value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "turret motor current",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/turret/turret motor/turret motor current Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Coast turret motor",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/turret/turret motor/set coast turret motor",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Brake turret motor",
+            "x": 256.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/turret/turret motor/set brake turret motor",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Power turret motor",
+            "x": 256.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/turret/turret motor/set power command turret motor",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Calibration Command turret motor",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/turret/turret motor/turret motor Calibration Command",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Reset turret motor",
+            "x": 512.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/turret/turret motor/turret motor manual reset",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "Calibrated",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/turret/turret motor/turret motor has Calibrated",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "turret min Limit Switch",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/sensors/turret min Limit Switch/value",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "shooter",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "type": "ComboBox Chooser",
+            "title": "shooter State Chooser",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/shooter State Chooser",
+              "period": 0.06,
+              "sort_options": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "State",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/shooter State",
+              "period": 0.06,
+              "data_type": "string", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Test Values",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/shooter Test Values",
+              "period": 0.06,
+              "data_type": "double[]", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "flywheel wanted",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/flywheel/flywheel wanted value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "flywheel current",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/flywheel/flywheel current Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Coast flywheel",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/flywheel/set coast flywheel",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Brake flywheel",
+            "x": 256.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/flywheel/set brake flywheel",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Power flywheel",
+            "x": 256.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/flywheel/set power command flywheel",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "Calibrated",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/flywheel/flywheel has Calibrated",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "hood wanted",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/hood/hood wanted value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "hood current",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/hood/hood current Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Coast hood",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/hood/set coast hood",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Brake hood",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/hood/set brake hood",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Power hood",
+            "x": 768.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/hood/set power command hood",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Calibration Command hood",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/hood/hood Calibration Command",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Reset hood",
+            "x": 1024.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/hood/hood manual reset",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "Calibrated",
+            "x": 1024.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/hood/hood has Calibrated",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "shooter 2",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "type": "Text Display",
+            "title": "feeder wanted",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/feeder/feeder wanted value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "feeder current",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/feeder/feeder current Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Coast feeder",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/feeder/set coast feeder",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Brake feeder",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/feeder/set brake feeder",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "Calibrated",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/feeder/feeder has Calibrated",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "hood min Limit Switch",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/sensors/hood min Limit Switch/value",
+              "period": 0.06,
+              "data_type": "boolean"
             }
           }
         ]
