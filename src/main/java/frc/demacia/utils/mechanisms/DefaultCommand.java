@@ -1,6 +1,7 @@
 package frc.demacia.utils.mechanisms;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.demacia.utils.log.Log;
 import frc.demacia.utils.motors.MotorInterface;
 import frc.demacia.utils.motors.MotorInterface.ControlMode;
 
@@ -54,6 +55,7 @@ public class DefaultCommand extends Command {
       mechanism.stop();
     } else {
       for (int i = 0; i < length; i++) {
+        Log.log(i);
         controls[i].run();
       }
     }

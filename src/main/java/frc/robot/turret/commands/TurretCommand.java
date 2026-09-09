@@ -8,7 +8,7 @@ public class TurretCommand extends DefaultCommand {
     
     public TurretCommand() {
         super(Turret.getInstance(), new ControlMode[] {
-            ControlMode.DUTYCYCLE
+            ControlMode.ANGLE
         });
     }
 }

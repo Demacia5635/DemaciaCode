@@ -472,6 +472,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param angle The angle to set
      */
     public void setAngle(int motorIndex, double angle){
+        Log.log(angle + " angle");
         setAngle(motorNames[motorIndex], angle);
     }
 
