@@ -93,9 +93,16 @@ public final class RobotPose {
         poseEstimator.resetPose(pose);
     }
 
+    public void setYaw(Rotation2d angle) {
+        if (angle != null) {
+            poseEstimator.resetPose(new Pose2d(getEstimatedPose().getTranslation(), angle));
+        }
+    }
+
     public Rotation2d getGyroAngle() {
         return odometryDataSupplier.get().gyroAngle();
     }
+
 
     /**
      * Installs the singleton instance, building the internal DemaciaPoseEstimator

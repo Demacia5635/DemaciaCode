@@ -300,7 +300,7 @@ public class ElasticGenerator {
         int visionSourceIndex = 0;
         int tabIndex = 1;
         
-        int col = 2;
+        int col = 0;
     
         while (visionSourceIndex < visionSources.size()) {
             if (tabIndex > 1) {

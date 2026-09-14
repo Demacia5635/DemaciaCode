@@ -4,24 +4,17 @@
 
 package frc.demacia.utils.chassis;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.kinematics.DemaciaKinematics;
 import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.log.Log;
@@ -138,10 +131,7 @@ public class Chassis extends SubsystemBase {
     public void setYaw(Rotation2d angle) {
         if (angle != null) {
             gyro.setYaw(angle.getDegrees());
-            poseEstimator.resetPosition(
-                    angle,
-                    getModulePositions(),
-                    new Pose2d(getPose().getTranslation(), angle));
+            RobotPose.getInstance().setYaw(angle);
         }
     }
 
@@ -290,14 +280,6 @@ public class Chassis extends SubsystemBase {
             res[i] = modules[i].getState();
         }
         return res;
-    }
-
-    private SwerveModulePosition[] getModulePositions() {
-        SwerveModulePosition[] arr = new SwerveModulePosition[modules.length];
-        for (int i = 0; i < arr.length; i++) {
-            arr[i] = modules[i].getModulePosition();
-        }
-        return arr;
     }
 
     @Override
