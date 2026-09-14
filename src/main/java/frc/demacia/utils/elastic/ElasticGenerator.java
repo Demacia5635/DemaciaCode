@@ -14,13 +14,13 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.demacia.RobotPose.Vision.VisionSource;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.mechanisms.BaseMechanism;
 import frc.demacia.utils.mechanisms.StateBaseMechanism;
 import frc.demacia.utils.motors.MotorInterface;
 import frc.demacia.utils.sensors.SensorInterface;
-import frc.demacia.vision.subsystem.Camera;
 import frc.demacia.utils.sensors.Cancoder;
 
 public class ElasticGenerator {
@@ -31,9 +31,9 @@ public class ElasticGenerator {
     private static final int MAX_COLS = 10;
     private static final int MAX_ROWS = 4;
 
-    private List<MotorInterface> allMotors = new ArrayList<>();
-    private List<SensorInterface> allSensors = new ArrayList<>();
-    private List<Camera> allTags = new ArrayList<>();
+    private List<MotorInterface> motors = new ArrayList<>();
+    private List<SensorInterface> sensors = new ArrayList<>();
+    private List<VisionSource> visionSources = new ArrayList<>();
     private List<BaseMechanism> mechanisms = new ArrayList<>();
     private List<Pair<BaseMechanism, MotorInterface>> powerCmds = new ArrayList<>();
     private List<Pair<BaseMechanism, MotorInterface>> autoCalibration = new ArrayList<>();
@@ -64,20 +64,20 @@ public class ElasticGenerator {
     }
 
     public void registerMotor(MotorInterface motor) {
-        if (!allMotors.contains(motor)) {
-            allMotors.add(motor);
+        if (!motors.contains(motor)) {
+            motors.add(motor);
         }
     }
 
     public void registerSensor(SensorInterface sensor) {
-        if (!allSensors.contains(sensor)) {
-            allSensors.add(sensor);
+        if (!sensors.contains(sensor)) {
+            sensors.add(sensor);
         }
     }
 
-    public void registerTag(Camera tagPose) {
-        if (!allTags.contains(tagPose)) {
-            allTags.add(tagPose);
+    public void registerVisionSource(VisionSource visionSource) {
+        if (!visionSources.contains(visionSource)) {
+            visionSources.add(visionSource);
         }
     }
 
@@ -152,7 +152,7 @@ public class ElasticGenerator {
         int motorIndex = 0;
         int sensorIndex = 0;
 
-        while (motorIndex < allMotors.size() || sensorIndex < allSensors.size() || (allMotors.isEmpty() && allSensors.isEmpty())) {
+        while (motorIndex < motors.size() || sensorIndex < sensors.size() || (motors.isEmpty() && sensors.isEmpty())) {
             if (!firstTab) sb.append(",\n");
             
             String tabName = "Tuner" + (tabIndex > 1 ? " " + tabIndex : "");
@@ -164,8 +164,8 @@ public class ElasticGenerator {
             int row = 0;
             int col = 0;
 
-            while (motorIndex < allMotors.size() && row < MAX_ROWS) {
-                MotorInterface motor = allMotors.get(motorIndex);
+            while (motorIndex < motors.size() && row < MAX_ROWS) {
+                MotorInterface motor = motors.get(motorIndex);
                 String motorPath = "/SmartDashboard/motors/" + motor.getName();
                 String logManagerMotorPath = "/Log/motors/" + motor.getName();
                 
@@ -189,8 +189,8 @@ public class ElasticGenerator {
                 motorIndex++;
             }
 
-            while (sensorIndex < allSensors.size() && row < MAX_ROWS) {
-                SensorInterface sensor = allSensors.get(sensorIndex);
+            while (sensorIndex < sensors.size() && row < MAX_ROWS) {
+                SensorInterface sensor = sensors.get(sensorIndex);
                 String sensorTopic = "/SmartDashboard/sensors/" + sensor.getName() + "/is Connected";
                 
                 if (SmartDashboard.containsKey("sensors/" + sensor.getName() + "/is Connected")) {
@@ -205,7 +205,7 @@ public class ElasticGenerator {
                 sensorIndex++;
             }
             
-            if (allMotors.isEmpty() && allSensors.isEmpty()) {
+            if (motors.isEmpty() && sensors.isEmpty()) {
                 widgets.add(createWidget("Text Display", "Status", 0, 0, 4, 1, "", "\"data_type\": \"string\""));
                 sb.append(String.join(",\n", widgets));
                 sb.append("\n        ]\n      }\n    }");
@@ -287,14 +287,7 @@ public class ElasticGenerator {
     
         List<String> visionWidgets = new ArrayList<>();
     
-        visionWidgets.add(createWidget("Field", "Quest Robot Field", 0, 0, 2, 3, "/SmartDashboard/quest/Quest Robot Field", "\"field_rotation\": 90.0"));
-        visionWidgets.add(createWidget("Command", "Reset Quest Pose", 0, 3, 2, 1, "/SmartDashboard/quest/Reset Quest Pose", "\"show_type\": true"));
-        visionWidgets.add(createWidget("Boolean Box", "is quest connected", 0, 4, 1, 1, "/Log/quest/is connected", "\"data_type\": \"boolean\""));
-        visionWidgets.add(createWidget("Boolean Box", "is quest working", 1, 4, 1, 1, "/Log/quest/is working", "\"data_type\": \"boolean\""));
-
-        sb.append(String.join(",\n", visionWidgets));
-    
-        if (allTags.isEmpty()) {
+        if (visionSources.isEmpty()) {
             sb.append("\n");
             sb.append("        ]\n");
             sb.append("      }\n");
@@ -302,14 +295,14 @@ public class ElasticGenerator {
             return sb.toString();
         }
     
-        final int TAG_WIDTH = 2;
+        final int VISION_SOURCE_WIDTH = 2;
     
-        int tagIndex = 0;
+        int visionSourceIndex = 0;
         int tabIndex = 1;
         
         int col = 2;
     
-        while (tagIndex < allTags.size()) {
+        while (visionSourceIndex < visionSources.size()) {
             if (tabIndex > 1) {
                 sb.append(",\n");
                 sb.append("    {\n");
@@ -323,15 +316,18 @@ public class ElasticGenerator {
     
             List<String> widgets = new ArrayList<>();
     
-            while (tagIndex < allTags.size() && col < MAX_COLS) {
-                Camera tag = allTags.get(tagIndex);
-                String tagPath = "/SmartDashboard/tags/" + tag.getName();
+            while (visionSourceIndex < visionSources.size() && col < MAX_COLS) {
+                VisionSource visionSource = visionSources.get(visionSourceIndex);
+                String visionSourcePath = "/SmartDashboard/vision/" + visionSource.getName();
     
-                widgets.add(createWidget("Field", tag.getName() + " Field", col, 0, 2, 3, tagPath + "/field-tag " + tag.getName(), "\"field_rotation\": 90.0"));
-                widgets.add(createWidget("Boolean Box", "See " + tag.getName(), col, 3, 1, 1, tagPath + "/" + tag.getName() + " see tag", "\"data_type\": \"boolean\""));
+                widgets.add(createWidget("Field", visionSource.getName() + " Field", col, 0, 2, 3, visionSourcePath + "/field " + visionSource.getName(), "\"field_rotation\": 90.0"));
+                widgets.add(createWidget("Boolean Box", "See " + visionSource.getName(), col, 3, 1, 1, visionSourcePath + "/" + visionSource.getName() + "is Connected", "\"data_type\": \"boolean\""));
 
-                col += TAG_WIDTH;
-                tagIndex++;
+
+                // visionWidgets.add(createWidget("Command", "Reset Quest Pose", 0, 3, 2, 1, "/SmartDashboard/quest/Reset Quest Pose", "\"show_type\": true"));
+
+                col += VISION_SOURCE_WIDTH;
+                visionSourceIndex++;
             }
 
             if (!visionWidgets.isEmpty() && tabIndex == 1) {
@@ -361,7 +357,7 @@ public class ElasticGenerator {
 
         sb.append(",\n");
 
-        while (motorIndex < allMotors.size() || (allMotors.isEmpty())) {
+        while (motorIndex < motors.size() || (motors.isEmpty())) {
             if (!firstTab) sb.append(",\n");
             
             String tabName = "Sysid" + (tabIndex > 1 ? " " + tabIndex : "");
@@ -373,8 +369,8 @@ public class ElasticGenerator {
             int row = 0;
             int col = 2;
 
-            while (motorIndex < allMotors.size() && col < MAX_COLS) {
-                MotorInterface motor = allMotors.get(motorIndex);
+            while (motorIndex < motors.size() && col < MAX_COLS) {
+                MotorInterface motor = motors.get(motorIndex);
                 
                 String motorPath = "/SmartDashboard/motors/" + motor.getName();
                 
@@ -484,7 +480,7 @@ public class ElasticGenerator {
             sb.append("        \"containers\": [\n");
             List<String> containers = new ArrayList<>();
             
-            if (allMotors.isEmpty()) {
+            if (motors.isEmpty()) {
                 containers.add(createWidget("Text Display", "Status", 0, 0, 4, 1, "", "\"data_type\": \"string\""));
             } else {
                 containers.add(createWidget("Command", "sysid Command", 0, 0, 2, 1, "/SmartDashboard/sysID/sysidCommand", "\"show_type\": true, \"maximize_button_space\": false"));

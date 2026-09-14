@@ -27,7 +27,6 @@ import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.sensors.Cancoder;
 import frc.demacia.utils.sensors.Pigeon;
-import frc.demacia.vision.subsystem.Vision;
 
 public class Chassis extends SubsystemBase {
 
@@ -49,9 +48,6 @@ public class Chassis extends SubsystemBase {
     
     private DemaciaKinematics demaciaKinematics;
     private SwerveDriveKinematics wpilibKinematics;
-    private SwerveDrivePoseEstimator poseEstimator;
-
-    private Field2d field;
 
     private ChassisSpeeds lastSpeedsFieldRel = new ChassisSpeeds();
     private double lastAccelTime = Timer.getFPGATimestamp();
@@ -74,16 +70,6 @@ public class Chassis extends SubsystemBase {
         demaciaKinematics = new DemaciaKinematics(modulePositions);
         wpilibKinematics = new SwerveDriveKinematics(modulePositions);
 
-        poseEstimator = new SwerveDrivePoseEstimator(
-                wpilibKinematics,
-                getGyroAngle(),
-                getModulePositions(),
-                new Pose2d());
-
-        field = new Field2d();
-
-        Vision.getInstance();
-
         addLog();
     }
 
@@ -94,16 +80,11 @@ public class Chassis extends SubsystemBase {
                 new InstantCommand(() -> setYaw(Rotation2d.kZero)).ignoringDisable(true));
         SmartDashboard.putData("chassis/reset gyro 180",
                 new InstantCommand(() -> setYaw(Rotation2d.kPi)).ignoringDisable(true));
-        SmartDashboard.putData("chassis/field", field);
         SmartDashboard.putData("chassis/set coast",
                 new InstantCommand(() -> setNeutralMode(false)).ignoringDisable(true));
         SmartDashboard.putData("chassis/set brake",
                 new InstantCommand(() -> setNeutralMode(true)).ignoringDisable(true));
         SmartDashboard.putData("chassis/reset moduls", new InstantCommand(()-> resetMudolse()).ignoringDisable(true));
-    }
-
-    public SwerveDrivePoseEstimator getPoseEstimate() {
-        return poseEstimator;
     }
 
     public void checkElectronics() {
@@ -138,10 +119,6 @@ public class Chassis extends SubsystemBase {
         }
     }
 
-    public void resetPose(Pose2d pose) {
-        poseEstimator.resetPosition(getGyroAngle(), getModulePositions(), pose);
-    }
-
     public Cancoder[] getCancoders() {
         Cancoder[] cancoders = new Cancoder[modules.length];
         for (int i = 0; i < modules.length; i++) {
@@ -156,15 +133,6 @@ public class Chassis extends SubsystemBase {
 
     public double getGyroAngularVelocity() {
         return gyro.getZVelocity();
-    }
-
-    public void addVisionMeasurement(Pose2d visionPose, double timestampSeconds) {
-        poseEstimator.addVisionMeasurement(visionPose, timestampSeconds);
-    }
-
-    public void addVisionMeasurement(Pose2d visionPose, double timestampSeconds,
-                                     Matrix<N3, N1> stdDevs) {
-        poseEstimator.addVisionMeasurement(visionPose, timestampSeconds, stdDevs);
     }
 
     public void setYaw(Rotation2d angle) {
@@ -316,26 +284,6 @@ public class Chassis extends SubsystemBase {
         return new Translation2d(s.vxMetersPerSecond, s.vyMetersPerSecond);
     }
 
-    public Pose2d getPose() {
-        return poseEstimator.getEstimatedPosition();
-    }
-
-    public Pose2d getPoseWithVelocity(double dt) {
-        Pose2d currentPose = getPose();
-        ChassisSpeeds currentSpeeds = getChassisSpeedsFieldRel();
-        return new Pose2d(
-                currentPose.getX() + (currentSpeeds.vxMetersPerSecond * dt),
-                currentPose.getY() + (currentSpeeds.vyMetersPerSecond * dt),
-                currentPose.getRotation().plus(new Rotation2d(currentSpeeds.omegaRadiansPerSecond * dt)));
-    }
-
-    public Pose2d getFuturePose(double dtSeconds) {
-        return getPose().exp(new Twist2d(
-                getChassisSpeedsFieldRel().vxMetersPerSecond * dtSeconds,
-                getChassisSpeedsFieldRel().vyMetersPerSecond * dtSeconds,
-                getChassisSpeedsFieldRel().omegaRadiansPerSecond * dtSeconds));
-    }
-
     public SwerveModuleState[] getModuleStates() {
         SwerveModuleState[] res = new SwerveModuleState[modules.length];
         for (int i = 0; i < modules.length; i++) {
@@ -354,8 +302,6 @@ public class Chassis extends SubsystemBase {
 
     @Override
     public void periodic() {
-        poseEstimator.update(getGyroAngle(), getModulePositions());
-
-        field.setRobotPose(getPose());
+        
     }
 }
