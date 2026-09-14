@@ -176,12 +176,6 @@ public interface MotorInterface extends Sendable {
   double getCurrentValue();
 
   /**
-   * @return The last active control mode (used for fallback when
-   *         disabled/dutycycle)
-   */
-  ControlMode getLastControlMode();
-
-  /**
    * Overrides the internal encoder position.
    * 
    * @param position The new position to set
