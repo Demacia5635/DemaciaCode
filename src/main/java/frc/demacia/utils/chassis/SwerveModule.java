@@ -127,7 +127,7 @@ public class SwerveModule {
         if (vel == 0) {
             setDrivePower(0);
         } else {
-            setDriveVelocity(vel - steerMotor.getCurrentVelocity() * config.steerVelToDriveVel);
+            setDriveVelocity(vel);
         }
     }
 

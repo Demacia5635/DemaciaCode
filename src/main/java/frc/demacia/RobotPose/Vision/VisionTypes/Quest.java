@@ -9,6 +9,7 @@ import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.RobotPose.Vision.BaseVisionSource;
 import frc.demacia.RobotPose.Vision.TimestampedVisionMeasurement;
 import frc.demacia.RobotPose.Vision.visionConfigs.QuestConfig;
+import frc.demacia.utils.log.Log;
 import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
 
@@ -80,6 +81,7 @@ public class Quest extends BaseVisionSource {
      */
     @Override
     public List<TimestampedVisionMeasurement> getPoseEstimates() {
+        Log.log("quest getPoseEstimates");
         return List.of(new TimestampedVisionMeasurement(pose, timestampSeconds, std));
     }
 
@@ -91,6 +93,7 @@ public class Quest extends BaseVisionSource {
     /** Required by QuestNav to process incoming/outgoing data -- must be called every loop. */
     @Override
     public void periodic() {
+        Log.log("quest periodic");
         questNav.commandPeriodic();
 
         poseFrames = questNav.getAllUnreadPoseFrames();

@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import frc.demacia.utils.log.Log;
 
 /** Add your docs here. */
 public class DemaciaOdometry {
@@ -51,6 +52,7 @@ public class DemaciaOdometry {
      *         
      */
     public Twist2d updateOdometry(Rotation2d gyroAngle, SwerveModulePosition[] modulePositions) {
+        Log.log("updateOdometry");
         for (int i = 0; i < modulePositions.length; i++) {
             moduleDisplacements[i] = calculateModuleDisplacement(lastModulePositions[i], modulePositions[i]);
         }

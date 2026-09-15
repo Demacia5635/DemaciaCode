@@ -9,12 +9,16 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.demacia.RobotPose.Estimation.DemaciaPoseEstimator;
 import frc.demacia.RobotPose.Estimation.DemaciaPoseEstimator.OdometryData;
 import frc.demacia.RobotPose.Vision.TimestampedVisionMeasurement;
 import frc.demacia.RobotPose.Vision.VisionManager;
 import frc.demacia.RobotPose.Vision.VisionSource;
 import frc.demacia.RobotPose.Vision.VisionTypes.Quest;
+import frc.demacia.utils.chassis.Chassis;
+import frc.demacia.utils.log.Log;
 
 /**
  * Top-level per-loop coordinator. Owns a DemaciaPoseEstimator (constructed
@@ -57,6 +61,15 @@ public final class RobotPose {
         this.odometryDataSupplier = odometryDataSupplier;
         this.poseEstimator = new DemaciaPoseEstimator(initialModulePositions, stateStd);
         this.sources = sources;
+
+        addLog();
+    }
+
+    private void addLog() {
+        SmartDashboard.putData("chassis/reset gyro",
+                new InstantCommand(() -> setYaw(Rotation2d.kZero)).ignoringDisable(true));
+        SmartDashboard.putData("chassis/reset gyro 180",
+                new InstantCommand(() -> setYaw(Rotation2d.kPi)).ignoringDisable(true));
     }
 
     /**
@@ -73,11 +86,15 @@ public final class RobotPose {
         }
 
         for (VisionSource source : sources) {
+            Log.log("1111");
             if (source instanceof Quest && ((Quest) source).hasDrifted()) {
+                Log.log("2222");
                 ((Quest) source).setPose(poseEstimator.getEstimatedPose());
             }
             else if (source.shouldUpdate()) {
+                Log.log("3333");
                 for (TimestampedVisionMeasurement measurement : source.getPoseEstimates()) {
+                    Log.log("4444");
                     poseEstimator.addVisionMeasurement(measurement.pose(), measurement.timestampSeconds(),
                             measurement.stdDevs());
                 }
@@ -95,6 +112,7 @@ public final class RobotPose {
 
     public void setYaw(Rotation2d angle) {
         if (angle != null) {
+            Chassis.getInstance().setYaw(angle);
             poseEstimator.resetPose(new Pose2d(getEstimatedPose().getTranslation(), angle));
         }
     }

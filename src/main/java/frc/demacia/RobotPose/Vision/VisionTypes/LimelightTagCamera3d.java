@@ -9,6 +9,7 @@ import frc.demacia.RobotPose.Vision.LimelightHelpers;
 import frc.demacia.RobotPose.Vision.LimelightHelpers.PoseEstimate;
 import frc.demacia.RobotPose.Vision.TimestampedVisionMeasurement;
 import frc.demacia.RobotPose.Vision.visionConfigs.LimelightTagCamera3dConfig;
+import frc.demacia.utils.log.Log;
 
 /**
  * Wraps a single Limelight camera in 3D (MegaTag2) mode as a VisionSource. 
@@ -86,6 +87,7 @@ public class LimelightTagCamera3d extends BaseVisionSource {
 
     @Override
     public List<TimestampedVisionMeasurement> getPoseEstimates() {
+        Log.log("3d getPoseEstimates");
         return List.of(new TimestampedVisionMeasurement(pose.pose, pose.timestampSeconds, std));
     }
 
@@ -99,6 +101,7 @@ public class LimelightTagCamera3d extends BaseVisionSource {
      */
     @Override
     public void periodic() {
+        Log.log("3d periodic");
         Rotation2d heading = RobotPose.getInstance().getGyroAngle();
         LimelightHelpers.SetRobotOrientation(getName(), heading.getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0);
     

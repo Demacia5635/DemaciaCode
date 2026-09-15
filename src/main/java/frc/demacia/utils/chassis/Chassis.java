@@ -14,9 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.kinematics.DemaciaKinematics;
-import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.sensors.Cancoder;
 import frc.demacia.utils.sensors.Pigeon;
@@ -69,10 +67,6 @@ public class Chassis extends SubsystemBase {
     public void addLog() {
         Log.putData("chassis/gyro angle", () -> getGyroAngle().getDegrees());
 
-        SmartDashboard.putData("chassis/reset gyro",
-                new InstantCommand(() -> setYaw(Rotation2d.kZero)).ignoringDisable(true));
-        SmartDashboard.putData("chassis/reset gyro 180",
-                new InstantCommand(() -> setYaw(Rotation2d.kPi)).ignoringDisable(true));
         SmartDashboard.putData("chassis/set coast",
                 new InstantCommand(() -> setNeutralMode(false)).ignoringDisable(true));
         SmartDashboard.putData("chassis/set brake",
@@ -94,16 +88,6 @@ public class Chassis extends SubsystemBase {
 
     public ChassisConfig getConfig() {
         return chassisConfig;
-    }
-
-    public void restGyro() {
-        double gyroAngle = !RobotCommon.getIsRed() ? 0 : 180;
-        gyro.setYaw(gyroAngle);
-    }
-
-    public void resrtGyro180() {
-        double gyroAngle = !RobotCommon.getIsRed() ? 180 : 0;
-        gyro.setYaw(gyroAngle);
     }
 
     public void resetMudolse(){
@@ -131,7 +115,6 @@ public class Chassis extends SubsystemBase {
     public void setYaw(Rotation2d angle) {
         if (angle != null) {
             gyro.setYaw(angle.getDegrees());
-            RobotPose.getInstance().setYaw(angle);
         }
     }
 
@@ -260,7 +243,7 @@ public class Chassis extends SubsystemBase {
     public ChassisSpeeds getChassisSpeedsRobotRel() {
         return demaciaKinematics.toChassisSpeeds(
                 getModuleStates(),
-                Math.toRadians(gyro.getCurrentYaw()));
+                getGyroAngle().getRadians());
     }
 
     public ChassisSpeeds getChassisSpeedsFieldRel() {
