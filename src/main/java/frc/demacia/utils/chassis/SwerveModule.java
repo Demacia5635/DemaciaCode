@@ -7,6 +7,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.demacia.utils.motors.MotorInterface;
+import frc.demacia.utils.motors.MotorInterface.ControlMode;
 import frc.demacia.utils.sensors.Cancoder;
 
 /**
@@ -81,6 +82,10 @@ public class SwerveModule {
 
     public void setSteerPower(double power) {
         steerMotor.setDuty(power);
+
+        if (driveMotor.getCurrentControlMode() == ControlMode.DISABLE){
+            driveMotor.setVelocity(-config.steerVelToDriveVel * getSteerVel());
+        }
     }
 
     /**
@@ -91,6 +96,10 @@ public class SwerveModule {
     public void setSteerPosition(double positionRadians) {
         if(Math.abs(positionRadians - steerMotor.getCurrentPosition()) <= Math.toRadians(0.5) ) steerMotor.setDuty(0);
         steerMotor.setPositionVoltage(positionRadians);
+        
+        if (driveMotor.getCurrentControlMode() == ControlMode.DISABLE){
+            driveMotor.setVelocity(-config.steerVelToDriveVel * getSteerVel());
+        }
     }
 
     public void setDrivePower(double power) {

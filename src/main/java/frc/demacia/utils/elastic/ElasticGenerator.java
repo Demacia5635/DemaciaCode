@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.demacia.RobotPose.Vision.VisionSource;
+import frc.demacia.RobotPose.Vision.VisionTypes.Quest;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.mechanisms.BaseMechanism;
@@ -320,11 +321,14 @@ public class ElasticGenerator {
                 VisionSource visionSource = visionSources.get(visionSourceIndex);
                 String visionSourcePath = "/SmartDashboard/vision/" + visionSource.getName();
     
-                widgets.add(createWidget("Field", visionSource.getName() + " Field", col, 0, 2, 3, visionSourcePath + "/field " + visionSource.getName(), "\"field_rotation\": 90.0"));
-                widgets.add(createWidget("Boolean Box", "See " + visionSource.getName(), col, 3, 1, 1, visionSourcePath + "/" + visionSource.getName() + "is Connected", "\"data_type\": \"boolean\""));
+                widgets.add(createWidget("Field", visionSource.getName() + " Field", col, 0, 2, 3, visionSourcePath + "/field ", "\"field_rotation\": 90.0"));
 
+                boolean isQuest = visionSource instanceof Quest;
+                widgets.add(createWidget("Boolean Box", "See " + visionSource.getName(), col, isQuest ? 4 : 3, 1, 1, visionSourcePath + "/is Connected", "\"data_type\": \"boolean\""));
 
-                // visionWidgets.add(createWidget("Command", "Reset Quest Pose", 0, 3, 2, 1, "/SmartDashboard/quest/Reset Quest Pose", "\"show_type\": true"));
+                if (isQuest) {
+                    widgets.add(createWidget("Command", "Reset Quest Pose", col, 3, 2, 1, visionSourcePath + "/Reset Quest Pose", "\"show_type\": true"));
+                }
 
                 col += VISION_SOURCE_WIDTH;
                 visionSourceIndex++;

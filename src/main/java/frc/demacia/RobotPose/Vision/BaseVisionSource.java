@@ -26,7 +26,7 @@ public abstract class BaseVisionSource implements VisionSource, Sendable {
 
         addLog();
         ElasticGenerator.getInstance().registerVisionSource(this);
-        SmartDashboard.putData("vision/" + name, field);
+        SmartDashboard.putData("vision/" + name, this);
     }
 
     protected void addLog() {
