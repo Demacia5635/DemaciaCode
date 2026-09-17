@@ -334,6 +334,10 @@ public class Sysid {
                         if (candidateModel != null) {
                             candidateModel.rawPoints = rawData.size();
 
+                            Log.log("voltageThreshold " + voltageThreshold
+                                + "smoothWindow " + smoothWindow
+                                + "zScoreThreshold " + zScoreThreshold
+                                + "outlierPercentage " + outlierPercentage);
                             if (calculateResultScore(candidateModel) < bestScore) {
                                 bestScore = calculateResultScore(candidateModel);
                                 result = candidateModel;
@@ -529,6 +533,7 @@ public class Sysid {
 
     private double calculateResultScore(BucketResult model) {
         double cost = model.avgError;
+        Log.log("avgError " + model.avgError);
         double r2 = model.rSquared;
         
         if (r2 < MIN_R_SQUARED_THRESHOLD) {
@@ -538,9 +543,12 @@ public class Sysid {
         } else {
             cost += (1.0 - r2) * R2_PENALTY_MULTIPLIER;
         }
+        Log.log("R2 " + model.rSquared + " r2 panelty " + (cost - model.avgError));
         
         double negativePenalty = 0.0;
         
+        
+        Log.log("kS " + model.kS + " kv " + model.kV + " ka " + model.kA);
         if (kFlags.useKS && model.kS < 0) {
             negativePenalty += NEGATIVE_PARAM_PENALTY_BASE;
         }
@@ -553,6 +561,7 @@ public class Sysid {
         if (kFlags.useKV2 && model.kV2 < 0) {
             negativePenalty += NEGATIVE_PARAM_PENALTY_BASE;
         }
+        Log.log("negativePenalty " + negativePenalty);
         
         cost += negativePenalty;
         
