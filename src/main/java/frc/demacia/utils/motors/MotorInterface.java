@@ -16,7 +16,7 @@ import edu.wpi.first.util.sendable.SendableRegistry;
 public interface MotorInterface extends Sendable {
 
   /** Enumeration of supported control modes */
-  enum ControlMode {
+  public enum ControlMode {
     DISABLE, DUTYCYCLE, VOLTAGE, VELOCITY, POSITION_VOLTAGE, MAGIC_MOTION, ANGLE
   }
 
@@ -174,12 +174,6 @@ public interface MotorInterface extends Sendable {
 
   /** @return The current calculated value based on control modes */
   double getCurrentValue();
-
-  /**
-   * @return The last active control mode (used for fallback when
-   *         disabled/dutycycle)
-   */
-  ControlMode getLastControlMode();
 
   /**
    * Overrides the internal encoder position.

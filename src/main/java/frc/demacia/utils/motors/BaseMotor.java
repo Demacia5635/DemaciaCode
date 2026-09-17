@@ -11,12 +11,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.demacia.sysid.Sysid;
 import frc.demacia.utils.Data;
 import frc.demacia.utils.elastic.ElasticGenerator;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.log.Log.LogLevel;
 import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
-import frc.demacia.utils.sysid.Sysid;
 
 public abstract class BaseMotor implements MotorInterface {
   protected BaseMotorConfig<?> config;
@@ -35,7 +35,6 @@ public abstract class BaseMotor implements MotorInterface {
   private double wantedValue;
   private double testValue;
 
-  private ControlMode notDutyControlMode = ControlMode.DISABLE;
   private ControlMode controlMode = ControlMode.DISABLE;
 
   private ControlMode valueControlMode = ControlMode.DUTYCYCLE;
@@ -167,9 +166,6 @@ public abstract class BaseMotor implements MotorInterface {
   public void stop() {
     stopMotor();
     wantedValue = 0;
-    if (controlMode != ControlMode.DISABLE && controlMode != ControlMode.DUTYCYCLE) {
-      notDutyControlMode = controlMode;
-    }
     controlMode = ControlMode.DISABLE;
   }
 
@@ -178,14 +174,8 @@ public abstract class BaseMotor implements MotorInterface {
     setMotorDuty(power);
     wantedValue = power;
     if (power == 0) {
-      if (controlMode != ControlMode.DISABLE && controlMode != ControlMode.DUTYCYCLE) {
-        notDutyControlMode = controlMode;
-      }
       controlMode = ControlMode.DISABLE;
     } else {
-      if (controlMode != ControlMode.DISABLE && controlMode != ControlMode.DUTYCYCLE) {
-        notDutyControlMode = controlMode;
-      }
       controlMode = ControlMode.DUTYCYCLE;
     }
   }
@@ -274,11 +264,6 @@ public abstract class BaseMotor implements MotorInterface {
   }
 
   @Override
-  public ControlMode getLastControlMode() {
-    return notDutyControlMode;
-  }
-
-  @Override
   public double getCurrentPosition() {
     return positionSignal.getDouble();
   }
@@ -313,10 +298,6 @@ public abstract class BaseMotor implements MotorInterface {
 
   public double getCurrentValue() {
     ControlMode mode = getCurrentControlMode();
-
-    if (mode == ControlMode.DISABLE || mode == ControlMode.DUTYCYCLE) {
-      mode = getLastControlMode();
-    }
 
     switch (mode) {
       case VOLTAGE:

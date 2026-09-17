@@ -4,7 +4,10 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.demacia.utils.motors.MotorInterface;
+import frc.demacia.utils.motors.MotorInterface.ControlMode;
 import frc.demacia.utils.sensors.Cancoder;
 
 /**
@@ -37,6 +40,13 @@ public class SwerveModule {
         name = config.name;
 
         steerMotor.setEncoderPosition(getAbsoluteAngle() - config.steerOffset);
+
+        SmartDashboard.putData("setSteerVelocity", 
+        new RunCommand(() -> {
+            setSteerPower(0.2);
+            setDriveVelocity(1);
+        })
+            .finallyDo(interrupted -> stop()));
     }
 
     /**
@@ -72,6 +82,10 @@ public class SwerveModule {
 
     public void setSteerPower(double power) {
         steerMotor.setDuty(power);
+
+        if (driveMotor.getCurrentControlMode() == ControlMode.DISABLE){
+            driveMotor.setVelocity(-config.steerVelToDriveVel * getSteerVel());
+        }
     }
 
     /**
@@ -82,6 +96,10 @@ public class SwerveModule {
     public void setSteerPosition(double positionRadians) {
         if(Math.abs(positionRadians - steerMotor.getCurrentPosition()) <= Math.toRadians(0.5) ) steerMotor.setDuty(0);
         steerMotor.setPositionVoltage(positionRadians);
+        
+        if (driveMotor.getCurrentControlMode() == ControlMode.DISABLE){
+            driveMotor.setVelocity(-config.steerVelToDriveVel * getSteerVel());
+        }
     }
 
     public void setDrivePower(double power) {
@@ -94,7 +112,7 @@ public class SwerveModule {
      * @param velocityMetersPerSecond Target velocity
      */
     public void setDriveVelocity(double velocityMetersPerSecond) {
-        driveMotor.setVelocity(velocityMetersPerSecond);
+        driveMotor.setVelocity(velocityMetersPerSecond - config.steerVelToDriveVel * getSteerVel());
     }
 
     /**
@@ -127,7 +145,7 @@ public class SwerveModule {
         if (vel == 0) {
             setDrivePower(0);
         } else {
-            setDriveVelocity(vel - steerMotor.getCurrentVelocity() * config.steerVelToDriveVel);
+            setDriveVelocity(vel);
         }
     }
 
