@@ -6,6 +6,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.demacia.utils.log.Log;
 import frc.demacia.utils.motors.MotorInterface;
 import frc.demacia.utils.motors.MotorInterface.ControlMode;
 import frc.demacia.utils.sensors.Cancoder;
@@ -32,6 +33,8 @@ public class SwerveModule {
     private MotorInterface driveMotor;
     private Cancoder cancoder;
 
+    boolean driveStop;
+
     public SwerveModule(SwerveModuleConfig config) {
         this.config = config;
         steerMotor = config.steerConfig.getMotorClass().create(config.steerConfig);
@@ -41,10 +44,12 @@ public class SwerveModule {
 
         steerMotor.setEncoderPosition(getAbsoluteAngle() - config.steerOffset);
 
+        driveStop = true;
+
         SmartDashboard.putData(name + " setSteerVelocity", 
         new RunCommand(() -> {
             setSteerPower(0.05);
-            driveMotor.stop();
+            setDrivePower(0);;
             // setDriveVelocity(0);
         })
             .finallyDo(interrupted -> stop()));
@@ -84,8 +89,9 @@ public class SwerveModule {
     public void setSteerPower(double power) {
         steerMotor.setDuty(power);
 
-        if (driveMotor.getCurrentControlMode() == ControlMode.DISABLE){
-            driveMotor.setVoltage(-config.steerVelToDriveVel * steerMotor.getCurrentVoltage());
+        if (driveStop){
+            Log.log("drive vel: " + -config.steerVelToDriveVel * steerMotor.getCurrentVelocity());
+            driveMotor.setVelocity(-config.steerVelToDriveVel * steerMotor.getCurrentVelocity());
         }
     }
 
@@ -104,7 +110,11 @@ public class SwerveModule {
     }
 
     public void setDrivePower(double power) {
-        driveMotor.setDuty(power);
+        if (power == 0) {
+            driveStop = true;
+        } else if (!driveStop) {
+            driveMotor.setDuty(power);
+        }
     }
 
     /**

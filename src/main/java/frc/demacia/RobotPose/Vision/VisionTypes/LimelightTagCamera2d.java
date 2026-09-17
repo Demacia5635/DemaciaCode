@@ -18,7 +18,6 @@ import frc.demacia.RobotPose.Vision.BaseVisionSource;
 import frc.demacia.RobotPose.Vision.LimelightHelpers;
 import frc.demacia.RobotPose.Vision.TimestampedVisionMeasurement;
 import frc.demacia.RobotPose.Vision.visionConfigs.LimelightTagCamera2dConfig;
-import frc.demacia.utils.log.Log;
 
 /**
  * Wraps a single Limelight camera in 2D mode as a VisionSource.
@@ -95,7 +94,6 @@ public class LimelightTagCamera2d extends BaseVisionSource {
      */
     @Override
     public List<TimestampedVisionMeasurement> getPoseEstimates() {
-        Log.log("2d getPoseEstimates");
         double latency = (Table.getEntry("tl").getDouble(0.0) + Table.getEntry("cl").getDouble(0.0))/1000.0;
         double timestampSeconds = Timer.getFPGATimestamp() - latency;
 
@@ -105,7 +103,6 @@ public class LimelightTagCamera2d extends BaseVisionSource {
    
     @Override
     public void periodic() {
-        Log.log("3d periodic");
         if (shouldUpdate()) {
             updatePose();
         }

@@ -30,7 +30,7 @@ public class SwerveModuleConfig {
 
     public Translation2d position = Translation2d.kZero;
 
-    public double steerVelToDriveVel = 0.2;///(2*Math.PI);
+    public double steerVelToDriveVel = 0.2/(2*Math.PI);
 
         /**
      * Constructor

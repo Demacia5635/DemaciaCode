@@ -26,7 +26,7 @@ public class RobotChassisConstants {
   public static final double STEER_KV = 0.0;  // TODO
   public static final double STEER_KA = 0.0;  // TODO
 
-  public static final double DRIVE_KP = 1;  // TODO
+  public static final double DRIVE_KP = 10;  // TODO
   public static final double DRIVE_KI = 0.0;  // TODO
   public static final double DRIVE_KD = 0.0;  // TODO
   public static final double DRIVE_KS = 0.0;  // TODO

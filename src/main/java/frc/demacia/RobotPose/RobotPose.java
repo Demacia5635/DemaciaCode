@@ -18,7 +18,6 @@ import frc.demacia.RobotPose.Vision.VisionManager;
 import frc.demacia.RobotPose.Vision.VisionSource;
 import frc.demacia.RobotPose.Vision.VisionTypes.Quest;
 import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.utils.log.Log;
 
 /**
  * Top-level per-loop coordinator. Owns a DemaciaPoseEstimator (constructed
@@ -86,15 +85,11 @@ public final class RobotPose {
         }
 
         for (VisionSource source : sources) {
-            Log.log("1111");
             if (source instanceof Quest && ((Quest) source).hasDrifted()) {
-                Log.log("2222");
                 ((Quest) source).setPose(poseEstimator.getEstimatedPose());
             }
             else if (source.shouldUpdate()) {
-                Log.log("3333");
                 for (TimestampedVisionMeasurement measurement : source.getPoseEstimates()) {
-                    Log.log("4444");
                     poseEstimator.addVisionMeasurement(measurement.pose(), measurement.timestampSeconds(),
                             measurement.stdDevs());
                 }
