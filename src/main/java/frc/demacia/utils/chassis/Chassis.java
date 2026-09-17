@@ -103,8 +103,9 @@ public class Chassis extends SubsystemBase {
     private DemaciaKinematics demaciaKinematics;
     private SwerveDriveKinematics wpilibKinematics;
 
-    private Field2d field;
+    private ChassisSpeeds targetVel;
 
+    private Field2d field;
     private StatusSignal<Angle> gyroYawStatus;
     private StatusSignal<AngularVelocity> gyroAngularVelocityStatus;
 
@@ -167,8 +168,15 @@ public class Chassis extends SubsystemBase {
                 new InstantCommand(() -> RobotPose.getInstance().setAngle3DLimelight()).ignoringDisable(true));
 
         headingController.enableContinuousInput(-Math.PI, Math.PI);
+        
+        ChassisSpeeds targetVel = new ChassisSpeeds();
+
 
         LogManager.log(chassisConfig.name + " initalize");
+    }
+
+    public ChassisSpeeds getTargetVel(){
+        return targetVel;
     }
 
     public void setDrivePower(double pow, int id) {
@@ -237,7 +245,7 @@ public class Chassis extends SubsystemBase {
      */
 
     public void setVelocities(ChassisSpeeds speeds) {
-
+        targetVel = speeds;
         SwerveModuleState[] states = demaciaKinematics
                 .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getGyroAngle()));
         // SwerveModuleState[] states = demaciaKinematics.toSwerveModuleStatesWithLimit(
