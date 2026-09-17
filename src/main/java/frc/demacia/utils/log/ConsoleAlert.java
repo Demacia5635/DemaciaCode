@@ -4,57 +4,53 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
- * A wrapper for the WPILib Alert class that includes a timer.
- * This allows the alert to track how long it has been active, 
- * useful for expiring messages after a certain time.
+ * A wrapper for the WPILib Alert class that includes a timer and prevents log spamming.
  */
 public class ConsoleAlert extends Alert {
   
   /** The timer that tracks the duration of the alert */
-  Timer timer;
+  private final Timer timer;
+  
+  private final String initialText;
+  private final AlertType type;
+  
+  // הזיכרון שמונע הדפסת לוגים 50 פעם בשנייה
+  private boolean lastActive = false; 
 
-  /**
-   * Creates a new Console Alert
-   * @param text the text to display
-   * @param type the type of alert (Info, Warning, Error)
-   */
   public ConsoleAlert(String text, AlertType type) {
-    super("console", text, type);
-    timer = new Timer();
+    super("console", text, type); // "console" זו הקבוצה שתראה באלסטיק
+    this.initialText = text;
+    this.type = type;
+    this.timer = new Timer();
   }
 
-  /**
-   * Sets the alert to be active or inactive.
-   * Starts the timer when active, stops and resets when inactive.
-   * @param active true to enable the alert, false to disable
-   */
   @Override
   public void set(boolean active) {
+    // 1. קורא ל-WPILib הרגיל (ואלסטיק כבר יזהה את זה ויקפיץ פופ-אפ!)
     super.set(active);
 
+    // 2. מנגנון למניעת הספמת הלוג
     if (active) {
-      timer.start();
+        if (!lastActive) {
+            // כאן מדפיסים לקונסול רק בפעם הראשונה שהתקלה קורית
+            System.out.println("[ALERT - " + this.type.name() + "] " + this.initialText);
+        }
+        timer.start();
     } else {
-      timer.stop();
-      timer.reset();
+        timer.stop();
+        timer.reset();
     }
+    
+    // 3. עדכון הזיכרון
+    lastActive = active;
   }
 
-  /**
-   * Updates the text of the alert.
-   * Resets the timer so the new message gets the full duration.
-   * @param text the new text to display
-   */
   @Override
   public void setText(String text) {
     super.setText(text);
     timer.reset();
   }
 
-  /**
-   * Checks if the alert has been active for longer than the allowed time.
-   * @return true if the timer has elapsed the constant time, false otherwise
-   */
   public boolean isTimerOver() {
     if (ConsoleConstants.CONSOLE_MESSEGE_TIME == 0) {
       return false;
