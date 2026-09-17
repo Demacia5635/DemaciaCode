@@ -41,10 +41,11 @@ public class SwerveModule {
 
         steerMotor.setEncoderPosition(getAbsoluteAngle() - config.steerOffset);
 
-        SmartDashboard.putData("setSteerVelocity", 
+        SmartDashboard.putData(name + " setSteerVelocity", 
         new RunCommand(() -> {
-            setSteerPower(0.2);
-            setDriveVelocity(1);
+            setSteerPower(0.05);
+            driveMotor.stop();
+            // setDriveVelocity(0);
         })
             .finallyDo(interrupted -> stop()));
     }
@@ -84,7 +85,7 @@ public class SwerveModule {
         steerMotor.setDuty(power);
 
         if (driveMotor.getCurrentControlMode() == ControlMode.DISABLE){
-            driveMotor.setVelocity(-config.steerVelToDriveVel * getSteerVel());
+            driveMotor.setVoltage(-config.steerVelToDriveVel * steerMotor.getCurrentVoltage());
         }
     }
 
@@ -98,7 +99,7 @@ public class SwerveModule {
         steerMotor.setPositionVoltage(positionRadians);
         
         if (driveMotor.getCurrentControlMode() == ControlMode.DISABLE){
-            driveMotor.setVelocity(-config.steerVelToDriveVel * getSteerVel());
+            driveMotor.setVoltage(-config.steerVelToDriveVel * steerMotor.getCurrentVoltage());
         }
     }
 

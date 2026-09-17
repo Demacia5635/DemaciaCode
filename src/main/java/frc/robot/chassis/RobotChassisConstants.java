@@ -19,14 +19,14 @@ public class RobotChassisConstants {
   public static final double DRIVE_GEAR_RATIO = 6.03; 
   public static final double WHEEL_DIAMETER = 0.1016; 
 
-  public static final double STEER_KP = 0.0;  // TODO
-  public static final double STEER_KI = 0.0;  // TODO
+  public static final double STEER_KP = 8;  // TODO
+  public static final double STEER_KI = 0.5;  // TODO
   public static final double STEER_KD = 0.0;  // TODO
   public static final double STEER_KS = 0.0;  // TODO
   public static final double STEER_KV = 0.0;  // TODO
   public static final double STEER_KA = 0.0;  // TODO
 
-  public static final double DRIVE_KP = 0.0;  // TODO
+  public static final double DRIVE_KP = 1;  // TODO
   public static final double DRIVE_KI = 0.0;  // TODO
   public static final double DRIVE_KD = 0.0;  // TODO
   public static final double DRIVE_KS = 0.0;  // TODO

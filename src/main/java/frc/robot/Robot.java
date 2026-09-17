@@ -8,11 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.demacia.RobotPose.RobotPose;
-
-// ייבוא המחלקות הנדרשות לבדיקה:
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Alert.AlertType;
-import frc.demacia.utils.log.ConsoleAlert;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -23,9 +19,6 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
-
-  // --- תוספת לבדיקה 1: יצירת ההתראה ---
-  private final ConsoleAlert testAlert = new ConsoleAlert("test", AlertType.kError);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -55,14 +48,7 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-<<<<<<< HEAD
-
-    // --- תוספת לבדיקה 3: קריאת הכפתור והפעלת ההתראה ---
-    boolean isTriggered = SmartDashboard.getBoolean("Test Alert Trigger", false);
-    testAlert.set(isTriggered);
-=======
     RobotPose.getInstance().periodic();
->>>>>>> 8b8270517d99168d17c2aab7ae3c653a0c393168
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

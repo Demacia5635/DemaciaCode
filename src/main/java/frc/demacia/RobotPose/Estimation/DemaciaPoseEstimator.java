@@ -13,7 +13,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
-import frc.demacia.utils.log.Log;
 
 /**
  * Pose estimator using the twist-sequence + splice + full-replay mechanism
@@ -51,7 +50,6 @@ public class DemaciaPoseEstimator {
     }
 
     public void addOdometryData(OdometryData odometryData) {
-        Log.log("addOdometryData");
         double timestamp = Timer.getFPGATimestamp();
         Twist2d twist = odometry.updateOdometry(odometryData.gyroAngle(), odometryData.swerveModules());
         updates.put(timestamp, new PoseUpdate(twist, new ArrayList<>()));
@@ -59,7 +57,6 @@ public class DemaciaPoseEstimator {
     }
 
     public void addVisionMeasurement(Pose2d visionRobotPose, double timestampSeconds, Matrix<N3, N1> stdDevs) {
-        Log.log("addVisionMeasurement");
         VisionUpdate visionUpdate = new VisionUpdate(visionRobotPose, stdDevs);
 
         if (updates.containsKey(timestampSeconds)) {
@@ -99,7 +96,6 @@ public class DemaciaPoseEstimator {
     }
 
     private void update() {
-        Log.log("update");
         double now = Timer.getFPGATimestamp();
 
         while (updates.size() > 1 && updates.firstKey() < now - HISTORY_LENGTH_SECONDS) {

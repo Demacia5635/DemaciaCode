@@ -65,8 +65,8 @@ public class RobotContainer implements Sendable {
     }
 
     Matrix<N3, N1> stateStd = new Matrix<>(N3.instance, N1.instance);
-    LimelightTagCamera2dConfig sourceConfig1 = new LimelightTagCamera2dConfig("2d", new Transform3d(), stateStd);
-    LimelightTagCamera3dConfig sourceConfig2 = new LimelightTagCamera3dConfig("3d", new Transform3d(), stateStd);
+    LimelightTagCamera2dConfig sourceConfig1 = new LimelightTagCamera2dConfig("back", new Transform3d(), stateStd);
+    LimelightTagCamera3dConfig sourceConfig2 = new LimelightTagCamera3dConfig("back", new Transform3d(), stateStd);
     QuestConfig sourceConfig3 = new QuestConfig("quest", new Transform3d(), stateStd);
 
     RobotPose.initialize(
@@ -74,9 +74,10 @@ public class RobotContainer implements Sendable {
       k, 
       stateStd, 
       VisionManager.getInstance()
-        .addSource(sourceConfig1)
+        // .addSource(sourceConfig1)
         .addSource(sourceConfig2)
-        .addSource(sourceConfig3));
+        // .addSource(sourceConfig3)
+        );
 
     configureBindings();
     setDefaultCommands();
