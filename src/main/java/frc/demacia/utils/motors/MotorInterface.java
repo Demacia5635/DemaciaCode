@@ -16,7 +16,7 @@ import edu.wpi.first.util.sendable.SendableRegistry;
 public interface MotorInterface extends Sendable {
 
   /** Enumeration of supported control modes */
-  enum ControlMode {
+  public enum ControlMode {
     DISABLE, DUTYCYCLE, VOLTAGE, VELOCITY, POSITION_VOLTAGE, MAGIC_MOTION, ANGLE
   }
 

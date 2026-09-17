@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.demacia.RobotPose.RobotPose;
 
 // ייבוא המחלקות הנדרשות לבדיקה:
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -54,10 +55,14 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+<<<<<<< HEAD
 
     // --- תוספת לבדיקה 3: קריאת הכפתור והפעלת ההתראה ---
     boolean isTriggered = SmartDashboard.getBoolean("Test Alert Trigger", false);
     testAlert.set(isTriggered);
+=======
+    RobotPose.getInstance().periodic();
+>>>>>>> 8b8270517d99168d17c2aab7ae3c653a0c393168
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
