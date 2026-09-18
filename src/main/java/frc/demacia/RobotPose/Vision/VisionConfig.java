@@ -2,20 +2,24 @@ package frc.demacia.RobotPose.Vision;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import frc.demacia.RobotPose.Vision.visionConfigs.BaseVisionSourceConfig;
 
-public final class VisionManager {
-
-    private static VisionManager instance;
-
+public class VisionConfig {
     private final List<VisionSource> sources;
 
-    private VisionManager() {
+    public VisionConfig() {
         this.sources = new ArrayList<>();
     }
 
-    public VisionManager addSource(BaseVisionSourceConfig config) {
+    public VisionConfig(BaseVisionSourceConfig... sourceConfigs) {
+        this();
+
+        for (BaseVisionSourceConfig sourceConfig : sourceConfigs) {
+            sources.add(sourceConfig.getVisionSourceType().create(sourceConfig));
+        }
+    }
+
+    public VisionConfig addSource(BaseVisionSourceConfig config) {
         sources.add(config.getVisionSourceType().create(config));
         return this;
     }
@@ -23,15 +27,5 @@ public final class VisionManager {
     /** Returns the configured, immutable list of all registered VisionSources (including Quest, if present). */
     public List<VisionSource> getSources() {
         return sources;
-    }
-
-    /**
-     * Returns the singleton instance, or null if initialize(...) has not been called yet.
-     */
-    public static synchronized VisionManager getInstance() {
-        if (instance == null) {
-            instance = new VisionManager();
-        }
-        return instance;
     }
 }

@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.demacia.RobotPose.Estimation.DemaciaPoseEstimator;
 import frc.demacia.RobotPose.Estimation.DemaciaPoseEstimator.OdometryData;
 import frc.demacia.RobotPose.Vision.TimestampedVisionMeasurement;
-import frc.demacia.RobotPose.Vision.VisionManager;
+import frc.demacia.RobotPose.Vision.VisionConfig;
 import frc.demacia.RobotPose.Vision.VisionSource;
 import frc.demacia.RobotPose.Vision.VisionTypes.Quest;
 import frc.demacia.utils.chassis.Chassis;
@@ -135,7 +135,7 @@ public final class RobotPose {
      */
     public static synchronized void initialize(Supplier<OdometryData> odometryDataSupplier,
             SwerveModulePosition[] initialModulePositions, Matrix<N3, N1> stateStd,
-            VisionManager visionManager) {
+            VisionConfig visionManager) {
         instance = new RobotPose(odometryDataSupplier, initialModulePositions, stateStd, visionManager.getSources());
     }
 

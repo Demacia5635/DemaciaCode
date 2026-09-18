@@ -1,9 +1,4 @@
 package frc.robot;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,10 +7,6 @@ import frc.demacia.utils.controller.CommandController.ControllerType;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.RobotPose.Estimation.DemaciaPoseEstimator.OdometryData;
-import frc.demacia.RobotPose.Vision.VisionManager;
-import frc.demacia.RobotPose.Vision.visionConfigs.LimelightTagCamera2dConfig;
-import frc.demacia.RobotPose.Vision.visionConfigs.LimelightTagCamera3dConfig;
-import frc.demacia.RobotPose.Vision.visionConfigs.QuestConfig;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
 import frc.robot.chassis.RobotChassisConstants;
@@ -24,6 +15,7 @@ import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.shinua.subsystems.Shinua;
 import frc.robot.shinua.commands.ShinuaCommand;
 import frc.robot.turret.subsystems.Turret;
+import frc.robot.vision.VisionConstants;
 import frc.robot.turret.commands.TurretCommand;
 import frc.robot.shooter.subsystems.Shooter;
 import frc.robot.shooter.commands.ShooterCommand;
@@ -59,25 +51,11 @@ public class RobotContainer implements Sendable {
     // turret = Turret.getInstance();
     // shooter = Shooter.getInstance();
 
-    SwerveModulePosition[] k = new SwerveModulePosition[4];
-    for(int i = 0; i < 4; i++){
-      k[i] = new SwerveModulePosition();
-    }
-
-    Matrix<N3, N1> stateStd = new Matrix<>(N3.instance, N1.instance);
-    LimelightTagCamera2dConfig sourceConfig1 = new LimelightTagCamera2dConfig("back", new Transform3d(), stateStd);
-    LimelightTagCamera3dConfig sourceConfig2 = new LimelightTagCamera3dConfig("back", new Transform3d(), stateStd);
-    QuestConfig sourceConfig3 = new QuestConfig("quest", new Transform3d(), stateStd);
-
     RobotPose.initialize(
-      ()->new OdometryData(Chassis.getInstance().getGyroAngle(), k), 
-      k, 
-      stateStd, 
-      VisionManager.getInstance()
-        // .addSource(sourceConfig1)
-        .addSource(sourceConfig2)
-        // .addSource(sourceConfig3)
-        );
+      ()->new OdometryData(Chassis.getInstance().getGyroAngle(), RobotChassisConstants.swerveModulesPosition), 
+      RobotChassisConstants.swerveModulesPosition, 
+      RobotChassisConstants.stateStd, 
+      VisionConstants.visionConfig);
 
     configureBindings();
     setDefaultCommands();

@@ -1,6 +1,12 @@
 package frc.robot.chassis;
 
+import org.ejml.simple.SimpleMatrix;
+
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import frc.demacia.utils.motors.TalonFXConfig;
 import frc.demacia.utils.chassis.ChassisConfig;
 import frc.demacia.utils.chassis.SwerveModuleConfig;
@@ -54,6 +60,15 @@ public class RobotChassisConstants {
         0.0, //BACK LEFT  // TODO
         0.0 //BACK RIGHT  // TODO
       });
+
+  public static final SwerveModulePosition[] swerveModulesPosition = new SwerveModulePosition[] {
+    new SwerveModulePosition(), 
+    new SwerveModulePosition(), 
+    new SwerveModulePosition(), 
+    new SwerveModulePosition()
+  };
+
+  public static final Matrix<N3, N1> stateStd = new Matrix<>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 }));
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);
 
