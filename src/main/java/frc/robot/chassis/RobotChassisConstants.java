@@ -77,6 +77,8 @@ public class RobotChassisConstants {
       MODULES,
       PIGEON_CONFIG);
 
+  public static final double METERS_FROM_360_DEGS = 0.2;
+
   public static final SwerveModuleConfig[] swerveModules(double[] offsets) {
     SwerveModuleConfig[] ans = new SwerveModuleConfig[4];
     for (int i = 0; i < 4; i++) {
@@ -103,7 +105,8 @@ public class RobotChassisConstants {
               .withMeterMotor(DRIVE_GEAR_RATIO, WHEEL_DIAMETER),
           new CancoderConfig(name + " Cancoder", i * 3 + 3, CAN_BUS))
           .withPosion(MODULE_LOCATIONS[i])
-          .withSteerOffset(offsets[i]);
+          .withSteerOffset(offsets[i])
+          .withMetersFrom360Degs(METERS_FROM_360_DEGS);
     }
     return ans;
   }
