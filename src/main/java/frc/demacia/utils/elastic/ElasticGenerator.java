@@ -404,13 +404,17 @@ public class ElasticGenerator {
                 listLayout.append("            },\n");
                 listLayout.append("            \"children\": [\n");
 
-                String commandName = powerCmds.stream()
-                        .filter(pair -> pair.getSecond().equals(motor))
-                        .map(pair -> pair.getFirst().getName() + " Power Command")
-                        .findFirst()
-                        .orElse(null);
+                Pair<BaseMechanism, MotorInterface> powerCmdPair = powerCmds.stream()
+                    .filter(pair -> pair.getSecond().equals(motor))
+                    .findFirst()
+                    .orElse(null);
 
-                if (commandName != null) {
+                if (powerCmdPair != null) {
+                    BaseMechanism mech = powerCmdPair.getFirst();
+                    String motorName = motor.getName();
+                    String commandName = mech.getName() + " Power Command";
+                    String Topic = "/SmartDashboard/" + mech.getName() + "/" + motorName + "/set power command " + motorName;
+
                     listLayout.append("              {\n");
                     listLayout.append("                \"title\": \"").append(commandName).append("\",\n");
                     listLayout.append("                \"x\": 0.0,\n");
@@ -419,7 +423,7 @@ public class ElasticGenerator {
                     listLayout.append("                \"height\": 128.0,\n");
                     listLayout.append("                \"type\": \"Command\",\n");
                     listLayout.append("                \"properties\": {\n");
-                    listLayout.append("                  \"topic\": \"/SmartDashboard/").append(commandName).append("\",\n"); 
+                    listLayout.append("                  \"topic\": \"").append(Topic).append("\",\n"); 
                     listLayout.append("                  \"show_type\": true,\n");
                     listLayout.append("                  \"maximize_button_space\": false\n");
                     listLayout.append("                }\n");
