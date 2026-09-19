@@ -13,14 +13,14 @@ import frc.demacia.RobotPose.Vision.visionConfigs.QuestConfig;
 
 public class VisionConstants {
     public static final Matrix<N3, N1> visionStd = new Matrix<>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 }));
-    public static final LimelightTagCamera2dConfig sourceConfig1 = new LimelightTagCamera2dConfig("back", new Transform3d(), visionStd);
+    public static final LimelightTagCamera2dConfig sourceConfig1 = new LimelightTagCamera2dConfig("2d", new Transform3d(), visionStd);
     public static final LimelightTagCamera3dConfig sourceConfig2 = new LimelightTagCamera3dConfig("back", new Transform3d(), visionStd);
     public static final QuestConfig sourceConfig3 = new QuestConfig("quest", new Transform3d(), visionStd);
 
     public static final VisionConfig visionConfig = new VisionConfig()
-        // .addSource(sourceConfig1)
+        .addSource(sourceConfig1)
         .addSource(sourceConfig2)
-        // .addSource(sourceConfig3)
+        .addSource(sourceConfig3)
         ;
 
     // VisionConfig visionConfig = new VisionConfig(sourceConfig1, sourceConfig2, sourceConfig3);

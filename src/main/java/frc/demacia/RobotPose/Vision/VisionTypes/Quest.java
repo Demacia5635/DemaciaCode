@@ -85,7 +85,7 @@ public class Quest extends BaseVisionSource {
 
     @Override
     public boolean isConnected() {
-        return questNav.isConnected();
+        return questNav != null && questNav.isConnected();
     }
 
     /** Required by QuestNav to process incoming/outgoing data -- must be called every loop. */

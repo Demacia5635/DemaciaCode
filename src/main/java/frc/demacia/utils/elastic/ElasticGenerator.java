@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.demacia.RobotPose.Vision.VisionSource;
+import frc.demacia.RobotPose.Vision.VisionTypes.LimelightTagCamera2d;
+import frc.demacia.RobotPose.Vision.VisionTypes.LimelightTagCamera3d;
 import frc.demacia.RobotPose.Vision.VisionTypes.Quest;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.log.Log;
@@ -323,8 +325,14 @@ public class ElasticGenerator {
     
                 widgets.add(createWidget("Field", visionSource.getName() + " Field", col, 0, 2, 3, visionSourcePath + "/field ", "\"field_rotation\": 90.0"));
 
+                boolean isLimelight = visionSource instanceof LimelightTagCamera2d || visionSource instanceof LimelightTagCamera3d;
                 boolean isQuest = visionSource instanceof Quest;
-                widgets.add(createWidget("Boolean Box", "See " + visionSource.getName(), col, isQuest ? 4 : 3, 1, 1, visionSourcePath + "/is Connected", "\"data_type\": \"boolean\""));
+
+                widgets.add(createWidget("Boolean Box", "connected " + visionSource.getName(), col, isQuest ? 4 : 3, 1, 1, visionSourcePath + "/is Connected", "\"data_type\": \"boolean\""));
+
+                if (isLimelight) {
+                    widgets.add(createWidget("Boolean Box", "see " + visionSource.getName(), col + 1, 3, 1, 1, visionSourcePath + "/is see", "\"data_type\": \"boolean\""));
+                }
 
                 if (isQuest) {
                     widgets.add(createWidget("Command", "Reset Quest Pose", col, 3, 2, 1, visionSourcePath + "/Reset Quest Pose", "\"show_type\": true"));

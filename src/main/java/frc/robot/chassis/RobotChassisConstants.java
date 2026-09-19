@@ -53,7 +53,7 @@ public class RobotChassisConstants {
     new Translation2d(-0.32, -0.27), //BACK RIGHT 
   };
 
-  public static final SwerveModuleConfig[] modules = swerveModules(
+  public static final SwerveModuleConfig[] MODULES = swerveModules(
       new double[] {
         0.0, //FRONT LEFT  // TODO
         0.0, //FRONT RIGHT  // TODO
@@ -74,7 +74,7 @@ public class RobotChassisConstants {
 
   public static final ChassisConfig CHASSIS_CONFIG = new ChassisConfig(
       NAME,
-      modules,
+      MODULES,
       PIGEON_CONFIG);
 
   public static final SwerveModuleConfig[] swerveModules(double[] offsets) {

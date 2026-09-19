@@ -2,6 +2,7 @@ package frc.demacia.RobotPose.Vision.VisionTypes;
 
 import java.util.List;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.RobotPose.Vision.BaseVisionSource;
@@ -15,21 +16,14 @@ import frc.demacia.RobotPose.Vision.visionConfigs.LimelightTagCamera3dConfig;
  *
  */
 public class LimelightTagCamera3d extends BaseVisionSource {
+    private String limelightName;
+
     private PoseEstimate pose;
 
-    // --- Connectivity tracking (see isConnected() below) --------------------------------
-    private double lastFrameCounterValue = -1.0;
-    private double lastFrameCounterChangeTime = 0.0;
+    private double lastFrameCounterValue = 0;
+    private double lastFrameCounterChangeTime = -1;
 
-    /**
-     * How long the Limelight's frame counter (LimelightHelpers.getHeartbeat()) may go
-     * without incrementing before this camera is considered disconnected. FLAGGED: this
-     * threshold is this assistant's own reasonable default, not a value confirmed against
-     * real hardware behavior or Limelight's own documentation -- reconsider/tune if it
-     * doesn't match observed behavior (e.g. false disconnects during normal pipeline
-     * switches).
-     */
-    private static final double CAMERA_STALE_TIMEOUT_SECONDS = 1.0;
+    private static final double CAMERA_STALE_TIMEOUT_SECONDS = 0.5;
 
     /**
      * @param config              Static configuration for this source. name is the
@@ -41,13 +35,14 @@ public class LimelightTagCamera3d extends BaseVisionSource {
      */
     public LimelightTagCamera3d(LimelightTagCamera3dConfig config) {
         super(config);
-        LimelightHelpers.setCameraPose_RobotSpace(name, 
-        offset.getX(), 
-        offset.getY(), 
-        offset.getZ(), 
-        Math.toDegrees(offset.getRotation().getX()), 
-        Math.toDegrees(offset.getRotation().getY()), 
-        Math.toDegrees(offset.getRotation().getZ()));
+        limelightName = "limelight-" + config.name;
+        LimelightHelpers.setCameraPose_RobotSpace(limelightName, 
+            offset.getX(), 
+            offset.getY(), 
+            offset.getZ(), 
+            Math.toDegrees(offset.getRotation().getX()), 
+            Math.toDegrees(offset.getRotation().getY()), 
+            Math.toDegrees(offset.getRotation().getZ()));
     }
 
     /**
@@ -58,7 +53,7 @@ public class LimelightTagCamera3d extends BaseVisionSource {
      */
     @Override
     public boolean shouldUpdate() {
-        return LimelightHelpers.getTV(getName());
+        return LimelightHelpers.getTV(limelightName);
     }
 
     /**
@@ -73,7 +68,7 @@ public class LimelightTagCamera3d extends BaseVisionSource {
      */
     @Override
     public boolean isConnected() {
-        double currentFrameCounter = LimelightHelpers.getHeartbeat(getName());
+        double currentFrameCounter = LimelightHelpers.getHeartbeat(limelightName);
         double now = Timer.getFPGATimestamp();
 
         if (currentFrameCounter != lastFrameCounterValue) {
@@ -100,8 +95,14 @@ public class LimelightTagCamera3d extends BaseVisionSource {
     @Override
     public void periodic() {
         Rotation2d heading = RobotPose.getInstance().getGyroAngle();
-        LimelightHelpers.SetRobotOrientation(getName(), heading.getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0);
+        LimelightHelpers.SetRobotOrientation(limelightName, heading.getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0);
     
-        pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(getName());
+        pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        builder.addBooleanProperty("is see", () -> shouldUpdate(), null);
     }
 }

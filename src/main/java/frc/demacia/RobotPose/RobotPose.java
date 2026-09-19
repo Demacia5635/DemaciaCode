@@ -136,7 +136,10 @@ public final class RobotPose {
     public static synchronized void initialize(Supplier<OdometryData> odometryDataSupplier,
             SwerveModulePosition[] initialModulePositions, Matrix<N3, N1> stateStd,
             VisionConfig visionManager) {
-        instance = new RobotPose(odometryDataSupplier, initialModulePositions, stateStd, visionManager.getSources());
+        instance = new RobotPose(odometryDataSupplier, 
+            initialModulePositions, 
+            stateStd, 
+            visionManager.getSources());
     }
 
     /**

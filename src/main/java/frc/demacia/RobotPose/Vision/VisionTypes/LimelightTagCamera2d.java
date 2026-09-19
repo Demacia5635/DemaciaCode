@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.RobotPose.Vision.BaseVisionSource;
@@ -26,21 +27,17 @@ import frc.demacia.RobotPose.Vision.visionConfigs.LimelightTagCamera2dConfig;
  *
  */
 public class LimelightTagCamera2d extends BaseVisionSource {
+    private String limelightName;
     private NetworkTable Table;
-
-    private final AprilTagFieldLayout aprilTagFieldLayout;
 
     private Pose2d pose;
 
-    // --- Connectivity tracking (see isConnected() below) --------------------------------
-    private double lastFrameCounterValue = -1.0;
-    private double lastFrameCounterChangeTime = 0.0;
+    private final AprilTagFieldLayout aprilTagFieldLayout;
 
-    /**
-     * How long the Limelight's frame counter (LimelightHelpers.getHeartbeat()) may go
-     * without incrementing before this camera is considered disconnected. 
-     */
-    private static final double CAMERA_STALE_TIMEOUT_SECONDS = 1.0;
+    private double lastFrameCounterValue = 0;
+    private double lastFrameCounterChangeTime = -1;
+
+    private static final double CAMERA_STALE_TIMEOUT_SECONDS = 0.5;
 
     /**
      * @param config Static configuration for this source. name is the Limelight's
@@ -49,9 +46,10 @@ public class LimelightTagCamera2d extends BaseVisionSource {
      * */
     public LimelightTagCamera2d(LimelightTagCamera2dConfig config) {
         super(config);
+        limelightName = "limelight-" + config.name;
+        Table = NetworkTableInstance.getDefault().getTable(limelightName);
         pose = Pose2d.kZero;
         aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-        Table = NetworkTableInstance.getDefault().getTable("limelight-"+config.name);
     }
 
     /**
@@ -59,6 +57,9 @@ public class LimelightTagCamera2d extends BaseVisionSource {
      */
     @Override
     public boolean shouldUpdate() {
+        if (Table == null) {
+            return false;
+        }
         return Table.getEntry("tv").getDouble(0.0) >= 0.1;
     }
 
@@ -74,7 +75,7 @@ public class LimelightTagCamera2d extends BaseVisionSource {
      */
     @Override
     public boolean isConnected() {
-        double currentFrameCounter = LimelightHelpers.getHeartbeat(getName());
+        double currentFrameCounter = LimelightHelpers.getHeartbeat(limelightName);
         double now = Timer.getFPGATimestamp();
 
         if (currentFrameCounter != lastFrameCounterValue) {
@@ -137,5 +138,11 @@ public class LimelightTagCamera2d extends BaseVisionSource {
             return new Translation3d();
         }
         return tagPose.get().getTranslation();
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        builder.addBooleanProperty("is see", () -> shouldUpdate(), null);
     }
 }
