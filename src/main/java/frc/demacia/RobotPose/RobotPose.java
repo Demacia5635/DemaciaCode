@@ -108,7 +108,7 @@ public final class RobotPose {
     }
 
     public void resetPose(Pose2d pose) {
-        poseEstimator.resetPose(pose, getGyroAngle());
+        resetEstimator(pose, getGyroAngle());
     }
 
     public void setYaw(Rotation2d angle) {
@@ -116,7 +116,21 @@ public final class RobotPose {
             Chassis.getInstance().setYaw(angle);
             // The gyro was just set to `angle`, so pass it as the gyro reading (the new value may
             // not have been read back from the device yet).
-            poseEstimator.resetPose(new Pose2d(getEstimatedPose().getTranslation(), angle), angle);
+            resetEstimator(new Pose2d(getEstimatedPose().getTranslation(), angle), angle);
+        }
+    }
+
+    /**
+     * Resets the estimator and re-anchors every Quest to the new pose. The Quest reports poses
+     * relative to its last anchor, so without this its next frames pull the estimate back to
+     * the old pose.
+     */
+    private void resetEstimator(Pose2d pose, Rotation2d gyroAngle) {
+        poseEstimator.resetPose(pose, gyroAngle);
+        for (VisionSource source : sources) {
+            if (source instanceof Quest) {
+                ((Quest) source).setPose(pose);
+            }
         }
     }
 
@@ -147,7 +161,7 @@ public final class RobotPose {
         instance = new RobotPose(odometryDataSupplier, 
             initialModulePositions, 
             moduleLocations, 
-stateStd, 
+            stateStd, 
             visionManager.getSources());
     }
 
