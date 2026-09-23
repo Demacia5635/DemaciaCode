@@ -1,6 +1,7 @@
 package frc.demacia.RobotPose.Vision.VisionTypes;
 
 import java.util.List;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
@@ -81,7 +82,9 @@ public class LimelightTagCamera3d extends BaseVisionSource {
 
     @Override
     public List<TimestampedVisionMeasurement> getPoseEstimates() {
-        return List.of(new TimestampedVisionMeasurement(pose.pose, pose.timestampSeconds, std));
+        // MegaTag2's yaw is the heading we sent with SetRobotOrientation, not a measurement.
+        return List.of(new TimestampedVisionMeasurement(pose.pose, pose.timestampSeconds,
+                VecBuilder.fill(std.get(0, 0), std.get(1, 0), Double.POSITIVE_INFINITY)));
     }
 
     /**

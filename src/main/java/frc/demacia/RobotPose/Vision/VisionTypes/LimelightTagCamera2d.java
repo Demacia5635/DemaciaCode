@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -96,7 +97,9 @@ public class LimelightTagCamera2d extends BaseVisionSource {
      */
     @Override
     public List<TimestampedVisionMeasurement> getPoseEstimates() {
-        return List.of(new TimestampedVisionMeasurement(pose, timestampSeconds, std));
+        // The heading is taken from the estimate, not measured, so it carries no information.
+        return List.of(new TimestampedVisionMeasurement(pose, timestampSeconds,
+                VecBuilder.fill(std.get(0, 0), std.get(1, 0), Double.POSITIVE_INFINITY)));
     }
 
    

@@ -223,6 +223,10 @@ public class DemaciaPoseEstimator {
                 if (exactCount > 0) {
                     residualByAxis[axis] = exactResidualSum / exactCount;
                     measurementVarianceByAxis[axis] = 0.0;
+                } else if (informationSum == 0.0) {
+                    // Every std dev on this axis is infinite: nothing was measured on it.
+                    residualByAxis[axis] = 0.0;
+                    measurementVarianceByAxis[axis] = Double.POSITIVE_INFINITY;
                 } else {
                     residualByAxis[axis] = weightedResidualSum / informationSum;
                     measurementVarianceByAxis[axis] = 1.0 / informationSum;
