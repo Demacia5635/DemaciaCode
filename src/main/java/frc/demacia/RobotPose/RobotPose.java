@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -56,9 +57,9 @@ public final class RobotPose {
     private final List<VisionSource> sources;
 
     private RobotPose(Supplier<OdometryData> odometryDataSupplier, SwerveModulePosition[] initialModulePositions,
-            Matrix<N3, N1> stateStd, List<VisionSource> sources) {
+            Translation2d[] moduleLocations, Matrix<N3, N1> stateStd, List<VisionSource> sources) {
         this.odometryDataSupplier = odometryDataSupplier;
-        this.poseEstimator = new DemaciaPoseEstimator(initialModulePositions, stateStd);
+        this.poseEstimator = new DemaciaPoseEstimator(initialModulePositions, moduleLocations, stateStd);
         this.sources = sources;
 
         addLog();
@@ -102,13 +103,15 @@ public final class RobotPose {
     }
 
     public void resetPose(Pose2d pose) {
-        poseEstimator.resetPose(pose);
+        poseEstimator.resetPose(pose, getGyroAngle());
     }
 
     public void setYaw(Rotation2d angle) {
         if (angle != null) {
             Chassis.getInstance().setYaw(angle);
-            poseEstimator.resetPose(new Pose2d(getEstimatedPose().getTranslation(), angle));
+            // The gyro was just set to `angle`, so pass it as the gyro reading (the new value may
+            // not have been read back from the device yet).
+            poseEstimator.resetPose(new Pose2d(getEstimatedPose().getTranslation(), angle), angle);
         }
     }
 
@@ -134,11 +137,12 @@ public final class RobotPose {
      * correct call order themselves rather than have this enforced here.
      */
     public static synchronized void initialize(Supplier<OdometryData> odometryDataSupplier,
-            SwerveModulePosition[] initialModulePositions, Matrix<N3, N1> stateStd,
-            VisionConfig visionManager) {
+            SwerveModulePosition[] initialModulePositions, Translation2d[] moduleLocations,
+            Matrix<N3, N1> stateStd, VisionConfig visionManager) {
         instance = new RobotPose(odometryDataSupplier, 
             initialModulePositions, 
-            stateStd, 
+            moduleLocations, 
+stateStd, 
             visionManager.getSources());
     }
 

@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
@@ -37,8 +38,9 @@ public class DemaciaPoseEstimator {
     private Pose2d latestPose = new Pose2d();
     private final NavigableMap<Double, PoseUpdate> updates = new TreeMap<>();
 
-    public DemaciaPoseEstimator(SwerveModulePosition[] initialPositions, Matrix<N3, N1> stateSTD) {
-        this.odometry = new DemaciaOdometry(initialPositions);
+    public DemaciaPoseEstimator(SwerveModulePosition[] initialPositions, Translation2d[] moduleLocations,
+            Matrix<N3, N1> stateSTD) {
+        this.odometry = new DemaciaOdometry(initialPositions, moduleLocations);
         setStateStd(stateSTD);
         this.latestPose = this.initialPose;
     }
@@ -114,12 +116,12 @@ public class DemaciaPoseEstimator {
         return latestPose;
     }
 
-    public void resetPose() {
-        resetPose(new Pose2d());
-    }
-
-    public void resetPose(Pose2d pose) {
-        odometry.resetPose(pose);
+    /**
+     * @param pose      The new field pose.
+     * @param gyroAngle The raw gyro reading that corresponds to pose's heading.
+     */
+    public void resetPose(Pose2d pose, Rotation2d gyroAngle) {
+        odometry.resetPose(pose, gyroAngle);
         updates.clear();
         initialPose = pose;
         latestPose = pose;

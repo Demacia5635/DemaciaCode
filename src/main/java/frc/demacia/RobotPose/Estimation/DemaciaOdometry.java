@@ -15,11 +15,16 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 public class DemaciaOdometry {
 
     private Pose2d pose;
+    /** Field heading minus raw gyro reading, set on reset so the reset heading is kept. */
+    private Rotation2d gyroOffset = Rotation2d.kZero;
     private SwerveModulePosition[] lastModulePositions;
     private Translation2d[] moduleDisplacements;
     private double[] modulesWeights;
+    /** Module locations relative to the robot centre (meters). */
+    private final Translation2d[] moduleLocations;
 
-    public DemaciaOdometry(SwerveModulePosition[] initialModulePositions) {
+    public DemaciaOdometry(SwerveModulePosition[] initialModulePositions, Translation2d[] moduleLocations) {
+        this.moduleLocations = moduleLocations;
         this.lastModulePositions = new SwerveModulePosition[initialModulePositions.length];
         this.modulesWeights = new double[initialModulePositions.length];
         this.moduleDisplacements = new Translation2d[initialModulePositions.length];
@@ -55,10 +60,10 @@ public class DemaciaOdometry {
             moduleDisplacements[i] = calculateModuleDisplacement(lastModulePositions[i], modulePositions[i]);
         }
 
-        Translation2d robotDisplacementRobotRelative = calculateRobotDisplacement(moduleDisplacements);
-
         Rotation2d previousRotation = pose.getRotation();
-        double dtheta = MathUtil.angleModulus(gyroAngle.minus(previousRotation).getRadians());
+        double dtheta = MathUtil.angleModulus(gyroAngle.plus(gyroOffset).minus(previousRotation).getRadians());
+
+        Translation2d robotDisplacementRobotRelative = calculateRobotDisplacement(moduleDisplacements, dtheta);
 
         Twist2d twist = new Twist2d(robotDisplacementRobotRelative.getX(),
                 robotDisplacementRobotRelative.getY(), dtheta);
@@ -88,22 +93,31 @@ public class DemaciaOdometry {
         return new Translation2d(chordLength, chordAngle);
     }
 
-    private Translation2d calculateRobotDisplacement(Translation2d[] moduleDisplacements) {
+    /**
+     * Module i moves (dx - dtheta * y_i, dy + dtheta * x_i), so the weighted mean is
+     * (dx, dy) + dtheta * (-y_w, x_w) where (x_w, y_w) is the weighted module centroid.
+     * The rotation term is removed so non-uniform weights don't turn rotation into translation.
+     */
+    private Translation2d calculateRobotDisplacement(Translation2d[] moduleDisplacements, double dtheta) {
         double x = 0;
         double y = 0;
         for (int i = 0; i < moduleDisplacements.length; i++) {
-            x += moduleDisplacements[i].getX() * modulesWeights[i];
-            y += moduleDisplacements[i].getY() * modulesWeights[i];
+            x += (moduleDisplacements[i].getX() + dtheta * moduleLocations[i].getY()) * modulesWeights[i];
+            y += (moduleDisplacements[i].getY() - dtheta * moduleLocations[i].getX()) * modulesWeights[i];
         }
         return new Translation2d(x, y);
     }
 
-    public void resetPose() {
-        resetPose(Pose2d.kZero);
-    }
-
-    public void resetPose(Pose2d newPose) {
+    /**
+     * Resets the pose. The gyro reading at the moment of the reset is needed so the new
+     * heading is kept on the next update instead of being replaced by the raw gyro.
+     *
+     * @param newPose   The new field pose.
+     * @param gyroAngle The raw gyro reading that corresponds to newPose's heading.
+     */
+    public void resetPose(Pose2d newPose, Rotation2d gyroAngle) {
         this.pose = newPose;
+        this.gyroOffset = newPose.getRotation().minus(gyroAngle);
     }
 
     public Pose2d getOdometryPose() {
@@ -130,11 +144,11 @@ public class DemaciaOdometry {
         double weightToDistribute = 1.0 - clampedNewWeight;
         modulesWeights[index] = clampedNewWeight;
 
-        if (remainingWeightSum > 0) {
-            for (int i = 0; i < modulesWeights.length; i++) {
-                if (i != index) {
-                    modulesWeights[i] = (modulesWeights[i] / remainingWeightSum) * weightToDistribute;
-                }
+        for (int i = 0; i < modulesWeights.length; i++) {
+            if (i != index) {
+                modulesWeights[i] = remainingWeightSum > 0
+                        ? (modulesWeights[i] / remainingWeightSum) * weightToDistribute
+                        : weightToDistribute / (modulesWeights.length - 1);
             }
         }
     }
