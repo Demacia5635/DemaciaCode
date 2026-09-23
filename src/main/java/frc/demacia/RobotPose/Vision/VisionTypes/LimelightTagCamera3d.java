@@ -94,7 +94,8 @@ public class LimelightTagCamera3d extends BaseVisionSource {
      */
     @Override
     public void periodic() {
-        Rotation2d heading = RobotPose.getInstance().getGyroAngle();
+        // MegaTag2 needs the field heading; after a pose reset that is no longer the raw gyro.
+        Rotation2d heading = RobotPose.getInstance().getEstimatedPose().getRotation();
         LimelightHelpers.SetRobotOrientation(limelightName, heading.getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0);
     
         pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);

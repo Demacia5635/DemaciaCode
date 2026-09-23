@@ -31,6 +31,7 @@ public class LimelightTagCamera2d extends BaseVisionSource {
     private NetworkTable Table;
 
     private Pose2d pose;
+    private double timestampSeconds;
 
     private final AprilTagFieldLayout aprilTagFieldLayout;
 
@@ -95,9 +96,6 @@ public class LimelightTagCamera2d extends BaseVisionSource {
      */
     @Override
     public List<TimestampedVisionMeasurement> getPoseEstimates() {
-        double latency = (Table.getEntry("tl").getDouble(0.0) + Table.getEntry("cl").getDouble(0.0))/1000.0;
-        double timestampSeconds = Timer.getFPGATimestamp() - latency;
-
         return List.of(new TimestampedVisionMeasurement(pose, timestampSeconds, std));
     }
 
@@ -110,13 +108,18 @@ public class LimelightTagCamera2d extends BaseVisionSource {
     }
 
     private Pose2d updatePose() {
-        pose = new Pose2d((getTag().toTranslation2d()).minus(getRobotToTag()), RobotPose.getInstance().getGyroAngle());
+        double latency = (Table.getEntry("tl").getDouble(0.0) + Table.getEntry("cl").getDouble(0.0))/1000.0;
+        timestampSeconds = Timer.getFPGATimestamp() - latency;
+        // Heading at the frame's capture time, not now (the robot may turn during the latency).
+        Rotation2d heading = RobotPose.getInstance().getEstimatedPoseAt(timestampSeconds).getRotation();
+
+        pose = new Pose2d((getTag().toTranslation2d()).minus(getRobotToTag(heading)), heading);
         return pose;
     }
 
-    private Translation2d getRobotToTag() {
+    private Translation2d getRobotToTag(Rotation2d heading) {
         return getCameraToTag().plus(
-            offset.getTranslation().toTranslation2d().rotateBy(RobotPose.getInstance().getGyroAngle()));
+            offset.getTranslation().toTranslation2d().rotateBy(heading));
     }
 
     private Translation2d getCameraToTag() {

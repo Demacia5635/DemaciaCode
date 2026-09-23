@@ -137,6 +137,31 @@ public class DemaciaPoseEstimator {
     }
 
     /**
+     * Returns the estimated pose at a past timestamp: the history is replayed up to it and the
+     * odometry twist that spans it is interpolated. Timestamps newer than the latest odometry
+     * sample return the latest pose; older than the history return the oldest pose.
+     */
+    public Pose2d getPoseAt(double timestampSeconds) {
+        Pose2d pose = initialPose;
+        double prevKey = Double.NaN;
+        for (var entry : updates.entrySet()) {
+            double key = entry.getKey();
+            if (key <= timestampSeconds) {
+                pose = entry.getValue().apply(pose, stateVarianceByAxis);
+                prevKey = key;
+                continue;
+            }
+            if (!Double.isNaN(prevKey)) {
+                Twist2d twist = entry.getValue().twist;
+                double frac = (timestampSeconds - prevKey) / (key - prevKey);
+                pose = pose.exp(new Twist2d(twist.dx * frac, twist.dy * frac, twist.dtheta * frac));
+            }
+            break;
+        }
+        return pose;
+    }
+
+    /**
      * @param pose      The new field pose.
      * @param gyroAngle The raw gyro reading that corresponds to pose's heading.
      */

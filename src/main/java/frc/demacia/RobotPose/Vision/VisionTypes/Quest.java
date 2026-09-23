@@ -96,11 +96,12 @@ public class Quest extends BaseVisionSource {
         poseFrames = questNav.getAllUnreadPoseFrames();
 
         if (poseFrames.length > 0 && poseFrames[poseFrames.length - 1].isTracking()) {
+            timestampSeconds = poseFrames[poseFrames.length - 1].dataTimestamp();
+
+            // Heading at the frame's capture time, not now.
             pose = new Pose2d(poseFrames[poseFrames.length - 1].questPose3d()
                 .transformBy(offset.inverse()).toPose2d().getTranslation(), 
-                RobotPose.getInstance().getGyroAngle());
-            
-            timestampSeconds = poseFrames[poseFrames.length - 1].dataTimestamp();
+                RobotPose.getInstance().getEstimatedPoseAt(timestampSeconds).getRotation());
         }
 
         if (!hasQuestDisconnected && !isConnected()) {

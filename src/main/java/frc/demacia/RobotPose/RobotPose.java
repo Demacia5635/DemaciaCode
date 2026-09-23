@@ -102,6 +102,11 @@ public final class RobotPose {
         return poseEstimator.getEstimatedPose();
     }
 
+    /** The estimated pose at a past FPGA timestamp (e.g. a vision frame's capture time). */
+    public Pose2d getEstimatedPoseAt(double timestampSeconds) {
+        return poseEstimator.getPoseAt(timestampSeconds);
+    }
+
     public void resetPose(Pose2d pose) {
         poseEstimator.resetPose(pose, getGyroAngle());
     }
