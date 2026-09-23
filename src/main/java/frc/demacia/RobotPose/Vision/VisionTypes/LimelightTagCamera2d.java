@@ -33,6 +33,9 @@ public class LimelightTagCamera2d extends BaseVisionSource {
 
     private Pose2d pose;
     private double timestampSeconds;
+    private boolean hasNewPose;
+    /** Heartbeat of the last frame processed; it increments once per camera frame. */
+    private double lastHeartbeat = Double.NaN;
 
     private final AprilTagFieldLayout aprilTagFieldLayout;
 
@@ -97,6 +100,9 @@ public class LimelightTagCamera2d extends BaseVisionSource {
      */
     @Override
     public List<TimestampedVisionMeasurement> getPoseEstimates() {
+        if (!hasNewPose) {
+            return List.of();
+        }
         // The heading is taken from the estimate, not measured, so it carries no information.
         return List.of(new TimestampedVisionMeasurement(pose, timestampSeconds,
                 VecBuilder.fill(std.get(0, 0), std.get(1, 0), Double.POSITIVE_INFINITY)));
@@ -105,9 +111,26 @@ public class LimelightTagCamera2d extends BaseVisionSource {
    
     @Override
     public void periodic() {
-        if (shouldUpdate()) {
-            updatePose();
+        hasNewPose = false;
+        if (!shouldUpdate()) {
+            return;
         }
+
+        // Until the camera publishes a newer frame, the same tx/ty are read back every loop.
+        double heartbeat = LimelightHelpers.getHeartbeat(limelightName);
+        if (heartbeat == lastHeartbeat) {
+            return;
+        }
+        lastHeartbeat = heartbeat;
+
+        // A tag that isn't in the field layout has no known position to measure from.
+        if (aprilTagFieldLayout.getTagPose((int) Table.getEntry("tid").getDouble(0.0)).isEmpty()) {
+            return;
+        }
+
+        updatePose();
+        // e.g. a tag at the camera's height makes the range dh / tan(0)
+        hasNewPose = Double.isFinite(pose.getX()) && Double.isFinite(pose.getY());
     }
 
     private Pose2d updatePose() {

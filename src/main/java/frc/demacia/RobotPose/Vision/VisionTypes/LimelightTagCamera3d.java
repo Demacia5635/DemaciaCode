@@ -20,6 +20,9 @@ public class LimelightTagCamera3d extends BaseVisionSource {
     private String limelightName;
 
     private PoseEstimate pose;
+    /** Capture time of the last frame reported, so each frame is fused only once. */
+    private double lastReportedTimestampSeconds = Double.NaN;
+    private boolean hasNewPose;
 
     private double lastFrameCounterValue = 0;
     private double lastFrameCounterChangeTime = -1;
@@ -82,6 +85,9 @@ public class LimelightTagCamera3d extends BaseVisionSource {
 
     @Override
     public List<TimestampedVisionMeasurement> getPoseEstimates() {
+        if (!hasNewPose) {
+            return List.of();
+        }
         // MegaTag2's yaw is the heading we sent with SetRobotOrientation, not a measurement.
         return List.of(new TimestampedVisionMeasurement(pose.pose, pose.timestampSeconds,
                 VecBuilder.fill(std.get(0, 0), std.get(1, 0), Double.POSITIVE_INFINITY)));
@@ -102,6 +108,12 @@ public class LimelightTagCamera3d extends BaseVisionSource {
         LimelightHelpers.SetRobotOrientation(limelightName, heading.getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0);
     
         pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+
+        // Until the camera publishes a newer frame, the same estimate is read back every loop.
+        hasNewPose = pose != null && pose.tagCount > 0 && pose.timestampSeconds != lastReportedTimestampSeconds;
+        if (hasNewPose) {
+            lastReportedTimestampSeconds = pose.timestampSeconds;
+        }
     }
 
     @Override
