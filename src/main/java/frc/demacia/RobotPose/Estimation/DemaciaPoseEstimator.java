@@ -59,6 +59,11 @@ public class DemaciaPoseEstimator {
     }
 
     public void addVisionMeasurement(Pose2d visionRobotPose, double timestampSeconds, Matrix<N3, N1> stdDevs) {
+        // A NaN once fused is replayed every loop and then folded into the base pose, so it would never go away.
+        if (!isValidMeasurement(visionRobotPose, stdDevs)) {
+            return;
+        }
+
         VisionUpdate visionUpdate = new VisionUpdate(visionRobotPose, stdDevs);
 
         if (updates.containsKey(timestampSeconds)) {
@@ -95,6 +100,21 @@ public class DemaciaPoseEstimator {
         updates.put(nextKey, new PoseUpdate(twist1, nextUpdate.visionUpdates));
 
         update();
+    }
+
+    /** Pose must be finite; std devs must be non-negative and not NaN (infinite means "not measured"). */
+    private static boolean isValidMeasurement(Pose2d pose, Matrix<N3, N1> stdDevs) {
+        if (!Double.isFinite(pose.getX()) || !Double.isFinite(pose.getY())
+                || !Double.isFinite(pose.getRotation().getRadians())) {
+            return false;
+        }
+        for (int i = 0; i < 3; i++) {
+            double std = stdDevs.get(i, 0);
+            if (Double.isNaN(std) || std < 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void update() {
@@ -150,27 +170,68 @@ public class DemaciaPoseEstimator {
 
         private Pose2d apply(Pose2d lastPose, double[] stateVarianceByAxis) {
             Pose2d pose = lastPose.exp(twist);
-            for (VisionUpdate visionUpdate : visionUpdates) {
-                double[] measurementVarianceByAxis = new double[3];
-                Matrix<N3, N1> stdDevs = visionUpdate.stdDevs;
-                for (int i = 0; i < 3; i++) {
-                    measurementVarianceByAxis[i] = stdDevs.get(i, 0) * stdDevs.get(i, 0);
-                }
-                double[] kalmanGainByAxis = new double[3];
-                for (int row = 0; row < 3; row++) {
-                    if (stateVarianceByAxis[row] == 0.0) {
-                        kalmanGainByAxis[row] = 0.0;
+            if (visionUpdates.isEmpty()) {
+                return pose;
+            }
+
+            // Measurements with the same timestamp are fused (inverse-variance) into one before
+            // the gain is applied, so N measurements of variance r count as one of variance r/N.
+            double[] residualByAxis = new double[3];
+            double[] measurementVarianceByAxis = new double[3];
+            for (int axis = 0; axis < 3; axis++) {
+                double informationSum = 0;
+                double weightedResidualSum = 0;
+                int exactCount = 0;
+                double exactResidualSum = 0;
+                for (VisionUpdate visionUpdate : visionUpdates) {
+                    double std = visionUpdate.stdDevs.get(axis, 0);
+                    double variance = std * std;
+                    double residual = residual(axis, visionUpdate.pose, pose);
+                    if (variance == 0.0) {
+                        exactCount++;
+                        exactResidualSum += residual;
                     } else {
-                        kalmanGainByAxis[row] = stateVarianceByAxis[row]
-                                / (stateVarianceByAxis[row] + Math.sqrt(stateVarianceByAxis[row] * measurementVarianceByAxis[row]));
+                        informationSum += 1.0 / variance;
+                        weightedResidualSum += residual / variance;
                     }
                 }
-                Twist2d visionTwist = pose.log(visionUpdate.pose);
-                Twist2d scaledTwist = new Twist2d(visionTwist.dx * kalmanGainByAxis[0],
-                        visionTwist.dy * kalmanGainByAxis[1], visionTwist.dtheta * kalmanGainByAxis[2]);
-                pose = pose.exp(scaledTwist);
+                if (exactCount > 0) {
+                    residualByAxis[axis] = exactResidualSum / exactCount;
+                    measurementVarianceByAxis[axis] = 0.0;
+                } else {
+                    residualByAxis[axis] = weightedResidualSum / informationSum;
+                    measurementVarianceByAxis[axis] = 1.0 / informationSum;
+                }
             }
-            return pose;
+
+            double[] kalmanGainByAxis = new double[3];
+            for (int row = 0; row < 3; row++) {
+                if (stateVarianceByAxis[row] == 0.0) {
+                    kalmanGainByAxis[row] = 0.0;
+                } else {
+                    kalmanGainByAxis[row] = stateVarianceByAxis[row]
+                            / (stateVarianceByAxis[row] + Math.sqrt(stateVarianceByAxis[row] * measurementVarianceByAxis[row]));
+                }
+            }
+
+            // The gain is applied per field axis (the frame the std devs are given in), not to
+            // pose.log(vision), whose dx/dy are robot-relative and bent by dtheta.
+            return new Pose2d(
+                    pose.getX() + kalmanGainByAxis[0] * residualByAxis[0],
+                    pose.getY() + kalmanGainByAxis[1] * residualByAxis[1],
+                    pose.getRotation().plus(new Rotation2d(kalmanGainByAxis[2] * residualByAxis[2])));
+        }
+
+        /** Field-frame residual of one axis (x, y in meters; theta wrapped to [-pi, pi]). */
+        private static double residual(int axis, Pose2d measured, Pose2d estimate) {
+            switch (axis) {
+                case 0:
+                    return measured.getX() - estimate.getX();
+                case 1:
+                    return measured.getY() - estimate.getY();
+                default:
+                    return measured.getRotation().minus(estimate.getRotation()).getRadians();
+            }
         }
     }
 }
