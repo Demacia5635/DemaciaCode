@@ -3,6 +3,7 @@ package frc.demacia.RobotPose.Vision.VisionTypes;
 import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.demacia.RobotPose.RobotPose;
@@ -35,6 +36,14 @@ public class Quest extends BaseVisionSource {
 
     private boolean hasUpdatedQuestIntialPose;
     private boolean hasQuestDisconnected;
+    private boolean hasNewPose;
+    private double poseResetTimestamp = Double.POSITIVE_INFINITY;
+
+    /**
+     * QuestNav does not acknowledge setPose(), so frames are only trusted once they were
+     * captured this long after the reset was sent.
+     */
+    private static final double QUEST_RESET_SETTLE_SECONDS = 0.25;
 
     /**
      * @param config Static configuration for this source. offset is robotToQuest -- the
@@ -70,7 +79,7 @@ public class Quest extends BaseVisionSource {
      */
     @Override
     public boolean shouldUpdate() {
-        return questNav.isConnected() && hasUpdatedQuestIntialPose;
+        return questNav.isConnected() && hasUpdatedQuestIntialPose && hasNewPose;
     }
 
     /**
@@ -94,6 +103,7 @@ public class Quest extends BaseVisionSource {
         questNav.commandPeriodic();
 
         poseFrames = questNav.getAllUnreadPoseFrames();
+        hasNewPose = false;
 
         if (poseFrames.length > 0 && poseFrames[poseFrames.length - 1].isTracking()) {
             timestampSeconds = poseFrames[poseFrames.length - 1].dataTimestamp();
@@ -102,10 +112,16 @@ public class Quest extends BaseVisionSource {
             pose = new Pose2d(poseFrames[poseFrames.length - 1].questPose3d()
                 .transformBy(offset.inverse()).toPose2d().getTranslation(), 
                 RobotPose.getInstance().getEstimatedPoseAt(timestampSeconds).getRotation());
+            hasNewPose = true;
+
+            if (!hasQuestDisconnected && timestampSeconds > poseResetTimestamp + QUEST_RESET_SETTLE_SECONDS) {
+                hasUpdatedQuestIntialPose = true;
+            }
         }
 
         if (!hasQuestDisconnected && !isConnected()) {
             hasQuestDisconnected = true;
+            hasUpdatedQuestIntialPose = false;
         }
     }
 
@@ -120,6 +136,7 @@ public class Quest extends BaseVisionSource {
         Pose3d questPose = robotPose3d.transformBy(offset);
         questNav.setPose(questPose);
 
+        poseResetTimestamp = Timer.getFPGATimestamp();
         hasUpdatedQuestIntialPose = false;
         hasQuestDisconnected = false;
     }
