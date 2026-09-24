@@ -11,18 +11,44 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
-/** Add your docs here. */
+/**
+ * Swerve odometry: turns gyro + module encoder readings into how far the robot moved since
+ * the last update.
+ *
+ * <p>Differences from WPILib's {@code SwerveDriveOdometry}:
+ * <ul>
+ * <li>Each module's path over one loop is treated as a circular arc (its wheel angle changed
+ * during the loop), and the straight-line chord of that arc is used as its displacement.</li>
+ * <li>The robot displacement is a weighted average of the module displacements, and the
+ * weights can be changed at runtime with {@link #changeModuleWeight} (e.g. to trust a
+ * slipping module less).</li>
+ * <li>The heading always comes from the gyro, never from the wheels.</li>
+ * </ul>
+ *
+ * <p>This class only does odometry. {@link DemaciaPoseEstimator} owns it and uses the twist
+ * returned by {@link #updateOdometry} each loop.
+ */
 public class DemaciaOdometry {
 
+    /** Pure-odometry pose (no vision). */
     private Pose2d pose;
     /** Field heading minus raw gyro reading, set on reset so the reset heading is kept. */
     private Rotation2d gyroOffset = Rotation2d.kZero;
+    /** Module readings from the previous update, to get this loop's change. */
     private SwerveModulePosition[] lastModulePositions;
+    /** Robot-relative chord of each module this loop (meters). Reused every update. */
     private Translation2d[] moduleDisplacements;
+    /** Each module's weight in the displacement average; always sums to 1. Starts equal. */
     private double[] modulesWeights;
     /** Module locations relative to the robot centre (meters). */
     private final Translation2d[] moduleLocations;
 
+    /**
+     * @param initialModulePositions Module readings right now, so the first update only counts
+     *                               motion from this point.
+     * @param moduleLocations        Module positions relative to the robot center (meters),
+     *                               same order as the module readings.
+     */
     public DemaciaOdometry(SwerveModulePosition[] initialModulePositions, Translation2d[] moduleLocations) {
         this.moduleLocations = moduleLocations;
         this.lastModulePositions = new SwerveModulePosition[initialModulePositions.length];
@@ -40,20 +66,21 @@ public class DemaciaOdometry {
     /**
      * Updates the odometry with new gyro and module readings.
      *
-     * <p>The combined robot-relative displacement (weighted average of per-module arc
-     * displacements) is packaged into a robot-relative Twist2d together with the gyro's
-     * dtheta, and {@code pose} is advanced via {@code pose.exp(twist)} - the same
-     * primitive WPILib's own pose estimators use to turn a twist into a pose. This is
-     * deliberate: the twist returned to the caller is the exact twist used to update
-     * {@code pose} internally, so replaying it externally via Pose2d.exp() from the same
-     * starting pose is guaranteed (by construction, not by small-angle approximation) to
-     * reproduce this method's own internal pose update - including when a single tick
-     * combines translation and rotation. 
+     * <ol>
+     * <li>Each module's displacement since the last update (robot-relative chord, see
+     * {@link #calculateModuleDisplacement}).</li>
+     * <li>dtheta from the gyro (with the reset offset), wrapped to [-pi, pi].</li>
+     * <li>The robot-center displacement: weighted average of the modules, with the part
+     * caused by rotation removed (see {@link #calculateRobotDisplacement}).</li>
+     * <li>{@code pose = pose.exp(twist)}.</li>
+     * </ol>
      *
-     * @param gyroAngle       The current gyro heading.
+     * The returned twist is exactly the one applied to {@code pose}, so the pose estimator can
+     * replay it with {@code Pose2d.exp()} from any starting pose and get the same motion.
+     *
+     * @param gyroAngle       The current raw gyro heading.
      * @param modulePositions The current swerve module positions.
-     * @return The robot-relative Twist2d representing the motion applied by this update.
-     *         
+     * @return The robot-relative motion of this update (dx, dy in meters, dtheta in radians).
      */
     public Twist2d updateOdometry(Rotation2d gyroAngle, SwerveModulePosition[] modulePositions) {
         for (int i = 0; i < modulePositions.length; i++) {
@@ -77,6 +104,14 @@ public class DemaciaOdometry {
         return twist;
     }
 
+    /**
+     * One module's straight-line displacement since the last update, robot-relative.
+     *
+     * <p>The wheel drove {@code arcLength} while its angle turned by {@code deltaAngle}, so it
+     * went along an arc of radius {@code arcLength / deltaAngle}. The chord of that arc has
+     * length {@code 2 * r * sin(deltaAngle / 2)} and points halfway between the old and new
+     * wheel angles. When the angle barely changed it's a straight line at the current angle.
+     */
     private Translation2d calculateModuleDisplacement(SwerveModulePosition lastPosition,
             SwerveModulePosition currentPosition) {
         double arcLength = currentPosition.distanceMeters - lastPosition.distanceMeters;
@@ -120,6 +155,7 @@ public class DemaciaOdometry {
         this.gyroOffset = newPose.getRotation().minus(gyroAngle);
     }
 
+    /** @return The pure-odometry pose (no vision corrections). */
     public Pose2d getOdometryPose() {
         return this.pose;
     }

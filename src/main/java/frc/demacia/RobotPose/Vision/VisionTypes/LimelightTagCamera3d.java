@@ -13,29 +13,34 @@ import frc.demacia.RobotPose.Vision.TimestampedVisionMeasurement;
 import frc.demacia.RobotPose.Vision.visionConfigs.LimelightTagCamera3dConfig;
 
 /**
- * Wraps a single Limelight camera in 3D (MegaTag2) mode as a VisionSource. 
+ * A Limelight using MegaTag2: the Limelight itself calculates the robot pose from every tag it
+ * sees, using the robot heading we send it each loop. Only x and y are used; MegaTag2's yaw is
+ * just the heading we sent.
  *
+ * <p>The camera's position on the robot (the config offset) is sent to the Limelight once, at
+ * construction.
  */
 public class LimelightTagCamera3d extends BaseVisionSource {
     private String limelightName;
 
+    /** Last MegaTag2 estimate read (blue-alliance origin), or null if none. */
     private PoseEstimate pose;
     /** Capture time of the last frame reported, so each frame is fused only once. */
     private double lastReportedTimestampSeconds = Double.NaN;
+    /** Whether this loop's periodic() read a new frame that has at least one tag. */
     private boolean hasNewPose;
 
     private double lastFrameCounterValue = 0;
     private double lastFrameCounterChangeTime = -1;
 
+    /** Disconnected if the heartbeat hasn't changed for this long. */
     private static final double CAMERA_STALE_TIMEOUT_SECONDS = 0.5;
 
     /**
-     * @param config              Static configuration for this source. name is the
-     *                            Limelight's NetworkTables name. offset is currently unused
-     *                            by this class (Limelight's own pose math accounts for
-     *                            camera placement via its own calibration) but is accepted
-     *                            here as part of the shared VisionSourceConfig shape used
-     *                            by every VisionSource.
+     * Sends the config offset to the Limelight as its camera pose in robot space (meters,
+     * degrees). This overwrites what was set in the Limelight web UI.
+     *
+     * @param config The camera's config. The Limelight name is {@code "limelight-" + config.name}.
      */
     public LimelightTagCamera3d(LimelightTagCamera3dConfig config) {
         super(config);
@@ -50,10 +55,8 @@ public class LimelightTagCamera3d extends BaseVisionSource {
     }
 
     /**
-     * Gated on LimelightHelpers.getTV(), matching the tv >= 0.1 pattern from the user's own
-     * old TagPose.isSeeTag() (explicitly confirmed as the model for this method) --
-     * getTV() is LimelightHelpers' own boolean wrapper around that same NetworkTables
-     * entry, so this is the same gate, just via the standard helper rather than a raw read.
+     * @return Whether the camera sees a tag ({@code tv}). Does not check if the frame is new;
+     *         {@link #getPoseEstimates()} handles that.
      */
     @Override
     public boolean shouldUpdate() {
@@ -61,14 +64,10 @@ public class LimelightTagCamera3d extends BaseVisionSource {
     }
 
     /**
-     * Limelight cameras communicate over NetworkTables; LimelightHelpers does not expose a
-     * direct "is this Limelight physically connected" boolean, so connectivity is inferred
-     * from LimelightHelpers.getHeartbeat(name) -- a counter that increments once per
-     * frame while the camera is alive (confirmed real API). Since it's a raw counter, not a
-     * boolean, connectivity has to be inferred by checking whether it's still CHANGING over
-     * time, not just reading it once -- so this tracks the last-seen value and when it last
-     * changed, and reports disconnected only if the counter has been stuck for longer than
-     * CAMERA_STALE_TIMEOUT_SECONDS.
+     * The Limelight's heartbeat counter goes up once per frame while it is running, so the
+     * camera counts as connected if the heartbeat changed in the last
+     * {@link #CAMERA_STALE_TIMEOUT_SECONDS}. Only updates when called (it's called by the
+     * dashboard).
      */
     @Override
     public boolean isConnected() {
@@ -83,6 +82,10 @@ public class LimelightTagCamera3d extends BaseVisionSource {
         return (now - lastFrameCounterChangeTime) < CAMERA_STALE_TIMEOUT_SECONDS;
     }
 
+    /**
+     * @return This loop's MegaTag2 measurement, or an empty list if there is no new frame with
+     *         a tag. The heading std dev is infinite because the heading is the one we sent.
+     */
     @Override
     public List<TimestampedVisionMeasurement> getPoseEstimates() {
         if (!hasNewPose) {
@@ -94,12 +97,12 @@ public class LimelightTagCamera3d extends BaseVisionSource {
     }
 
     /**
-     * Pushes the current gyro heading via SetRobotOrientation() BEFORE this loop's pose can
-     * be correctly read back -- confirmed hard MegaTag2 requirement, not optional. This is
-     * exactly why RobotPose calls periodic() on every VisionSource before calling
-     * shouldUpdate()/getPoseEstimates() on any of them (the two-pass design): this call
-     * must happen before getPoseEstimates() runs for THIS SAME LOOP, and the two-pass
-     * structure guarantees that ordering regardless of source iteration order.
+     * Sends the current estimated heading to the Limelight (MegaTag2 needs it), then reads
+     * the latest MegaTag2 estimate. A frame counts as new only if its timestamp differs from
+     * the last one used, so each frame is used once.
+     *
+     * <p>The Limelight uses the heading on its next frame, so the frame read here was made
+     * with a heading sent in an earlier loop.
      */
     @Override
     public void periodic() {

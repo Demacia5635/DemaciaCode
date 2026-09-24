@@ -11,13 +11,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.RobotPose.Vision.visionConfigs.BaseVisionSourceConfig;
 import frc.demacia.utils.elastic.ElasticGenerator;
 
+/**
+ * Common base for every vision source: holds the config values and sets up the dashboard
+ * entries ({@code vision/<name>}, {@code vision/<name>/field}, and the Elastic layout).
+ */
 public abstract class BaseVisionSource implements VisionSource, Sendable {
+    /** Name from the config. */
     protected final String name;
+    /** Where the device is mounted relative to the robot center (robot to device). */
     protected Transform3d offset;
+    /** Base measurement std devs from the config (x meters, y meters, theta radians). */
     protected Matrix<N3, N1> std;
 
     private Field2d field;
 
+    /** Copies the config and registers this source on SmartDashboard and Elastic. */
     public BaseVisionSource(BaseVisionSourceConfig config) {
         name = config.name;
         offset = config.offset;
@@ -29,6 +37,7 @@ public abstract class BaseVisionSource implements VisionSource, Sendable {
         SmartDashboard.putData("vision/" + name, this);
     }
 
+    /** Puts dashboard entries. Subclasses can override to add their own (call super). */
     protected void addLog() {
         SmartDashboard.putData("vision/" + name + "/field", field);
     }
