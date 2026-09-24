@@ -1,31 +1,20 @@
 package frc.demacia.utils.chassis;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.demacia.kinematics.DemaciaKinematics;
 
 public class ChassisCommon {
-    Chassis chassis;
-    DemaciaKinematics kinematics;
-    public ChassisCommon(Chassis chassis, DemaciaKinematics kinematics){
-        this.chassis = chassis;
-        this.kinematics = kinematics;
-    }
-
-    public ChassisSpeeds getWantedChassisSpeed(){
-        return chassis.getTargetVel();
-    }
-
-    public ChassisSpeeds getCurrentChassisSpeeds(){
-        return chassis.getChassisSpeedsFieldRel();
-    }
-
-    public SwerveModuleState[] getSwerveModuleState(){
-        return chassis.getModuleStates();
-    } 
-
-    public Pose2d getPose(){
-        return chassis.getPose();
-    }
+    public static Pose2d currentRobotPose = Pose2d.kZero;
+    public static Pose2d futureRobotPose = Pose2d.kZero;
+    public static ChassisSpeeds robotRelSpeeds = new ChassisSpeeds();
+    public static ChassisSpeeds fieldRelSpeeds = new ChassisSpeeds();
+    public static SwerveModuleState[] moduleStates = new SwerveModuleState[] {
+            new SwerveModuleState(), new SwerveModuleState(),
+            new SwerveModuleState(), new SwerveModuleState()
+        };
+    public static Rotation2d chassisAngle = Rotation2d.kZero;
+    public static ChassisSpeeds fieldRelAccel = new ChassisSpeeds();
+    public static ChassisSpeeds fieldRelFutureSpeeds = new ChassisSpeeds();
 }

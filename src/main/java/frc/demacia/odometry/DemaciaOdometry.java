@@ -10,7 +10,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import frc.demacia.utils.chassis.Chassis;
+import frc.demacia.utils.chassis.ChassisCommon;
 
 /** Add your docs here. */
 public class DemaciaOdometry {
@@ -41,11 +44,22 @@ public class DemaciaOdometry {
         return instance;
     }
 
+    private void updateStaticPose(){
+        ChassisCommon.currentRobotPose = RobotPose.getInstance().getPose();
+        ChassisSpeeds v = ChassisCommon.fieldRelSpeeds;
+        ChassisCommon.futureRobotPose = new Pose2d(
+            pose.getX() + v.vxMetersPerSecond * 0.02,
+            pose.getY() + v.vyMetersPerSecond * 0.02,
+            new Rotation2d(pose.getRotation().getRadians()
+                    + v.omegaRadiansPerSecond * 0.02));
+}
+    
+
     public Pose2d update(Rotation2d gyroAngle, SwerveModulePosition[] currentPositions) {
         Translation2d[] moduleDisplacements = new Translation2d[modulePositions.length];
         for (int i = 0; i < modulePositions.length; i++) {
             moduleDisplacements[i] = calculateModuleDisplacement(lastPositions[i], currentPositions[i]);
-
+            updateStaticPose();
         }
 
         Twist2d robotDisplacement = calculateRobotDisplacement(moduleDisplacements);

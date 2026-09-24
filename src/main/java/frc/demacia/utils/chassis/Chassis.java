@@ -344,8 +344,28 @@ public class Chassis extends SubsystemBase {
         }
     }
 
+    public void updateCommon(){
+        ChassisCommon.chassisAngle = getGyroAngle();
+        ChassisCommon.fieldRelSpeeds = getChassisSpeedsFieldRel();
+        ChassisCommon.robotRelSpeeds = getChassisSpeedsRobotRel();
+        ChassisCommon.moduleStates = getModuleStates();
+
+        ChassisSpeeds v = ChassisCommon.fieldRelSpeeds;
+        ChassisSpeeds prev = ChassisCommon.fieldRelSpeeds;
+        ChassisCommon.fieldRelAccel = new ChassisSpeeds(
+            (v.vxMetersPerSecond - prev.vxMetersPerSecond) / 0.02,
+            (v.vyMetersPerSecond - prev.vyMetersPerSecond) / 0.02,
+            (v.omegaRadiansPerSecond - prev.omegaRadiansPerSecond) / 0.02);
+        ChassisSpeeds accel = ChassisCommon.fieldRelAccel;
+          ChassisCommon.fieldRelFutureSpeeds = new ChassisSpeeds(
+            v.vxMetersPerSecond + accel.vxMetersPerSecond * 0.02,
+            v.vyMetersPerSecond + accel.vyMetersPerSecond * 0.02,
+            v.omegaRadiansPerSecond + accel.omegaRadiansPerSecond * 0.02);
+    }
+
     @Override
     public void periodic() {
+        updateCommon();
         // updateCommon(); TODO: ROBOT COMOON
 
         observation = new OdometryObservation(
