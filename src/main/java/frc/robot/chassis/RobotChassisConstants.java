@@ -9,6 +9,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.demacia.utils.motors.TalonFXConfig;
 import frc.demacia.utils.chassis.ChassisConfig;
+import frc.demacia.utils.chassis.Mk5nConstants;
 import frc.demacia.utils.chassis.SwerveModuleConfig;
 import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
 import frc.demacia.utils.sensors.CancoderConfig;
@@ -18,47 +19,43 @@ public class RobotChassisConstants {
 
   public static final String NAME = "robot Chassis";
 
-  public static final int PIGEON_ID = 0; 
+  public static final int PIGEON_ID =14; 
   public static final Canbus CAN_BUS = Canbus.CANIvore; 
   public static final Canbus PIGEON_CAN_BUS = Canbus.CANIvore; 
-  public static final double STEER_GEAR_RATIO = 26.09090909090909; 
-  public static final double DRIVE_GEAR_RATIO = 6.03; 
-  public static final double WHEEL_DIAMETER = 0.1016; 
+  public static final double STEER_GEAR_RATIO = Mk5nConstants.STEER_GEAR_RATIO; 
+  public static final double DRIVE_GEAR_RATIO = Mk5nConstants.R2.driveGearRatio; 
+  public static final double WHEEL_DIAMETER = Mk5nConstants.WHEEL_DIAMETER; 
 
-  public static final double STEER_KP = 8;  // TODO
-  public static final double STEER_KI = 0.5;  // TODO
-  public static final double STEER_KD = 0.0;  // TODO
-  public static final double STEER_KS = 0.0;  // TODO
-  public static final double STEER_KV = 0.0;  // TODO
+  public static final double STEER_KP = 5.8;  
+  public static final double STEER_KI = 0.0;  
+  public static final double STEER_KD = 0.0;  
+  public static final double STEER_KS = 0.4254d;  // TODO
+  public static final double STEER_KV = 0.3218d;  // TODO
   public static final double STEER_KA = 0.0;  // TODO
 
-  public static final double DRIVE_KP = 10;  // TODO
+  public static final double DRIVE_KP = 1;  // TODO
   public static final double DRIVE_KI = 0.0;  // TODO
   public static final double DRIVE_KD = 0.0;  // TODO
-  public static final double DRIVE_KS = 0.0;  // TODO
-  public static final double DRIVE_KV = 0.0;  // TODO
-  public static final double DRIVE_KA = 0.0;  // TODO
-
-  public static final double STEER_MOTION_MAGIC_VEL = 100.0; 
-  public static final double STEER_MOTION_MAGIC_ACCEL = 50.0; 
-  public static final double STEER_MOTION_MAGIC_JERK = 1000.0; 
+  public static final double DRIVE_KS = 0.17123;  // TODO
+  public static final double DRIVE_KV = 2.20388;  // TODO
+  public static final double DRIVE_KA =0.48899;  // TODO
 
   public static final double MAX_DRIVE_VELOCITY = 5.0; 
   public static final double RAMP_TIME_STEER = 0.25; 
 
   public static final Translation2d[] MODULE_LOCATIONS = {
-    new Translation2d(0.32, 0.27), //FRONT LEFT 
-    new Translation2d(0.32, -0.27), //FRONT RIGHT 
-    new Translation2d(-0.32, 0.27), //BACK LEFT 
-    new Translation2d(-0.32, -0.27), //BACK RIGHT 
+    new Translation2d(0.295 , 0.395), //FRONT LEFT 
+    new Translation2d(0.295, -0.395), //FRONT RIGHT 
+    new Translation2d(-0.295, 0.395), //BACK LEFT 
+    new Translation2d(-0.295, -0.395), //BACK RIGHT 
   };
 
   public static final SwerveModuleConfig[] MODULES = swerveModules(
       new double[] {
-        0.0, //FRONT LEFT  // TODO
-        0.0, //FRONT RIGHT  // TODO
-        0.0, //BACK LEFT  // TODO
-        0.0 //BACK RIGHT  // TODO
+        1.5217120831752096896735813514194, //FRONT LEFT  // TODO
+        1.8837303710189759237145855990482, //FRONT RIGHT  // TODO
+        -1.7674223277977745984402216157124, //BACK LEFT  // TODO
+        1.012428498101768307786402232556 //BACK RIGHT  // TODO
       });
 
   public static final SwerveModulePosition[] swerveModulesPosition = new SwerveModulePosition[] {
@@ -94,7 +91,6 @@ public class RobotChassisConstants {
           name,
           new TalonFXConfig(name + " Steer", i * 3 + 2, CAN_BUS)
               .withPID(STEER_KP, STEER_KI, STEER_KD, STEER_KS, STEER_KV, STEER_KA, 0, 0, 0)
-              .withMotionParam(STEER_MOTION_MAGIC_VEL, STEER_MOTION_MAGIC_ACCEL, STEER_MOTION_MAGIC_JERK)
               .withBrake(true)
               .withInvert(true)
               .withRadiansMotor(STEER_GEAR_RATIO)

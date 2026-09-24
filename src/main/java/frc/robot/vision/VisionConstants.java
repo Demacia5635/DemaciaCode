@@ -39,13 +39,13 @@ public class VisionConstants {
     public static final Transform3d QUEST_OFFSET = new Transform3d(
         new Translation3d(0.0, 0.0, 0.0), 
         new Rotation3d(0.0, 0.0, 0.0)); 
-    public static final Matrix<N3, N1> QUEST_STD = new Matrix<>(new SimpleMatrix(new double[] { 0.0, 0.0, 0.0 })); 
+    public static final Matrix<N3, N1> QUEST_STD = new Matrix<>(new SimpleMatrix(new double[] { 0.3, 0.3, 0.0 })); 
     public static final QuestConfig QUEST_CONFIG = new QuestConfig(QUEST_NAME, QUEST_OFFSET, QUEST_STD);
 
     public static final VisionConfig visionConfig = new VisionConfig()
-        .addSource(BACK_2D_CONFIG)
-        .addSource(BACK_3D_CONFIG)
-        .addSource(BACK_3D_2_CONFIG)
+        // .addSource(BACK_2D_CONFIG)
+        // .addSource(BACK_3D_CONFIG)
+        // .addSource(BACK_3D_2_CONFIG)
         .addSource(QUEST_CONFIG)
         ;
 
