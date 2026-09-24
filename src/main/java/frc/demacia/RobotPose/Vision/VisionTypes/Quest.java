@@ -74,11 +74,17 @@ public class Quest extends BaseVisionSource {
         questNav.commandPeriodic();
     }
 
-    /** Adds a "Reset Quest Pose" dashboard button that anchors the Quest to (0, 0, 0). */
+    /**
+     * Adds a "Reset Quest Pose" dashboard button that re-anchors the Quest to the current
+     * estimate. (It used to anchor the Quest to (0, 0, 0) without moving the estimate, so the
+     * Quest then pulled the estimate toward the origin. To move the robot's pose, use
+     * {@code RobotPose.resetPose}, which also re-anchors the Quest.)
+     */
     @Override
     protected void addLog() {
         super.addLog();
-        SmartDashboard.putData("vision/" + getName() + "/Reset Quest Pose", new InstantCommand(()->setPose(new Pose2d())).ignoringDisable(true));
+        SmartDashboard.putData("vision/" + getName() + "/Reset Quest Pose", new InstantCommand(
+                () -> setPose(RobotPose.getInstance().getEstimatedPose())).ignoringDisable(true));
     }
 
     /**
