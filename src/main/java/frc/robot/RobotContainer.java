@@ -56,8 +56,8 @@ public class RobotContainer implements Sendable {
     shooter = Shooter.getInstance();
 
     RobotPose.initialize(
-      ()->new OdometryData(Chassis.getInstance().getGyroAngle(), new SwerveModulePosition[4]), 
-      new SwerveModulePosition[4], 
+      ()->new OdometryData(Chassis.getInstance().getGyroAngle(), new SwerveModulePosition[] {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()}), 
+      new SwerveModulePosition[] {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()}, 
       new Matrix<>(new SimpleMatrix(new double[] { 0.0, 0.0, 0.0 })), 
       VisionConstants.visionConfig);
 

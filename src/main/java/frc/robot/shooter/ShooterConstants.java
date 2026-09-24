@@ -64,8 +64,8 @@ public class ShooterConstants {
             .withPID(HOOD_KP, HOOD_KI, HOOD_KD, HOOD_KS, HOOD_KV, HOOD_KA, HOOD_KG, HOOD_KCOS, HOOD_KV2)
             .withMotionParam(HOOD_MAX_VELOCITY, HOOD_MAX_ACCELERATION, HOOD_MAX_JERK);
 
-        public static final double HOOD_MIN_LIMIT = 0.0; // TODO
-        public static final double HOOD_MAX_LIMIT = 60; // TODO
+        public static final double HOOD_MIN_LIMIT = Math.toRadians(0.0); // TODO
+        public static final double HOOD_MAX_LIMIT = Math.toRadians(60); // TODO
         public static final double HOOD_CALIBRATION_POWER = -0.1;
         public static final double HOOD_CMD_CALIBRATION_RESET_POS = 0.0;
         public static final double HOOD_AUTO_CALIBRATION_RESET_POS = 0.0;
@@ -86,7 +86,7 @@ public class ShooterConstants {
 
     public static final class HoodMinLimitSwitchConstants {
         public static final String HOOD_MIN_LIMIT_SWITCH_NAME = "hood min Limit Switch";
-        public static final int HOOD_MIN_LIMIT_SWITCH_ID = 0; // TODO
+        public static final int HOOD_MIN_LIMIT_SWITCH_ID = 6; // TODO
         public static final boolean HOOD_MIN_LIMIT_SWITCH_INVERT = false;
         public static final LimitSwitchConfig HOOD_MIN_LIMIT_SWITCH_CONFIG = new LimitSwitchConfig(HOOD_MIN_LIMIT_SWITCH_NAME,HOOD_MIN_LIMIT_SWITCH_ID)
             .withInvert(HOOD_MIN_LIMIT_SWITCH_INVERT);

@@ -48,16 +48,16 @@ public class IntakeConstants {
             .withPID(INTAKE_DEPLOY_KP, INTAKE_DEPLOY_KI, INTAKE_DEPLOY_KD, INTAKE_DEPLOY_KS, INTAKE_DEPLOY_KV, INTAKE_DEPLOY_KA, INTAKE_DEPLOY_KG, INTAKE_DEPLOY_KCOS, INTAKE_DEPLOY_KV2)
             .withMotionParam(INTAKE_DEPLOY_MAX_VELOCITY, INTAKE_DEPLOY_MAX_ACCELERATION, INTAKE_DEPLOY_MAX_JERK);
 
-        public static final double INTAKE_DEPLOY_MIN_LIMIT = 0.0; // TODO
-        public static final double INTAKE_DEPLOY_MAX_LIMIT = 90; // TODO
+        public static final double INTAKE_DEPLOY_MIN_LIMIT = Math.toRadians(0.0); // TODO
+        public static final double INTAKE_DEPLOY_MAX_LIMIT = Math.toRadians(90); // TODO
         public static final double INTAKE_DEPLOY_CALIBRATION_POWER = 0.2;
-        public static final double INTAKE_DEPLOY_CMD_CALIBRATION_RESET_POS = 90;
-        public static final double INTAKE_DEPLOY_AUTO_CALIBRATION_RESET_POS = 90; // TODO
+        public static final double INTAKE_DEPLOY_CMD_CALIBRATION_RESET_POS = Math.toRadians(90);
+        public static final double INTAKE_DEPLOY_AUTO_CALIBRATION_RESET_POS = Math.toRadians(90); // TODO
     }
 
     public static final class IntakeDeployMaxLimitSwitchConstants {
         public static final String INTAKE_DEPLOY_MAX_LIMIT_SWITCH_NAME = "intake deploy max Limit Switch";
-        public static final int INTAKE_DEPLOY_MAX_LIMIT_SWITCH_ID = 0; // TODO
+        public static final int INTAKE_DEPLOY_MAX_LIMIT_SWITCH_ID = 5; // TODO
         public static final boolean INTAKE_DEPLOY_MAX_LIMIT_SWITCH_INVERT = false;
         public static final LimitSwitchConfig INTAKE_DEPLOY_MAX_LIMIT_SWITCH_CONFIG = new LimitSwitchConfig(INTAKE_DEPLOY_MAX_LIMIT_SWITCH_NAME,INTAKE_DEPLOY_MAX_LIMIT_SWITCH_ID)
             .withInvert(INTAKE_DEPLOY_MAX_LIMIT_SWITCH_INVERT);
