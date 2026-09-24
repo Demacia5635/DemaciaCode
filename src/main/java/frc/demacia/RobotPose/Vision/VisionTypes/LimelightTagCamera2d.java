@@ -30,9 +30,10 @@ import frc.demacia.RobotPose.Vision.visionConfigs.LimelightTagCamera2dConfig;
  * <ol>
  * <li>Horizontal distance camera to tag: {@code |tagHeight - cameraHeight| / tan(cameraPitch + ty)},
  * divided by {@code cos(tx)}.</li>
- * <li>Camera to tag vector: that distance at angle {@code cameraYaw - tx}.</li>
- * <li>Robot pose = tag position - (camera to tag + robot to camera), with the heading from
- * the estimate at the frame's capture time.</li>
+ * <li>Camera to tag vector: that distance at angle {@code cameraYaw - tx} (robot-relative).</li>
+ * <li>Robot to tag = robot to camera + camera to tag (robot-relative), rotated to the field
+ * by the heading at the frame's capture time.</li>
+ * <li>Robot position = tag position - robot to tag.</li>
  * </ol>
  *
  * <p>Reads the Limelight's NetworkTables table {@code "limelight-" + name} directly.
@@ -156,15 +157,24 @@ public class LimelightTagCamera2d extends BaseVisionSource {
         return pose;
     }
 
-    /** Vector from the robot center to the tag: camera to tag plus robot to camera. */
+    /**
+     * Vector from the robot center to the tag, on the field.
+     *
+     * <p>Robot to camera (the offset) and camera to tag are both relative to the robot, so
+     * they are added first and the sum is rotated to the field by the heading. (Before issue
+     * #13 only the offset was rotated, so the pose was only right at heading 0 and was meters
+     * off at 90 and 180 degrees.)
+     *
+     * @param heading The robot's field heading when the frame was captured.
+     */
     private Translation2d getRobotToTag(Rotation2d heading) {
         return getCameraToTag().plus(
-            offset.getTranslation().toTranslation2d().rotateBy(heading));
+            offset.getTranslation().toTranslation2d()).rotateBy(heading);
     }
 
     /**
-     * Vector from the camera to the tag, relative to the robot's forward direction (the
-     * camera's yaw is added to {@code -tx}; tx is positive to the right).
+     * Vector from the camera to the tag, relative to the robot (not the field): the floor
+     * distance at angle {@code cameraYaw - tx} (tx is positive to the right).
      */
     private Translation2d getCameraToTag() {
         return new Translation2d(getDistanceFromCamera(),
