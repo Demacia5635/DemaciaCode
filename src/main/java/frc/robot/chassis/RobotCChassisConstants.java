@@ -1,12 +1,6 @@
 package frc.robot.chassis;
 
-import org.ejml.simple.SimpleMatrix;
-
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import frc.demacia.utils.motors.TalonFXConfig;
 import frc.demacia.utils.chassis.ChassisConfig;
 import frc.demacia.utils.chassis.SwerveModuleConfig;
@@ -14,36 +8,36 @@ import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
 import frc.demacia.utils.sensors.CancoderConfig;
 import frc.demacia.utils.sensors.PigeonConfig;
 
-public class RobotChassisConstants {
+public class RobotCChassisConstants {
 
-  public static final String NAME = "robot Chassis";
+  public static final String NAME = "robotC Chassis";
 
-  public static final int PIGEON_ID = 0; 
-  public static final Canbus CAN_BUS = Canbus.CANIvore; 
-  public static final Canbus PIGEON_CAN_BUS = Canbus.CANIvore; 
-  public static final double STEER_GEAR_RATIO = 26.09090909090909; 
+  public static final int PIGEON_ID = 0;  // TODO
+  public static final Canbus CAN_BUS = Canbus.CANIvore;  // TODO
+  public static final Canbus PIGEON_CAN_BUS = Canbus.CANIvore;  // TODO
+  public static final double STEER_GEAR_RATIO = 287.0 / 11.0; 
   public static final double DRIVE_GEAR_RATIO = 6.03; 
-  public static final double WHEEL_DIAMETER = 0.1016; 
+  public static final double WHEEL_DIAMETER = 4 * 0.0254; 
 
-  public static final double STEER_KP = 8;  // TODO
-  public static final double STEER_KI = 0.5;  // TODO
-  public static final double STEER_KD = 0.0;  // TODO
-  public static final double STEER_KS = 0.0;  // TODO
-  public static final double STEER_KV = 0.0;  // TODO
-  public static final double STEER_KA = 0.0;  // TODO
+  public static final double STEER_KP = 0;  // TODO
+  public static final double STEER_KI = 0;  // TODO
+  public static final double STEER_KD = 0;  // TODO
+  public static final double STEER_KS = 0;  // TODO
+  public static final double STEER_KV = 0;  // TODO
+  public static final double STEER_KA = 0;  // TODO
 
-  public static final double DRIVE_KP = 10;  // TODO
-  public static final double DRIVE_KI = 0.0;  // TODO
-  public static final double DRIVE_KD = 0.0;  // TODO
-  public static final double DRIVE_KS = 0.0;  // TODO
-  public static final double DRIVE_KV = 0.0;  // TODO
-  public static final double DRIVE_KA = 0.0;  // TODO
+  public static final double DRIVE_KP = 0;  // TODO
+  public static final double DRIVE_KI = 0;  // TODO
+  public static final double DRIVE_KD = 0;  // TODO
+  public static final double DRIVE_KS = 0;  // TODO
+  public static final double DRIVE_KV = 0;  // TODO
+  public static final double DRIVE_KA = 0;  // TODO
 
-  public static final double STEER_MOTION_MAGIC_VEL = 100.0; 
-  public static final double STEER_MOTION_MAGIC_ACCEL = 50.0; 
-  public static final double STEER_MOTION_MAGIC_JERK = 1000.0; 
+  public static final double STEER_MOTION_MAGIC_VEL = 100; 
+  public static final double STEER_MOTION_MAGIC_ACCEL = 50; 
+  public static final double STEER_MOTION_MAGIC_JERK = 1000; 
 
-  public static final double MAX_DRIVE_VELOCITY = 5.0; 
+  public static final double MAX_DRIVE_VELOCITY = 5; 
   public static final double RAMP_TIME_STEER = 0.25; 
 
   public static final Translation2d[] MODULE_LOCATIONS = {
@@ -53,31 +47,20 @@ public class RobotChassisConstants {
     new Translation2d(-0.32, -0.27), //BACK RIGHT 
   };
 
-  public static final SwerveModuleConfig[] MODULES = swerveModules(
+  public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        0.0, //FRONT LEFT  // TODO
-        0.0, //FRONT RIGHT  // TODO
-        0.0, //BACK LEFT  // TODO
-        0.0 //BACK RIGHT  // TODO
+        0, //FRONT LEFT  // TODO
+        0, //FRONT RIGHT  // TODO
+        0, //BACK LEFT  // TODO
+        0 //BACK RIGHT  // TODO
       });
-
-  public static final SwerveModulePosition[] swerveModulesPosition = new SwerveModulePosition[] {
-    new SwerveModulePosition(), 
-    new SwerveModulePosition(), 
-    new SwerveModulePosition(), 
-    new SwerveModulePosition()
-  };
-
-  public static final Matrix<N3, N1> stateStd = new Matrix<>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 }));
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);
 
   public static final ChassisConfig CHASSIS_CONFIG = new ChassisConfig(
       NAME,
-      MODULES,
+      modules,
       PIGEON_CONFIG);
-
-  public static final double METERS_FROM_360_DEGS = 0.2;
 
   public static final SwerveModuleConfig[] swerveModules(double[] offsets) {
     SwerveModuleConfig[] ans = new SwerveModuleConfig[4];
@@ -105,8 +88,7 @@ public class RobotChassisConstants {
               .withMeterMotor(DRIVE_GEAR_RATIO, WHEEL_DIAMETER),
           new CancoderConfig(name + " Cancoder", i * 3 + 3, CAN_BUS))
           .withPosion(MODULE_LOCATIONS[i])
-          .withSteerOffset(offsets[i])
-          .withMetersFrom360Degs(METERS_FROM_360_DEGS);
+          .withSteerOffset(offsets[i]);
     }
     return ans;
   }

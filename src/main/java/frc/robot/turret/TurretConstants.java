@@ -11,11 +11,11 @@ public class TurretConstants {
 
     public static final class TurretMotorConstants {
         public static final String TURRET_MOTOR_NAME = "turret motor";
-        public static final int TURRET_MOTOR_ID = 50;
+        public static final int TURRET_MOTOR_ID = 0; // TODO
         public static final Canbus TURRET_MOTOR_CANBUS = Canbus.Rio; // TODO
         public static final boolean TURRET_MOTOR_BRAKE = true;
         public static final boolean TURRET_MOTOR_INVERT = false;
-        public static final double TURRET_MOTOR_GEAR_RATIO = 199.111;
+        public static final double TURRET_MOTOR_GEAR_RATIO = 48.0*112.0/27.0;
         public static final double TURRET_MOTOR_KP = 0.0; // TODO
         public static final double TURRET_MOTOR_KI = 0.0; // TODO
         public static final double TURRET_MOTOR_KD = 0.0; // TODO
@@ -36,17 +36,17 @@ public class TurretConstants {
             .withPID(TURRET_MOTOR_KP, TURRET_MOTOR_KI, TURRET_MOTOR_KD, TURRET_MOTOR_KS, TURRET_MOTOR_KV, TURRET_MOTOR_KA, TURRET_MOTOR_KG, TURRET_MOTOR_KCOS, TURRET_MOTOR_KV2)
             .withMotionParam(TURRET_MOTOR_MAX_VELOCITY, TURRET_MOTOR_MAX_ACCELERATION, TURRET_MOTOR_MAX_JERK);
 
-        public static final double TURRET_MOTOR_MIN_LIMIT = -1000; // TODO
-        public static final double TURRET_MOTOR_MAX_LIMIT = 1000.0; // TODO
-        public static final double TURRET_MOTOR_CALIBRATION_POWER = -0.1; // TODO
-        public static final double TURRET_MOTOR_CMD_CALIBRATION_RESET_POS = 0.0; // TODO
-        public static final double TURRET_MOTOR_AUTO_CALIBRATION_RESET_POS = 0.0; // TODO
+        public static final double TURRET_MOTOR_MIN_LIMIT = -30.0; // TODO
+        public static final double TURRET_MOTOR_MAX_LIMIT = 310; // TODO
+        public static final double TURRET_MOTOR_CALIBRATION_POWER = -0.2;
+        public static final double TURRET_MOTOR_CMD_CALIBRATION_RESET_POS = -30; // TODO
+        public static final double TURRET_MOTOR_AUTO_CALIBRATION_RESET_POS = -30; // TODO
     }
 
     public static final class TurretMinLimitSwitchConstants {
         public static final String TURRET_MIN_LIMIT_SWITCH_NAME = "turret min Limit Switch";
-        public static final int TURRET_MIN_LIMIT_SWITCH_ID = 8;
-        public static final boolean TURRET_MIN_LIMIT_SWITCH_INVERT = true;
+        public static final int TURRET_MIN_LIMIT_SWITCH_ID = 0; // TODO
+        public static final boolean TURRET_MIN_LIMIT_SWITCH_INVERT = false;
         public static final LimitSwitchConfig TURRET_MIN_LIMIT_SWITCH_CONFIG = new LimitSwitchConfig(TURRET_MIN_LIMIT_SWITCH_NAME,TURRET_MIN_LIMIT_SWITCH_ID)
             .withInvert(TURRET_MIN_LIMIT_SWITCH_INVERT);
     }

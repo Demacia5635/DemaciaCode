@@ -5,8 +5,8 @@ import frc.demacia.utils.motors.MotorInterface;
 import frc.demacia.utils.sensors.SensorInterface;
 import frc.demacia.utils.motors.TalonFXMotor;
 import static frc.robot.shinua.ShinuaConstants.*;
+import static frc.robot.shinua.ShinuaConstants.RollersConstants.*;
 import static frc.robot.shinua.ShinuaConstants.MechanomConstants.*;
-import static frc.robot.shinua.ShinuaConstants.ShinuaRollersConstants.*;
 
 public class Shinua extends StateBaseMechanism {
     private static Shinua instance;
@@ -14,8 +14,8 @@ public class Shinua extends StateBaseMechanism {
     private Shinua() {
         super(SHINUA_NAME, 
         new MotorInterface[] {
+            new TalonFXMotor(ROLLERS_CONFIG),
             new TalonFXMotor(MECHANOM_CONFIG),
-            new TalonFXMotor(SHINUA_ROLLERS_CONFIG),
         }, 
         new SensorInterface[] {
         }, 
@@ -30,4 +30,11 @@ public class Shinua extends StateBaseMechanism {
         return instance;
     }
 
+    public void setRollersPower(double power) {
+        setPower(ROLLERS_NAME, power);
+    }
+
+    public void setMechanomPower(double power) {
+        setPower(MECHANOM_NAME, power);
+    }
 }

@@ -48,9 +48,8 @@ public class SwerveModule {
 
         SmartDashboard.putData(name + " setSteerVelocity", 
         new RunCommand(() -> {
-            setSteerPower(0.05);
-            setDrivePower(0);;
-            // setDriveVelocity(0);
+            setSteerPower(0.1);
+            setDrivePower(0);
         })
             .finallyDo(interrupted -> stop()));
     }
@@ -90,7 +89,6 @@ public class SwerveModule {
         steerMotor.setDuty(power);
 
         if (driveStop){
-            Log.log("drive vel: " + -config.steerVelToDriveVel * steerMotor.getCurrentVelocity());
             driveMotor.setVelocity(-config.steerVelToDriveVel * steerMotor.getCurrentVelocity());
         }
     }

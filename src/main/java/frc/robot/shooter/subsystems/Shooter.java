@@ -8,7 +8,6 @@ import frc.demacia.utils.sensors.LimitSwitch;
 import frc.robot.RobotContainer;
 import static frc.robot.shooter.ShooterConstants.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.shooter.ShooterConstants.ShooterStates;
 import frc.robot.shooter.commands.HoodCalibrationCommand;
 import static frc.robot.shooter.ShooterConstants.FlywheelConstants.*;
 import static frc.robot.shooter.ShooterConstants.HoodConstants.*;
@@ -31,9 +30,9 @@ public class Shooter extends StateBaseMechanism {
         ShooterStates.class);
 
         addLimit(HOOD_NAME, HOOD_MIN_LIMIT, HOOD_MAX_LIMIT);
+        withPowerCommand(HOOD_NAME, () -> RobotContainer.controller.getRightX());
         withPowerCommand(FLYWHEEL_NAME, () -> RobotContainer.controller.getRightX());
-        withPowerCommand(HOOD_NAME, () -> RobotContainer.controller.getRightY());
-        withAutoCalibration(HOOD_NAME, this::atHoodAutoResetPos, HOOD_AUTO_CALIBRATION_RESET_POS);
+        withAutoCalibration(HOOD_NAME, this::atHoodResetPos, HOOD_AUTO_CALIBRATION_RESET_POS);
         SmartDashboard.putData(SHOOTER_NAME + "/" + HOOD_NAME + " Calibration Command", new HoodCalibrationCommand(this));
     }
 
@@ -44,27 +43,54 @@ public class Shooter extends StateBaseMechanism {
         return instance;
     }
 
+    public void setFlywheelPower(double power) {
+        setPower(FLYWHEEL_NAME, power);
+    }
+
+    public void setFlywheelVelocity(double velocity) {
+        setVelocity(FLYWHEEL_NAME, velocity);
+    }
+
+    public double getFlywheelVelocity() {
+        return getMotor(FLYWHEEL_NAME).getCurrentVelocity();
+    }
+
+    public void setHoodPower(double power) {
+        setPower(HOOD_NAME, power);
+    }
+
+    public void setHoodMotion(double motion) {
+        setMotion(HOOD_NAME, motion);
+    }
+
+    public double getHoodPosition() {
+        return getMotor(HOOD_NAME).getCurrentPosition();
+    }
+
+    public void setFeederPower(double power) {
+        setPower(FEEDER_NAME, power);
+    }
+
+    public boolean getHoodMin() {
+        return ((LimitSwitch) getSensor(HOOD_MIN_LIMIT_SWITCH_NAME)).get();
+    }
+
     public double[] getShooterValues() {
         switch ((ShooterStates) state) {
             case SHOOTING:
                 break;
             case DELIVERY:
                 break;
-            case GETTING_READY:
+            case TRANCH:
                 break;
             default:
                 break;
         }
         
-        return new double[3];
+        return new double[] {}; // TODO: Unimplemented method 'getShooterValues'
     }
 
     public boolean atHoodResetPos() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean atHoodAutoResetPos() {
         return ((LimitSwitch) getSensor(HOOD_MIN_LIMIT_SWITCH_NAME)).get();
     }
 
