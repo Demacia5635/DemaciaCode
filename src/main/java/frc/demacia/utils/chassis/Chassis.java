@@ -169,7 +169,7 @@ public class Chassis extends SubsystemBase {
 
         headingController.enableContinuousInput(-Math.PI, Math.PI);
         
-        ChassisSpeeds targetVel = new ChassisSpeeds();
+        targetVel = new ChassisSpeeds();
 
 
         LogManager.log(chassisConfig.name + " initalize");
@@ -304,6 +304,7 @@ public class Chassis extends SubsystemBase {
     }
 
     public void setRobotRelVelocities(ChassisSpeeds speeds) {
+        targetVel = ChassisSpeeds.fromRobotRelativeSpeeds(speeds, getGyroAngle());
         SwerveModuleState[] states = wpilibKinematics.toSwerveModuleStates(speeds);
         setModuleStates(states);
     }
@@ -344,36 +345,55 @@ public class Chassis extends SubsystemBase {
         }
     }
 
-    public void updateCommon(){
-        ChassisCommon.chassisAngle = getGyroAngle();
-        ChassisCommon.fieldRelSpeeds = getChassisSpeedsFieldRel();
-        ChassisCommon.robotRelSpeeds = getChassisSpeedsRobotRel();
-        ChassisCommon.moduleStates = getModuleStates();
-
-        ChassisSpeeds v = ChassisCommon.fieldRelSpeeds;
+    /**
+     * Updates every field in {@link ChassisCommon}. Called once per cycle from
+     * {@link #periodic()}, after the pose estimator has been updated.
+     */
+    public void updateCommon() {
+        final double dt = 0.02;
         ChassisSpeeds prev = ChassisCommon.fieldRelSpeeds;
+
+        ChassisCommon.chassisAngle = getGyroAngle();
+        ChassisCommon.moduleStates = getModuleStates();
+        ChassisCommon.robotRelSpeeds = getChassisSpeedsRobotRel();
+        ChassisCommon.fieldRelSpeeds = getChassisSpeedsFieldRel();
+        ChassisSpeeds v = ChassisCommon.fieldRelSpeeds;
+        ChassisSpeeds wanted = targetVel;
+        ChassisCommon.wantedFieldRelSpeeds = wanted;
+
+        ChassisCommon.prevFieldRelAccel = ChassisCommon.fieldRelAccel;
         ChassisCommon.fieldRelAccel = new ChassisSpeeds(
-            (v.vxMetersPerSecond - prev.vxMetersPerSecond) / 0.02,
-            (v.vyMetersPerSecond - prev.vyMetersPerSecond) / 0.02,
-            (v.omegaRadiansPerSecond - prev.omegaRadiansPerSecond) / 0.02);
+                (v.vxMetersPerSecond - prev.vxMetersPerSecond) / dt,
+                (v.vyMetersPerSecond - prev.vyMetersPerSecond) / dt,
+                (v.omegaRadiansPerSecond - prev.omegaRadiansPerSecond) / dt);
+        ChassisCommon.wantedFieldRelAccel = new ChassisSpeeds(
+                (wanted.vxMetersPerSecond - v.vxMetersPerSecond) / dt,
+                (wanted.vyMetersPerSecond - v.vyMetersPerSecond) / dt,
+                (wanted.omegaRadiansPerSecond - v.omegaRadiansPerSecond) / dt);
         ChassisSpeeds accel = ChassisCommon.fieldRelAccel;
-          ChassisCommon.fieldRelFutureSpeeds = new ChassisSpeeds(
-            v.vxMetersPerSecond + accel.vxMetersPerSecond * 0.02,
-            v.vyMetersPerSecond + accel.vyMetersPerSecond * 0.02,
-            v.omegaRadiansPerSecond + accel.omegaRadiansPerSecond * 0.02);
+
+        ChassisCommon.fieldRelFutureSpeeds = new ChassisSpeeds(
+                v.vxMetersPerSecond + accel.vxMetersPerSecond * dt,
+                v.vyMetersPerSecond + accel.vyMetersPerSecond * dt,
+                v.omegaRadiansPerSecond + accel.omegaRadiansPerSecond * dt);
+
+        Pose2d pose = getPose();
+        ChassisCommon.currentRobotPose = pose;
+        ChassisCommon.futureRobotPose = new Pose2d(
+                pose.getX() + v.vxMetersPerSecond * dt,
+                pose.getY() + v.vyMetersPerSecond * dt,
+                pose.getRotation().plus(new Rotation2d(v.omegaRadiansPerSecond * dt)));
     }
 
     @Override
     public void periodic() {
-        updateCommon();
-        // updateCommon(); TODO: ROBOT COMOON
-
         observation = new OdometryObservation(
                 Timer.getFPGATimestamp(),
                 getGyroAngle(),
                 getModulePositions());
 
         RobotPose.getInstance().update(observation);
+        updateCommon();
         field.setRobotPose(getPose());
         // field.getObject("Turret").setPose(new Pose2d(RobotCommon.getCurrentRobotPose().getTranslation()
         //         .plus(TurretConstants.TURRET_POSITION_ON_ROBOT.rotateBy(RobotCommon.getRobotAngle())),
@@ -381,13 +401,6 @@ public class Chassis extends SubsystemBase {
         //                 + MathUtil.angleModulus(Turret.getInstance().getTurretAngle()))));
         // field.getObject("estimation").setPose(ShooterUtils.computeFuturePosition(getChassisSpeedsFieldRel(), RobotCommon.getCurrentRobotPose(), 0.1));
     }
-    //TODO: ROBOT COMMON
-    // public void updateCommon() {
-    //     RobotCommon.setRobotAngle(getGyroAngle());
-    //     RobotCommon.setCurrentRobotPose(getPose());
-    //     RobotCommon.setFieldRelativeSpeeds(getChassisSpeedsFieldRel());
-    //     RobotCommon.setFutureRobotPose(getFuturePose(0.2));
-    // }
 
     public Pose2d getFuturePose(double dtSeconds) {
         return getPose().exp(new Twist2d(
@@ -465,6 +478,7 @@ public class Chassis extends SubsystemBase {
      * Stops all swerve modules immediately.
      */
     public void stop() {
+        targetVel = new ChassisSpeeds();
         for (SwerveModule i : modules) {
             i.stop();
         }
