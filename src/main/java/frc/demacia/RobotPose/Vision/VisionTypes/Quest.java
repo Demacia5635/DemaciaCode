@@ -1,6 +1,7 @@
 package frc.demacia.RobotPose.Vision.VisionTypes;
 
 import java.util.List;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Timer;
@@ -31,7 +32,8 @@ import gg.questnav.questnav.QuestNav;
  *
  * <p>Only the newest unread frame each loop is used, and only if it is tracking. Its
  * position is converted from the headset to the robot center with the config offset; the
- * heading is copied from the estimate at the frame's time.
+ * heading is copied from the estimate at the frame's time, so only x/y are measured (theta
+ * is sent with an infinite std dev, like the Limelights).
  */
 public class Quest extends BaseVisionSource {
     private final QuestNav questNav;
@@ -89,12 +91,14 @@ public class Quest extends BaseVisionSource {
     }
 
     /**
-     * @return The measurement from this loop's newest frame, with the config std devs
-     *         (including theta). Only valid when {@link #shouldUpdate()} is true.
+     * @return The measurement from this loop's newest frame, with the config x/y std devs.
+     *         The theta std dev is infinite because the heading was copied from the
+     *         estimate, not measured. Only valid when {@link #shouldUpdate()} is true.
      */
     @Override
     public List<TimestampedVisionMeasurement> getPoseEstimates() {
-        return List.of(new TimestampedVisionMeasurement(pose, timestampSeconds, std));
+        return List.of(new TimestampedVisionMeasurement(pose, timestampSeconds,
+                VecBuilder.fill(std.get(0, 0), std.get(1, 0), Double.POSITIVE_INFINITY)));
     }
 
     @Override
