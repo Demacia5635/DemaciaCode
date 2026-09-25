@@ -101,7 +101,7 @@ public class SwerveModule {
         if(Math.abs(positionRadians - steerMotor.getCurrentPosition()) <= Math.toRadians(0.5) ) steerMotor.setDuty(0);
         steerMotor.setPositionVoltage(positionRadians);
         
-        if (driveMotor.getCurrentControlMode() == ControlMode.DISABLE){
+        if (driveStop){
             driveMotor.setVoltage(-config.steerVelToDriveVel * steerMotor.getCurrentVoltage());
         }
     }
