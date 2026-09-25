@@ -9,7 +9,7 @@ import frc.robot.RobotContainer;
 import static frc.robot.intake.IntakeConstants.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.intake.commands.IntakeDeployCalibrationCommand;
-import static frc.robot.intake.IntakeConstants.RollersConstants.*;
+import static frc.robot.intake.IntakeConstants.IntakeRollersConstants.*;
 import static frc.robot.intake.IntakeConstants.IntakeDeployConstants.*;
 import static frc.robot.intake.IntakeConstants.IntakeDeployMaxLimitSwitchConstants.*;
 
@@ -19,7 +19,7 @@ public class Intake extends StateBaseMechanism {
     private Intake() {
         super(INTAKE_NAME, 
         new MotorInterface[] {
-            new TalonFXMotor(ROLLERS_CONFIG),
+            new TalonFXMotor(INTAKE_ROLLERS_CONFIG),
             new TalonFXMotor(INTAKE_DEPLOY_CONFIG),
         }, 
         new SensorInterface[] {
@@ -41,7 +41,7 @@ public class Intake extends StateBaseMechanism {
     }
 
     public void setRollersPower(double power) {
-        setPower(ROLLERS_NAME, power);
+        setPower(INTAKE_ROLLERS_NAME, power);
     }
 
     public void setIntakeDeployPower(double power) {

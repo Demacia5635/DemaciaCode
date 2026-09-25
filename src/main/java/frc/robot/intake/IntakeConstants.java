@@ -8,22 +8,21 @@ import frc.demacia.utils.sensors.LimitSwitchConfig;
 public class IntakeConstants {
     public static final String INTAKE_NAME = "intake";
 
-    public static final class RollersConstants {
-        public static final String ROLLERS_NAME = "rollers";
-        public static final int ROLLERS_ID = 0; // TODO
-        public static final Canbus ROLLERS_CANBUS = Canbus.Rio; // TODO
-        public static final boolean ROLLERS_BRAKE = false;
-        public static final boolean ROLLERS_INVERT = false;
+    public static final class IntakeRollersConstants {
+        public static final String INTAKE_ROLLERS_NAME = "rollers";
+        public static final int INTAKE_ROLLERS_ID = 30; // TODO
+        public static final Canbus INTAKE_ROLLERS_CANBUS = Canbus.Rio; // TODO
+        public static final boolean INTAKE_ROLLERS_BRAKE = false;
+        public static final boolean INTAKE_ROLLERS_INVERT = false;
 
-        public static final TalonFXConfig ROLLERS_CONFIG = new TalonFXConfig(ROLLERS_NAME, ROLLERS_ID, ROLLERS_CANBUS)
-            .withBrake(ROLLERS_BRAKE)
-            .withInvert(ROLLERS_INVERT);
-
+        public static final TalonFXConfig INTAKE_ROLLERS_CONFIG = new TalonFXConfig(INTAKE_ROLLERS_NAME, INTAKE_ROLLERS_ID, INTAKE_ROLLERS_CANBUS)
+            .withBrake(INTAKE_ROLLERS_BRAKE)
+            .withInvert(INTAKE_ROLLERS_INVERT);
     }
 
     public static final class IntakeDeployConstants {
         public static final String INTAKE_DEPLOY_NAME = "intake Deploy";
-        public static final int INTAKE_DEPLOY_ID = 0; // TODO
+        public static final int INTAKE_DEPLOY_ID = 31; // TODO
         public static final Canbus INTAKE_DEPLOY_CANBUS = Canbus.Rio;
         public static final boolean INTAKE_DEPLOY_BRAKE = true;
         public static final boolean INTAKE_DEPLOY_INVERT = false;

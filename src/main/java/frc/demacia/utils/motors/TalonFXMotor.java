@@ -34,6 +34,8 @@ public class TalonFXMotor extends BaseMotor {
   private MotionMagicVoltage motionMagicVoltage;
   private PositionVoltage positionVoltage;
 
+  private double simOffset = 0.0;
+
   /**
    * Creates a new TalonFX motor wrapper.
    * 
@@ -57,7 +59,7 @@ public class TalonFXMotor extends BaseMotor {
         double pos = getCurrentPosition();
     
         double newPos = pos + vel * 0.02;
-        double newPosRot = newPos * config.motorRatio * (config.inverted ? -1 : 1);
+        double newPosRot = toSimValue(newPos - simOffset);
 
         motor.getSimState().setRawRotorPosition(newPosRot);
         return 0;
@@ -190,7 +192,7 @@ public class TalonFXMotor extends BaseMotor {
     motor.setControl(dutyCycle.withOutput(power));
 
     if (RobotBase.isSimulation()) {
-      motor.getSimState().setRotorVelocity(power * MAX_SIM_VEL * config.motorRatio * (config.inverted ? -1 : 1));
+      motor.getSimState().setRotorVelocity(toSimValue(power * MAX_SIM_VEL));
     }
   }
 
@@ -199,7 +201,7 @@ public class TalonFXMotor extends BaseMotor {
 
     if (RobotBase.isSimulation()) {
       double power = voltage / 12.0;
-      motor.getSimState().setRotorVelocity(power * MAX_SIM_VEL * config.motorRatio * (config.inverted ? -1 : 1));
+      motor.getSimState().setRotorVelocity(toSimValue(power * MAX_SIM_VEL));
     }
   }
 
@@ -207,7 +209,7 @@ public class TalonFXMotor extends BaseMotor {
     motor.setControl(velocityVoltage.withVelocity(velocity).withFeedForward(feedForward));
 
     if (RobotBase.isSimulation()) {
-      motor.getSimState().setRotorVelocity(velocity * config.motorRatio * (config.inverted ? -1 : 1));
+      motor.getSimState().setRotorVelocity(toSimValue(velocity));
     }
   }
 
@@ -215,7 +217,7 @@ public class TalonFXMotor extends BaseMotor {
     motor.setControl(positionVoltage.withPosition(position).withFeedForward(feedForward));
 
     if (RobotBase.isSimulation()) {
-      motor.getSimState().setRawRotorPosition(position * config.motorRatio * (config.inverted ? -1 : 1));
+      motor.getSimState().setRawRotorPosition(toSimValue(position - simOffset));
     }
   }
 
@@ -223,8 +225,12 @@ public class TalonFXMotor extends BaseMotor {
     motor.setControl(motionMagicVoltage.withPosition(position).withFeedForward(feedForward));
 
     if (RobotBase.isSimulation()) {
-      motor.getSimState().setRawRotorPosition(position * config.motorRatio * (config.inverted ? -1 : 1));
+      motor.getSimState().setRawRotorPosition(toSimValue(position - simOffset));
     }
+  }
+
+  private double toSimValue(double value) {
+    return value * config.motorRatio * (config.inverted ? -1 : 1);
   }
 
   @Override
@@ -243,5 +249,9 @@ public class TalonFXMotor extends BaseMotor {
   @Override
   public void setEncoderPosition(double position) {
     motor.setPosition(position);
+
+    if (RobotBase.isSimulation()) {
+      simOffset = position - getCurrentPosition();
+    }
   }
 }

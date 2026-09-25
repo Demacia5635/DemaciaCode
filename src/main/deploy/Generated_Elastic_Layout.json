@@ -1273,6 +1273,322 @@
         "containers": [
           {
             "type": "Boolean Box",
+            "title": "1",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/1/is Connected",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "type": "ComboBox Chooser",
+            "title": "Value Control",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/1/Value Control Mode Chooser",
+              "period": 0.06
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Values",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/1/test Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Number Slider",
+            "title": "value",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/1/test Value",
+              "period": 0.06,
+              "data_type": "double", "update_continuously": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Run",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/1/test value command",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Current Values",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/1/current value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "2",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/2/is Connected",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "type": "ComboBox Chooser",
+            "title": "Value Control",
+            "x": 128.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/2/Value Control Mode Chooser",
+              "period": 0.06
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Values",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/2/test Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Number Slider",
+            "title": "value",
+            "x": 384.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/2/test Value",
+              "period": 0.06,
+              "data_type": "double", "update_continuously": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Run",
+            "x": 640.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/2/test value command",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Current Values",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/2/current value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "3",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/3/is Connected",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "type": "ComboBox Chooser",
+            "title": "Value Control",
+            "x": 128.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/3/Value Control Mode Chooser",
+              "period": 0.06
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Values",
+            "x": 256.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/3/test Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Number Slider",
+            "title": "value",
+            "x": 384.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/3/test Value",
+              "period": 0.06,
+              "data_type": "double", "update_continuously": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Run",
+            "x": 640.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/3/test value command",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Current Values",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/3/current value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "4",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/4/is Connected",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "type": "ComboBox Chooser",
+            "title": "Value Control",
+            "x": 128.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/4/Value Control Mode Chooser",
+              "period": 0.06
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Values",
+            "x": 256.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/4/test Value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Number Slider",
+            "title": "value",
+            "x": 384.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/4/test Value",
+              "period": 0.06,
+              "data_type": "double", "update_continuously": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Run",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/4/test value command",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Current Values",
+            "x": 768.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/Log/motors/4/current value",
+              "period": 0.06,
+              "data_type": "double", "show_submit_button": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Tuner 6",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "type": "Boolean Box",
             "title": "Front Left Cancoder",
             "x": 0.0,
             "y": 0.0,
@@ -5450,6 +5766,948 @@
                 "type": "Toggle Button",
                 "properties": {
                   "topic": "/SmartDashboard/motors/feeder/PID+FF config slot 0/Update",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              }
+            ]
+          }
+        ],
+        "containers": [
+          {
+            "type": "Command",
+            "title": "sysid Command",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/sysID/sysidCommand",
+              "period": 0.06,
+              "show_type": true, "maximize_button_space": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Sysid 5",
+      "grid_layout": {
+        "layouts": [
+          {
+            "type": "List Layout",
+            "title": "1",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 512.0,
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "KP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/KP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/KI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/KD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/USE_KS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/KS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/USE_KV",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/KV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/USE_KA",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/KA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/USE_KG",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/KG",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/USE_KCOS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/KCOS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/USE_KV2",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/KV2",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Update",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Button",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/1/PID+FF config slot 0/Update",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              }
+            ]
+          },
+          {
+            "type": "List Layout",
+            "title": "2",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 512.0,
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "KP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/KP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/KI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/KD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/USE_KS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/KS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/USE_KV",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/KV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/USE_KA",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/KA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/USE_KG",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/KG",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/USE_KCOS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/KCOS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/USE_KV2",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/KV2",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Update",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Button",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/2/PID+FF config slot 0/Update",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              }
+            ]
+          },
+          {
+            "type": "List Layout",
+            "title": "3",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 512.0,
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "KP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/KP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/KI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/KD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/USE_KS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/KS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/USE_KV",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/KV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/USE_KA",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/KA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/USE_KG",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/KG",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/USE_KCOS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/KCOS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/USE_KV2",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/KV2",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Update",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Button",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/3/PID+FF config slot 0/Update",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              }
+            ]
+          },
+          {
+            "type": "List Layout",
+            "title": "4",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 512.0,
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "KP",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/KP",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KI",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/KI",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "KD",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/KD",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/USE_KS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/KS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/USE_KV",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/KV",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/USE_KA",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KA",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/KA",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/USE_KG",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KG",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/KG",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/USE_KCOS",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KCOS",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/KCOS",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "USE_KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Switch",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/USE_KV2",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "KV2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/KV2",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Update",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Toggle Button",
+                "properties": {
+                  "topic": "/SmartDashboard/motors/4/PID+FF config slot 0/Update",
                   "period": 0.06,
                   "data_type": "boolean"
                 }

@@ -11,7 +11,7 @@ public class ShooterConstants {
 
     public static final class FlywheelConstants {
         public static final String FLYWHEEL_NAME = "flywheel";
-        public static final int FLYWHEEL_ID = 0; // TODO
+        public static final int FLYWHEEL_ID = 60; // TODO
         public static final Canbus FLYWHEEL_CANBUS = Canbus.Rio; // TODO
         public static final boolean FLYWHEEL_BRAKE = false;
         public static final boolean FLYWHEEL_INVERT = false;
@@ -39,7 +39,7 @@ public class ShooterConstants {
 
     public static final class HoodConstants {
         public static final String HOOD_NAME = "hood";
-        public static final int HOOD_ID = 0; // TODO
+        public static final int HOOD_ID = 61; // TODO
         public static final Canbus HOOD_CANBUS = Canbus.Rio; // TODO
         public static final boolean HOOD_BRAKE = true;
         public static final boolean HOOD_INVERT = false;

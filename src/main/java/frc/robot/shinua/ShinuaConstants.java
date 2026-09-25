@@ -9,7 +9,7 @@ public class ShinuaConstants {
 
     public static final class RollersConstants {
         public static final String ROLLERS_NAME = "rollers";
-        public static final int ROLLERS_ID = 0; // TODO
+        public static final int ROLLERS_ID = 40; // TODO
         public static final Canbus ROLLERS_CANBUS = Canbus.Rio; // TODO
         public static final boolean ROLLERS_BRAKE = false;
         public static final boolean ROLLERS_INVERT = false;
@@ -22,7 +22,7 @@ public class ShinuaConstants {
 
     public static final class MechanomConstants {
         public static final String MECHANOM_NAME = "mechanom";
-        public static final int MECHANOM_ID = 0; // TODO
+        public static final int MECHANOM_ID = 41; // TODO
         public static final Canbus MECHANOM_CANBUS = Canbus.Rio; // TODO
         public static final boolean MECHANOM_BRAKE = false;
         public static final boolean MECHANOM_INVERT = false;

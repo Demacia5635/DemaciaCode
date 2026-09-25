@@ -11,7 +11,7 @@ public class TurretConstants {
 
     public static final class TurretMotorConstants {
         public static final String TURRET_MOTOR_NAME = "turret motor";
-        public static final int TURRET_MOTOR_ID = 0; // TODO
+        public static final int TURRET_MOTOR_ID = 50; // TODO
         public static final Canbus TURRET_MOTOR_CANBUS = Canbus.Rio; // TODO
         public static final boolean TURRET_MOTOR_BRAKE = true;
         public static final boolean TURRET_MOTOR_INVERT = false;
