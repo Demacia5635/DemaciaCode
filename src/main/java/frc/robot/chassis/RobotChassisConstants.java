@@ -3,6 +3,7 @@ package frc.robot.chassis;
 import org.ejml.simple.SimpleMatrix;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -63,6 +64,19 @@ public class RobotChassisConstants {
   public static final Matrix<N3, N1> stateStd = new Matrix<>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 }));
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);
+
+  /**
+   * Where the roboRIO is relative to the robot center (meters, x forward, y left). Its
+   * accelerometer is used for collision detection, and spinning makes an off-center roboRIO read
+   * w^2 * r (up to ~3 g at 20 cm). TODO measure.
+   */
+  public static final Translation2d ROBORIO_POSITION = new Translation2d(0, 0);
+  /**
+   * How the roboRIO is turned on the robot (it must lie flat, label up): the angle from the
+   * robot's forward direction to the roboRIO accelerometer's X axis, counter-clockwise positive.
+   * TODO check: lifting the robot's front must make "pose/acceleration x g" go positive.
+   */
+  public static final Rotation2d ROBORIO_YAW = Rotation2d.kZero;
 
   public static final ChassisConfig CHASSIS_CONFIG = new ChassisConfig(
       NAME,

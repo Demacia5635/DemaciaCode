@@ -48,15 +48,16 @@ public class DemaciaPoseEstimator {
     public static final double HISTORY_LENGTH_SECONDS = 1.5;
 
     /**
-     * Horizontal IMU acceleration (m/s^2) above which the robot was hit. Driving can't get past
-     * about 1.2 g (traction), hits are 5-40 g and the Pigeon clips them at 2 g.
-     * TODO tune from logs ("pose/acceleration g"); an IMU far from the robot center also reads
-     * w^2 * r when spinning.
+     * Horizontal acceleration (m/s^2) above which the robot was hit. Driving can't get past about
+     * 1.2 g (traction), hits are 5-40 g (the roboRIO accelerometer reads up to 8 g). 3 g leaves
+     * room for tilt (0.26 g on the 15 deg bump) and turning the robot hard.
+     * TODO tune from logs ("pose/acceleration g").
      */
-    public static final double COLLISION_ACCELERATION = 1.8 * 9.81;
+    public static final double COLLISION_ACCELERATION = 3 * 9.81;
     /**
      * How long after the last hit sample the collision lasts (seconds): the wheels take ~25 ms
-     * to spin down after the robot stops, plus one Pigeon frame the loop didn't read.
+     * to spin down after the robot stops, plus about one loop, since the accelerometer is read
+     * once per loop.
      */
     public static final double COLLISION_HOLD_SECONDS = 0.06;
 
@@ -122,12 +123,13 @@ public class DemaciaPoseEstimator {
         double timestamp = Timer.getFPGATimestamp();
         Twist2d twist = odometry.updateOdometry(odometryData.gyroAngle(), odometryData.swerveModules());
 
-        Translation2d accelerationFromGyro = odometryData.accelerationFromGyro();
-        if (accelerationFromGyro.getNorm() > COLLISION_ACCELERATION) {
+        Translation2d accelerationFromRoboRio = odometryData.accelerationFromRoboRio();
+        if (accelerationFromRoboRio.getNorm() > COLLISION_ACCELERATION) {
             if (timestamp - lastHitTime >= COLLISION_HOLD_SECONDS) {
                 // A new collision. Later samples of the same hit are the chassis ringing and can
                 // point anywhere, so the direction is only taken here.
-                hitDirection = accelerationFromGyro.rotateBy(odometryData.gyroAngle()).div(accelerationFromGyro.getNorm());
+                hitDirection = accelerationFromRoboRio.rotateBy(odometryData.gyroAngle())
+                        .div(accelerationFromRoboRio.getNorm());
             }
             lastHitTime = timestamp;
         }
@@ -304,16 +306,16 @@ public class DemaciaPoseEstimator {
     /**
      * One odometry sample.
      *
-     * @param gyroAngle            Raw gyro heading.
-     * @param swerveModules        Module positions (total distance driven + wheel angle), same
-     *                             order as the module locations.
-     * @param accelerationFromGyro Horizontal acceleration from the gyro (Pigeon), robot relative
-     *                             (x forward, y left, m/s^2, gravity included).
-     *                             {@code Translation2d.kZero} if there is no trustworthy reading
-     *                             (collision detection is then off).
+     * @param gyroAngle               Raw gyro heading.
+     * @param swerveModules           Module positions (total distance driven + wheel angle),
+     *                                same order as the module locations.
+     * @param accelerationFromRoboRio Horizontal acceleration of the robot from the roboRIO's
+     *                                built-in accelerometer, robot relative (x forward, y left,
+     *                                m/s^2), with the part caused by spinning removed.
+     *                                {@code Translation2d.kZero} turns collision detection off.
      */
     public record OdometryData(Rotation2d gyroAngle, SwerveModulePosition[] swerveModules,
-            Translation2d accelerationFromGyro) {
+            Translation2d accelerationFromRoboRio) {
     }
 
     /** One vision measurement waiting in the history. */
