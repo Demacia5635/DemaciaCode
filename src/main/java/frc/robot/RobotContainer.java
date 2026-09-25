@@ -1,5 +1,4 @@
 package frc.robot;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -10,8 +9,6 @@ import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.RobotPose.Estimation.DemaciaPoseEstimator.OdometryData;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
-import edu.wpi.first.wpilibj.BuiltInAccelerometer;
-import edu.wpi.first.wpilibj.BuiltInAccelerometer.Range;
 import frc.robot.chassis.RobotChassisConstants;
 import frc.robot.intake.subsystems.Intake;
 import frc.robot.intake.commands.IntakeCommand;
@@ -41,8 +38,6 @@ public class RobotContainer implements Sendable {
   private Turret turret;
   private Shooter shooter;
   public static DriveCommand driveCommand;
-  /** Used for collision detection in odometry, see {@link #getAccelerationFromRoboRio()}. */
-  private final BuiltInAccelerometer roboRioAccelerometer = new BuiltInAccelerometer(Range.k8G);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -57,7 +52,7 @@ public class RobotContainer implements Sendable {
     // shooter = Shooter.getInstance();
 
     RobotPose.initialize(
-      ()->new OdometryData(Chassis.getInstance().getGyroAngle(), Chassis.getInstance().getModulePositions(), getAccelerationFromRoboRio()),
+      ()->new OdometryData(Chassis.getInstance().getGyroAngle(), Chassis.getInstance().getModulePositions()), 
       Chassis.getInstance().getModulePositions(), 
       Chassis.getInstance().getModuleLocations(), 
       RobotChassisConstants.stateStd, 
@@ -66,28 +61,6 @@ public class RobotContainer implements Sendable {
     configureBindings();
     setDefaultCommands();
     setController();
-  }
-
-  /**
-   * Horizontal acceleration of the robot (robot relative, m/s^2) for collision detection, from
-   * the roboRIO's built-in accelerometer.
-   *
-   * <p>Why the roboRIO and not the Pigeon: the roboRIO reads up to 8 g, the Pigeon's acceleration
-   * signal stops at 2 g, so every hit read the same ~2 g and the threshold had to sit close to
-   * normal driving. The roboRIO is also read right now in the loop (the Pigeon's value comes over
-   * CAN, up to 10 ms old) and can't disconnect and leave a stale value. Its downside is that it's
-   * usually not at the robot center, so the w^2 * r it reads while spinning is removed here (see
-   * {@link RobotChassisConstants#ROBORIO_POSITION}).
-   *
-   * <p>In simulation it reads 0, so no collisions are detected there.
-   */
-  private Translation2d getAccelerationFromRoboRio() {
-    Translation2d measured = new Translation2d(roboRioAccelerometer.getX(), roboRioAccelerometer.getY())
-        .times(9.81)
-        .rotateBy(RobotChassisConstants.ROBORIO_YAW);
-    // Spinning at w pulls a point at r toward the center with w^2 * r. That isn't a hit.
-    double yawRate = Chassis.getInstance().getGyroAngularVelocity();
-    return measured.plus(RobotChassisConstants.ROBORIO_POSITION.times(yawRate * yawRate));
   }
 
   private void configureBindings() {

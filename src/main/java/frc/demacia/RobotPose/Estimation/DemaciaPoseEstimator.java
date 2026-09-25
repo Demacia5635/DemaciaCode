@@ -118,12 +118,17 @@ public class DemaciaPoseEstimator {
      *
      * <p>Not fixed here (only vision can): being shoved while stopped, pushing that goes on
      * after the hit (no acceleration left to see), and hits shorter than the samples we read.
+     *
+     * @param odometryData            This loop's gyro and module readings.
+     * @param accelerationFromRoboRio Horizontal acceleration of the robot from the roboRIO's
+     *                                built-in accelerometer, robot relative (x forward, y left,
+     *                                m/s^2), with the part caused by spinning removed.
+     *                                {@code Translation2d.kZero} turns collision detection off.
      */
-    public void addOdometryData(OdometryData odometryData) {
+    public void addOdometryData(OdometryData odometryData, Translation2d accelerationFromRoboRio) {
         double timestamp = Timer.getFPGATimestamp();
         Twist2d twist = odometry.updateOdometry(odometryData.gyroAngle(), odometryData.swerveModules());
 
-        Translation2d accelerationFromRoboRio = odometryData.accelerationFromRoboRio();
         if (accelerationFromRoboRio.getNorm() > COLLISION_ACCELERATION) {
             if (timestamp - lastHitTime >= COLLISION_HOLD_SECONDS) {
                 // A new collision. Later samples of the same hit are the chassis ringing and can
@@ -306,16 +311,11 @@ public class DemaciaPoseEstimator {
     /**
      * One odometry sample.
      *
-     * @param gyroAngle               Raw gyro heading.
-     * @param swerveModules           Module positions (total distance driven + wheel angle),
-     *                                same order as the module locations.
-     * @param accelerationFromRoboRio Horizontal acceleration of the robot from the roboRIO's
-     *                                built-in accelerometer, robot relative (x forward, y left,
-     *                                m/s^2), with the part caused by spinning removed.
-     *                                {@code Translation2d.kZero} turns collision detection off.
+     * @param gyroAngle     Raw gyro heading.
+     * @param swerveModules Module positions (total distance driven + wheel angle), same order
+     *                      as the module locations.
      */
-    public record OdometryData(Rotation2d gyroAngle, SwerveModulePosition[] swerveModules,
-            Translation2d accelerationFromRoboRio) {
+    public record OdometryData(Rotation2d gyroAngle, SwerveModulePosition[] swerveModules) {
     }
 
     /** One vision measurement waiting in the history. */

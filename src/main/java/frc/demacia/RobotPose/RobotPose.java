@@ -10,6 +10,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
+import edu.wpi.first.wpilibj.BuiltInAccelerometer.Range;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.demacia.RobotPose.Estimation.DemaciaPoseEstimator;
@@ -27,9 +29,9 @@ import frc.demacia.utils.log.Log;
  *
  * <p>Every loop {@link #periodic()} feeds the {@link DemaciaPoseEstimator} with:
  * <ol>
- * <li>one odometry sample (gyro + swerve module positions + roboRIO acceleration, which the
- * estimator uses to detect collisions) from the supplier passed to
- * {@link #initialize}, and</li>
+ * <li>one odometry sample (gyro + swerve module positions) from the supplier passed to
+ * {@link #initialize}, with the roboRIO's acceleration, which the estimator uses to detect
+ * collisions (see {@link #getAccelerationFromRoboRio()}), and</li>
  * <li>every new measurement from the {@link VisionSource}s in the {@link VisionConfig}.</li>
  * </ol>
  *
@@ -45,11 +47,24 @@ import frc.demacia.utils.log.Log;
  */
 public final class RobotPose {
 
+    /**
+     * How the roboRIO is mounted (its accelerometer is used for collision detection).
+     * TODO check the X direction on the robot, see {@link RoboRioOrientation}.
+     */
+    public static final RoboRioOrientation ROBORIO_ORIENTATION = RoboRioOrientation.LABEL_LEFT_X_FRONT;
+    /**
+     * Where the roboRIO is relative to the robot center (meters, x forward, y left). Spinning
+     * makes an off-center roboRIO read w^2 * r (up to ~3 g at 20 cm), which is removed using this.
+     * TODO measure.
+     */
+    public static final Translation2d ROBORIO_POSITION = Translation2d.kZero;
+
     private static RobotPose instance;
 
     private final DemaciaPoseEstimator poseEstimator;
-    /** Reads the gyro, module positions and roboRIO acceleration; called once per loop (and by {@link #getGyroAngle()}). */
+    /** Reads the gyro and module positions; called once per loop (and by {@link #getGyroAngle()}). */
     private final Supplier<OdometryData> odometryDataSupplier;
+    private final BuiltInAccelerometer roboRioAccelerometer = new BuiltInAccelerometer(Range.k8G);
     /**
      * Horizontal roboRIO acceleration of the last odometry sample, robot relative, in g (logged to
      * tune the collision threshold and check the roboRIO's mounting).
@@ -96,9 +111,9 @@ public final class RobotPose {
      * measurement is used.
      */
     public void periodic() {
-        OdometryData odometryData = odometryDataSupplier.get();
-        poseEstimator.addOdometryData(odometryData);
-        lastAccelerationG = odometryData.accelerationFromRoboRio().div(9.81);
+        Translation2d accelerationFromRoboRio = getAccelerationFromRoboRio();
+        poseEstimator.addOdometryData(odometryDataSupplier.get(), accelerationFromRoboRio);
+        lastAccelerationG = accelerationFromRoboRio.div(9.81);
 
         for (VisionSource source : sources) {
             source.periodic();
@@ -183,6 +198,28 @@ public final class RobotPose {
      */
     public Rotation2d getGyroAngle() {
         return odometryDataSupplier.get().gyroAngle();
+    }
+
+    /**
+     * Horizontal acceleration of the robot (robot relative, m/s^2) for collision detection, from
+     * the roboRIO's built-in accelerometer, turned to the robot by {@link #ROBORIO_ORIENTATION}.
+     *
+     * <p>Why the roboRIO and not the Pigeon: the roboRIO reads up to 8 g, the Pigeon's
+     * acceleration signal stops at 2 g, so every hit read the same ~2 g and the threshold had to
+     * sit close to normal driving. The roboRIO is also read right now in the loop (the Pigeon's
+     * value comes over CAN, up to 10 ms old) and can't disconnect and leave a stale value. Its
+     * downside is that it's usually not at the robot center, so the w^2 * r it reads while
+     * spinning is removed (see {@link #ROBORIO_POSITION}).
+     *
+     * <p>In simulation it reads 0, so no collisions are detected there.
+     */
+    private Translation2d getAccelerationFromRoboRio() {
+        Translation2d measured = ROBORIO_ORIENTATION.toRobotHorizontal(
+                roboRioAccelerometer.getX(), roboRioAccelerometer.getY(), roboRioAccelerometer.getZ())
+                .times(9.81);
+        // Spinning at w pulls a point at r toward the center with w^2 * r. That isn't a hit.
+        double yawRate = Chassis.getInstance().getGyroAngularVelocity();
+        return measured.plus(ROBORIO_POSITION.times(yawRate * yawRate));
     }
 
 
