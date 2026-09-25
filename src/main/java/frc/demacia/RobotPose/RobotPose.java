@@ -19,6 +19,7 @@ import frc.demacia.RobotPose.Vision.VisionConfig;
 import frc.demacia.RobotPose.Vision.VisionSource;
 import frc.demacia.RobotPose.Vision.VisionTypes.Quest;
 import frc.demacia.utils.chassis.Chassis;
+import frc.demacia.utils.log.Log;
 
 /**
  * The robot's field pose. This is the only class the rest of the robot code should use
@@ -26,7 +27,8 @@ import frc.demacia.utils.chassis.Chassis;
  *
  * <p>Every loop {@link #periodic()} feeds the {@link DemaciaPoseEstimator} with:
  * <ol>
- * <li>one odometry sample (gyro + swerve module positions) from the supplier passed to
+ * <li>one odometry sample (gyro + swerve module positions + IMU acceleration, which the
+ * estimator uses to detect collisions) from the supplier passed to
  * {@link #initialize}, and</li>
  * <li>every new measurement from the {@link VisionSource}s in the {@link VisionConfig}.</li>
  * </ol>
@@ -46,8 +48,10 @@ public final class RobotPose {
     private static RobotPose instance;
 
     private final DemaciaPoseEstimator poseEstimator;
-    /** Reads the gyro and module positions; called once per loop (and by {@link #getGyroAngle()}). */
+    /** Reads the gyro, module positions and IMU acceleration; called once per loop (and by {@link #getGyroAngle()}). */
     private final Supplier<OdometryData> odometryDataSupplier;
+    /** Horizontal IMU acceleration of the last odometry sample, in g (logged to tune the collision threshold). */
+    private double lastAccelerationG = 0;
     /** Every configured vision source, including the Quest if there is one. */
     private final List<VisionSource> sources;
 
@@ -65,6 +69,8 @@ public final class RobotPose {
                 new InstantCommand(() -> setYaw(Rotation2d.kZero)).ignoringDisable(true));
         SmartDashboard.putData("chassis/reset gyro 180",
                 new InstantCommand(() -> setYaw(Rotation2d.kPi)).ignoringDisable(true));
+        Log.putData("pose/colliding", poseEstimator::isColliding);
+        Log.putData("pose/acceleration g", () -> lastAccelerationG);
     }
 
     /**
@@ -85,7 +91,9 @@ public final class RobotPose {
      * measurement is used.
      */
     public void periodic() {
-        poseEstimator.addOdometryData(odometryDataSupplier.get());
+        OdometryData odometryData = odometryDataSupplier.get();
+        poseEstimator.addOdometryData(odometryData);
+        lastAccelerationG = odometryData.accelerationFromGyro().getNorm() / 9.81;
 
         for (VisionSource source : sources) {
             source.periodic();

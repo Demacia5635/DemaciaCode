@@ -47,7 +47,26 @@ public class DemaciaPoseEstimator {
      */
     public static final double HISTORY_LENGTH_SECONDS = 1.5;
 
+    /**
+     * Horizontal IMU acceleration (m/s^2) above which the robot was hit. Driving can't get past
+     * about 1.2 g (traction), hits are 5-40 g and the Pigeon clips them at 2 g.
+     * TODO tune from logs ("pose/acceleration g"); an IMU far from the robot center also reads
+     * w^2 * r when spinning.
+     */
+    public static final double COLLISION_ACCELERATION = 1.8 * 9.81;
+    /**
+     * How long after the last hit sample the collision lasts (seconds): the wheels take ~25 ms
+     * to spin down after the robot stops, plus one Pigeon frame the loop didn't read.
+     */
+    public static final double COLLISION_HOLD_SECONDS = 0.06;
+
     private final DemaciaOdometry odometry;
+
+    /** Time of the last sample over {@link #COLLISION_ACCELERATION}. */
+    private double lastHitTime = Double.NEGATIVE_INFINITY;
+    /** Unit vector (gyro frame) the collision pushed the robot toward, taken from its first sample. */
+    private Translation2d hitDirection = Translation2d.kZero;
+    private boolean colliding = false;
 
     /** Per-axis (x meters, y meters, theta radians) squared state std devs, used as the "q" term in the per-axis gain formula below. */
     private final double[] stateVarianceByAxis = new double[3];
@@ -87,12 +106,50 @@ public class DemaciaPoseEstimator {
     /**
      * Runs odometry with a new sample, stores its twist at the current FPGA time, and
      * replays the history. Call once per loop, before adding that loop's vision.
+     *
+     * <p><b>Collisions:</b> a sample with horizontal acceleration over
+     * {@link #COLLISION_ACCELERATION} is a hit, and the collision lasts until
+     * {@link #COLLISION_HOLD_SECONDS} after the last one. While colliding, the part of the wheel
+     * motion that goes into the hit is dropped: driving into a wall or robot, the wheels keep
+     * turning while the robot is stopped. Motion to the side of or away from the hit is kept
+     * (being hit from the side or behind, the wheels report too little, and dropping it would
+     * make that worse). The heading change from the gyro is always kept.
+     *
+     * <p>Not fixed here (only vision can): being shoved while stopped, pushing that goes on
+     * after the hit (no acceleration left to see), and hits shorter than the samples we read.
      */
     public void addOdometryData(OdometryData odometryData) {
         double timestamp = Timer.getFPGATimestamp();
         Twist2d twist = odometry.updateOdometry(odometryData.gyroAngle(), odometryData.swerveModules());
+
+        Translation2d accelerationFromGyro = odometryData.accelerationFromGyro();
+        if (accelerationFromGyro.getNorm() > COLLISION_ACCELERATION) {
+            if (timestamp - lastHitTime >= COLLISION_HOLD_SECONDS) {
+                // A new collision. Later samples of the same hit are the chassis ringing and can
+                // point anywhere, so the direction is only taken here.
+                hitDirection = accelerationFromGyro.rotateBy(odometryData.gyroAngle()).div(accelerationFromGyro.getNorm());
+            }
+            lastHitTime = timestamp;
+        }
+        colliding = timestamp - lastHitTime < COLLISION_HOLD_SECONDS;
+        if (colliding) {
+            twist = dropMotionIntoHit(twist, odometryData.gyroAngle());
+        }
+
         updates.put(timestamp, new PoseUpdate(twist, new ArrayList<>()));
         update();
+    }
+
+    /** Scales the twist's translation by 1 - (how much it points into the hit), in [0, 1]. */
+    private Twist2d dropMotionIntoHit(Twist2d twist, Rotation2d gyroAngle) {
+        Translation2d motion = new Translation2d(twist.dx, twist.dy).rotateBy(gyroAngle);
+        double length = motion.getNorm();
+        if (length == 0) {
+            return twist;
+        }
+        double intoHit = -(motion.getX() * hitDirection.getX() + motion.getY() * hitDirection.getY()) / length;
+        double scale = 1 - Math.max(0, intoHit);
+        return new Twist2d(twist.dx * scale, twist.dy * scale, twist.dtheta);
     }
 
     /**
@@ -198,6 +255,11 @@ public class DemaciaPoseEstimator {
         return latestPose;
     }
 
+    /** @return True while a collision is limiting the wheel translation. */
+    public boolean isColliding() {
+        return colliding;
+    }
+
     /**
      * Returns the estimated pose at a past timestamp: the history is replayed up to it and the
      * odometry twist that spans it is interpolated. Timestamps newer than the latest odometry
@@ -234,17 +296,24 @@ public class DemaciaPoseEstimator {
         updates.clear();
         initialPose = pose;
         latestPose = pose;
+        lastHitTime = Double.NEGATIVE_INFINITY;
+        colliding = false;
     }
 
 
     /**
      * One odometry sample.
      *
-     * @param gyroAngle     Raw gyro heading.
-     * @param swerveModules Module positions (total distance driven + wheel angle), same order
-     *                      as the module locations.
+     * @param gyroAngle            Raw gyro heading.
+     * @param swerveModules        Module positions (total distance driven + wheel angle), same
+     *                             order as the module locations.
+     * @param accelerationFromGyro Horizontal acceleration from the gyro (Pigeon), robot relative
+     *                             (x forward, y left, m/s^2, gravity included).
+     *                             {@code Translation2d.kZero} if there is no trustworthy reading
+     *                             (collision detection is then off).
      */
-    public record OdometryData(Rotation2d gyroAngle, SwerveModulePosition[] swerveModules) {
+    public record OdometryData(Rotation2d gyroAngle, SwerveModulePosition[] swerveModules,
+            Translation2d accelerationFromGyro) {
     }
 
     /** One vision measurement waiting in the history. */

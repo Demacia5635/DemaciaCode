@@ -1,4 +1,5 @@
 package frc.robot;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -9,6 +10,7 @@ import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.RobotPose.Estimation.DemaciaPoseEstimator.OdometryData;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
+import frc.demacia.utils.sensors.Pigeon;
 import frc.robot.chassis.RobotChassisConstants;
 import frc.robot.intake.subsystems.Intake;
 import frc.robot.intake.commands.IntakeCommand;
@@ -52,7 +54,7 @@ public class RobotContainer implements Sendable {
     // shooter = Shooter.getInstance();
 
     RobotPose.initialize(
-      ()->new OdometryData(Chassis.getInstance().getGyroAngle(), Chassis.getInstance().getModulePositions()), 
+      ()->new OdometryData(Chassis.getInstance().getGyroAngle(), Chassis.getInstance().getModulePositions(), getAccelerationFromGyro()),
       Chassis.getInstance().getModulePositions(), 
       Chassis.getInstance().getModuleLocations(), 
       RobotChassisConstants.stateStd, 
@@ -61,6 +63,19 @@ public class RobotContainer implements Sendable {
     configureBindings();
     setDefaultCommands();
     setController();
+  }
+
+  /**
+   * Pigeon horizontal acceleration (robot relative, m/s^2) for collision detection, or zero if
+   * the reading is more than 0.1 s old: a disconnected Pigeon keeps its last value, which could
+   * be a hit and would keep the robot "colliding".
+   */
+  private static Translation2d getAccelerationFromGyro() {
+    Pigeon gyro = Chassis.getInstance().gyro;
+    if (gyro.getAccelerationX(false).getTimestamp().getLatency() > 0.1) {
+      return Translation2d.kZero;
+    }
+    return new Translation2d(gyro.getXAcceleration(), gyro.getYAcceleration());
   }
 
   private void configureBindings() {
