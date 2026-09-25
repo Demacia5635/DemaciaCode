@@ -8,7 +8,7 @@ public class PneumaticsConfig {
     public final String name;
 
 
-    public PneumaticsConfig(int module, PneumaticsModuleType moduleType,String name) {
+    public PneumaticsConfig(String name, int module, PneumaticsModuleType moduleType) {
         this.module = module;
         this.moduleType = moduleType;
         this.name = name;

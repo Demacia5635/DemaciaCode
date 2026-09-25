@@ -20,6 +20,7 @@ import frc.demacia.utils.motors.MotorInterface;
  */
 public class CalibrationCommand extends Command {
   BaseMechanism mechanism;
+  String motorName;
   MotorInterface motor;
   double power;
   BooleanSupplier stopSupplier;
@@ -39,6 +40,7 @@ public class CalibrationCommand extends Command {
    */
   public CalibrationCommand(BaseMechanism mechanism, String motorName, double power, BooleanSupplier stopSupplier, double resetPos, double startPower, double sec) {
     this.mechanism = mechanism;
+    this.motorName = motorName;
     motor = mechanism.getMotor(motorName);
     this.power = power;
     this.stopSupplier = stopSupplier;
@@ -89,7 +91,7 @@ public class CalibrationCommand extends Command {
     timer.reset();
     motor.stop();
     motor.setEncoderPosition(resetPos);
-    mechanism.setCalibration(true);
+    mechanism.setCalibration(motorName, true);
   }
 
   // Returns true when the command should end.
