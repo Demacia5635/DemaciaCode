@@ -1,6 +1,11 @@
 package frc.robot.chassis;
 
+import org.ejml.simple.SimpleMatrix;
+
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import frc.demacia.utils.motors.TalonFXConfig;
 import frc.demacia.utils.chassis.ChassisConfig;
 import frc.demacia.utils.chassis.SwerveModuleConfig;
@@ -62,6 +67,10 @@ public class RobotCChassisConstants {
       modules,
       PIGEON_CONFIG);
 
+  public static final Matrix<N3, N1> STATE_STD = new Matrix<>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 })); 
+
+  public static final double METERS_FROM_360_DEGS = 0.2;
+
   public static final SwerveModuleConfig[] swerveModules(double[] offsets) {
     SwerveModuleConfig[] ans = new SwerveModuleConfig[4];
     for (int i = 0; i < 4; i++) {
@@ -88,7 +97,8 @@ public class RobotCChassisConstants {
               .withMeterMotor(DRIVE_GEAR_RATIO, WHEEL_DIAMETER),
           new CancoderConfig(name + " Cancoder", i * 3 + 3, CAN_BUS))
           .withPosion(MODULE_LOCATIONS[i])
-          .withSteerOffset(offsets[i]);
+          .withSteerOffset(offsets[i])
+          .withMetersFrom360Degs(METERS_FROM_360_DEGS);
     }
     return ans;
   }

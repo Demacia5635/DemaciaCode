@@ -1,8 +1,5 @@
 package frc.robot;
-import org.ejml.simple.SimpleMatrix;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -56,9 +53,9 @@ public class RobotContainer implements Sendable {
     shooter = Shooter.getInstance();
 
     RobotPose.initialize(
-      ()->new OdometryData(Chassis.getInstance().getGyroAngle(), new SwerveModulePosition[] {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()}), 
-      new SwerveModulePosition[] {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()}, 
-      new Matrix<>(new SimpleMatrix(new double[] { 0.0, 0.0, 0.0 })), 
+      ()->new OdometryData(Chassis.getInstance().getGyroAngle(), Chassis.getInstance().getModulePositions()), 
+      Chassis.getInstance().getModuleLocations(), 
+      RobotCChassisConstants.STATE_STD, 
       VisionConstants.visionConfig);
 
     configureBindings();
