@@ -2,7 +2,7 @@ package frc.demacia.utils.chassis;
 
 public enum Mk5nConstants {
     R1(7.03, 
-    0.16),
+        0.16),
     R2(6.03, 
         0.19),
     R3(5.72, 

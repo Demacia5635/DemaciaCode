@@ -42,6 +42,9 @@ public abstract class BaseMotor implements MotorInterface {
 
   private boolean[] kFlags = { true, true, true, false, false, false };
 
+  private Supplier<Double> displayPositionOverride = null;
+  private Supplier<Double> displayVelocityOverride = null;
+
   protected static final double MAX_SIM_VEL = 50;
 
   /**
@@ -109,6 +112,7 @@ public abstract class BaseMotor implements MotorInterface {
             velocitySignal,
             accelerationSignal,
             voltageSignal,
+            currentSignal, 
             closedLoopErrorSignal,
             closedLoopSPSignal },
         LogLevel.LOG_ONLY, "motors", false);
@@ -313,6 +317,23 @@ public abstract class BaseMotor implements MotorInterface {
     }
   }
 
+  public double getDisplayValue() {
+    ControlMode mode = getCurrentControlMode();
+
+    switch (mode) {
+      case VOLTAGE:
+        return getCurrentVoltage();
+      case VELOCITY:
+        return getDisplayVelocity();
+      case MAGIC_MOTION, POSITION_VOLTAGE:
+        return getDisplayPosition();
+      case ANGLE:
+        return getCurrentAngle();
+      default:
+        return 0.0;
+    }
+  }
+
   @Override
   public double getCurrentClosedLoopSP() {
     return closedLoopSPSignal.getDouble();
@@ -497,15 +518,15 @@ public abstract class BaseMotor implements MotorInterface {
     builder.setSmartDashboardType("Motor");
     builder.addBooleanProperty("Is Connected", this::isConnected, null);
     builder.addDoubleProperty("CloseLoopError", this::getCurrentClosedLoopError, null);
-    builder.addDoubleProperty("Position", this::getCurrentPosition, null);
-    builder.addDoubleProperty("Velocity", this::getCurrentVelocity, null);
+    builder.addDoubleProperty("Position", this::getDisplayPosition, null);
+    builder.addDoubleProperty("Velocity", this::getDisplayVelocity, null);
     builder.addDoubleProperty("Acceleration", this::getCurrentAcceleration, null);
     builder.addDoubleProperty("Voltage", this::getCurrentVoltage, null);
     builder.addDoubleProperty("Current", this::getCurrentCurrent, null);
     if (isRadiansMotor()) {
       builder.addDoubleProperty("Angle", this::getCurrentAngle, null);
     }
-    builder.addDoubleProperty("Value", this::getCurrentValue, null);
+    builder.addDoubleProperty("Value", this::getDisplayValue, null);
     builder.addDoubleProperty("ControlMode", this::getCurrentControlModeInteger, null);
     builder.addDoubleProperty("Wanted Value", this::getWantedValue, null);
 
@@ -539,6 +560,24 @@ public abstract class BaseMotor implements MotorInterface {
 
   public Data<?> getCurrentSignal() {
     return currentSignal;
+  }
+
+  @Override
+  public void setDisplayPositionOverride(Supplier<Double> displayPositionOverride) {
+      this.displayPositionOverride = displayPositionOverride;
+  }
+
+  @Override
+  public void setDisplayVelocityOverride(Supplier<Double> displayVelocityOverride) {
+      this.displayVelocityOverride = displayVelocityOverride;
+  }
+
+  private double getDisplayPosition() {
+      return displayPositionOverride != null ? displayPositionOverride.get() : getCurrentPosition();
+  }
+
+  private double getDisplayVelocity() {
+      return displayVelocityOverride != null ? displayVelocityOverride.get() : getCurrentVelocity();
   }
 
   protected abstract void createMotor();
