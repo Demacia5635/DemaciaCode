@@ -19,22 +19,22 @@ def number(x):
 
 
 max_module_velocity = constant(KINEMATICS, "MAX_ALLOWED_MODULE_VELOCITY")
-max_accel = constant(LIMITER, "MAX_ACCEL")
+motor_accel_from_stop = constant(LIMITER, "MOTOR_ACCEL_FROM_STOP")
 free_speed = constant(LIMITER, "FREE_SPEED")
-max_skid = constant(LIMITER, "MAX_SKID_ACCEL")
-max_tilt_front = constant(LIMITER, "MAX_TILT_ACCEL_FRONT")
+max_accel_before_slipping = constant(LIMITER, "MAX_ACCEL_BEFORE_SLIPPING")
+max_accel_before_tipping_front = constant(LIMITER, "MAX_ACCEL_BEFORE_TIPPING_FRONT")
 dt = constant(LIMITER, "MAX_DT")
 
 # straight line from rest, the same limits the limiter uses (one loop at a time)
 speed, time = 0.0, 0.0
 while speed < max_module_velocity - 1e-9 and time < 30:
-    accel = min(max_skid, max_tilt_front, max_accel * max(0.0, 1 - speed / free_speed))
+    accel = min(max_accel_before_slipping, max_accel_before_tipping_front, motor_accel_from_stop * max(0.0, 1 - speed / free_speed))
     if accel <= 0:
         break
     speed = min(max_module_velocity, speed + accel * dt)
     time += dt
 accel_time = number(time) if speed >= max_module_velocity - 1e-9 else "never (above FREE_SPEED)"
-stop_time = number(max_module_velocity / min(max_skid, max_tilt_front))
+stop_time = number(max_module_velocity / min(max_accel_before_slipping, max_accel_before_tipping_front))
 
 values = {
     "max-module-velocity": number(max_module_velocity),

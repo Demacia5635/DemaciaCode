@@ -9,7 +9,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
  * Limits how fast a swerve drive's velocity setpoint can change.
  *
  * <p>Each call to {@link #calculate} returns the velocity closest to the wanted one that the
- * skid, forward and tilt limits allow in the time since the previous call. Velocities are
+ * slipping, motor and tipping limits allow in the time since the previous call. Velocities are
  * field-relative. Omega is passed through.
  *
  * <p>The limiter only keeps the time of the last call. The caller keeps the last commanded
@@ -18,19 +18,19 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
  */
 public final class SwerveAccelerationLimiter {
     // Placeholders. Tune on the robot.
-    public static final double MAX_ACCEL = 10.0; // forward limit at rest [m/s^2]
+    public static final double MOTOR_ACCEL_FROM_STOP = 10.0; // how hard the motors speed the robot up from standing still, less as it goes faster [m/s^2]
     public static final double FREE_SPEED = 5.3; // where the drive motors run out of torque: Kraken X60 6000 rpm (no FOC) / 6.03 * 4" wheel [m/s]
-    public static final double MAX_SKID_ACCEL = 8.0; // traction limit [m/s^2]
-    public static final double MAX_TILT_ACCEL_FRONT = 12.0; // robot front/back [m/s^2]
-    public static final double MAX_TILT_ACCEL_SIDE = 12.0; // robot left/right [m/s^2]
+    public static final double MAX_ACCEL_BEFORE_SLIPPING = 8.0; // more than this and the wheels slip, any direction [m/s^2]
+    public static final double MAX_ACCEL_BEFORE_TIPPING_FRONT = 12.0; // more than this along the robot's front/back and it tips [m/s^2]
+    public static final double MAX_ACCEL_BEFORE_TIPPING_SIDE = 12.0; // more than this to the robot's left/right and it tips [m/s^2]
     public static final double MAX_DT = 0.02; // one loop: a slow loop still moves at most one step [s]
     private static final double TOLERANCE = 1e-12; // rounding allowed when checking a limit [m/s]
 
     private double lastTime = MathSharedStore.getTimestamp();
 
     /**
-     * Returns the next velocity setpoint: the velocity closest to {@code wanted} that the skid,
-     * forward and tilt limits allow from {@code lastCommanded} in the time since the previous call.
+     * Returns the next velocity setpoint: the velocity closest to {@code wanted} that the slipping,
+     * motor and tipping limits allow from {@code lastCommanded} in the time since the previous call.
      *
      * @param wanted field-relative target speeds [m/s, rad/s]
      * @param lastCommanded field-relative speeds sent last loop (after desaturation)
@@ -47,12 +47,14 @@ public final class SwerveAccelerationLimiter {
     /** Same as {@link #calculate(ChassisSpeeds, ChassisSpeeds, Rotation2d)} with a given dt [s]. */
     static ChassisSpeeds calculate(ChassisSpeeds wanted, ChassisSpeeds lastCommanded, Rotation2d heading, double dt) {
         return calculate(wanted, lastCommanded, heading, dt,
-                MAX_ACCEL, FREE_SPEED, MAX_SKID_ACCEL, MAX_TILT_ACCEL_FRONT, MAX_TILT_ACCEL_SIDE);
+                MOTOR_ACCEL_FROM_STOP, FREE_SPEED, MAX_ACCEL_BEFORE_SLIPPING,
+                MAX_ACCEL_BEFORE_TIPPING_FRONT, MAX_ACCEL_BEFORE_TIPPING_SIDE);
     }
 
     /** The limiter with given limits, so they can be tested with other values than the constants. */
     static ChassisSpeeds calculate(ChassisSpeeds wanted, ChassisSpeeds lastCommanded, Rotation2d heading, double dt,
-            double maxAccel, double freeSpeed, double maxSkidAccel, double maxTiltFront, double maxTiltSide) {
+            double motorAccelFromStop, double freeSpeed, double maxAccelBeforeSlipping,
+            double maxAccelBeforeTippingFront, double maxAccelBeforeTippingSide) {
         dt = Math.min(dt, MAX_DT);
 
         // NaN or infinite velocities: stop, instead of returning NaN.
@@ -63,28 +65,28 @@ public final class SwerveAccelerationLimiter {
         Translation2d wantedChange = target.minus(velocity);
         if (!(dt > 0) || wantedChange.getNorm() == 0) return toSpeeds(velocity, omega); // nothing to do
 
-        // Unknown heading: the tilt axes are unknown, so use the smaller tilt limit on both.
+        // Unknown heading: the robot's front/side are unknown, so use the smaller tipping limit on both.
         if (!Double.isFinite(heading.getRadians())) {
             heading = Rotation2d.kZero;
-            maxTiltFront = maxTiltSide = Math.min(maxTiltFront, maxTiltSide);
+            maxAccelBeforeTippingFront = maxAccelBeforeTippingSide = Math.min(maxAccelBeforeTippingFront, maxAccelBeforeTippingSide);
         }
 
         // Every limit is a set of allowed velocity changes c (field-relative, for this loop):
-        // 1. Skid: |c| <= MAX_SKID_ACCEL * dt, a disk around 0.
-        // 2. Forward: the speed can grow by at most MAX_ACCEL * (1 - speed / FREE_SPEED) * dt.
+        // 1. Slipping: |c| <= MAX_ACCEL_BEFORE_SLIPPING * dt, a disk around 0.
+        // 2. Motors: the speed can grow by at most MOTOR_ACCEL_FROM_STOP * (1 - speed / FREE_SPEED) * dt.
         //    |velocity + c| <= speed + maxSpeedUp, a disk around -velocity. Braking and turning
-        //    are free here (skid and tilt still limit them). This caps the new speed itself, so a
+        //    are free here (slipping and tipping still limit them). This caps the new speed itself, so a
         //    step to the side can't add speed either (the step is a chord of the turn, not the arc).
-        // 3. Tilt: |c along the robot's front| <= MAX_TILT_ACCEL_FRONT * dt, and the same for the
+        // 3. Tipping: |c along the robot's front| <= MAX_ACCEL_BEFORE_TIPPING_FRONT * dt, and the same for the
         //    side: a box turned with the robot, 4 half-planes.
         double speed = velocity.getNorm();
-        double maxSpeedUp = maxAccel * Math.max(0, 1 - speed / freeSpeed) * dt;
+        double maxSpeedUp = motorAccelFromStop * Math.max(0, 1 - speed / freeSpeed) * dt;
         Translation2d front = new Translation2d(heading.getCos(), heading.getSin());
         Translation2d side = new Translation2d(-heading.getSin(), heading.getCos());
-        double maxFront = maxTiltFront * dt, maxSide = maxTiltSide * dt;
+        double maxFront = maxAccelBeforeTippingFront * dt, maxSide = maxAccelBeforeTippingSide * dt;
 
         Disk[] disks = {
-                new Disk(new Translation2d(), maxSkidAccel * dt),
+                new Disk(new Translation2d(), maxAccelBeforeSlipping * dt),
                 new Disk(velocity.unaryMinus(), speed + maxSpeedUp) };
         HalfPlane[] halfPlanes = {
                 new HalfPlane(front, maxFront), new HalfPlane(front.unaryMinus(), maxFront),
