@@ -19,7 +19,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 public final class SwerveAccelerationLimiter {
     // Placeholders. Tune on the robot.
     public static final double MAX_ACCEL = 10.0; // forward limit at rest [m/s^2]
-    public static final double FREE_SPEED = 5.3; // robot speed where the drive motors run out of torque [m/s]
+    public static final double FREE_SPEED = 5.3; // where the drive motors run out of torque: Kraken X60 6000 rpm (no FOC) / 6.03 * 4" wheel [m/s]
     public static final double MAX_SKID_ACCEL = 8.0; // traction limit [m/s^2]
     public static final double MAX_TILT_ACCEL_FRONT = 12.0; // robot front/back [m/s^2]
     public static final double MAX_TILT_ACCEL_SIDE = 12.0; // robot left/right [m/s^2]
