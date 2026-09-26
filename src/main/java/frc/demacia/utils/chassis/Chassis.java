@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.kinematics.DemaciaKinematics;
+import frc.demacia.kinematics.SwerveAccelerationLimiter;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.sensors.Cancoder;
 import frc.demacia.utils.sensors.Pigeon;
@@ -46,6 +47,12 @@ public class Chassis extends SubsystemBase {
 
     private double lastOmega = 0;
     private double lastOmegaTime = Timer.getFPGATimestamp();
+
+    private final SwerveAccelerationLimiter accelLimiter = new SwerveAccelerationLimiter();
+    private ChassisSpeeds lastCommandedSpeedsFieldRel = new ChassisSpeeds(); // what the limiter sent last loop
+    private ChassisSpeeds wantedSpeedsFieldRel = new ChassisSpeeds(); // for the log
+    private boolean usedAccelLimit = false; // setSpeedsFieldRelWithAccelLimit was called since the last periodic
+    private boolean accelLimitLogAdded = false;
 
     private Chassis(ChassisConfig chassisConfig) {
         setName(getName());
@@ -175,6 +182,59 @@ public class Chassis extends SubsystemBase {
         setSpeedsFieldRel(fieldSpeeds);
     }
 
+    /**
+     * Drives with the acceleration limiter (skid, forward and tilt limits). Call it once per loop,
+     * instead of {@link #setSpeedsFieldRel}, not together with it.
+     *
+     * @param fieldSpeeds wanted field-relative speeds [m/s, rad/s]
+     */
+    public void setSpeedsFieldRelWithAccelLimit(ChassisSpeeds fieldSpeeds) {
+        if (!accelLimitLogAdded) addAccelLimitLog();
+        Rotation2d heading = getGyroAngle();
+        wantedSpeedsFieldRel = fieldSpeeds;
+        ChassisSpeeds limited = accelLimiter.calculate(fieldSpeeds, lastCommandedSpeedsFieldRel, heading);
+        // setSpeedsFieldRel works with robot-relative speeds (DriveCommand converts before calling it too)
+        ChassisSpeeds robotRel = ChassisSpeeds.fromFieldRelativeSpeeds(limited, heading);
+        setSpeedsFieldRel(robotRel);
+        lastCommandedSpeedsFieldRel = ChassisSpeeds.fromRobotRelativeSpeeds(getSentSpeedsRobotRel(robotRel), heading);
+        usedAccelLimit = true;
+    }
+
+    /**
+     * The robot-relative speeds the modules really got for these speeds, after DemaciaKinematics
+     * desaturates them. Desaturation scales every module by the same factor, and the modules sit
+     * around the center, so the average of the module vectors is the translation that was sent.
+     */
+    private ChassisSpeeds getSentSpeedsRobotRel(ChassisSpeeds robotRel) {
+        SwerveModuleState[] states = demaciaKinematics.toSwerveModuleStates(robotRel);
+        double vx = 0, vy = 0;
+        for (SwerveModuleState state : states) {
+            vx += state.speedMetersPerSecond * state.angle.getCos();
+            vy += state.speedMetersPerSecond * state.angle.getSin();
+        }
+        return new ChassisSpeeds(vx / states.length, vy / states.length, robotRel.omegaRadiansPerSecond);
+    }
+
+    /**
+     * When the limiter didn't drive last loop (disabled, or other code drove with setSpeedsFieldRel),
+     * its last commanded speeds are old. Replace them with the measured speeds, so the next limited
+     * command starts from what the robot is really doing. Called from periodic().
+     */
+    private void syncAccelLimit() {
+        if (!usedAccelLimit) lastCommandedSpeedsFieldRel = getChassisSpeedsFieldRel();
+        usedAccelLimit = false;
+    }
+
+    private void addAccelLimitLog() {
+        accelLimitLogAdded = true;
+        Log.putData("chassis/accel limit/wanted vx", () -> wantedSpeedsFieldRel.vxMetersPerSecond);
+        Log.putData("chassis/accel limit/wanted vy", () -> wantedSpeedsFieldRel.vyMetersPerSecond);
+        Log.putData("chassis/accel limit/commanded vx", () -> lastCommandedSpeedsFieldRel.vxMetersPerSecond);
+        Log.putData("chassis/accel limit/commanded vy", () -> lastCommandedSpeedsFieldRel.vyMetersPerSecond);
+        Log.putData("chassis/accel limit/measured vx", () -> getChassisSpeedsFieldRel().vxMetersPerSecond);
+        Log.putData("chassis/accel limit/measured vy", () -> getChassisSpeedsFieldRel().vyMetersPerSecond);
+    }
+
     public void setSteerPositions(double[] positions) {
         for (int i = 0; i < positions.length; i++) {
             modules[i].setSteerPosition(positions[i]);
@@ -284,6 +344,6 @@ public class Chassis extends SubsystemBase {
 
     @Override
     public void periodic() {
-        
+        syncAccelLimit();
     }
 }
