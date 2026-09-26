@@ -8,58 +8,59 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.demacia.utils.motors.TalonFXConfig;
 import frc.demacia.utils.chassis.ChassisConfig;
+import frc.demacia.utils.chassis.Mk5nConstants;
 import frc.demacia.utils.chassis.SwerveModuleConfig;
 import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
 import frc.demacia.utils.sensors.CancoderConfig;
 import frc.demacia.utils.sensors.PigeonConfig;
 
-public class RobotCChassisConstants {
-  public static final String NAME = "robot C Chassis";
+public class RobotBChassisConstants {
+  public static final String NAME = "robot B Chassis";
 
-  public static final int PIGEON_ID = 0;  // TODO
-  public static final Canbus CAN_BUS = Canbus.CANIvore;  // TODO
-  public static final Canbus PIGEON_CAN_BUS = Canbus.CANIvore;  // TODO
-  public static final double STEER_GEAR_RATIO = 287.0 / 11.0; 
-  public static final double DRIVE_GEAR_RATIO = 6.03; 
-  public static final double WHEEL_DIAMETER = 4 * 0.0254; 
+  public static final int PIGEON_ID = 14; 
+  public static final Canbus CAN_BUS = Canbus.CANIvore; 
+  public static final Canbus PIGEON_CAN_BUS = Canbus.CANIvore; 
+  public static final double STEER_GEAR_RATIO = Mk5nConstants.STEER_GEAR_RATIO; 
+  public static final double DRIVE_GEAR_RATIO = Mk5nConstants.R2.driveGearRatio; 
+  public static final double WHEEL_DIAMETER = Mk5nConstants.WHEEL_DIAMETER; 
 
-  public static final double STEER_KP = 0;  // TODO
-  public static final double STEER_KI = 0;  // TODO
-  public static final double STEER_KD = 0;  // TODO
-  public static final double STEER_KS = 0;  // TODO
-  public static final double STEER_KV = 0;  // TODO
-  public static final double STEER_KA = 0;  // TODO
+  public static final double STEER_KP = 5.8;  
+  public static final double STEER_KI = 0.0;  
+  public static final double STEER_KD = 0.0;  
+  public static final double STEER_KS = 0.4254d;
+  public static final double STEER_KV = 0.3218d;
+  public static final double STEER_KA = 0.0;
 
-  public static final double DRIVE_KP = 0;  // TODO
-  public static final double DRIVE_KI = 0;  // TODO
-  public static final double DRIVE_KD = 0;  // TODO
-  public static final double DRIVE_KS = 0;  // TODO
-  public static final double DRIVE_KV = 0;  // TODO
-  public static final double DRIVE_KA = 0;  // TODO
+  public static final double DRIVE_KP = 1;
+  public static final double DRIVE_KI = 0.0;
+  public static final double DRIVE_KD = 0.0;
+  public static final double DRIVE_KS = 0.17123;
+  public static final double DRIVE_KV = 2.20388;
+  public static final double DRIVE_KA = 0.48899;
 
-  public static final double MAX_DRIVE_VELOCITY = 5; 
+  public static final double MAX_DRIVE_VELOCITY = 5.0; 
   public static final double RAMP_TIME_STEER = 0.25; 
 
   public static final Translation2d[] MODULE_LOCATIONS = {
-    new Translation2d(0.32, 0.27), //FRONT LEFT 
-    new Translation2d(0.32, -0.27), //FRONT RIGHT 
-    new Translation2d(-0.32, 0.27), //BACK LEFT 
-    new Translation2d(-0.32, -0.27), //BACK RIGHT 
+    new Translation2d(0.295 , 0.395), //FRONT LEFT 
+    new Translation2d(0.295, -0.395), //FRONT RIGHT 
+    new Translation2d(-0.295, 0.395), //BACK LEFT 
+    new Translation2d(-0.295, -0.395), //BACK RIGHT 
   };
 
-  public static final SwerveModuleConfig[] modules = swerveModules(
+  public static final SwerveModuleConfig[] MODULES = swerveModules(
       new double[] {
-        0, //FRONT LEFT  // TODO
-        0, //FRONT RIGHT  // TODO
-        0, //BACK LEFT  // TODO
-        0 //BACK RIGHT  // TODO
+        1.5217120831752096896735813514194, //FRONT LEFT
+        1.8837303710189759237145855990482, //FRONT RIGHT
+        -1.7674223277977745984402216157124, //BACK LEFT
+        1.012428498101768307786402232556 //BACK RIGHT
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);
 
   public static final ChassisConfig CHASSIS_CONFIG = new ChassisConfig(
       NAME,
-      modules,
+      MODULES,
       PIGEON_CONFIG);
 
   public static final Matrix<N3, N1> STATE_STD = new Matrix<>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 })); 

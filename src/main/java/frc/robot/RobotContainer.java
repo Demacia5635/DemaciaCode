@@ -5,6 +5,8 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
+import frc.demacia.utils.controller.CommandController;
+import frc.demacia.utils.controller.CommandController.ControllerType;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.RobotPose.Estimation.DemaciaPoseEstimator.OdometryData;
@@ -28,8 +30,15 @@ import frc.robot.shooter.commands.ShooterCommand;
  * the {@link Robot}
  * periodic methods (other than the scheduler calls). Instead, the structure of
 * the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+* the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
+public class RobotContainer implements Sendable {
 public class RobotContainer implements Sendable {
 
   public static CommandController controller = new CommandController(0, ControllerType.kPS5);
@@ -63,7 +72,12 @@ public class RobotContainer implements Sendable {
     setController();
   }
 
+    setDefaultCommands();
+    setController();
+  }
+
   private void configureBindings() {
+
 
   }
 
@@ -81,6 +95,7 @@ public class RobotContainer implements Sendable {
 
   @Override
   public void initSendable(SendableBuilder builder) {
+
 
   }
 
