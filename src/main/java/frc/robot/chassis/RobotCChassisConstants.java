@@ -37,10 +37,6 @@ public class RobotCChassisConstants {
   public static final double DRIVE_KV = 0;  // TODO
   public static final double DRIVE_KA = 0;  // TODO
 
-  public static final double STEER_MOTION_MAGIC_VEL = 100; 
-  public static final double STEER_MOTION_MAGIC_ACCEL = 50; 
-  public static final double STEER_MOTION_MAGIC_JERK = 1000; 
-
   public static final double MAX_DRIVE_VELOCITY = 5; 
   public static final double RAMP_TIME_STEER = 0.25; 
 
@@ -85,7 +81,6 @@ public class RobotCChassisConstants {
           name,
           new TalonFXConfig(name + " Steer", i * 3 + 2, CAN_BUS)
               .withPID(STEER_KP, STEER_KI, STEER_KD, STEER_KS, STEER_KV, STEER_KA, 0, 0, 0)
-              .withMotionParam(STEER_MOTION_MAGIC_VEL, STEER_MOTION_MAGIC_ACCEL, STEER_MOTION_MAGIC_JERK)
               .withBrake(true)
               .withInvert(true)
               .withRadiansMotor(STEER_GEAR_RATIO)
