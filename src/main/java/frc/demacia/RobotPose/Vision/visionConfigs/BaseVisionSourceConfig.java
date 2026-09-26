@@ -9,7 +9,6 @@ import frc.demacia.RobotPose.Vision.VisionTypes.LimelightTagCamera2d;
 import frc.demacia.RobotPose.Vision.VisionTypes.LimelightTagCamera3d;
 import frc.demacia.RobotPose.Vision.VisionTypes.Quest;
 
-
 /**
  * Settings shared by every vision source. Each subclass sets {@link #visionSourceType}, which
  * decides which {@link VisionSource} class {@code VisionConfig.addSource} creates.

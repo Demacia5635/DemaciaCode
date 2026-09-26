@@ -91,9 +91,9 @@ public class LimelightTagCamera3d extends BaseVisionSource {
         if (!hasNewPose) {
             return List.of();
         }
-        // MegaTag2's yaw is the heading we sent with SetRobotOrientation, not a measurement.
-        return List.of(new TimestampedVisionMeasurement(pose.pose, pose.timestampSeconds,
-                VecBuilder.fill(std.get(0, 0), std.get(1, 0), Double.POSITIVE_INFINITY)));
+
+        return List.of(new TimestampedVisionMeasurement(pose.pose, pose.timestampSeconds, 
+            VecBuilder.fill(std.get(0, 0), std.get(1, 0), Double.POSITIVE_INFINITY)));
     }
 
     /**
@@ -106,12 +106,11 @@ public class LimelightTagCamera3d extends BaseVisionSource {
      */
     @Override
     public void periodic() {
-        // MegaTag2 needs the field heading; after a pose reset that is no longer the raw gyro.
         Rotation2d heading = RobotPose.getInstance().getEstimatedPose().getRotation();
         LimelightHelpers.SetRobotOrientation(limelightName, heading.getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0);
     
         pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
-
+        
         // Until the camera publishes a newer frame, the same estimate is read back every loop.
         hasNewPose = pose != null && pose.tagCount > 0 && pose.timestampSeconds != lastReportedTimestampSeconds;
         if (hasNewPose) {

@@ -113,7 +113,7 @@ public class Chassis extends SubsystemBase {
         return gyro.getZVelocity();
     }
 
-    public void setYaw(Rotation2d angle) {
+    public void setGyroYaw(Rotation2d angle) {
         if (angle != null) {
             gyro.setYaw(angle.getDegrees());
         }

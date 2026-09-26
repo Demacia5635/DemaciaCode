@@ -83,10 +83,8 @@ public class LimelightTagCamera2d extends BaseVisionSource {
     }
 
     /**
-     * The Limelight's heartbeat counter goes up once per frame while it is running, so the
-     * camera counts as connected if the heartbeat changed in the last
-     * {@link #CAMERA_STALE_TIMEOUT_SECONDS}. Only updates when called (it's called by the
-     * dashboard).
+     * @return This loop's measurement, or an empty list if there is no new frame. The heading
+     *         std dev is infinite because the heading was copied from the estimate.
      */
     @Override
     public boolean isConnected() {
@@ -110,11 +108,12 @@ public class LimelightTagCamera2d extends BaseVisionSource {
         if (!hasNewPose) {
             return List.of();
         }
-        // The heading is taken from the estimate, not measured, so it carries no information.
-        return List.of(new TimestampedVisionMeasurement(pose, timestampSeconds,
-                VecBuilder.fill(std.get(0, 0), std.get(1, 0), Double.POSITIVE_INFINITY)));
+
+        return List.of(new TimestampedVisionMeasurement(pose, timestampSeconds, 
+            VecBuilder.fill(std.get(0, 0), std.get(1, 0), Double.POSITIVE_INFINITY)));
     }
 
+   
     /**
      * Calculates a new pose if the camera sees a tag, the frame is new (heartbeat changed),
      * and the tag is in the field layout. Otherwise there is no measurement this loop.
@@ -149,11 +148,10 @@ public class LimelightTagCamera2d extends BaseVisionSource {
      */
     private Pose2d updatePose() {
         double latency = (Table.getEntry("tl").getDouble(0.0) + Table.getEntry("cl").getDouble(0.0))/1000.0;
-        timestampSeconds = Timer.getFPGATimestamp() - latency;
-        // Heading at the frame's capture time, not now (the robot may turn during the latency).
-        Rotation2d heading = RobotPose.getInstance().getEstimatedPoseAt(timestampSeconds).getRotation();
+        double timestampSeconds = Timer.getFPGATimestamp() - latency;
 
-        pose = new Pose2d((getTag().toTranslation2d()).minus(getRobotToTag(heading)), heading);
+        Rotation2d heading = RobotPose.getInstance().getEstimatedPoseAt(timestampSeconds).getRotation();
+        pose = new Pose2d((getTag().toTranslation2d()).minus(getRobotToTag(heading)), RobotPose.getInstance().getGyroAngle());
         return pose;
     }
 
@@ -192,7 +190,7 @@ public class LimelightTagCamera2d extends BaseVisionSource {
         double alpha = offset.getRotation().getY() + Math.toRadians(Table.getEntry("ty").getDouble(0.0));
         double distance = Math.abs(deltaHeight / Math.tan(alpha)) / Math.cos(Math.toRadians(Table.getEntry("tx").getDouble(0.0)));
 
-        return distance;
+        return distance;   
     }
 
     /** Field position of the tag the camera sees ({@code tid}), or (0, 0, 0) if unknown. */

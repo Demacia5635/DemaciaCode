@@ -7,7 +7,6 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,8 +37,6 @@ import frc.demacia.utils.chassis.Chassis;
  *
  * <p>Singleton: call {@link #initialize} once (in RobotContainer, after
  * {@code Chassis.initialize}), then {@link #getInstance()} everywhere else.
- *
- * <p>See {@code README.md} in this folder for the full data flow.
  */
 public final class RobotPose {
 
@@ -51,10 +48,10 @@ public final class RobotPose {
     /** Every configured vision source, including the Quest if there is one. */
     private final List<VisionSource> sources;
 
-    private RobotPose(Supplier<OdometryData> odometryDataSupplier, SwerveModulePosition[] initialModulePositions,
-            Translation2d[] moduleLocations, Matrix<N3, N1> stateStd, List<VisionSource> sources) {
+    private RobotPose(Supplier<OdometryData> odometryDataSupplier, Translation2d[] moduleLocations, 
+        Matrix<N3, N1> stateStd, List<VisionSource> sources) {
         this.odometryDataSupplier = odometryDataSupplier;
-        this.poseEstimator = new DemaciaPoseEstimator(initialModulePositions, moduleLocations, stateStd);
+        this.poseEstimator = new DemaciaPoseEstimator(odometryDataSupplier.get().swerveModules(), moduleLocations, stateStd);
         this.sources = sources;
 
         addLog();
@@ -67,7 +64,7 @@ public final class RobotPose {
                 new InstantCommand(() -> setYaw(Rotation2d.kPi)).ignoringDisable(true));
     }
 
-    /**
+        /**
      * Runs one loop of pose estimation. Called from {@code Robot.robotPeriodic()}, after the
      * CommandScheduler.
      *
@@ -143,7 +140,7 @@ public final class RobotPose {
      */
     public void setYaw(Rotation2d angle) {
         if (angle != null) {
-            Chassis.getInstance().setYaw(angle);
+            Chassis.getInstance().setGyroYaw(angle);
             // The gyro was just set to `angle`, so pass it as the gyro reading (the new value may
             // not have been read back from the device yet).
             resetEstimator(new Pose2d(getEstimatedPose().getTranslation(), angle), angle);
@@ -179,8 +176,6 @@ public final class RobotPose {
      *
      * @param odometryDataSupplier   Returns the current gyro angle and swerve module
      *                               positions; called every loop.
-     * @param initialModulePositions Module positions at startup, so the first odometry update
-     *                               doesn't count everything driven before boot.
      * @param moduleLocations        Each module's position relative to the robot center
      *                               (meters), in the same order as the module positions.
      * @param stateStd               How much to trust odometry, per axis (x m, y m, theta rad).
@@ -190,12 +185,11 @@ public final class RobotPose {
      *                               the config is built.
      */
     public static synchronized void initialize(Supplier<OdometryData> odometryDataSupplier,
-            SwerveModulePosition[] initialModulePositions, Translation2d[] moduleLocations,
-            Matrix<N3, N1> stateStd, VisionConfig visionConfig) {
-        instance = new RobotPose(odometryDataSupplier,
-            initialModulePositions,
-            moduleLocations,
-            stateStd,
+            Translation2d[] moduleLocations, Matrix<N3, N1> stateStd,
+            VisionConfig visionConfig) {
+        instance = new RobotPose(odometryDataSupplier, 
+            moduleLocations, 
+            stateStd, 
             visionConfig.getSources());
     }
 

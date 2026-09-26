@@ -84,7 +84,7 @@ public class Quest extends BaseVisionSource {
     protected void addLog() {
         super.addLog();
         SmartDashboard.putData("vision/" + getName() + "/Reset Quest Pose", new InstantCommand(
-                () -> setPose(RobotPose.getInstance().getEstimatedPose())).ignoringDisable(true));
+            ()->setPose(RobotPose.getInstance().getEstimatedPose())).ignoringDisable(true));
     }
 
     /**
@@ -103,7 +103,7 @@ public class Quest extends BaseVisionSource {
      */
     @Override
     public List<TimestampedVisionMeasurement> getPoseEstimates() {
-        return List.of(new TimestampedVisionMeasurement(pose, timestampSeconds,
+        return List.of(new TimestampedVisionMeasurement(pose, timestampSeconds, 
                 VecBuilder.fill(std.get(0, 0), std.get(1, 0), Double.POSITIVE_INFINITY)));
     }
 
@@ -128,10 +128,10 @@ public class Quest extends BaseVisionSource {
         if (poseFrames.length > 0 && poseFrames[poseFrames.length - 1].isTracking()) {
             timestampSeconds = poseFrames[poseFrames.length - 1].dataTimestamp();
 
-            // Heading at the frame's capture time, not now.
             pose = new Pose2d(poseFrames[poseFrames.length - 1].questPose3d()
                 .transformBy(offset.inverse()).toPose2d().getTranslation(), 
                 RobotPose.getInstance().getEstimatedPoseAt(timestampSeconds).getRotation());
+
             hasNewPose = true;
 
             if (!hasQuestDisconnected && timestampSeconds > poseResetTimestamp + QUEST_RESET_SETTLE_SECONDS) {

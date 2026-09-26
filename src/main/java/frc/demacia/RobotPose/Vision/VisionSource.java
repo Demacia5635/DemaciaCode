@@ -15,7 +15,6 @@ import java.util.List;
  * {@code BaseVisionSourceConfig.VisionSourceType}.
  */
 public interface VisionSource {
-
     /** @return The name from the config; also used for the dashboard paths. */
     public String getName();
 
