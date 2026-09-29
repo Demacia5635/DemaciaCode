@@ -220,7 +220,9 @@ public interface MotorInterface extends Sendable {
    * @param allowedError The allowable tolerance
    * @return true if the motor is within tolerance, false otherwise
    */
-  boolean isReady(double allowedError);
+  boolean getIsReady(double allowedError);
+
+  boolean getIsStuck();
 
   boolean isRadiansMotor();
 

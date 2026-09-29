@@ -1,10 +1,13 @@
 package frc.demacia.utils.motors;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -45,6 +48,14 @@ public abstract class BaseMotor implements MotorInterface {
   private Supplier<Double> displayPositionOverride = null;
   private Supplier<Double> displayVelocityOverride = null;
 
+  // DetectStallInMotor
+  private static final List<BaseMotor> stallMonitoredMotors = new ArrayList<>();
+  private static boolean stallDetectionScheduled = false;
+
+  private boolean isStuck;
+  private Timer stallConfirmTimer;
+  private Timer stuckDurationTimer;
+
   protected static final double MAX_SIM_VEL = 50;
 
   /**
@@ -55,11 +66,13 @@ public abstract class BaseMotor implements MotorInterface {
   public BaseMotor(BaseMotorConfig<?> config) {
     this.config = config;
     name = config.name;
+    setName(name);
     createMotor();
     configMotor();
     setSignals();
     addLog();
-    setName(name);
+    configureStallDetection();
+
     SmartDashboard.putData("motors/" + name, this);
     Log.log(name + " motor initialized");
     ElasticGenerator.getInstance().registerMotor(this);
@@ -136,6 +149,54 @@ public abstract class BaseMotor implements MotorInterface {
 
     configPidFf(0);
     configMotionMagic();
+  }
+
+  private void configureStallDetection() {
+    if (config.highCurrentThreshold > 0) {
+      if (!stallDetectionScheduled) {
+        stallDetectionScheduled = true;
+        new RunCommand(BaseMotor::updateAllStuckStates).ignoringDisable(true).schedule();
+      }
+
+      stallMonitoredMotors.add(this);
+      stallConfirmTimer = new Timer();
+      stuckDurationTimer = new Timer();
+    }
+  }
+
+  private static void updateAllStuckStates() {
+    for (BaseMotor motor : stallMonitoredMotors) {
+      motor.updateIsStuck();
+    }
+  }
+
+  private void updateIsStuck() {
+    boolean isStuckNow = Math.abs(getCurrentCurrent()) >= config.highCurrentThreshold && 
+      Math.abs(getCurrentVelocity()) <= config.lowVelocityThreshold;
+
+    if (isStuckNow && !stallConfirmTimer.isRunning() && !stuckDurationTimer.isRunning()){
+      stallConfirmTimer.reset();    
+      stallConfirmTimer.start();
+    }
+
+    if (stallConfirmTimer.isRunning() && !isStuckNow) {
+        stallConfirmTimer.stop();
+        stallConfirmTimer.reset();
+    }
+
+    if (isStuckNow && stallConfirmTimer.hasElapsed(config.stallConfirmSeconds) && !stuckDurationTimer.isRunning()) {
+        stallConfirmTimer.stop();
+        stallConfirmTimer.reset();
+        stuckDurationTimer.reset();
+        stuckDurationTimer.start();
+        isStuck = true;
+    }
+
+    if (stuckDurationTimer.hasElapsed(config.stuckDurationSeconds)) {
+        stuckDurationTimer.stop();
+        stuckDurationTimer.reset();
+        isStuck = false;
+    }
   }
 
   @Override
@@ -490,7 +551,7 @@ public abstract class BaseMotor implements MotorInterface {
     }
   }
 
-  public boolean isReady(double allowedError) {
+  public boolean getIsReady(double allowedError) {
     return Math.abs(getCurrentClosedLoopError()) < allowedError;
   }
 
@@ -578,6 +639,10 @@ public abstract class BaseMotor implements MotorInterface {
 
   private double getDisplayVelocity() {
       return displayVelocityOverride != null ? displayVelocityOverride.get() : getCurrentVelocity();
+  }
+
+  public boolean getIsStuck() {
+    return isStuck;
   }
 
   protected abstract void createMotor();
