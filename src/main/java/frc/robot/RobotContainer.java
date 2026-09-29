@@ -24,6 +24,7 @@ public class RobotContainer implements Sendable{
   public static boolean isComp = false;
   private static boolean hasRemovedFromLog = false;
   public static boolean isRed = false;
+  public static sensoSub subsystem = new sensoSub();
 
   // The robot's subsystems and commands are defined here...
 
@@ -49,7 +50,7 @@ public class RobotContainer implements Sendable{
    * joysticks}.
    */
   private void configureBindings() {
-    
+    subsystem.setDefaultCommand(new stnsor(subsystem));
   }
 
   public static boolean getIsRed() {
