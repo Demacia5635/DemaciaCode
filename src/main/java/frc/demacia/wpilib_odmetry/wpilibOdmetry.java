@@ -20,4 +20,8 @@ class wpilivOdmetry{
     public void updatePose(Rotation2d gyroAngle,SwerveModulePosition[] modulePositions){
         odometry.update(gyroAngle, modulePositions);
     }
+
+    public SwerveDriveOdometry getOdometry(){
+        return odometry;
+    }
 }
