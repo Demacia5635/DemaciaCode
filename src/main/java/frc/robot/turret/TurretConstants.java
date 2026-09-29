@@ -11,7 +11,7 @@ public class TurretConstants {
 
     public static final class TurretMotorConstants {
         public static final String TURRET_MOTOR_NAME = "turret motor";
-        public static final int TURRET_MOTOR_ID = 50; // TODO
+        public static final int TURRET_MOTOR_ID = 20; // TODO
         public static final Canbus TURRET_MOTOR_CANBUS = Canbus.Rio; // TODO
         public static final boolean TURRET_MOTOR_BRAKE = true;
         public static final boolean TURRET_MOTOR_INVERT = false;
@@ -45,7 +45,7 @@ public class TurretConstants {
 
     public static final class TurretMinLimitSwitchConstants {
         public static final String TURRET_MIN_LIMIT_SWITCH_NAME = "turret min Limit Switch";
-        public static final int TURRET_MIN_LIMIT_SWITCH_ID = 7; // TODO
+        public static final int TURRET_MIN_LIMIT_SWITCH_ID = 9; // TODO
         public static final boolean TURRET_MIN_LIMIT_SWITCH_INVERT = false;
         public static final LimitSwitchConfig TURRET_MIN_LIMIT_SWITCH_CONFIG = new LimitSwitchConfig(TURRET_MIN_LIMIT_SWITCH_NAME,TURRET_MIN_LIMIT_SWITCH_ID)
             .withInvert(TURRET_MIN_LIMIT_SWITCH_INVERT);

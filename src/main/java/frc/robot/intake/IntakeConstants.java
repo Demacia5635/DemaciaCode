@@ -10,7 +10,7 @@ public class IntakeConstants {
 
     public static final class IntakeRollersConstants {
         public static final String INTAKE_ROLLERS_NAME = "rollers";
-        public static final int INTAKE_ROLLERS_ID = 30; // TODO
+        public static final int INTAKE_ROLLERS_ID = 51; // TODO
         public static final Canbus INTAKE_ROLLERS_CANBUS = Canbus.Rio; // TODO
         public static final boolean INTAKE_ROLLERS_BRAKE = false;
         public static final boolean INTAKE_ROLLERS_INVERT = false;
@@ -22,7 +22,7 @@ public class IntakeConstants {
 
     public static final class IntakeDeployConstants {
         public static final String INTAKE_DEPLOY_NAME = "intake Deploy";
-        public static final int INTAKE_DEPLOY_ID = 31; // TODO
+        public static final int INTAKE_DEPLOY_ID = 50; // TODO
         public static final Canbus INTAKE_DEPLOY_CANBUS = Canbus.Rio;
         public static final boolean INTAKE_DEPLOY_BRAKE = true;
         public static final boolean INTAKE_DEPLOY_INVERT = false;
@@ -56,7 +56,7 @@ public class IntakeConstants {
 
     public static final class IntakeDeployMaxLimitSwitchConstants {
         public static final String INTAKE_DEPLOY_MAX_LIMIT_SWITCH_NAME = "intake deploy max Limit Switch";
-        public static final int INTAKE_DEPLOY_MAX_LIMIT_SWITCH_ID = 5; // TODO
+        public static final int INTAKE_DEPLOY_MAX_LIMIT_SWITCH_ID = 7; // TODO
         public static final boolean INTAKE_DEPLOY_MAX_LIMIT_SWITCH_INVERT = false;
         public static final LimitSwitchConfig INTAKE_DEPLOY_MAX_LIMIT_SWITCH_CONFIG = new LimitSwitchConfig(INTAKE_DEPLOY_MAX_LIMIT_SWITCH_NAME,INTAKE_DEPLOY_MAX_LIMIT_SWITCH_ID)
             .withInvert(INTAKE_DEPLOY_MAX_LIMIT_SWITCH_INVERT);

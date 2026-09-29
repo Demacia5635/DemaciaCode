@@ -39,9 +39,6 @@ import gg.questnav.questnav.QuestNav;
 public class Quest extends BaseVisionSource {
     private final QuestNav questNav;
 
-    /** Robot pose from the newest frame (heading copied from the estimate). */
-    private Pose2d pose;
-
     /** Capture time of {@link #pose} (QuestNav's data timestamp, FPGA time). */
     private double timestampSeconds;
     private PoseFrame[] poseFrames;
@@ -121,6 +118,8 @@ public class Quest extends BaseVisionSource {
      */
     @Override
     public void periodic() {
+        super.periodic();
+        
         questNav.commandPeriodic();
 
         poseFrames = questNav.getAllUnreadPoseFrames();

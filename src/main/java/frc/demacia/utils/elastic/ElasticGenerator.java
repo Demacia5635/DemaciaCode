@@ -323,7 +323,7 @@ public class ElasticGenerator {
                 VisionSource visionSource = visionSources.get(visionSourceIndex);
                 String visionSourcePath = "/SmartDashboard/vision/" + visionSource.getName();
     
-                widgets.add(createWidget("Field", visionSource.getName() + " Field", col, 0, 2, 3, visionSourcePath + "/field ", "\"field_rotation\": 90.0"));
+                widgets.add(createWidget("Field", visionSource.getName() + " Field", col, 0, 2, 3, visionSourcePath + "/field", "\"field_rotation\": 90.0"));
 
                 boolean isLimelight = visionSource instanceof LimelightTagCamera2d || visionSource instanceof LimelightTagCamera3d;
                 boolean isQuest = visionSource instanceof Quest;

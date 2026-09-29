@@ -11,7 +11,7 @@ public class ShooterConstants {
 
     public static final class FlywheelConstants {
         public static final String FLYWHEEL_NAME = "flywheel";
-        public static final int FLYWHEEL_ID = 60; // TODO
+        public static final int FLYWHEEL_ID = 30; // TODO
         public static final Canbus FLYWHEEL_CANBUS = Canbus.Rio; // TODO
         public static final boolean FLYWHEEL_BRAKE = false;
         public static final boolean FLYWHEEL_INVERT = false;
@@ -39,7 +39,7 @@ public class ShooterConstants {
 
     public static final class HoodConstants {
         public static final String HOOD_NAME = "hood";
-        public static final int HOOD_ID = 61; // TODO
+        public static final int HOOD_ID = 34; // TODO
         public static final Canbus HOOD_CANBUS = Canbus.Rio; // TODO
         public static final boolean HOOD_BRAKE = true;
         public static final boolean HOOD_INVERT = false;
@@ -73,7 +73,7 @@ public class ShooterConstants {
 
     public static final class FeederConstants {
         public static final String FEEDER_NAME = "feeder";
-        public static final int FEEDER_ID = 0; // TODO
+        public static final int FEEDER_ID = 33; // TODO
         public static final Canbus FEEDER_CANBUS = Canbus.Rio; // TODO
         public static final boolean FEEDER_BRAKE = false;
         public static final boolean FEEDER_INVERT = false;
@@ -86,7 +86,7 @@ public class ShooterConstants {
 
     public static final class HoodMinLimitSwitchConstants {
         public static final String HOOD_MIN_LIMIT_SWITCH_NAME = "hood min Limit Switch";
-        public static final int HOOD_MIN_LIMIT_SWITCH_ID = 6; // TODO
+        public static final int HOOD_MIN_LIMIT_SWITCH_ID = 8; // TODO
         public static final boolean HOOD_MIN_LIMIT_SWITCH_INVERT = false;
         public static final LimitSwitchConfig HOOD_MIN_LIMIT_SWITCH_CONFIG = new LimitSwitchConfig(HOOD_MIN_LIMIT_SWITCH_NAME,HOOD_MIN_LIMIT_SWITCH_ID)
             .withInvert(HOOD_MIN_LIMIT_SWITCH_INVERT);
