@@ -7,9 +7,9 @@ package frc.demacia.wpilib_kinmatics;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class wpilib_kinmatics extends Command {
+public class wpilibKinmaticsCommand extends Command {
   /** Creates a new wpilib_kinmatics. */
-  public wpilib_kinmatics() {
+  public wpilibKinmaticsCommand() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
