@@ -6,6 +6,7 @@ package frc.demacia.wpilib_kinmatics;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.Kinematics;
@@ -15,13 +16,28 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 /** Add your docs here. */
 public class wpilibKinmatics {
     private SwerveDriveKinematics kinematics;
+    private double dt;
 
     public wpilibKinmatics(Translation2d[] moudlePose){
         kinematics = new SwerveDriveKinematics(moudlePose);
     }
 
-    public SwerveModuleState[] toSwerveModuleState(ChassisSpeeds speeds){
+    public SwerveModuleState[] toSwerveModuleStateWithFix(ChassisSpeeds speeds, SwerveModuleState[] currentModuleState, Rotation2d gyroAngle){
         SwerveModuleState[] swerveModuleStatesWpilib = kinematics.toSwerveModuleStates(speeds);
-        return swerveModuleStatesWpilib;
+        SwerveModuleState[] swerveModuleStatesFix = new SwerveModuleState[swerveModuleStatesWpilib.length];
+
+
+        for (int i = 0; i < swerveModuleStatesWpilib.length; i++) {
+            swerveModuleStatesFix[i].angle = new Rotation2d(swerveModuleStatesWpilib[i].angle.getRadians() + (currentModuleState[i].angle.getRadians()) - gyroAngle.getRadians() * dt);
+        }
+        return swerveModuleStatesFix;
+    }
+
+    public SwerveModuleState[] toSwerveModuleStates(ChassisSpeeds speeds){
+        return kinematics.toSwerveModuleStates(speeds);
+    }
+
+    public SwerveDriveKinematics kinematics(){
+        return kinematics;
     }
 }
