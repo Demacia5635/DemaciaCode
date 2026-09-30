@@ -13,14 +13,14 @@ import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
 import frc.demacia.utils.sensors.CancoderConfig;
 import frc.demacia.utils.sensors.PigeonConfig;
 
-public class Mk4nChassisConstants {
-  public static final String NAME = "Mk4n Chassis";
+public class Mk4iChassisConstants {
+  public static final String NAME = "Mk4i Chassis";
 
   public static final int PIGEON_ID = 14;
   public static final Canbus CAN_BUS = Canbus.Rio;
   public static final Canbus PIGEON_CAN_BUS = Canbus.Rio;
-  public static final double STEER_GEAR_RATIO = 287.0 / 11.0; 
-  public static final double DRIVE_GEAR_RATIO = 6.03; 
+  public static final double STEER_GEAR_RATIO = 150.0 / 7.0; 
+  public static final double DRIVE_GEAR_RATIO = 8.14; 
   public static final double WHEEL_DIAMETER = 4 * 0.0254; 
 
   public static final double STEER_KP = 1;  // TODO
@@ -49,10 +49,10 @@ public class Mk4nChassisConstants {
 
   public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        1.3821166898849626, //FRONT LEFT
-        2.389942067525829, //FRONT RIGHT
-        1.6183497312193513, //BACK LEFT
-        0.500077736850719 //BACK RIGHT
+        -1.8361750030991124, //FRONT LEFT
+        -0.7547185476397354, //FRONT RIGHT
+        -1.4894953450369577, //BACK LEFT
+        -2.6476508398906167 //BACK RIGHT
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);

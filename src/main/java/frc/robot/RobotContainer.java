@@ -10,7 +10,7 @@ import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.RobotPose.Estimation.DemaciaPoseEstimator.OdometryData;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
-import frc.robot.chassis.Mk4nChassisConstants;
+import frc.robot.chassis.Mk4iChassisConstants;
 import frc.robot.intake.subsystems.Intake;
 import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.shinua.subsystems.Shinua;
@@ -51,7 +51,7 @@ public class RobotContainer implements Sendable {
    */
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
-    Chassis.initialize(Mk4nChassisConstants.CHASSIS_CONFIG);
+    Chassis.initialize(Mk4iChassisConstants.CHASSIS_CONFIG);
     driveCommand = new DriveCommand(Chassis.getInstance(), controller);
     // intake = Intake.getInstance();
     // shinua = Shinua.getInstance();
@@ -61,7 +61,7 @@ public class RobotContainer implements Sendable {
     RobotPose.initialize(
       ()->new OdometryData(Chassis.getInstance().getGyroAngle(), Chassis.getInstance().getModulePositions()), 
       Chassis.getInstance().getModuleLocations(), 
-      Mk4nChassisConstants.STATE_STD, 
+      Mk4iChassisConstants.STATE_STD, 
       VisionConstants.visionConfig);
 
     configureBindings();
