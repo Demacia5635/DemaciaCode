@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
@@ -112,7 +113,7 @@ public class Chassis extends SubsystemBase {
         return gyro.getZVelocity();
     }
 
-    public void setYaw(Rotation2d angle) {
+    public void setGyroYaw(Rotation2d angle) {
         if (angle != null) {
             gyro.setYaw(angle.getDegrees());
         }
@@ -255,6 +256,22 @@ public class Chassis extends SubsystemBase {
     public Translation2d getChassisSpeedsVector() {
         ChassisSpeeds s = getChassisSpeedsFieldRel();
         return new Translation2d(s.vxMetersPerSecond, s.vyMetersPerSecond);
+    }
+
+    public SwerveModulePosition[] getModulePositions() {
+        SwerveModulePosition[] res = new SwerveModulePosition[modules.length];
+        for (int i = 0; i < modules.length; i++) {
+            res[i] = modules[i].getModulePosition();
+        }
+        return res;
+    }
+
+    public Translation2d[] getModuleLocations() {
+        Translation2d[] res = new Translation2d[modules.length];
+        for (int i = 0; i < modules.length; i++) {
+            res[i] = chassisConfig.swerveModuleConfig[i].position;
+        }
+        return res;
     }
 
     public SwerveModuleState[] getModuleStates() {

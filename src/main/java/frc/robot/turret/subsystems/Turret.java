@@ -27,7 +27,7 @@ public class Turret extends StateBaseMechanism {
 
         addLimit(TURRET_MOTOR_NAME, TURRET_MOTOR_MIN_LIMIT, TURRET_MOTOR_MAX_LIMIT);
         withPowerCommand(TURRET_MOTOR_NAME, () -> RobotContainer.controller.getRightX());
-        withAutoCalibration(TURRET_MOTOR_NAME, this::atTurretMotorAutoResetPos, TURRET_MOTOR_AUTO_CALIBRATION_RESET_POS);
+        withAutoCalibration(TURRET_MOTOR_NAME, this::atTurretMotorResetPos, TURRET_MOTOR_AUTO_CALIBRATION_RESET_POS);
         SmartDashboard.putData(TURRET_NAME + "/" + TURRET_MOTOR_NAME + " Calibration Command", new TurretMotorCalibrationCommand(this));
     }
 
@@ -36,6 +36,14 @@ public class Turret extends StateBaseMechanism {
             instance = new Turret();
         }
         return instance;
+    }
+
+    public void setTurretMotorPower(double power) {
+        setPower(TURRET_MOTOR_NAME, power);
+    }
+
+    public boolean getTurretMin() {
+        return ((LimitSwitch) getSensor(TURRET_MIN_LIMIT_SWITCH_NAME)).get();
     }
 
     public double[] getTurretValues() {
@@ -48,15 +56,11 @@ public class Turret extends StateBaseMechanism {
                 break;
         }
         
-        return new double[1];
+        return new double[] {}; // TODO: Unimplemented method 'getTurretValues'
     }
 
     public boolean atTurretMotorResetPos() {
         return ((LimitSwitch) getSensor(TURRET_MIN_LIMIT_SWITCH_NAME)).get();
-    }
-
-    public boolean atTurretMotorAutoResetPos() {
-        return false;
     }
 
 }

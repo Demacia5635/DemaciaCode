@@ -9,7 +9,7 @@ public class IntakeCommand extends DefaultCommand {
     public IntakeCommand() {
         super(Intake.getInstance(), new ControlMode[] {
             ControlMode.DUTYCYCLE,
-            ControlMode.ANGLE
+            ControlMode.MAGIC_MOTION
         });
     }
 }

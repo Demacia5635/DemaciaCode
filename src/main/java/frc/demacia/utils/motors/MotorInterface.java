@@ -176,6 +176,20 @@ public interface MotorInterface extends Sendable {
   double getCurrentValue();
 
   /**
+   * Overrides the value shown as "Position" on the dashboard only.
+   * Does not affect Log or getCurrentPosition().
+   * Pass null to go back to the raw motor value.
+   */
+  void setDisplayPositionOverride(Supplier<Double> displayPositionOverride);
+
+  /**
+   * Overrides the value shown as "Velocity" on the dashboard only.
+   * Does not affect Log (sysid still sees the raw encoder value) or getCurrentPosition().
+   * Pass null to go back to the raw motor value.
+   */
+  void setDisplayVelocityOverride(Supplier<Double> displayVelocityOverride);
+
+  /**
    * Overrides the internal encoder position.
    * 
    * @param position The new position to set
@@ -206,7 +220,9 @@ public interface MotorInterface extends Sendable {
    * @param allowedError The allowable tolerance
    * @return true if the motor is within tolerance, false otherwise
    */
-  boolean isReady(double allowedError);
+  boolean getIsReady(double allowedError);
+
+  boolean getIsStuck();
 
   boolean isRadiansMotor();
 
