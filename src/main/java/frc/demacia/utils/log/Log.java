@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import edu.wpi.first.networktables.ConnectionInfo;
 import edu.wpi.first.networktables.NTSendable;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -17,6 +18,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DataLogManager;
 import com.ctre.phoenix6.StatusSignal;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -175,6 +177,94 @@ public class Log extends SubsystemBase {
   /** Single alert raised when too many different messages were registered. */
   private static ConsoleAlert alertOverflow;
 
+  /** {@link #alert} pop-ups raised while Elastic was not connected, waiting to be sent. */
+  private static final ArrayList<ConsoleAlert> pendingPopups = new ArrayList<>();
+
+  /** When Elastic connected, or NaN while it is not connected. Updated every loop. */
+  private static double elasticConnectedSince = Double.NaN;
+
+  /**
+   * Raises an alert once, for something that is checked a single time rather than every loop,
+   * such as an invalid CAN ID found in a motor constructor. The Elastic pop-up stays until it is
+   * closed with its X, and the alert stays active for the rest of the run.
+   *
+   * <pre>{@code
+   * if (config.id < 0 || config.id > 62) {
+   *   Log.alert(name + " has an invalid CAN ID: " + config.id);
+   * }
+   * }</pre>
+   *
+   * <p>Constructors run while the robot program is starting, before Elastic has connected. The
+   * log line and the alert in the Alerts widget happen immediately, and the pop-up is held until
+   * Elastic has been connected for {@link ConsoleConstants#ALERT_POPUP_CONNECT_DELAY} seconds.
+   *
+   * <p>Calling it again with the same message does nothing.
+   *
+   * @param message the alert text
+   * @return the alert backing this message
+   */
+  public static ConsoleAlert alert(String message) {
+    return alert(message, true);
+  }
+
+  /**
+   * Shows an alert's pop-up now if Elastic is ready to receive it, or holds it until it is.
+   *
+   * @param alert the alert that was just raised
+   */
+  private static void showPopup(ConsoleAlert alert) {
+    if (isElasticReady()) {
+      alert.sendNotification();
+    } else if (!pendingPopups.contains(alert)) {
+      pendingPopups.add(alert);
+    }
+  }
+
+  /**
+   * Tracks whether Elastic is connected and sends the held pop-ups once it has been connected
+   * long enough. A held alert whose condition has already cleared is dropped instead of shown.
+   */
+  private static void sendPendingPopups() {
+    if (!isElasticConnected()) {
+      elasticConnectedSince = Double.NaN;
+      return;
+    }
+    if (Double.isNaN(elasticConnectedSince)) {
+      elasticConnectedSince = Timer.getFPGATimestamp();
+    }
+    if (pendingPopups.isEmpty() || !isElasticReady()) {
+      return;
+    }
+
+    for (ConsoleAlert alert : pendingPopups) {
+      if (alert.get()) {
+        alert.sendNotification();
+      }
+    }
+    pendingPopups.clear();
+  }
+
+  /**
+   * Whether Elastic has been connected long enough to have subscribed to the pop-up topic.
+   * Elastic subscribes a moment after it connects, so a pop-up sent at the instant of
+   * connection would be missed.
+   */
+  private static boolean isElasticReady() {
+    return !Double.isNaN(elasticConnectedSince)
+        && Timer.getFPGATimestamp() - elasticConnectedSince
+            >= ConsoleConstants.ALERT_POPUP_CONNECT_DELAY;
+  }
+
+  /** Whether Elastic, and not just any NetworkTables client such as a Limelight, is connected. */
+  private static boolean isElasticConnected() {
+    for (ConnectionInfo connection : NetworkTableInstance.getDefault().getConnections()) {
+      if (connection.remote_id.startsWith(ConsoleConstants.ELASTIC_CLIENT_NAME_PREFIX)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * Raises or clears an alert straight from a {@code periodic()} method, without declaring a
    * field for it.
@@ -183,6 +273,11 @@ public class Log extends SubsystemBase {
    * Elastic dashboard until it is dismissed manually, and is then reused on every following
    * call with the same message. Safe to call every loop: it only writes to the log and sends
    * an Elastic notification when {@code active} changes from false to true.
+   * </p>
+   * <p>
+   * If Elastic is not connected when the condition becomes true (a condition that is already
+   * true when the robot starts, or Elastic reconnecting mid-match), the pop-up is held and sent
+   * once Elastic connects - as long as the condition is still true by then.
    * </p>
    *
    * <pre>{@code
@@ -210,11 +305,16 @@ public class Log extends SubsystemBase {
       if (conditionAlerts.size() >= ConsoleConstants.CONDITION_ALERT_LIMIT) {
         return alertOverflow(message);
       }
-      alert = ConsoleAlert.warning(message).withNoAutoDismiss();
+      // Pop-ups are sent by Log rather than by the alert itself, so they can wait for Elastic.
+      alert = ConsoleAlert.warning(message).withNoAutoDismiss().withNotification(false);
       conditionAlerts.put(message, alert);
     }
 
+    boolean risingEdge = active && !alert.get();
     alert.set(active);
+    if (risingEdge) {
+      showPopup(alert);
+    }
     return alert;
   }
 
@@ -231,8 +331,10 @@ public class Log extends SubsystemBase {
           .withDescription("More than " + ConsoleConstants.CONDITION_ALERT_LIMIT
               + " different alert texts were registered. A message built from a changing value "
               + "creates a new alert every loop - keep the text constant, or use ConsoleAlert.")
-          .withNoAutoDismiss();
+          .withNoAutoDismiss()
+          .withNotification(false);
       alertOverflow.set(true);
+      showPopup(alertOverflow);
       DataLogManager.log("[Log.alert] message limit reached, ignoring: " + message);
     }
     return alertOverflow;
@@ -246,6 +348,7 @@ public class Log extends SubsystemBase {
   @Override
   public void periodic() {
     Data.refreshAll();
+    sendPendingPopups();
     for (int i = activeConsole.size() - 1; i >= 0; i--) {
       ConsoleAlert alert = activeConsole.get(i);
       if (alert.isTimerOver()) {

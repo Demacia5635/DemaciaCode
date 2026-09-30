@@ -242,7 +242,9 @@ public class ConsoleAlert extends Alert {
   /** Handles the rising edge - this runs exactly once per activation. */
   private void onActivate() {
     DataLogManager.log("[ALERT - " + type.name() + "] " + fullMessage());
-    sendNotification();
+    if (notifyElastic) {
+      sendNotification();
+    }
   }
 
   /** Handles the falling edge - this runs exactly once per activation. */
@@ -253,14 +255,13 @@ public class ConsoleAlert extends Alert {
   }
 
   /**
-   * Sends the Elastic pop-up, unless notifications are disabled for this alert or the last one
-   * was sent too recently.
+   * Sends the Elastic pop-up with this alert's settings, unless one was sent less than the
+   * minimum interval ago. Called automatically on activation when pop-ups are enabled for this
+   * alert. Public for callers that decide themselves when the pop-up should appear, such as
+   * {@link Log#alert} holding it until Elastic is connected - it works even when pop-ups are
+   * disabled for the alert.
    */
-  private void sendNotification() {
-    if (!notifyElastic) {
-      return;
-    }
-
+  public void sendNotification() {
     double now = Timer.getFPGATimestamp();
     if (now - lastNotificationTime < minNotificationInterval) {
       return;
