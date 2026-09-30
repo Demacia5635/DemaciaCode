@@ -43,7 +43,7 @@ public class VisionConstants {
     public static final QuestConfig QUEST_CONFIG = new QuestConfig(QUEST_NAME, QUEST_OFFSET, QUEST_STD);
 
     public static final VisionConfig visionConfig = new VisionConfig()
-        .addSource(BACK_2D_CONFIG)
+        // .addSource(BACK_2D_CONFIG)
         // .addSource(BACK_3D_CONFIG)
         // .addSource(BACK_3D_2_CONFIG)
         // .addSource(QUEST_CONFIG)

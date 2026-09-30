@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.demacia.sysid.Sysid;
+// import frc.demacia.sysid.Sysid;
 import frc.demacia.utils.Data;
 import frc.demacia.utils.elastic.ElasticGenerator;
 import frc.demacia.utils.log.Log;
@@ -76,7 +76,7 @@ public abstract class BaseMotor implements MotorInterface {
     SmartDashboard.putData("motors/" + name, this);
     Log.log(name + " motor initialized");
     ElasticGenerator.getInstance().registerMotor(this);
-    Sysid.registerMotor(this);
+    // Sysid.registerMotor(this);
   }
 
   public BaseMotorConfig<?> getConfig() {
