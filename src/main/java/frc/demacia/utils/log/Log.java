@@ -162,6 +162,83 @@ public class Log extends SubsystemBase {
   }
 
   /**
+   * Alerts created by {@link #alert(String, boolean)}, keyed by their message.
+   * <p>
+   * This map is what makes the one liner API possible: the caller does not hold the alert
+   * object, so it is looked up here by its text and reused on every loop. Reusing the same
+   * object is exactly what keeps the edge detection inside {@link ConsoleAlert} working - a
+   * new object every loop would reset its state and spam the log and the dashboard.
+   * </p>
+   */
+  private static final Map<String, ConsoleAlert> conditionAlerts = new HashMap<>();
+
+  /** Single alert raised when too many different messages were registered. */
+  private static ConsoleAlert alertOverflow;
+
+  /**
+   * Raises or clears an alert straight from a {@code periodic()} method, without declaring a
+   * field for it.
+   * <p>
+   * The alert is created on the first call as a {@link AlertType#kWarning} that stays on the
+   * Elastic dashboard until it is dismissed manually, and is then reused on every following
+   * call with the same message. Safe to call every loop: it only writes to the log and sends
+   * an Elastic notification when {@code active} changes from false to true.
+   * </p>
+   *
+   * <pre>{@code
+   * public void periodic() {
+   *   Log.alert("Arm motor is hot", motor.getTemperature() > 80);
+   * }
+   * }</pre>
+   *
+   * <p>
+   * The message is the identity of the alert, so it must stay constant between calls. Building
+   * it from a changing value ({@code "temp is " + temp}) creates a new alert every loop - after
+   * {@link ConsoleConstants#CONDITION_ALERT_LIMIT} different messages this is detected and a
+   * single error alert is raised instead. Use {@link ConsoleAlert} directly when the text has
+   * to change.
+   * </p>
+   *
+   * @param message the alert text, and the key the alert is remembered by
+   * @param active  whether the condition of the alert currently holds
+   * @return the alert backing this message, so it can be configured further if needed
+   */
+  public static ConsoleAlert alert(String message, boolean active) {
+    ConsoleAlert alert = conditionAlerts.get(message);
+
+    if (alert == null) {
+      if (conditionAlerts.size() >= ConsoleConstants.CONDITION_ALERT_LIMIT) {
+        return alertOverflow(message);
+      }
+      alert = ConsoleAlert.warning(message).withNoAutoDismiss();
+      conditionAlerts.put(message, alert);
+    }
+
+    alert.set(active);
+    return alert;
+  }
+
+  /**
+   * Handles the case of too many different messages passed to {@link #alert(String, boolean)},
+   * which almost always means the message is built from a changing value.
+   *
+   * @param message the message that could not be registered
+   * @return the shared overflow alert
+   */
+  private static ConsoleAlert alertOverflow(String message) {
+    if (alertOverflow == null) {
+      alertOverflow = ConsoleAlert.error("Too many Log.alert messages")
+          .withDescription("More than " + ConsoleConstants.CONDITION_ALERT_LIMIT
+              + " different alert texts were registered. A message built from a changing value "
+              + "creates a new alert every loop - keep the text constant, or use ConsoleAlert.")
+          .withNoAutoDismiss();
+      alertOverflow.set(true);
+      DataLogManager.log("[Log.alert] message limit reached, ignoring: " + message);
+    }
+    return alertOverflow;
+  }
+
+  /**
    * Periodic method called by the scheduler.
    * Refreshes data, updates console alerts (handling expiration), and updates all
    * log entries.
