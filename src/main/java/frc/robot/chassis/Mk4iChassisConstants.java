@@ -64,7 +64,7 @@ public class Mk4iChassisConstants {
 
   public static final Matrix<N3, N1> STATE_STD = new Matrix<>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 })); 
 
-  public static final double METERS_FROM_360_DEGS = 0.2;
+  public static final double METERS_FROM_360_DEGS = 0.1623;
 
   public static final SwerveModuleConfig[] swerveModules(double[] offsets) {
     SwerveModuleConfig[] ans = new SwerveModuleConfig[4];
