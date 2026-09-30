@@ -113,12 +113,11 @@ public class LimelightTagCamera3d extends BaseVisionSource {
         LimelightHelpers.SetRobotOrientation(limelightName, heading.getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0);
     
         poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
-        pose = poseEstimate.pose;
-
         
         // Until the camera publishes a newer frame, the same estimate is read back every loop.
         hasNewPose = poseEstimate != null && poseEstimate.tagCount > 0 && poseEstimate.timestampSeconds != lastReportedTimestampSeconds;
         if (hasNewPose) {
+            pose = poseEstimate.pose;
             lastReportedTimestampSeconds = poseEstimate.timestampSeconds;
         }
     }
