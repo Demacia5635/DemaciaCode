@@ -44,18 +44,18 @@ public class RobotChassisConstants {
   public static final double RAMP_TIME_STEER = 0.25; 
 
   public static final Translation2d[] MODULE_LOCATIONS = {
-    new Translation2d(0.295 , 0.395), //FRONT LEFT 
-    new Translation2d(0.295, -0.395), //FRONT RIGHT 
-    new Translation2d(-0.295, 0.395), //BACK LEFT 
-    new Translation2d(-0.295, -0.395), //BACK RIGHT 
+    new Translation2d(0.295 , -0.395), //FRONT LEFT 
+    new Translation2d(0.295, 0.395), //FRONT RIGHT 
+    new Translation2d(-0.295, -0.395), //BACK LEFT 
+    new Translation2d(-0.295, 0.395), //BACK RIGHT 
   };
 
   public static final SwerveModuleConfig[] MODULES = swerveModules(
       new double[] {
-        1.5217120831752096896735813514194, //FRONT LEFT  // TODO
-        1.8837303710189759237145855990482, //FRONT RIGHT  // TODO
-        -1.7674223277977745984402216157124, //BACK LEFT  // TODO
-        1.012428498101768307786402232556 //BACK RIGHT  // TODO
+        0.263184 * Math.PI * 2, //FRONT LEFT  // TODO
+        0.2971119 * Math.PI * 2, //FRONT RIGHT  // TODO
+        -0.288574 * Math.PI * 2, //BACK LEFT  // TODO
+        0.15918 * Math.PI * 2 //BACK RIGHT  // TODO
       });
 
   public static final SwerveModulePosition[] swerveModulesPosition = new SwerveModulePosition[] {

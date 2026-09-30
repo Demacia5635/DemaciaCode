@@ -33,7 +33,7 @@ public class RobotContainer implements Sendable {
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
     Chassis.initialize(RobotChassisConstants.CHASSIS_CONFIG);
-    // driveCommand = new DriveCommand(Chassis.getInstance(), controller);
+    driveCommand = new DriveCommand(Chassis.getInstance(), controller);
 
     RobotPose.initialize(
       ()->new OdometryData(Chassis.getInstance().getGyroAngle(), RobotChassisConstants.swerveModulesPosition), 
