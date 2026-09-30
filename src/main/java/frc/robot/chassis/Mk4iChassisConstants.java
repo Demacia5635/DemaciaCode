@@ -23,12 +23,12 @@ public class Mk4iChassisConstants {
   public static final double DRIVE_GEAR_RATIO = 8.14; 
   public static final double WHEEL_DIAMETER = 4 * 0.0254; 
 
-  public static final double STEER_KP = 1;  // TODO
+  public static final double STEER_KP = 6;  // TODO
   public static final double STEER_KI = 0;  // TODO
   public static final double STEER_KD = 0;  // TODO
-  public static final double STEER_KS = 0;  // TODO
-  public static final double STEER_KV = 0;  // TODO
-  public static final double STEER_KA = 0;  // TODO
+  public static final double STEER_KS = 0.07718;  // TODO
+  public static final double STEER_KV = 0.3707;  // TODO
+  public static final double STEER_KA = 0.00589;  // TODO
 
   public static final double DRIVE_KP = 1;  // TODO
   public static final double DRIVE_KI = 0;  // TODO
@@ -41,10 +41,10 @@ public class Mk4iChassisConstants {
   public static final double RAMP_TIME_STEER = 0.25; 
 
   public static final Translation2d[] MODULE_LOCATIONS = {
-    new Translation2d(0.4, 0.36), //FRONT LEFT 
-    new Translation2d(0.4, -0.36), //FRONT RIGHT 
-    new Translation2d(-0.4, 0.36), //BACK LEFT 
-    new Translation2d(-0.4, -0.36), //BACK RIGHT 
+    new Translation2d(0.4, -0.36), //FRONT LEFT 
+    new Translation2d(0.4, 0.36), //FRONT RIGHT 
+    new Translation2d(-0.4, -0.36), //BACK LEFT 
+    new Translation2d(-0.4, 0.36), //BACK RIGHT 
   };
 
   public static final SwerveModuleConfig[] modules = swerveModules(
