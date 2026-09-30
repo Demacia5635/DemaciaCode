@@ -37,9 +37,9 @@ public class VisionConstants {
 
     public static final String QUEST_NAME = "quest";
     public static final Transform3d QUEST_OFFSET = new Transform3d(
-        new Translation3d(0.0, 0.0, 0.0), 
+        new Translation3d(0.1579, -0.176043, 0.460), 
         new Rotation3d(0.0, 0.0, 0.0)); 
-    public static final Matrix<N3, N1> QUEST_STD = new Matrix<>(new SimpleMatrix(new double[] { 0.3, 0.3, 0.0 })); 
+    public static final Matrix<N3, N1> QUEST_STD = new Matrix<>(new SimpleMatrix(new double[] { 0.05, 0.05, 0.0 })); 
     public static final QuestConfig QUEST_CONFIG = new QuestConfig(QUEST_NAME, QUEST_OFFSET, QUEST_STD);
 
     public static final VisionConfig visionConfig = new VisionConfig()
