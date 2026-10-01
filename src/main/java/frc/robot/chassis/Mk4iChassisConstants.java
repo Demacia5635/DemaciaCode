@@ -33,9 +33,9 @@ public class Mk4iChassisConstants {
   public static final double DRIVE_KP = 1;  // TODO
   public static final double DRIVE_KI = 0;  // TODO
   public static final double DRIVE_KD = 0;  // TODO
-  public static final double DRIVE_KS = 0;  // TODO
-  public static final double DRIVE_KV = 0;  // TODO
-  public static final double DRIVE_KA = 0;  // TODO
+  public static final double DRIVE_KS = 0.09053;  // TODO
+  public static final double DRIVE_KV = 2.71729;  // TODO
+  public static final double DRIVE_KA = 0.06453;  // TODO
 
   public static final double MAX_DRIVE_VELOCITY = 5; 
   public static final double RAMP_TIME_STEER = 0.25; 
@@ -49,10 +49,10 @@ public class Mk4iChassisConstants {
 
   public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        -1.8361750030991124, //FRONT LEFT
-        -0.7547185476397354, //FRONT RIGHT
-        -1.4894953450369577, //BACK LEFT
-        -2.6476508398906167 //BACK RIGHT
+        1.3345632854605078, //FRONT LEFT
+        2.457437222192797, //FRONT RIGHT
+        1.6060778849162662, //BACK LEFT
+        0.47860200582032003 //BACK RIGHT
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);

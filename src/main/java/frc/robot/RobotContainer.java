@@ -75,7 +75,7 @@ public class RobotContainer implements Sendable {
   }
 
   private void setDefaultCommands() {
-    // Chassis.getInstance().setDefaultCommand(driveCommand);
+    Chassis.getInstance().setDefaultCommand(driveCommand);
     // intake.setDefaultCommand(new IntakeCommand());
     // shinua.setDefaultCommand(new ShinuaCommand());
     // turret.setDefaultCommand(new TurretCommand());
