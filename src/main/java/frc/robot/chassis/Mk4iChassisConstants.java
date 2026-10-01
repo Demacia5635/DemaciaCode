@@ -49,10 +49,10 @@ public class Mk4iChassisConstants {
 
   public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        1.3345632854605078, //FRONT LEFT
-        2.457437222192797, //FRONT RIGHT
-        1.6060778849162662, //BACK LEFT
-        0.47860200582032003 //BACK RIGHT
+        -1.3345632854605078, //FRONT LEFT
+        -2.457437222192797, //FRONT RIGHT
+        -1.6060778849162662, //BACK LEFT
+        -0.47860200582032003 //BACK RIGHT
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);
@@ -89,7 +89,8 @@ public class Mk4iChassisConstants {
               .withPID(DRIVE_KP, DRIVE_KI, DRIVE_KD, DRIVE_KS, DRIVE_KV, DRIVE_KA, 0, 0, 0)
               .withBrake(true)
               .withMeterMotor(DRIVE_GEAR_RATIO, WHEEL_DIAMETER),
-          new CancoderConfig(name + " Cancoder", i * 3 + 3, CAN_BUS))
+          new CancoderConfig(name + " Cancoder", i * 3 + 3, CAN_BUS)
+            .withInvert(true))
           .withPosion(MODULE_LOCATIONS[i])
           .withSteerOffset(offsets[i])
           .withMetersFrom360Degs(METERS_FROM_360_DEGS);
