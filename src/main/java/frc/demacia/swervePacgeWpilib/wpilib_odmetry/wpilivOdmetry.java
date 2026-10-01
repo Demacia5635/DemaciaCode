@@ -6,7 +6,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
-class wpilivOdmetry{
+public class wpilivOdmetry{
     private SwerveDriveOdometry odometry;
 
     public wpilivOdmetry (SwerveDriveKinematics kinematics, Rotation2d gyroAngle, SwerveModulePosition[] modulePosition){

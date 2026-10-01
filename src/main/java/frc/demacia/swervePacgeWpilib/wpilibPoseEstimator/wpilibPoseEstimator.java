@@ -10,7 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
-class wpilibPoseEstimator{
+public class wpilibPoseEstimator{
     private PoseEstimator poseEstimator;
 
     public wpilibPoseEstimator(SwerveDriveKinematics kinematics,SwerveDriveOdometry odometry, Matrix<N3, N1> stateStdDevs, Matrix<N3, N1> visionMeasurementStdDevs){
@@ -19,6 +19,10 @@ class wpilibPoseEstimator{
 
     public Pose2d getPose2d(){
         return poseEstimator.getEstimatedPosition();
+    }
+
+    public void updateVision(Pose2d visionPose, double timestamp){
+        poseEstimator.addVisionMeasurement(visionPose, timestamp);
     }
 
     

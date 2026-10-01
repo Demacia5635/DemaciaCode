@@ -16,25 +16,17 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 /** Add your docs here. */
 public class wpilibKinmatics {
     private SwerveDriveKinematics kinematics;
-    private double dt;
 
     public wpilibKinmatics(Translation2d[] moudlePose){
         kinematics = new SwerveDriveKinematics(moudlePose);
     }
 
-    public SwerveModuleState[] toSwerveModuleStateWithFix(ChassisSpeeds speeds, SwerveModuleState[] currentModuleState, Rotation2d gyroAngle){
-        SwerveModuleState[] swerveModuleStatesWpilib = kinematics.toSwerveModuleStates(speeds);
-        SwerveModuleState[] swerveModuleStatesFix = new SwerveModuleState[swerveModuleStatesWpilib.length];
-
-
-        for (int i = 0; i < swerveModuleStatesWpilib.length; i++) {
-            swerveModuleStatesFix[i].angle = new Rotation2d(swerveModuleStatesWpilib[i].angle.getRadians() + (currentModuleState[i].angle.getRadians()) - gyroAngle.getRadians() * dt);
-        }
-        return swerveModuleStatesFix;
-    }
-
     public SwerveModuleState[] toSwerveModuleStates(ChassisSpeeds speeds){
         return kinematics.toSwerveModuleStates(speeds);
+    }
+
+    public ChassisSpeeds toChassisSpeeds(SwerveModuleState[] states){
+        return kinematics.toChassisSpeeds(states);
     }
 
     public SwerveDriveKinematics kinematics(){

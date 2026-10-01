@@ -126,14 +126,14 @@ public class Chassis extends SubsystemBase {
     Rotation2d gyroAngle;
 
     OdometryObservation observation;
-
+    public Translation2d[] modulePositions;
     private Chassis(ChassisConfig chassisConfig) {
         setName(getName());
 
         this.chassisConfig = chassisConfig;
 
         modules = new SwerveModule[4];
-        Translation2d[] modulePositions = new Translation2d[4];
+        modulePositions = new Translation2d[4];
         for (int i = 0; i < 4; i++) {
             modules[i] = new SwerveModule(chassisConfig.swerveModuleConfig[i]);
             modulePositions[i] = chassisConfig.swerveModuleConfig[i].position;
