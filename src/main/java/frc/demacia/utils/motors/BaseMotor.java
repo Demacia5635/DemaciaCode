@@ -66,6 +66,9 @@ public abstract class BaseMotor implements MotorInterface {
   public BaseMotor(BaseMotorConfig<?> config) {
     this.config = config;
     name = config.name;
+    if (config.id <= 0) {
+      Log.alert("the " + name + " id is 0 or less").withDescription(name);
+    }
     setName(name);
     createMotor();
     configMotor();
