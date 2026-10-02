@@ -56,6 +56,13 @@ public class Chassis extends SubsystemBase {
         for (int i = 0; i < 4; i++) {
             modules[i] = new SwerveModule(chassisConfig.swerveModuleConfig[i]);
             modulePositions[i] = chassisConfig.swerveModuleConfig[i].position;
+            if (modulePositions[i].getNorm() == 0) {
+                Log.alert(getName() + " module location on the robot is 0");
+            }
+
+            if (chassisConfig.swerveModuleConfig[i].steerOffset == 0) {
+                Log.alert(getName() + " steer offset is 0");
+            }
         }
         gyro = new Pigeon(chassisConfig.pigeonConfig);
 

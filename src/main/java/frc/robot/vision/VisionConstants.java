@@ -44,9 +44,9 @@ public class VisionConstants {
 
     public static final VisionConfig visionConfig = new VisionConfig()
         // .addSource(BACK_2D_CONFIG)
-        // .addSource(BACK_3D_CONFIG)
+        .addSource(BACK_3D_CONFIG)
         // .addSource(BACK_3D_2_CONFIG)
-        // .addSource(QUEST_CONFIG)
+        .addSource(QUEST_CONFIG)
         ;
 
     // VisionConfig visionConfig = new VisionConfig(TWO_D_CONFIG, BACK_CONFIG, QUEST_CONFIG);

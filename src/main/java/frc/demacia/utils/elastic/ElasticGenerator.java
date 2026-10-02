@@ -55,7 +55,7 @@ public class ElasticGenerator {
         try {
             WebServer.start(5800, dir.getPath());
         } catch (Exception e) {
-            Log.log("Failed to start WebServer for Elastic: " + e.getMessage());
+            Log.alert("Failed to start WebServer for Elastic: " + e.getMessage());
         }
     }
 
@@ -141,7 +141,7 @@ public class ElasticGenerator {
             SmartDashboard.putString("elastic/Status", "Saved at: " + file.getAbsolutePath());
             Log.log("Elastic layout saved successfully at: " + file.getAbsolutePath());  
         } catch (IOException e) {
-            Log.log("Failed to save Elastic layout: " + e.getMessage());
+            Log.alert("Failed to save Elastic layout: " + e.getMessage());
             SmartDashboard.putString("elastic/Status", "Failed to save: " + e.getMessage());
         }
     }
@@ -328,7 +328,7 @@ public class ElasticGenerator {
                 boolean isLimelight = visionSource instanceof LimelightTagCamera2d || visionSource instanceof LimelightTagCamera3d;
                 boolean isQuest = visionSource instanceof Quest;
 
-                widgets.add(createWidget("Boolean Box", "connected " + visionSource.getName(), col, isQuest ? 4 : 3, 1, 1, visionSourcePath + "/is Connected", "\"data_type\": \"boolean\""));
+                widgets.add(createWidget("Boolean Box", "connected " + visionSource.getName(), col + (isQuest ? 2 : 0), isQuest ? 0 : 3, 1, 1, visionSourcePath + "/is Connected", "\"data_type\": \"boolean\""));
 
                 if (isLimelight) {
                     widgets.add(createWidget("Boolean Box", "see " + visionSource.getName(), col + 1, 3, 1, 1, visionSourcePath + "/is see", "\"data_type\": \"boolean\""));
@@ -336,6 +336,9 @@ public class ElasticGenerator {
 
                 if (isQuest) {
                     widgets.add(createWidget("Command", "Reset Quest Pose", col, 3, 2, 1, visionSourcePath + "/Reset Quest Pose", "\"show_type\": true"));
+                    col += 2;
+                    widgets.add(createWidget("Boolean Box", "should update " + visionSource.getName(), col + 1, 0, 1, 1, visionSourcePath + "/should update", "\"data_type\": \"boolean\""));
+                    widgets.add(createWidget("Boolean Box", "battery " + visionSource.getName(), col, 1, 1, 1, visionSourcePath + "/battery", "\"data_type\": \"boolean\""));
                 }
 
                 col += VISION_SOURCE_WIDTH;

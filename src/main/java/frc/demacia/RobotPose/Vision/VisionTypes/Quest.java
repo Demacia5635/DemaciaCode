@@ -5,6 +5,7 @@ import java.util.List;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -91,7 +92,7 @@ public class Quest extends BaseVisionSource {
      */
     @Override
     public boolean shouldUpdate() {
-        return questNav.isConnected() && hasUpdatedQuestIntialPose && hasNewPose;
+        return isConnected() && hasUpdatedQuestIntialPose && hasNewPose;
     }
 
     /**
@@ -108,6 +109,13 @@ public class Quest extends BaseVisionSource {
     @Override
     public boolean isConnected() {
         return questNav != null && questNav.isConnected();
+    }
+
+    public int getBattery() {
+        if (questNav == null) {
+            return 0;
+        }
+        return questNav.getBatteryPercent().getAsInt();
     }
 
     /**
@@ -169,5 +177,12 @@ public class Quest extends BaseVisionSource {
         poseResetTimestamp = Timer.getFPGATimestamp();
         hasUpdatedQuestIntialPose = false;
         hasQuestDisconnected = false;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        builder.addBooleanProperty("should update", () -> shouldUpdate(), null);
+        builder.addIntegerProperty("battery", () -> getBattery(), null);
     }
 }

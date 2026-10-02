@@ -67,6 +67,9 @@ public abstract class BaseMotor implements MotorInterface {
     this.config = config;
     name = config.name;
     setName(name);
+    if (config.id <= 0) {
+      Log.alert("the " + name + " id is 0 or less").withDescription(name);
+    }
     createMotor();
     configMotor();
     setSignals();
@@ -254,6 +257,11 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setVelocity(double velocity, double feedForward) {
+    if (isPidFfParamsZero(config.pidFfParams[getSlot()])) {
+      Log.alert(getName() + " pid and FF are all zero")
+        .withDescription("you used setVelocity in" + getName() + " but the pid and FF are all zero");
+    }
+
     setMotorVelocity(velocity, feedForward + velocityFeedForward(velocity));
     wantedValue = velocity;
     controlMode = ControlMode.VELOCITY;
@@ -271,6 +279,11 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setPositionVoltage(double position, double feedForward) {
+    if (isPidFfParamsZero(config.pidFfParams[getSlot()])) {
+      Log.alert(getName() + " pid and FF are all zero")
+        .withDescription("you used setPositionVoltage in" + getName() + " but the pid and FF are all zero");
+    }
+
     setMotorPositionVoltage(position, feedForward + positionFeedForward(position));
     wantedValue = position;
     controlMode = ControlMode.POSITION_VOLTAGE;
@@ -283,6 +296,16 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setMotion(double position, double feedForward) {
+    if (isPidFfParamsZero(config.pidFfParams[getSlot()])) {
+      Log.alert(getName() + " pid and FF are all zero")
+        .withDescription("you used setMotion in" + getName() + " but the pid and FF are all zero");
+    }
+
+    if (config.maxVelocity == 0) {
+      Log.alert(getName() + " max velocity is zero")
+        .withDescription("you used setMotion in" + getName() + " but max velocity is zero");
+    }
+
     setMotorMotionMagic(position, feedForward + positionFeedForward(position));
     wantedValue = position;
     controlMode = ControlMode.MAGIC_MOTION;
@@ -318,6 +341,10 @@ public abstract class BaseMotor implements MotorInterface {
     return Math.cos(position * config.posToRad) * config.pidFfParams[slot].kCos();
   }
 
+  private boolean isPidFfParamsZero(CloseLoopParam param) {
+    return param.kP() == 0 && param.kI() == 0 && param.kD() == 0 && param.kP() == 0 && param.kS() == 0 && param.kV() == 0 && param.kA() == 0 && param.kG() == 0 && param.kV2() == 0 && param.kCos() == 0;
+  }
+
   @Override
   public int getCurrentControlModeInteger() {
     return controlMode.ordinal();
@@ -348,6 +375,8 @@ public abstract class BaseMotor implements MotorInterface {
     if (config.isRadiansMotor) {
       return MathUtil.angleModulus(getCurrentPosition());
     }
+    Log.alert(getName() + " cant use getCurrentAngle")
+      .withDescription(getName() + " is not in Radians so you cant use getCurrentAngle");
     return 0;
   }
 

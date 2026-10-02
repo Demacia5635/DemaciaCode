@@ -4,8 +4,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.demacia.utils.motors.MotorInterface;
 import frc.demacia.utils.sensors.Cancoder;
 
@@ -48,13 +46,6 @@ public class SwerveModule {
 
         driveMotor.setDisplayPositionOverride(this::getDrivePosition);
         driveMotor.setDisplayVelocityOverride(this::getDriveVel);
-
-        SmartDashboard.putData(name + " setSteerVelocity", 
-        new RunCommand(() -> {
-            setSteerPower(0.1);
-            setDrivePower(0);
-        })
-            .finallyDo(interrupted -> stop()));
     }
 
     /**
