@@ -48,7 +48,7 @@ public class SwerveCommand extends Command {
 
     kinematics = new wpilibKinmatics(chassis.modulePositions);
     odometry = new wpilivOdmetry(kinematics.kinematics(), chassis.getGyroAngle(), modulePositions);
-    poseEstimator = new wpilibPoseEstimator(kinematics.kinematics(), odometry.getOdometry(), null, visionSTD);
+    poseEstimator = new wpilibPoseEstimator(kinematics.kinematics(), odometry.getOdometry(),odmetryStd , visionSTD);
 
     this.visionSTD = new Matrix<N3, N1>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 }));
     this.odmetryStd = new Matrix<N3, N1>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 }));
