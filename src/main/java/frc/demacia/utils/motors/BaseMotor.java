@@ -580,7 +580,7 @@ public abstract class BaseMotor implements MotorInterface {
     }
   }
 
-  public boolean getIsReady(double allowedError) {
+  public boolean isReady(double allowedError) {
     return Math.abs(getCurrentClosedLoopError()) < allowedError;
   }
 
@@ -670,7 +670,7 @@ public abstract class BaseMotor implements MotorInterface {
       return displayVelocityOverride != null ? displayVelocityOverride.get() : getCurrentVelocity();
   }
 
-  public boolean getIsStuck() {
+  public boolean isStuck() {
     return isStuck;
   }
 

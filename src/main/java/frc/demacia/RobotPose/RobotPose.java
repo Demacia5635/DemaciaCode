@@ -191,11 +191,10 @@ public final class RobotPose {
      * @param visionConfig           The vision sources to use. They are already created when
      *                               the config is built.
      */
-    public static synchronized void initialize(Supplier<OdometryData> odometryDataSupplier,
-            Translation2d[] moduleLocations, Matrix<N3, N1> stateStd,
-            VisionConfig visionConfig) {
-        instance = new RobotPose(odometryDataSupplier, 
-            moduleLocations, 
+    public static synchronized void initialize(Matrix<N3, N1> stateStd, VisionConfig visionConfig) {
+        instance = new RobotPose(
+            ()->new OdometryData(Chassis.getInstance().getGyroAngle(), Chassis.getInstance().getModulePositions()), 
+            Chassis.getInstance().getModuleLocations(), 
             stateStd, 
             visionConfig.getSources());
     }

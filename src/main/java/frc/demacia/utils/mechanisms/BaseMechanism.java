@@ -550,7 +550,7 @@ public class BaseMechanism extends SubsystemBase{
         for (int i = 0; i < motorsAmount; i++){
             MotorNode node = getNode(motorNames[i]);
             MotorInterface motor = node.motor;
-            if (!motor.getIsReady(allowedErrors[i])){
+            if (!motor.isReady(allowedErrors[i])){
                 return false;
             }
         }
@@ -572,7 +572,7 @@ public class BaseMechanism extends SubsystemBase{
         
         MotorInterface motor = node.motor;
 
-        return motor.getIsReady(allowedError);
+        return motor.isReady(allowedError);
     }
 
     /**

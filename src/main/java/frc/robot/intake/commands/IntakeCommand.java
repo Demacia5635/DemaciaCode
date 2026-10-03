@@ -22,8 +22,8 @@ public class IntakeCommand extends DefaultCommand<IntakeStates> {
     public void execute() {
         switch (intake.getState()) {
             case INTAKING, POOPING:
-            intake.setRollersPower(intake.getValue(INTAKE_ROLLERS_NAME));
-            intake.setIntakeDeployMotion(intake.getValue(INTAKE_DEPLOY_NAME));
+                intake.setRollersPower(intake.getValue(INTAKE_ROLLERS_NAME));
+                intake.setIntakeDeployMotion(intake.getValue(INTAKE_DEPLOY_NAME));
                 break;
             default:
                 super.execute();
