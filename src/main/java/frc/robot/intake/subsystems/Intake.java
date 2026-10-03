@@ -8,6 +8,7 @@ import frc.demacia.utils.sensors.LimitSwitch;
 import frc.robot.RobotContainer;
 import static frc.robot.intake.IntakeConstants.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.intake.IntakeConstants.IntakeStates;
 import frc.robot.intake.commands.IntakeDeployCalibrationCommand;
 import static frc.robot.intake.IntakeConstants.IntakeRollersConstants.*;
 import static frc.robot.intake.IntakeConstants.IntakeDeployConstants.*;
@@ -39,7 +40,7 @@ public class Intake extends StateBaseMechanism<IntakeStates> {
         return instance;
     }
 
-    public void setRollersPower(double power) {
+    public void setIntakeRollersPower(double power) {
         setPower(INTAKE_ROLLERS_NAME, power);
     }
 
@@ -55,19 +56,22 @@ public class Intake extends StateBaseMechanism<IntakeStates> {
         return getMotor(INTAKE_DEPLOY_NAME).getCurrentPosition();
     }
 
-    public boolean isRollersStuck() {
+    public boolean isIntakeDeployReady() {
+        return getMotor(INTAKE_DEPLOY_NAME).getCurrentAngle() < INTAKE_DEPLOY_CALIBRATION_POWER;
+    }
+    public boolean isIntakeReady() {
+        return isIntakeDeployReady();
+    }
+
+    public boolean isStuckIntakeRollers() {
         return getMotor(INTAKE_ROLLERS_NAME).isStuck();
     }
-
-    public boolean isRollersReady() {
-        return isReady(name, INTAKE_DEPLOY_MAX_LIMIT_SWITCH_ID);
-    }
-
     public boolean getIntakeDeployMax() {
         return ((LimitSwitch) getSensor(INTAKE_DEPLOY_MAX_LIMIT_SWITCH_NAME)).get();
     }
 
     public boolean atIntakeDeployResetPos() {
-        return ((LimitSwitch) getSensor(INTAKE_DEPLOY_MAX_LIMIT_SWITCH_NAME)).get();
+        return getIntakeDeployMax();
     }
+
 }
