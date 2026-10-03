@@ -17,7 +17,8 @@ public class IntakeConstants {
 
         public static final TalonFXConfig INTAKE_ROLLERS_CONFIG = new TalonFXConfig(INTAKE_ROLLERS_NAME, INTAKE_ROLLERS_ID, INTAKE_ROLLERS_CANBUS)
             .withBrake(INTAKE_ROLLERS_BRAKE)
-            .withInvert(INTAKE_ROLLERS_INVERT);
+            .withInvert(INTAKE_ROLLERS_INVERT)
+            .withDetectStall(INTAKE_ROLLERS_ID, INTAKE_ROLLERS_ID, INTAKE_ROLLERS_ID, INTAKE_ROLLERS_ID);
     }
 
     public static final class IntakeDeployConstants {

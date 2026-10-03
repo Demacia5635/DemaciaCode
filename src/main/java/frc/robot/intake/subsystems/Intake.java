@@ -13,7 +13,7 @@ import static frc.robot.intake.IntakeConstants.IntakeRollersConstants.*;
 import static frc.robot.intake.IntakeConstants.IntakeDeployConstants.*;
 import static frc.robot.intake.IntakeConstants.IntakeDeployMaxLimitSwitchConstants.*;
 
-public class Intake extends StateBaseMechanism {
+public class Intake extends StateBaseMechanism<IntakeStates> {
     private static Intake instance;
 
     private Intake() {
@@ -24,8 +24,7 @@ public class Intake extends StateBaseMechanism {
         }, 
         new SensorInterface[] {
             new LimitSwitch(INTAKE_DEPLOY_MAX_LIMIT_SWITCH_CONFIG),
-        }, 
-        IntakeStates.class);
+        });
 
         addLimit(INTAKE_DEPLOY_NAME, INTAKE_DEPLOY_MIN_LIMIT, INTAKE_DEPLOY_MAX_LIMIT);
         withPowerCommand(INTAKE_DEPLOY_NAME, () -> RobotContainer.controller.getRightX());
@@ -60,8 +59,11 @@ public class Intake extends StateBaseMechanism {
         return ((LimitSwitch) getSensor(INTAKE_DEPLOY_MAX_LIMIT_SWITCH_NAME)).get();
     }
 
+    public boolean getIsRollersStuck() {
+        return getMotor(INTAKE_ROLLERS_NAME).getIsStuck();
+    }
+
     public boolean atIntakeDeployResetPos() {
         return ((LimitSwitch) getSensor(INTAKE_DEPLOY_MAX_LIMIT_SWITCH_NAME)).get();
     }
-
 }
