@@ -19,6 +19,7 @@ import frc.demacia.RobotPose.Vision.VisionConfig;
 import frc.demacia.RobotPose.Vision.VisionSource;
 import frc.demacia.RobotPose.Vision.VisionTypes.Quest;
 import frc.demacia.utils.chassis.Chassis;
+import frc.demacia.utils.log.Log;
 
 /**
  * The robot's field pose. This is the only class the rest of the robot code should use
@@ -68,6 +69,17 @@ public final class RobotPose {
         SmartDashboard.putData("pose/reset pose to 0",
                 new InstantCommand(() -> resetPose(Pose2d.kZero)).ignoringDisable(true));
         SmartDashboard.putData("pose/field", field);
+
+        Log.putData("pose/x", () -> getEstimatedPose().getX());
+        Log.putData("pose/y", () -> getEstimatedPose().getY());
+        Log.putData("pose/heading deg", () -> getEstimatedPose().getRotation().getDegrees());
+        Log.putData("pose/odometry x", () -> poseEstimator.getOdometryPose().getX());
+        Log.putData("pose/odometry y", () -> poseEstimator.getOdometryPose().getY());
+        Log.putData("pose/odometry heading deg", () -> poseEstimator.getOdometryPose().getRotation().getDegrees());
+        Log.putData("pose/raw gyro deg", () -> getGyroAngle().getDegrees());
+        Log.putData("pose/twist dx", () -> poseEstimator.getLastOdometryTwist().dx);
+        Log.putData("pose/twist dy", () -> poseEstimator.getLastOdometryTwist().dy);
+        Log.putData("pose/twist dtheta deg", () -> Math.toDegrees(poseEstimator.getLastOdometryTwist().dtheta));
     }
 
         /**
@@ -107,6 +119,7 @@ public final class RobotPose {
         }
 
         field.setRobotPose(poseEstimator.getEstimatedPose());
+        field.getObject("odometry").setPose(poseEstimator.getOdometryPose());
     }
 
     /**

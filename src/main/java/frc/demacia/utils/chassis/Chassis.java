@@ -47,6 +47,9 @@ public class Chassis extends SubsystemBase {
     private double lastOmega = 0;
     private double lastOmegaTime = Timer.getFPGATimestamp();
 
+    /** The last speeds given to the kinematics (robot-relative), for logging. */
+    private ChassisSpeeds lastCommandedSpeeds = new ChassisSpeeds();
+
     private Chassis(ChassisConfig chassisConfig) {
         setName(getName());
 
@@ -67,6 +70,16 @@ public class Chassis extends SubsystemBase {
 
     public void addLog() {
         Log.putData("chassis/gyro angle", () -> getGyroAngle().getDegrees());
+        Log.putData("chassis/commanded vx", () -> lastCommandedSpeeds.vxMetersPerSecond);
+        Log.putData("chassis/commanded vy", () -> lastCommandedSpeeds.vyMetersPerSecond);
+        Log.putData("chassis/commanded omega", () -> lastCommandedSpeeds.omegaRadiansPerSecond);
+
+        for (SwerveModule module : modules) {
+            Log.putData("chassis/" + module.name + "/steer angle deg", () -> module.getSteerRotation().getDegrees());
+            Log.putData("chassis/" + module.name + "/odometry angle deg", () -> module.getModulePosition().angle.getDegrees());
+            Log.putData("chassis/" + module.name + "/drive distance", () -> module.getModulePosition().distanceMeters);
+            Log.putData("chassis/" + module.name + "/drive velocity", () -> module.getDriveVel());
+        }
 
         SmartDashboard.putData("chassis/set coast",
                 new InstantCommand(() -> setNeutralMode(false)).ignoringDisable(true));
@@ -157,6 +170,7 @@ public class Chassis extends SubsystemBase {
     }
 
     public void setSpeedsFieldRel(ChassisSpeeds speeds) {
+        lastCommandedSpeeds = speeds;
         SwerveModuleState[] states = demaciaKinematics.toSwerveModuleStates(speeds);
         setModuleStates(states);
 
@@ -166,6 +180,7 @@ public class Chassis extends SubsystemBase {
     }
 
     public void setSpeedsRobotRel(ChassisSpeeds speeds) {
+        lastCommandedSpeeds = speeds;
         SwerveModuleState[] states = wpilibKinematics.toSwerveModuleStates(speeds);
         setModuleStates(states);
     }

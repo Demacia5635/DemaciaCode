@@ -58,6 +58,8 @@ public class DemaciaPoseEstimator {
     private Pose2d latestPose = new Pose2d();
     /** FPGA timestamp to odometry twist and vision measurements at that time, sorted by time. */
     private final NavigableMap<Double, PoseUpdate> updates = new TreeMap<>();
+    /** The robot-relative odometry twist of the last sample (for logging). */
+    private Twist2d lastOdometryTwist = new Twist2d();
 
     /**
      * @param initialPositions Module readings right now.
@@ -91,6 +93,7 @@ public class DemaciaPoseEstimator {
     public void addOdometryData(OdometryData odometryData) {
         double timestamp = Timer.getFPGATimestamp();
         Twist2d twist = odometry.updateOdometry(odometryData.gyroAngle(), odometryData.swerveModules());
+        lastOdometryTwist = twist;
         updates.put(timestamp, new PoseUpdate(twist, new ArrayList<>()));
         update();
     }
@@ -196,6 +199,16 @@ public class DemaciaPoseEstimator {
     /** @return The current fused pose (from the last replay). */
     public Pose2d getEstimatedPose() {
         return latestPose;
+    }
+
+    /** @return The pure-odometry pose (no vision corrections). */
+    public Pose2d getOdometryPose() {
+        return odometry.getOdometryPose();
+    }
+
+    /** @return The robot-relative odometry twist of the last sample (dx, dy meters, dtheta radians). */
+    public Twist2d getLastOdometryTwist() {
+        return lastOdometryTwist;
     }
 
     /**
