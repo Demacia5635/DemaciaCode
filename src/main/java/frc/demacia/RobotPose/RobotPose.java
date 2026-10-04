@@ -68,6 +68,8 @@ public final class RobotPose {
         SmartDashboard.putData("chassis/reset gyro 180",
                 new InstantCommand(() -> setYaw(Rotation2d.kPi)).ignoringDisable(true));
         SmartDashboard.putData("chassis/field", field);
+        SmartDashboard.putData("chassis/reset pose",
+            new InstantCommand(() -> resetPose(new Pose2d())).ignoringDisable(true));
     }
 
         /**

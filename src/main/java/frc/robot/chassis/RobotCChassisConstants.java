@@ -50,10 +50,10 @@ public class RobotCChassisConstants {
 
   public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        3.14932, //FRONT LEFT
-        -0.691825, //FRONT RIGHT
-        -0.1288544, //BACK LEFT
-        1.1382137 //BACK RIGHT
+        3.124718864923051, //FRONT LEFT
+        2.462039164556454, //FRONT RIGHT
+        2.9989324403164286, //BACK LEFT
+        -2.0156507552817327 //BACK RIGHT
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);
@@ -86,7 +86,7 @@ public class RobotCChassisConstants {
               .withRampTime(RAMP_TIME_STEER),
           new TalonFXConfig(name + " Drive", i * 3 + 1, CAN_BUS)
               .withPID(DRIVE_KP, DRIVE_KI, DRIVE_KD, DRIVE_KS, DRIVE_KV, DRIVE_KA, 0, 0, 0)
-              .withBrake(true)
+              .withBrake(false)
               .withMeterMotor(DRIVE_GEAR_RATIO, WHEEL_DIAMETER),
           new CancoderConfig(name + " Cancoder", i * 3 + 3, CAN_BUS)
             .withInvert(true))

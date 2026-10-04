@@ -13,7 +13,7 @@ public class IntakeConstants {
         public static final int INTAKE_ROLLERS_ID = 51;
         public static final Canbus INTAKE_ROLLERS_CANBUS = Canbus.Rio; // TODO
         public static final boolean INTAKE_ROLLERS_BRAKE = false;
-        public static final boolean INTAKE_ROLLERS_INVERT = false;
+        public static final boolean INTAKE_ROLLERS_INVERT = true;
         public static final double INTAKE_ROLLERS_HIGH_CURRENT_THRESHOLD = 30; // TODO
         public static final double INTAKE_ROLLERS_LOW_VELOCITY_THRESHOLD = 5; // TODO
         public static final double INTAKE_ROLLERS_STALL_CONFIRM_SECONDS = 0.2; // TODO
