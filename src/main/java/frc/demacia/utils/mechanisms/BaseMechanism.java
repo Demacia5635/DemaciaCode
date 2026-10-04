@@ -101,12 +101,6 @@ public class BaseMechanism extends SubsystemBase{
             SmartDashboard.putData(getName() + "/" + motorName + "/set coast " + motorName, 
                 new InstantCommand(() -> setNeutralMode(motorName, false)).ignoringDisable(true));
         }
-
-        // Create global Brake/Coast buttons for the whole mechanism
-        SmartDashboard.putData(getName() + "/set coast " + getName(), 
-                new InstantCommand(() -> setNeutralMode(false)).ignoringDisable(true));
-        SmartDashboard.putData(getName() + "/set brake " + getName(), 
-                new InstantCommand(() -> setNeutralMode(true)).ignoringDisable(true));
         
         SmartDashboard.putData(name, this);
         ElasticGenerator.getInstance().registerMechanism(this);

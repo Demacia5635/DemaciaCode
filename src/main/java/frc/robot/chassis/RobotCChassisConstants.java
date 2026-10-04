@@ -18,8 +18,8 @@ public class RobotCChassisConstants {
   public static final String NAME = "robot c Chassis";
 
   public static final int PIGEON_ID = 14;
-  public static final Canbus CAN_BUS = Canbus.CANIvore; // TODO
-  public static final Canbus PIGEON_CAN_BUS = Canbus.CANIvore; // TODO
+  public static final Canbus CAN_BUS = Canbus.CANIvore;
+  public static final Canbus PIGEON_CAN_BUS = Canbus.CANIvore;
   public static final double STEER_GEAR_RATIO = Mk5nConstants.STEER_GEAR_RATIO;
   public static final double DRIVE_GEAR_RATIO = Mk5nConstants.R2.driveGearRatio;
   public static final double WHEEL_DIAMETER = Mk5nConstants.WHEEL_DIAMETER;
@@ -27,19 +27,19 @@ public class RobotCChassisConstants {
   public static final double MAX_DRIVE_VELOCITY = 5;
   public static final double RAMP_TIME_STEER = 0.25;
 
-  public static final double STEER_KP = 0; // TODO
-  public static final double STEER_KI = 0; // TODO
-  public static final double STEER_KD = 0; // TODO
-  public static final double STEER_KS = 0; // TODO
-  public static final double STEER_KV = 0; // TODO
-  public static final double STEER_KA = 0; // TODO
+  public static final double STEER_KP = 5;
+  public static final double STEER_KI = 0;
+  public static final double STEER_KD = 0;
+  public static final double STEER_KS = 0.35;
+  public static final double STEER_KV = 0.38;
+  public static final double STEER_KA = 0.01;
 
-  public static final double DRIVE_KP = 0; // TODO
-  public static final double DRIVE_KI = 0; // TODO
-  public static final double DRIVE_KD = 0; // TODO
-  public static final double DRIVE_KS = 0; // TODO
-  public static final double DRIVE_KV = 0; // TODO
-  public static final double DRIVE_KA = 0; // TODO
+  public static final double DRIVE_KP = 1;
+  public static final double DRIVE_KI = 0;
+  public static final double DRIVE_KD = 0;
+  public static final double DRIVE_KS = 0.15;
+  public static final double DRIVE_KV = 2.4;
+  public static final double DRIVE_KA = 0;
 
   public static final Translation2d[] MODULE_LOCATIONS = {
     new Translation2d(0.32, 0.27), //FRONT LEFT 
@@ -50,10 +50,10 @@ public class RobotCChassisConstants {
 
   public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        0, //FRONT LEFT // TODO
-        0, //FRONT RIGHT // TODO
-        0, //BACK LEFT // TODO
-        0 //BACK RIGHT // TODO
+        3.14932, //FRONT LEFT
+        -0.691825, //FRONT RIGHT
+        -0.1288544, //BACK LEFT
+        1.1382137 //BACK RIGHT
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);
@@ -89,7 +89,7 @@ public class RobotCChassisConstants {
               .withBrake(true)
               .withMeterMotor(DRIVE_GEAR_RATIO, WHEEL_DIAMETER),
           new CancoderConfig(name + " Cancoder", i * 3 + 3, CAN_BUS)
-            .withInvert(false))
+            .withInvert(true))
           .withPosion(MODULE_LOCATIONS[i])
           .withSteerOffset(offsets[i])
           .withMetersFrom360Degs(METERS_FROM_360_DEGS);

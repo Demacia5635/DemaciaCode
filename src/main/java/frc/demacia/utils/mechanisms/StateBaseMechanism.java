@@ -243,6 +243,6 @@ public class StateBaseMechanism<S extends StateBaseMechanism.MechanismState> ext
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
         builder.addDoubleArrayProperty(getName() + " Test Values", () -> getTestValues(), testValues -> setTestValues(testValues));
-        builder.addStringProperty(getName() + " State", () -> (getMechanismState() == null)? "" : getMechanismState().name(), null);
+        builder.addStringProperty(getName() + " State", () -> (getMechanismState() == null) ? "" : getMechanismState().name(), null);
     }
 }
