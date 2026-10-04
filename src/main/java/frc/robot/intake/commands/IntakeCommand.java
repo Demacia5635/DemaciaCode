@@ -3,6 +3,8 @@ package frc.robot.intake.commands;
 import static frc.robot.intake.IntakeConstants.IntakeRollersConstants.*;
 import static frc.robot.intake.IntakeConstants.IntakeDeployConstants.*;
 import static frc.robot.intake.IntakeConstants.IntakeStates.*;
+
+import frc.demacia.utils.log.Log;
 import frc.demacia.utils.mechanisms.DefaultCommand;
 import frc.demacia.utils.motors.MotorInterface.ControlMode;
 import frc.robot.intake.IntakeConstants.IntakeStates;
@@ -27,15 +29,26 @@ public class IntakeCommand extends DefaultCommand<IntakeStates> {
                 Shinua.getInstance().isStuckShinuaRollers() || 
                 intake.isStuckIntakeRollers() || 
                 Shooter.getInstance().isStuckFeeder()) {
+                    Log.alert(Shinua.getInstance().isStuckMecanum() + "isStuckMecanum");
+                    Log.alert(Shinua.getInstance().isStuckShinuaRollers() + "isStuckShinuaRollers");
+                    Log.alert(intake.isStuckIntakeRollers() + "isStuckIntakeRollers");
+                    Log.alert(Shooter.getInstance().isStuckFeeder() + "isStuckFeeder");
                     intake.setState(POOPING);
         }
+
+        //if state is testing or idle then getState() is null and DefaultCommand execute will handle it
+        if (intake.getState() == null) {
+            super.execute();
+            return;
+        }
+
         switch (intake.getState()) {
             case INTAKING, POOPING, CLOSED, MIDDLE, SHOOTING:
                 intake.setIntakeRollersPower(intake.getValue(INTAKE_ROLLERS_NAME));
                 intake.setIntakeDeployMotion(intake.getValue(INTAKE_DEPLOY_NAME));
                 break;
             default:
-                super.execute();
+                break;
         }
     }
 }

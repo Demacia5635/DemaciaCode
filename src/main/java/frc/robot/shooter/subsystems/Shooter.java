@@ -6,10 +6,13 @@ import frc.demacia.utils.sensors.SensorInterface;
 import frc.demacia.utils.motors.TalonFXMotor;
 import frc.demacia.utils.sensors.LimitSwitch;
 import frc.robot.RobotContainer;
-import static frc.robot.shooter.ShooterConstants.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.shooter.ShooterConstants.ShooterStates;
 import frc.robot.shooter.commands.HoodCalibrationCommand;
+import frc.robot.shootingValues.ShootingValues;
+import frc.robot.shootingValues.ShootingValuesConstants;
+import frc.robot.shootingValues.ShootingValuesRecord;
+import static frc.robot.shooter.ShooterConstants.*;
 import static frc.robot.shooter.ShooterConstants.FlywheelConstants.*;
 import static frc.robot.shooter.ShooterConstants.HoodConstants.*;
 import static frc.robot.shooter.ShooterConstants.FeederConstants.*;
@@ -17,6 +20,8 @@ import static frc.robot.shooter.ShooterConstants.HoodMinLimitSwitchConstants.*;
 
 public class Shooter extends StateBaseMechanism<ShooterStates> {
     private static Shooter instance;
+
+    private double[] shooterValues;
 
     private Shooter() {
         super(SHOOTER_NAME, 
@@ -28,6 +33,8 @@ public class Shooter extends StateBaseMechanism<ShooterStates> {
         new SensorInterface[] {
             new LimitSwitch(HOOD_MIN_LIMIT_SWITCH_CONFIG),
         });
+
+        shooterValues = new double[3];
 
         addLimit(HOOD_NAME, HOOD_MIN_LIMIT, HOOD_MAX_LIMIT);
         withPowerCommand(FLYWHEEL_NAME, () -> RobotContainer.controller.getRightX());
@@ -90,24 +97,43 @@ public class Shooter extends StateBaseMechanism<ShooterStates> {
     public double[] getShooterValues() {
         switch ((ShooterStates) state) {
             case SHOOTING:
+                ShootingValuesRecord shootingValues = ShootingValues.getInstance().getShootingValues();
+
+                shooterValues[0] = shootingValues.velocity();
+                shooterValues[1] = shootingValues.hoodAngle();
+                shooterValues[2] = FEEDER_POWER;
                 break;
             case DELIVERY:
+                shooterValues[0] = ShootingValuesConstants.LOOK_UP_TABLE.get(ShootingValues.getInstance().distanceFromHubAfterTime(ShootingValuesConstants.PREDICTING_TIME))[0];
+                shooterValues[1] = ShootingValuesConstants.LOOK_UP_TABLE.get(ShootingValues.getInstance().distanceFromHubAfterTime(ShootingValuesConstants.PREDICTING_TIME))[1];
+                shooterValues[2] = FEEDER_POWER;
                 break;
             case TRANCH:
+                shooterValues[1] = 0;
                 break;
             default:
                 break;
         }
         
-        return new double[] {}; // TODO: Unimplemented method 'getShooterValues'
+        return shooterValues;
     }
 
     public boolean getHoodMin() {
-        return ((LimitSwitch) getSensor(HOOD_MIN_LIMIT_SWITCH_NAME)).get() || isStuckHood();
+        return ((LimitSwitch) getSensor(HOOD_MIN_LIMIT_SWITCH_NAME)).get();
     }
 
-    public boolean atHoodResetPos() {
+    public boolean atHoodAutoResetPos() {
         return getHoodMin();
     }
 
+    public boolean atHoodResetPos() {
+        return getHoodMin() || isStuckHood();
+    }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+
+        ShootingValues.getInstance().updateShootingValues();
+    }
 }

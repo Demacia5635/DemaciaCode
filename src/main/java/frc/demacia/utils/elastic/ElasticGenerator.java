@@ -620,7 +620,7 @@ public class ElasticGenerator {
                         }
                         
                         SensorInterface sensor = mech.getSensor(sensorIndex);
-                        String sensorTopic = "/SmartDashboard/sensors/" + sensor.getName() + "/value";
+                        String sensorTopic = "/SmartDashboard/sensors/" + sensor.getName() + "/Value";
                         
                         if (sensor instanceof frc.demacia.utils.sensors.DigitalSensorInterface) {
                             widgets.add(createWidget("Boolean Box", sensor.getName(), xOffset, yOffset, WIDGET_WIDTH, 1, sensorTopic, "\"data_type\": \"boolean\""));

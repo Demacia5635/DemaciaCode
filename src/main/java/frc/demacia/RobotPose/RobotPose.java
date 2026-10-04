@@ -7,6 +7,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -125,6 +126,16 @@ public final class RobotPose {
      */
     public Pose2d getEstimatedPoseAt(double timestampSeconds) {
         return poseEstimator.getPoseAt(timestampSeconds);
+    }
+
+    public Pose2d getFuturePose(double sec) {
+        Pose2d pose = getEstimatedPose();
+        ChassisSpeeds speed = Chassis.getInstance().getChassisSpeedsFieldRel();
+        
+        return new Pose2d(
+            pose.getX() + speed.vxMetersPerSecond * sec,
+            pose.getY() + speed.vyMetersPerSecond * sec,
+            pose.getRotation().plus(Rotation2d.fromRadians(speed.omegaRadiansPerSecond * sec)));
     }
 
     /**

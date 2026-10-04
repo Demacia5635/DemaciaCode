@@ -14,10 +14,10 @@ public class IntakeConstants {
         public static final Canbus INTAKE_ROLLERS_CANBUS = Canbus.Rio; // TODO
         public static final boolean INTAKE_ROLLERS_BRAKE = false;
         public static final boolean INTAKE_ROLLERS_INVERT = false;
-        public static final double INTAKE_ROLLERS_HIGH_CURRENT_THRESHOLD = 0.0; // TODO
-        public static final double INTAKE_ROLLERS_LOW_VELOCITY_THRESHOLD = 0.0; // TODO
-        public static final double INTAKE_ROLLERS_STALL_CONFIRM_SECONDS = 0.0; // TODO
-        public static final double INTAKE_ROLLERS_STUCK_DURATION_SECONDS = 0.0; // TODO
+        public static final double INTAKE_ROLLERS_HIGH_CURRENT_THRESHOLD = 30; // TODO
+        public static final double INTAKE_ROLLERS_LOW_VELOCITY_THRESHOLD = 5; // TODO
+        public static final double INTAKE_ROLLERS_STALL_CONFIRM_SECONDS = 0.2; // TODO
+        public static final double INTAKE_ROLLERS_STUCK_DURATION_SECONDS = 0.2; // TODO
 
         public static final TalonFXConfig INTAKE_ROLLERS_CONFIG = new TalonFXConfig(INTAKE_ROLLERS_NAME, INTAKE_ROLLERS_ID, INTAKE_ROLLERS_CANBUS)
             .withBrake(INTAKE_ROLLERS_BRAKE)
@@ -59,22 +59,26 @@ public class IntakeConstants {
         public static final double INTAKE_DEPLOY_CALIBRATION_POWER = 0.2;
         public static final double INTAKE_DEPLOY_CMD_CALIBRATION_RESET_POS = Math.toRadians(100);
         public static final double INTAKE_DEPLOY_AUTO_CALIBRATION_RESET_POS = Math.toRadians(100);
+
+        public static final double INTAKE_DEPLOY_CLOSED = Math.toRadians(100);
+        public static final double INTAKE_DEPLOY_MIDDLE = Math.toRadians(40);
+        public static final double INTAKE_DEPLOY_OPEN = Math.toRadians(0);
     }
 
     public static final class IntakeDeployMaxLimitSwitchConstants {
         public static final String INTAKE_DEPLOY_MAX_LIMIT_SWITCH_NAME = "intake deploy max Limit Switch";
         public static final int INTAKE_DEPLOY_MAX_LIMIT_SWITCH_ID = 7; // TODO
-        public static final boolean INTAKE_DEPLOY_MAX_LIMIT_SWITCH_INVERT = false;
+        public static final boolean INTAKE_DEPLOY_MAX_LIMIT_SWITCH_INVERT = true;
         public static final LimitSwitchConfig INTAKE_DEPLOY_MAX_LIMIT_SWITCH_CONFIG = new LimitSwitchConfig(INTAKE_DEPLOY_MAX_LIMIT_SWITCH_NAME,INTAKE_DEPLOY_MAX_LIMIT_SWITCH_ID)
             .withInvert(INTAKE_DEPLOY_MAX_LIMIT_SWITCH_INVERT);
     }
 
     public static enum IntakeStates implements MechanismState {
-        INTAKING(0.7, 0.0), // TODO
-        POOPING(-0.7, 0.0), // TODO
-        CLOSED(0.0, 0.0), // TODO
-        MIDDLE(0.0, 0.0), // TODO
-        SHOOTING(0.2, 0.0); // TODO
+        INTAKING(0.7, IntakeDeployConstants.INTAKE_DEPLOY_OPEN), // TODO
+        POOPING(-0.7, IntakeDeployConstants.INTAKE_DEPLOY_OPEN), // TODO
+        CLOSED(0.0, IntakeDeployConstants.INTAKE_DEPLOY_CLOSED), // TODO
+        MIDDLE(0.0, IntakeDeployConstants.INTAKE_DEPLOY_MIDDLE), // TODO
+        SHOOTING(0.2, IntakeDeployConstants.INTAKE_DEPLOY_MIDDLE); // TODO
 
         private final double[] values;
         private IntakeStates(double... vals) { this.values = vals; }

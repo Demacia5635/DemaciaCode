@@ -36,18 +36,18 @@ public class TurretConstants {
             .withPID(TURRET_MOTOR_KP, TURRET_MOTOR_KI, TURRET_MOTOR_KD, TURRET_MOTOR_KS, TURRET_MOTOR_KV, TURRET_MOTOR_KA, TURRET_MOTOR_KG, TURRET_MOTOR_KCOS, TURRET_MOTOR_KV2)
             .withMotionParam(TURRET_MOTOR_MAX_VELOCITY, TURRET_MOTOR_MAX_ACCELERATION, TURRET_MOTOR_MAX_JERK);
 
-        public static final double TURRET_MOTOR_MIN_LIMIT = Math.toRadians(-1); // TODO
-        public static final double TURRET_MOTOR_MAX_LIMIT = Math.toRadians(-1); // TODO
-        public static final double TURRET_MOTOR_ALLOWED_ERROR = Math.toRadians(3);
+        public static final double TURRET_MOTOR_MIN_LIMIT = Math.toRadians(-300); // TODO
+        public static final double TURRET_MOTOR_MAX_LIMIT = Math.toRadians(30); // TODO
+        public static final double TURRET_MOTOR_ALLOWED_ERROR = Math.toRadians(5);
         public static final double TURRET_MOTOR_CALIBRATION_POWER = -0.1;
-        public static final double TURRET_MOTOR_CMD_CALIBRATION_RESET_POS = Math.toRadians(0);
-        public static final double TURRET_MOTOR_AUTO_CALIBRATION_RESET_POS = Math.toRadians(0); // TODO
+        public static final double TURRET_MOTOR_CMD_CALIBRATION_RESET_POS = Math.toRadians(-300);
+        public static final double TURRET_MOTOR_AUTO_CALIBRATION_RESET_POS = Math.toRadians(-300); // TODO
     }
 
     public static final class MinLimitSwitchConstants {
         public static final String MIN_LIMIT_SWITCH_NAME = "min Limit Switch";
         public static final int MIN_LIMIT_SWITCH_ID = 9;
-        public static final boolean MIN_LIMIT_SWITCH_INVERT = false;
+        public static final boolean MIN_LIMIT_SWITCH_INVERT = true;
         public static final LimitSwitchConfig MIN_LIMIT_SWITCH_CONFIG = new LimitSwitchConfig(MIN_LIMIT_SWITCH_NAME,MIN_LIMIT_SWITCH_ID)
             .withInvert(MIN_LIMIT_SWITCH_INVERT);
     }

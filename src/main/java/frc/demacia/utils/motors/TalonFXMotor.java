@@ -53,15 +53,9 @@ public class TalonFXMotor extends BaseMotor {
 
     if (RobotBase.isSimulation()) {
       motor.getSimState().setSupplyVoltage(12);
-      
-      new Data(() -> {
-        double vel = getCurrentVelocity();
-        double pos = getCurrentPosition();
     
-        double newPos = pos + vel * 0.02;
-        double newPosRot = toSimValue(newPos - simOffset);
-
-        motor.getSimState().setRawRotorPosition(newPosRot);
+      new Data(() -> {
+        motor.getSimState().addRotorPosition(toSimValue(getCurrentVelocity() * 0.02));
         return 0;
       });
     }
@@ -251,7 +245,7 @@ public class TalonFXMotor extends BaseMotor {
     motor.setPosition(position);
 
     if (RobotBase.isSimulation()) {
-      simOffset = position - getCurrentPosition();
+      simOffset += position - getCurrentPosition();
     }
-  }
+  } 
 }

@@ -55,10 +55,10 @@ public class ShooterConstants {
         public static final double HOOD_MAX_VELOCITY = 0.0; // TODO
         public static final double HOOD_MAX_ACCELERATION = 0.0; // TODO
         public static final double HOOD_MAX_JERK = 0.0; // TODO
-        public static final double HOOD_HIGH_CURRENT_THRESHOLD = 0.0; // TODO
-        public static final double HOOD_LOW_VELOCITY_THRESHOLD = 0.0; // TODO
-        public static final double HOOD_STALL_CONFIRM_SECONDS = 0.0; // TODO
-        public static final double HOOD_STUCK_DURATION_SECONDS = 0.0; // TODO
+        public static final double HOOD_HIGH_CURRENT_THRESHOLD = 10.0; // TODO
+        public static final double HOOD_LOW_VELOCITY_THRESHOLD = 0.1; // TODO
+        public static final double HOOD_STALL_CONFIRM_SECONDS = 0.1; // TODO
+        public static final double HOOD_STUCK_DURATION_SECONDS = 0.1; // TODO
 
         public static final TalonFXConfig HOOD_CONFIG = new TalonFXConfig(HOOD_NAME, HOOD_ID, HOOD_CANBUS)
             .withBrake(HOOD_BRAKE)
@@ -82,10 +82,12 @@ public class ShooterConstants {
         public static final Canbus FEEDER_CANBUS = Canbus.Rio; // TODO
         public static final boolean FEEDER_BRAKE = false;
         public static final boolean FEEDER_INVERT = false;
-        public static final double FEEDER_HIGH_CURRENT_THRESHOLD = 0.0; // TODO
-        public static final double FEEDER_LOW_VELOCITY_THRESHOLD = 0.0; // TODO
-        public static final double FEEDER_STALL_CONFIRM_SECONDS = 0.0; // TODO
-        public static final double FEEDER_STUCK_DURATION_SECONDS = 0.0; // TODO
+        public static final double FEEDER_HIGH_CURRENT_THRESHOLD = 30.0; // TODO
+        public static final double FEEDER_LOW_VELOCITY_THRESHOLD = 5.0; // TODO
+        public static final double FEEDER_STALL_CONFIRM_SECONDS = 0.2; // TODO
+        public static final double FEEDER_STUCK_DURATION_SECONDS = 0.2; // TODO
+        public static final double FEEDER_POWER = 1;
+        public static final double FEEDER_POOPING_POWER = -1;
 
         public static final TalonFXConfig FEEDER_CONFIG = new TalonFXConfig(FEEDER_NAME, FEEDER_ID, FEEDER_CANBUS)
             .withBrake(FEEDER_BRAKE)
@@ -97,7 +99,7 @@ public class ShooterConstants {
     public static final class HoodMinLimitSwitchConstants {
         public static final String HOOD_MIN_LIMIT_SWITCH_NAME = "hood min Limit Switch";
         public static final int HOOD_MIN_LIMIT_SWITCH_ID = 5;
-        public static final boolean HOOD_MIN_LIMIT_SWITCH_INVERT = false;
+        public static final boolean HOOD_MIN_LIMIT_SWITCH_INVERT = true;
         public static final LimitSwitchConfig HOOD_MIN_LIMIT_SWITCH_CONFIG = new LimitSwitchConfig(HOOD_MIN_LIMIT_SWITCH_NAME,HOOD_MIN_LIMIT_SWITCH_ID)
             .withInvert(HOOD_MIN_LIMIT_SWITCH_INVERT);
     }

@@ -30,22 +30,31 @@ public class ShinuaCommand extends DefaultCommand<ShinuaStates> {
                 Shooter.getInstance().isStuckFeeder()) {
             shinua.setState(POOPING);
         }
+
+        if (!Intake.getInstance().isIntakeReady() && !mechanism.getMechanismState().equals(mechanism.IDLE_STATE)) {
+            shinua.setState(NO_MECANUM);
+        }
+
+        //if state is testing or idle getState() is null and DefaultCommand will handle it
+        if (shinua.getState() == null) {
+            super.execute();
+            return;
+        }
  
         switch (shinua.getState()) {
             case SHOOTING:
                 if (Shooter.getInstance().isShooterReady() && 
-                        Turret.getInstance().isTurretReady() && 
-                        Intake.getInstance().isIntakeReady()) {
+                        Turret.getInstance().isTurretReady()) {
                     shinua.setShinuaRollersPower(shinua.getValue(SHINUA_ROLLERS_NAME));
                     shinua.setMecanumPower(shinua.getValue(MECANUM_NAME));
                 }
                 break;
-            case POOPING, NOT_SHOOTING:
+            case POOPING, NOT_SHOOTING, NO_MECANUM:
                 shinua.setShinuaRollersPower(shinua.getValue(SHINUA_ROLLERS_NAME));
                 shinua.setMecanumPower(shinua.getValue(MECANUM_NAME));
                 break;
             default:
-                super.execute();
+                break;
         }
     }
 }

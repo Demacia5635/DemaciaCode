@@ -317,7 +317,7 @@ public class BaseMechanism extends SubsystemBase{
             node.hasCalibrated = true;
             Log.log(node.hasCalibrated);
         }).ignoringDisable(true));
-        }
+    }
 
     /**
      * Stops all motors in this mechanism and resets their wanted values.

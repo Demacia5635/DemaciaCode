@@ -6,14 +6,20 @@ import frc.demacia.utils.sensors.SensorInterface;
 import frc.demacia.utils.motors.TalonFXMotor;
 import frc.demacia.utils.sensors.LimitSwitch;
 import frc.robot.RobotContainer;
+import frc.robot.shootingValues.ShootingValues;
+import frc.robot.shootingValues.ShootingValuesConstants;
+
 import static frc.robot.turret.TurretConstants.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.turret.TurretConstants.TurretStates;
 import frc.robot.turret.commands.TurretMotorCalibrationCommand;
 import static frc.robot.turret.TurretConstants.TurretMotorConstants.*;
 import static frc.robot.turret.TurretConstants.MinLimitSwitchConstants.*;
 
 public class Turret extends StateBaseMechanism<TurretStates> {
     private static Turret instance;
+
+    private double[] turretVal;
 
     private Turret() {
         super(TURRET_NAME, 
@@ -23,6 +29,8 @@ public class Turret extends StateBaseMechanism<TurretStates> {
         new SensorInterface[] {
             new LimitSwitch(MIN_LIMIT_SWITCH_CONFIG),
         });
+
+        turretVal = new double[1];
 
         addLimit(TURRET_MOTOR_NAME, TURRET_MOTOR_MIN_LIMIT, TURRET_MOTOR_MAX_LIMIT);
         withPowerCommand(TURRET_MOTOR_NAME, () -> RobotContainer.controller.getRightX());
@@ -41,6 +49,14 @@ public class Turret extends StateBaseMechanism<TurretStates> {
         setPower(TURRET_MOTOR_NAME, power);
     }
 
+    public void setTurretMotorMotion(double motion) {
+        setMotion(TURRET_MOTOR_NAME, motion);
+    }
+
+    public double getTurretMotorPosition() {
+        return getMotor(TURRET_MOTOR_NAME).getCurrentPosition();
+    }
+
     public boolean isTurretMotorReady() {
         return isReady(TURRET_MOTOR_NAME, TURRET_MOTOR_ALLOWED_ERROR);
     }
@@ -51,14 +67,16 @@ public class Turret extends StateBaseMechanism<TurretStates> {
     public double[] getTurretValues() {
         switch ((TurretStates) state) {
             case SHOOTING:
+                turretVal[0] = ShootingValues.getInstance().getShootingValues().turretAngle();
                 break;
             case DELIVERY:
+                turretVal[0] = ShootingValues.getInstance().angleFromHubAfterTime(ShootingValuesConstants.PREDICTING_TIME);
                 break;
             default:
                 break;
         }
         
-        return new double[] {}; // TODO: Unimplemented method 'getTurretValues'
+        return turretVal;
     }
 
     public boolean getMin() {

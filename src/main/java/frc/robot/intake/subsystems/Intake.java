@@ -57,7 +57,7 @@ public class Intake extends StateBaseMechanism<IntakeStates> {
     }
 
     public boolean isIntakeDeployReady() {
-        return getMotor(INTAKE_DEPLOY_NAME).getCurrentAngle() < INTAKE_DEPLOY_CALIBRATION_POWER;
+        return getMotor(INTAKE_DEPLOY_NAME).getCurrentAngle() < INTAKE_DEPLOY_ALLOWED_POS;
     }
     public boolean isIntakeReady() {
         return isIntakeDeployReady();

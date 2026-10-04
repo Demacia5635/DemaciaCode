@@ -252,7 +252,7 @@ public class Chassis extends SubsystemBase {
     public ChassisSpeeds getChassisSpeedsRobotRel() {
         return demaciaKinematics.toChassisSpeeds(
                 getModuleStates(),
-                getGyroAngle().getRadians());
+                getGyroAngularVelocity());
     }
 
     public ChassisSpeeds getChassisSpeedsFieldRel() {

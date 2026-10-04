@@ -13,10 +13,10 @@ public class ShinuaConstants {
         public static final Canbus SHINUA_ROLLERS_CANBUS = Canbus.Rio; // TODO
         public static final boolean SHINUA_ROLLERS_BRAKE = false;
         public static final boolean SHINUA_ROLLERS_INVERT = false;
-        public static final double SHINUA_ROLLERS_HIGH_CURRENT_THRESHOLD = 0.0; // TODO
-        public static final double SHINUA_ROLLERS_LOW_VELOCITY_THRESHOLD = 0.0; // TODO
-        public static final double SHINUA_ROLLERS_STALL_CONFIRM_SECONDS = 0.0; // TODO
-        public static final double SHINUA_ROLLERS_STUCK_DURATION_SECONDS = 0.0; // TODO
+        public static final double SHINUA_ROLLERS_HIGH_CURRENT_THRESHOLD = 30.0; // TODO
+        public static final double SHINUA_ROLLERS_LOW_VELOCITY_THRESHOLD = 5.0; // TODO
+        public static final double SHINUA_ROLLERS_STALL_CONFIRM_SECONDS = 0.2; // TODO
+        public static final double SHINUA_ROLLERS_STUCK_DURATION_SECONDS = 0.2; // TODO
 
         public static final TalonFXConfig SHINUA_ROLLERS_CONFIG = new TalonFXConfig(SHINUA_ROLLERS_NAME, SHINUA_ROLLERS_ID, SHINUA_ROLLERS_CANBUS)
             .withBrake(SHINUA_ROLLERS_BRAKE)
@@ -31,10 +31,10 @@ public class ShinuaConstants {
         public static final Canbus MECANUM_CANBUS = Canbus.Rio; // TODO
         public static final boolean MECANUM_BRAKE = false;
         public static final boolean MECANUM_INVERT = false;
-        public static final double MECANUM_HIGH_CURRENT_THRESHOLD = 0.0; // TODO
-        public static final double MECANUM_LOW_VELOCITY_THRESHOLD = 0.0; // TODO
-        public static final double MECANUM_STALL_CONFIRM_SECONDS = 0.0; // TODO
-        public static final double MECANUM_STUCK_DURATION_SECONDS = 0.0; // TODO
+        public static final double MECANUM_HIGH_CURRENT_THRESHOLD = 30.0; // TODO
+        public static final double MECANUM_LOW_VELOCITY_THRESHOLD = 5.0; // TODO
+        public static final double MECANUM_STALL_CONFIRM_SECONDS = 0.2; // TODO
+        public static final double MECANUM_STUCK_DURATION_SECONDS = 0.2; // TODO
 
         public static final TalonFXConfig MECANUM_CONFIG = new TalonFXConfig(MECANUM_NAME, MECANUM_ID, MECANUM_CANBUS)
             .withBrake(MECANUM_BRAKE)
@@ -46,7 +46,8 @@ public class ShinuaConstants {
     public static enum ShinuaStates implements MechanismState {
         SHOOTING(-0.1, 0.7), // TODO
         POOPING(-0.3, 0.1), // TODO
-        NOT_SHOOTING(-0.3, 0.1); // TODO
+        NOT_SHOOTING(-0.3, 0.1), 
+        NO_MECANUM(-0.05, 0); // TODO
 
         private final double[] values;
         private ShinuaStates(double... vals) { this.values = vals; }
