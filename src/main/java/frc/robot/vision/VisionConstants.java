@@ -28,7 +28,7 @@ public class VisionConstants {
     public static final LimelightTagCamera3dConfig ROBORIO_CONFIG = new LimelightTagCamera3dConfig(ROBORIO_NAME, ROBORIO_OFFSET, ROBORIO_STD);
 
     public static final VisionConfig visionConfig = new VisionConfig()
-        // .addSource(QUEST_CONFIG)
-        // .addSource(ROBORIO_CONFIG)
+        .addSource(QUEST_CONFIG)
+        .addSource(ROBORIO_CONFIG)
         ;
 }

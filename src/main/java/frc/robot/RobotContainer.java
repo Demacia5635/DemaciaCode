@@ -48,10 +48,10 @@ public class RobotContainer implements Sendable {
     SmartDashboard.putData("RC", this);
     Chassis.initialize(RobotCChassisConstants.CHASSIS_CONFIG);
     driveCommand = new DriveCommand(Chassis.getInstance(), controller);
-    // intake = Intake.getInstance();
-    // shinua = Shinua.getInstance();
-    // turret = Turret.getInstance();
-    // shooter = Shooter.getInstance();
+    intake = Intake.getInstance();
+    shinua = Shinua.getInstance();
+    turret = Turret.getInstance();
+    shooter = Shooter.getInstance();
 
     RobotPose.initialize(
       RobotCChassisConstants.STATE_STD, 
@@ -68,10 +68,10 @@ public class RobotContainer implements Sendable {
 
   private void setDefaultCommands() {
     Chassis.getInstance().setDefaultCommand(driveCommand);
-    // intake.setDefaultCommand(new IntakeCommand());
-    // shinua.setDefaultCommand(new ShinuaCommand());
-    // turret.setDefaultCommand(new TurretCommand());
-    // shooter.setDefaultCommand(new ShooterCommand());
+    intake.setDefaultCommand(new IntakeCommand());
+    shinua.setDefaultCommand(new ShinuaCommand());
+    turret.setDefaultCommand(new TurretCommand());
+    shooter.setDefaultCommand(new ShooterCommand());
   }
 
   private void setController() {
@@ -89,6 +89,6 @@ public class RobotContainer implements Sendable {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return (new RunCommand(() -> Chassis.getInstance().setSpeedsFieldRel(new ChassisSpeeds(0, 0.5, 0)), Chassis.getInstance()).until(()->RobotPose.getInstance().getEstimatedPose().getY() >= 1.95)).andThen(() -> Chassis.getInstance().stop());
+    return null;
   }
 }
