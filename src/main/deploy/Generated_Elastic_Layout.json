@@ -1398,13 +1398,13 @@
           },
           {
             "type": "Command",
-            "title": "Reset Odometry",
-            "x": 1024.0,
+            "title": "Reset Pose",
+            "x": 768.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/chassis/reset odmetry",
+              "topic": "/SmartDashboard/chassis/reset pose",
               "period": 0.06,
               "show_type": true
             }
@@ -1562,39 +1562,39 @@
           },
           {
             "type": "Field",
-            "title": "roborio Field",
+            "title": "roboio Field",
             "x": 512.0,
             "y": 0.0,
             "width": 256.0,
             "height": 384.0,
             "properties": {
-              "topic": "/SmartDashboard/vision/roborio/field",
+              "topic": "/SmartDashboard/vision/roboio/field",
               "period": 0.06,
               "field_rotation": 90.0
             }
           },
           {
             "type": "Boolean Box",
-            "title": "connected roborio",
+            "title": "connected roboio",
             "x": 512.0,
             "y": 384.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/vision/roborio/is Connected",
+              "topic": "/SmartDashboard/vision/roboio/is Connected",
               "period": 0.06,
               "data_type": "boolean"
             }
           },
           {
             "type": "Boolean Box",
-            "title": "see roborio",
+            "title": "see roboio",
             "x": 640.0,
             "y": 384.0,
             "width": 128.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/vision/roborio/is see",
+              "topic": "/SmartDashboard/vision/roboio/is see",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -5532,9 +5532,35 @@
             }
           },
           {
+            "type": "Boolean Box",
+            "title": "is ready",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/intake rollers/Is Ready",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "is stuck",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/intake rollers/Is Stuck",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
             "type": "Text Display",
             "title": "intake deploy wanted",
-            "x": 512.0,
+            "x": 768.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -5547,7 +5573,7 @@
           {
             "type": "Text Display",
             "title": "intake deploy value",
-            "x": 640.0,
+            "x": 896.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -5560,7 +5586,7 @@
           {
             "type": "Command",
             "title": "Coast intake deploy",
-            "x": 512.0,
+            "x": 768.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -5573,7 +5599,7 @@
           {
             "type": "Command",
             "title": "Brake intake deploy",
-            "x": 512.0,
+            "x": 768.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
@@ -5586,7 +5612,7 @@
           {
             "type": "Command",
             "title": "Power intake deploy",
-            "x": 512.0,
+            "x": 768.0,
             "y": 384.0,
             "width": 256.0,
             "height": 128.0,
@@ -5599,7 +5625,7 @@
           {
             "type": "Command",
             "title": "Calibration Command intake deploy",
-            "x": 768.0,
+            "x": 1024.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
@@ -5612,7 +5638,7 @@
           {
             "type": "Command",
             "title": "Reset intake deploy",
-            "x": 768.0,
+            "x": 1024.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -5625,7 +5651,7 @@
           {
             "type": "Boolean Box",
             "title": "Calibrated",
-            "x": 768.0,
+            "x": 1024.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
@@ -5637,13 +5663,34 @@
           },
           {
             "type": "Boolean Box",
-            "title": "intake deploy max Limit Switch",
+            "title": "is ready",
             "x": 1024.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/intake deploy/Is Ready",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "intake 2",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "type": "Boolean Box",
+            "title": "intake deploy max Limit Switch",
+            "x": 0.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/sensors/intake deploy max Limit Switch/value",
+              "topic": "/SmartDashboard/sensors/intake deploy max Limit Switch/Value",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -5761,9 +5808,35 @@
             }
           },
           {
+            "type": "Boolean Box",
+            "title": "is ready",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/shinua rollers/Is Ready",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "is stuck",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/shinua rollers/Is Stuck",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
             "type": "Text Display",
             "title": "mecanum wanted",
-            "x": 512.0,
+            "x": 768.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -5776,7 +5849,7 @@
           {
             "type": "Text Display",
             "title": "mecanum value",
-            "x": 640.0,
+            "x": 896.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -5789,7 +5862,7 @@
           {
             "type": "Command",
             "title": "Coast mecanum",
-            "x": 512.0,
+            "x": 768.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -5802,7 +5875,7 @@
           {
             "type": "Command",
             "title": "Brake mecanum",
-            "x": 512.0,
+            "x": 768.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
@@ -5815,12 +5888,38 @@
           {
             "type": "Boolean Box",
             "title": "Calibrated",
-            "x": 512.0,
+            "x": 768.0,
             "y": 384.0,
             "width": 256.0,
             "height": 128.0,
             "properties": {
               "topic": "/SmartDashboard/shinua/mecanum/mecanum has Calibrated",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "is ready",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/mecanum/Is Ready",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "is stuck",
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/mecanum/Is Stuck",
               "period": 0.06,
               "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
             }
@@ -5978,13 +6077,26 @@
           },
           {
             "type": "Boolean Box",
+            "title": "is ready",
+            "x": 512.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/turret motor/Is Ready",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
+            "type": "Boolean Box",
             "title": "min Limit Switch",
             "x": 768.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/sensors/min Limit Switch/value",
+              "topic": "/SmartDashboard/sensors/min Limit Switch/Value",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -6115,6 +6227,19 @@
             }
           },
           {
+            "type": "Boolean Box",
+            "title": "is ready",
+            "x": 512.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/flywheel/Is Ready",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
             "type": "Text Display",
             "title": "hood wanted",
             "x": 768.0,
@@ -6217,6 +6342,32 @@
               "period": 0.06,
               "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
             }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "is ready",
+            "x": 1024.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/hood/Is Ready",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "is stuck",
+            "x": 1152.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/hood/Is Stuck",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
           }
         ]
       }
@@ -6293,13 +6444,39 @@
           },
           {
             "type": "Boolean Box",
-            "title": "hood min Limit Switch",
+            "title": "is ready",
             "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/feeder/Is Ready",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "is stuck",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/motors/feeder/Is Stuck",
+              "period": 0.06,
+              "data_type": "boolean", "true_color": 4283215696, "false_color": 4294198070
+            }
+          },
+          {
+            "type": "Boolean Box",
+            "title": "hood min Limit Switch",
+            "x": 512.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
             "properties": {
-              "topic": "/SmartDashboard/sensors/hood min Limit Switch/value",
+              "topic": "/SmartDashboard/sensors/hood min Limit Switch/Value",
               "period": 0.06,
               "data_type": "boolean"
             }

@@ -245,7 +245,7 @@ public class ElasticGenerator {
         sb.append(createWidget("Command", "Reset 180", 4, 1, 2, 1, "/SmartDashboard/chassis/reset gyro 180", "\"show_type\": true"));
 
         sb.append(",\n");
-        sb.append(createWidget("Command", "Reset Odometry", 8, 0, 2, 1, "/SmartDashboard/chassis/reset odmetry", "\"show_type\": true"));
+        sb.append(createWidget("Command", "Reset Pose", 6, 0, 2, 1, "/SmartDashboard/chassis/reset pose", "\"show_type\": true"));
 
         chassisCancoders = Chassis.getInstance().getCancoders();
         if (chassisCancoders != null) {
@@ -601,6 +601,13 @@ public class ElasticGenerator {
                     
                     if (yOffset >= MAX_ROWS) { yOffset = 0; xOffset += WIDGET_WIDTH; }
                     widgets.add(createWidget("Boolean Box", "Calibrated", xOffset, yOffset, WIDGET_WIDTH, 1, baseTopic + motorName + " has Calibrated", "\"data_type\": \"boolean\", \"true_color\": 4283215696, \"false_color\": 4294198070"));
+                    yOffset++;
+                    
+                    if (yOffset >= MAX_ROWS) { yOffset = 0; xOffset += WIDGET_WIDTH; }
+                    widgets.add(createWidget("Boolean Box", "is ready", xOffset, yOffset, 1, 1, "/SmartDashboard/motors/" + motorName + "/Is Ready", "\"data_type\": \"boolean\", \"true_color\": 4283215696, \"false_color\": 4294198070"));
+                    if (NetworkTableInstance.getDefault().getTable("SmartDashboard").getSubTable("motors/" + motorName).containsKey("Is Stuck")) {
+                        widgets.add(createWidget("Boolean Box", "is stuck", xOffset + 1, yOffset, 1, 1, "/SmartDashboard/motors/" + motorName + "/Is Stuck", "\"data_type\": \"boolean\", \"true_color\": 4283215696, \"false_color\": 4294198070"));
+                    }
                     yOffset++;
                     
                     xOffset += WIDGET_WIDTH;

@@ -89,6 +89,6 @@ public class RobotContainer implements Sendable {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return null;
+    return new RunCommand(() -> Chassis.getInstance().setSpeedsRobotRel(new ChassisSpeeds(0, 0, 1)), Chassis.getInstance());
   }
 }

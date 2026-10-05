@@ -56,6 +56,8 @@ public abstract class BaseMotor implements MotorInterface {
   private Timer stallConfirmTimer;
   private Timer stuckDurationTimer;
 
+  private boolean lastIsReady;
+
   protected static final double MAX_SIM_VEL = 50;
 
   /**
@@ -75,6 +77,7 @@ public abstract class BaseMotor implements MotorInterface {
     setSignals();
     addLog();
     configureStallDetection();
+    lastIsReady = true;
 
     SmartDashboard.putData("motors/" + name, this);
     Log.log(name + " motor initialized");
@@ -581,7 +584,13 @@ public abstract class BaseMotor implements MotorInterface {
   }
 
   public boolean isReady(double allowedError) {
-    return Math.abs(getCurrentClosedLoopError()) < allowedError;
+    boolean isReady = Math.abs(getCurrentClosedLoopError()) < allowedError;
+    lastIsReady = isReady;
+    return isReady;
+  }
+
+  public boolean isStuck() {
+    return isStuck;
   }
 
   @Override
@@ -621,6 +630,11 @@ public abstract class BaseMotor implements MotorInterface {
     builder.addDoubleProperty("Wanted Value", this::getWantedValue, null);
 
     builder.addDoubleProperty("test Value", this::getTestValue, (value) -> setTestValue(value));
+  
+    builder.addBooleanProperty("Is Ready", () -> lastIsReady, null);
+    if (config.highCurrentThreshold > 0) {
+      builder.addBooleanProperty("Is Stuck", this::isStuck, null);
+    }
   }
 
   // Raw data Accessors
@@ -668,10 +682,6 @@ public abstract class BaseMotor implements MotorInterface {
 
   private double getDisplayVelocity() {
       return displayVelocityOverride != null ? displayVelocityOverride.get() : getCurrentVelocity();
-  }
-
-  public boolean isStuck() {
-    return isStuck;
   }
 
   protected abstract void createMotor();
