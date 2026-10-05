@@ -4,6 +4,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
+import frc.demacia.utils.log.Log;
 import frc.demacia.utils.motors.MotorInterface;
 import frc.demacia.utils.sensors.Cancoder;
 
@@ -32,6 +34,8 @@ public class SwerveModule {
     private double initiolazedSteerPosition;
     private boolean isDriveStop;
 
+    private Timer motorAndCancoderOpositeTimer;
+
     public SwerveModule(SwerveModuleConfig config) {
         this.config = config;
         steerMotor = config.steerConfig.getMotorClass().create(config.steerConfig);
@@ -46,6 +50,8 @@ public class SwerveModule {
 
         driveMotor.setDisplayPositionOverride(this::getDrivePosition);
         driveMotor.setDisplayVelocityOverride(this::getDriveVel);
+
+        motorAndCancoderOpositeTimer = new Timer();
     }
 
     /**
@@ -82,6 +88,7 @@ public class SwerveModule {
 
     public void setSteerPower(double power) {
         steerMotor.setDuty(power);
+        checkMotorAndCancoderOposite();
 
         if (isDriveStop){
             driveMotor.setVelocity(-config.steerVelToDriveVel * steerMotor.getCurrentVelocity());
@@ -96,6 +103,7 @@ public class SwerveModule {
     public void setSteerPosition(double positionRadians) {
         if(Math.abs(positionRadians - steerMotor.getCurrentPosition()) <= Math.toRadians(0.5) ) steerMotor.setDuty(0);
         steerMotor.setPositionVoltage(positionRadians);
+        checkMotorAndCancoderOposite();
         
         if (isDriveStop){
             driveMotor.setVelocity(-config.steerVelToDriveVel * steerMotor.getCurrentVelocity());
@@ -195,6 +203,22 @@ public class SwerveModule {
      */
     public SwerveModuleState getState() {
         return new SwerveModuleState(getDriveVel(), getSteerRotation());
+    }
+
+    public void checkMotorAndCancoderOposite() {
+        if (Math.abs(steerMotor.getCurrentVelocity()) > 0.05 && 
+                Math.abs(cancoder.getCurrentVelocity()) > 0.05 && 
+                Math.signum(steerMotor.getCurrentVelocity()) != Math.signum(cancoder.getCurrentVelocity())) {
+            if (!motorAndCancoderOpositeTimer.isRunning()) {
+                motorAndCancoderOpositeTimer.restart();
+            } else if (motorAndCancoderOpositeTimer.hasElapsed(0.1)){
+                Log.alert("cancoder and motor velocity are with opposite sigh in " + name);
+                motorAndCancoderOpositeTimer.stop();
+            }
+        } else if (motorAndCancoderOpositeTimer.isRunning()) {
+            motorAndCancoderOpositeTimer.stop();
+            motorAndCancoderOpositeTimer.reset();
+        }
     }
 
     /**
