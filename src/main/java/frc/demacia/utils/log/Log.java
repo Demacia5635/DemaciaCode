@@ -4,6 +4,7 @@
 
 package frc.demacia.utils.log;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.networktables.NTSendable;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.RuntimeLoader;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -55,10 +57,18 @@ public class Log extends SubsystemBase {
   /** Singleton instance of the LogManager */
   private static Log logManager;
 
+  /**
+   * Whether the WPILib native libraries are available. They are missing when the code runs in a
+   * plain desktop JVM (not on the robot and not through {@code simulateJava}). WPILib calls
+   * {@code System.exit} as soon as a JNI class fails to load them, so this must be checked before
+   * touching NetworkTables, DataLog or the HAL. Must stay above {@link #table}.
+   */
+  private static final boolean NATIVES_AVAILABLE = loadNatives();
+
   /** The main DataLog instance for file writing */
   public static DataLog log;
-  /** The NetworkTable instance for the "Log" table */
-  public static NetworkTable table = NetworkTableInstance.getDefault().getTable("Log");
+  /** The NetworkTable instance for the "Log" table, or null if the native libraries are missing */
+  public static NetworkTable table = NATIVES_AVAILABLE ? NetworkTableInstance.getDefault().getTable("Log") : null;
 
   /** List of currently active console alerts */
   private static ArrayList<ConsoleAlert> activeConsole;
@@ -97,8 +107,31 @@ public class Log extends SubsystemBase {
    * Static initializer to ensure the LogManager is created.
    */
   static {
-    if (logManager == null) {
-      new Log();
+    if (logManager == null && NATIVES_AVAILABLE) {
+      try {
+        new Log();
+      } catch (RuntimeException e) {
+        System.err.println("[Log ERROR] failed to start the log manager: " + e);
+      }
+    }
+  }
+
+  /**
+   * Loads the native libraries Log depends on, without letting WPILib exit the program if they
+   * are missing.
+   *
+   * @return true if all native libraries were loaded
+   */
+  private static boolean loadNatives() {
+    try {
+      RuntimeLoader.loadLibrary("wpiutiljni");
+      RuntimeLoader.loadLibrary("ntcorejni");
+      RuntimeLoader.loadLibrary("wpiHaljni");
+      return true;
+    } catch (IOException | UnsatisfiedLinkError e) {
+      System.err.println("[Log ERROR] WPILib native libraries are not available (not on the robot"
+          + " and not in simulation). Log messages will only be printed to the console.");
+      return false;
     }
   }
 
@@ -133,29 +166,44 @@ public class Log extends SubsystemBase {
   /**
    * Logs a message to the console and creates an alert.
    * Manages the console limit by removing old alerts.
-   * 
+   * <p>
+   * Never crashes the robot: if logging is unavailable (no WPILib native libraries) or fails,
+   * the message is printed to the console as an error instead.
+   * </p>
+   *
    * @param message   The message to log
    * @param alertType The severity of the alert
-   * @return The created ConsoleAlert
+   * @return The created ConsoleAlert, or null if the message could only be printed
    */
   public static ConsoleAlert log(Object message, AlertType alertType) {
-    DataLogManager.log(String.valueOf(message));
-
-    ConsoleAlert alert = new ConsoleAlert(String.valueOf(message), alertType);
-    alert.set(true);
-    if (activeConsole.size() > ConsoleConstants.CONSOLE_LIMIT) {
-      activeConsole.get(0).close();
-      activeConsole.remove(0);
+    String text = String.valueOf(message);
+    if (logManager == null) {
+      System.err.println("[Log ERROR] logging is unavailable, " + alertType + ": " + text);
+      return null;
     }
-    activeConsole.add(alert);
-    return alert;
+
+    try {
+      DataLogManager.log(text);
+
+      ConsoleAlert alert = new ConsoleAlert(text, alertType);
+      alert.set(true);
+      if (activeConsole.size() > ConsoleConstants.CONSOLE_LIMIT) {
+        activeConsole.get(0).close();
+        activeConsole.remove(0);
+      }
+      activeConsole.add(alert);
+      return alert;
+    } catch (RuntimeException e) {
+      System.err.println("[Log ERROR] failed to log (" + e + "), " + alertType + ": " + text);
+      return null;
+    }
   }
 
   /**
    * Logs an info message to the console.
-   * 
+   *
    * @param message The message to log
-   * @return The created ConsoleAlert
+   * @return The created ConsoleAlert, or null if the message could only be printed
    */
   public static ConsoleAlert log(Object message) {
     return log(message, AlertType.kInfo);
