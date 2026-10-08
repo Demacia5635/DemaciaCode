@@ -9,6 +9,8 @@ import java.util.NoSuchElementException;
 import org.ejml.simple.SimpleMatrix;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Alert.AlertType;
+import frc.demacia.utils.log.Log;
 import frc.demacia.utils.log.LogReader.Entry;
 import frc.demacia.utils.log.LogReader.EntryPoint;
 import frc.demacia.utils.motors.CloseLoopParam;
@@ -160,7 +162,7 @@ public class Sysid {
     }
 
     public Sysid(String name, List<Entry> motorEntries, boolean[] kFlags) {
-        System.out.println("Performing analysis...");
+        Log.log("Performing analysis...");
 
         this.name = name;
         this.motorEntries = motorEntries;
@@ -168,7 +170,7 @@ public class Sysid {
             this.kFlags = new KFlags(kFlags[0], kFlags[1], kFlags[2], kFlags[3], kFlags[4], kFlags[5]);
         } else {
             this.kFlags = new KFlags(true, true, true, false, false, false);
-            System.out.println("kFlags shuold have 6 flags for kS, kV, kA, kG, kCos, kV2");
+            Log.log("kFlags shuold have 6 flags for kS, kV, kA, kG, kCos, kV2", AlertType.kWarning);
         }
         rawData = new ArrayList<>();
         isCos = true;
@@ -208,7 +210,7 @@ public class Sysid {
             maxJerk = maxAcceleration / TIME_TO_MAX_ACCEL;
         }
 
-        System.out.println(name + " analysis complete.");
+        Log.log(name + " analysis complete.");
     }
 
     public CloseLoopParam getParams() {
@@ -315,7 +317,7 @@ public class Sysid {
             }
         }
 
-        System.out.println("Group: " + name + " | Total data points: " + rawData.size());
+        Log.log("Group: " + name + " | Total data points: " + rawData.size());
         if (rawData.isEmpty()) return;
 
         rawData.sort((p1, p2) -> Long.compare(p1.timestamp, p2.timestamp));
@@ -386,7 +388,7 @@ public class Sysid {
         }
 
 
-        System.out.println(" voltageThreshold " + voltageThresholdR + 
+        Log.log(" voltageThreshold " + voltageThresholdR + 
                             " smoothWindow " + smoothWindowR + 
                             " zScoreThreshold " + zScoreThresholdR + 
                             " outlierPercentage " + outlierPercentageR + 
@@ -409,11 +411,11 @@ public class Sysid {
         result.maxError = maxErr;
         result.rawPoints = rawData.size();
 
-        System.out.println(name + " avg Error: " + result.avgError);
-        System.out.println(name + " max Error: " + result.maxError);
-        System.out.println(name + " used Points size: " + result.points);
-        System.out.println(name + " raw Points size: " + result.rawPoints);
-        System.out.println(name + " r Squared: " + result.rSquared);
+        Log.log(name + " avg Error: " + result.avgError);
+        Log.log(name + " max Error: " + result.maxError);
+        Log.log(name + " used Points size: " + result.points);
+        Log.log(name + " raw Points size: " + result.rawPoints);
+        Log.log(name + " r Squared: " + result.rSquared);
     }
 
     private List<SyncedDataPoint> filterAndSmooth(List<SyncedDataPoint> data, double voltageThresh, int windowSize) {
@@ -611,7 +613,7 @@ public class Sysid {
             BucketResult sinResult = solveOLS(cleanData);
 
             if (sinResult != null && sinResult.avgError < result.avgError) {
-                System.out.println("its seems " + name
+                Log.log("its seems " + name
                         + " zero is not Supported by the code, the zero should be forward like Unit Circle");
             }
         } finally {

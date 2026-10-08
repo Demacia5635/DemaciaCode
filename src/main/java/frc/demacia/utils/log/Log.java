@@ -129,8 +129,8 @@ public class Log extends SubsystemBase {
       RuntimeLoader.loadLibrary("wpiHaljni");
       return true;
     } catch (IOException | UnsatisfiedLinkError e) {
-      System.err.println("[Log ERROR] WPILib native libraries are not available (not on the robot"
-          + " and not in simulation). Log messages will only be printed to the console.");
+      System.out.println("[Log] WPILib native libraries not found (not running as robot code)."
+          + " Log messages are printed to the console only.");
       return false;
     }
   }
@@ -167,8 +167,9 @@ public class Log extends SubsystemBase {
    * Logs a message to the console and creates an alert.
    * Manages the console limit by removing old alerts.
    * <p>
-   * Never crashes the robot: if logging is unavailable (no WPILib native libraries) or fails,
-   * the message is printed to the console as an error instead.
+   * Safe to call from code that is not running on the robot (e.g. SysidApp): without the WPILib
+   * native libraries the message is just printed to the console. If logging fails, the message
+   * is printed as an error instead of crashing the robot.
    * </p>
    *
    * @param message   The message to log
@@ -178,7 +179,7 @@ public class Log extends SubsystemBase {
   public static ConsoleAlert log(Object message, AlertType alertType) {
     String text = String.valueOf(message);
     if (logManager == null) {
-      System.err.println("[Log ERROR] logging is unavailable, " + alertType + ": " + text);
+      printToConsole(text, alertType);
       return null;
     }
 
@@ -196,6 +197,22 @@ public class Log extends SubsystemBase {
     } catch (RuntimeException e) {
       System.err.println("[Log ERROR] failed to log (" + e + "), " + alertType + ": " + text);
       return null;
+    }
+  }
+
+  /**
+   * Prints a message when there is no log manager, e.g. in a desktop tool like SysidApp.
+   * Info messages go to standard output as-is, warnings and errors to standard error with their
+   * severity.
+   *
+   * @param text      The message to print
+   * @param alertType The severity of the message
+   */
+  private static void printToConsole(String text, AlertType alertType) {
+    if (alertType == AlertType.kInfo) {
+      System.out.println(text);
+    } else {
+      System.err.println("[" + alertType + "] " + text);
     }
   }
 

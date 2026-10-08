@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotBase;
 
 public class LogReader {
@@ -67,12 +68,12 @@ public class LogReader {
         activeEntriesMap.clear();
         
         try {
-            System.out.println("Reading log file...");
+            Log.log("Reading log file...");
             String filePath = isLatestLog ? loadLatestRobotLog() : LogFileChooser.selectFileFromComputer();
 
             wpilogReader(filePath);
         } catch (IOException e) {
-            System.err.println("Error reading log file: " + e.getMessage());
+            Log.log("Error reading log file: " + e.getMessage(), AlertType.kError);
             e.printStackTrace();
         }
     }
@@ -85,7 +86,7 @@ public class LogReader {
             throw new IOException("SysID Error: No .wpilog files found on the robot!");
         }
 
-        System.out.println("SysID: Successfully found and loading latest log: " + latestLogFile.getAbsolutePath());
+        Log.log("SysID: Successfully found and loading latest log: " + latestLogFile.getAbsolutePath());
 
         return latestLogFile.getAbsolutePath(); 
     }
@@ -128,9 +129,9 @@ public class LogReader {
             }
 
             skipHeaderExtra(dataInputStream);
-            System.out.println("Header read successfully. Starting to read records...");
+            Log.log("Header read successfully. Starting to read records...");
             readRecords(dataInputStream);
-            System.out.println("File Read Successfully. Total entries: " + entries.size());
+            Log.log("File Read Successfully. Total entries: " + entries.size());
         }
     }
 
@@ -155,7 +156,7 @@ public class LogReader {
                 readRecord(dataInputStream);
                 n++;
                 if(n%1000 == 0) {
-                    System.out.println("Read " + n + " records...");
+                    Log.log("Read " + n + " records...");
                 }
             } catch (EOFException e) {
                 break;
