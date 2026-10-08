@@ -222,6 +222,8 @@ public interface MotorInterface extends Sendable {
    */
   boolean isReady(double allowedError);
 
+  boolean isStuck();
+
   boolean isRadiansMotor();
 
   double getTestValue();

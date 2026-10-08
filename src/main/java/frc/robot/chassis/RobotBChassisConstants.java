@@ -19,7 +19,7 @@ public class RobotBChassisConstants {
 
   public static final int PIGEON_ID = 14; 
   public static final Canbus CAN_BUS = Canbus.CANIvore; 
-  public static final Canbus PIGEON_CAN_BUS = Canbus.CANIvore; 
+  public static final Canbus PIGEON_CAN_BUS = Canbus.Rio; 
   public static final double STEER_GEAR_RATIO = Mk5nConstants.STEER_GEAR_RATIO; 
   public static final double DRIVE_GEAR_RATIO = Mk5nConstants.R2.driveGearRatio; 
   public static final double WHEEL_DIAMETER = Mk5nConstants.WHEEL_DIAMETER; 
@@ -27,16 +27,16 @@ public class RobotBChassisConstants {
   public static final double STEER_KP = 5.8;  
   public static final double STEER_KI = 0.0;  
   public static final double STEER_KD = 0.0;  
-  public static final double STEER_KS = 0.4254d;
-  public static final double STEER_KV = 0.3218d;
+  public static final double STEER_KS = 0.26;
+  public static final double STEER_KV = 0.36;
   public static final double STEER_KA = 0.0;
 
   public static final double DRIVE_KP = 1;
   public static final double DRIVE_KI = 0.0;
   public static final double DRIVE_KD = 0.0;
-  public static final double DRIVE_KS = 0.17123;
-  public static final double DRIVE_KV = 2.20388;
-  public static final double DRIVE_KA = 0.48899;
+  public static final double DRIVE_KS = 0.19;
+  public static final double DRIVE_KV = 2.4;
+  public static final double DRIVE_KA = 0.28;
 
   public static final double MAX_DRIVE_VELOCITY = 5.0; 
   public static final double RAMP_TIME_STEER = 0.25; 
@@ -50,10 +50,10 @@ public class RobotBChassisConstants {
 
   public static final SwerveModuleConfig[] MODULES = swerveModules(
       new double[] {
-        1.5217120831752096896735813514194, //FRONT LEFT
-        1.8837303710189759237145855990482, //FRONT RIGHT
-        -1.7674223277977745984402216157124, //BACK LEFT
-        1.012428498101768307786402232556 //BACK RIGHT
+        1.6137477888556946, //FRONT LEFT
+        1.2624661884298827, //FRONT RIGHT
+       -1.3391652278241648, //BACK LEFT
+        2.124563391221613 //BACK RIGHT
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);
@@ -63,7 +63,7 @@ public class RobotBChassisConstants {
       MODULES,
       PIGEON_CONFIG);
 
-  public static final Matrix<N3, N1> STATE_STD = new Matrix<>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 })); 
+  public static final Matrix<N3, N1> STATE_STD = new Matrix<>(new SimpleMatrix(new double[] { 0.05, 0.05, 0 })); 
 
   public static final double METERS_FROM_360_DEGS = 0.2;
 
@@ -90,7 +90,8 @@ public class RobotBChassisConstants {
               .withPID(DRIVE_KP, DRIVE_KI, DRIVE_KD, DRIVE_KS, DRIVE_KV, DRIVE_KA, 0, 0, 0)
               .withBrake(true)
               .withMeterMotor(DRIVE_GEAR_RATIO, WHEEL_DIAMETER),
-          new CancoderConfig(name + " Cancoder", i * 3 + 3, CAN_BUS))
+          new CancoderConfig(name + " Cancoder", i * 3 + 3, CAN_BUS)
+            .withInvert(true))
           .withPosion(MODULE_LOCATIONS[i])
           .withSteerOffset(offsets[i])
           .withMetersFrom360Degs(METERS_FROM_360_DEGS);

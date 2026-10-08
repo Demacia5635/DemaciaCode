@@ -7,8 +7,10 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.demacia.RobotPose.Estimation.DemaciaPoseEstimator;
@@ -48,11 +50,14 @@ public final class RobotPose {
     /** Every configured vision source, including the Quest if there is one. */
     private final List<VisionSource> sources;
 
+    private Field2d field;
+
     private RobotPose(Supplier<OdometryData> odometryDataSupplier, Translation2d[] moduleLocations, 
         Matrix<N3, N1> stateStd, List<VisionSource> sources) {
         this.odometryDataSupplier = odometryDataSupplier;
         this.poseEstimator = new DemaciaPoseEstimator(odometryDataSupplier.get().swerveModules(), moduleLocations, stateStd);
         this.sources = sources;
+        field = new Field2d();
 
         addLog();
     }
@@ -62,6 +67,9 @@ public final class RobotPose {
                 new InstantCommand(() -> setYaw(Rotation2d.kZero)).ignoringDisable(true));
         SmartDashboard.putData("chassis/reset gyro 180",
                 new InstantCommand(() -> setYaw(Rotation2d.kPi)).ignoringDisable(true));
+        SmartDashboard.putData("chassis/field", field);
+        SmartDashboard.putData("chassis/reset pose",
+            new InstantCommand(() -> resetPose(new Pose2d())).ignoringDisable(true));
     }
 
         /**
@@ -90,7 +98,7 @@ public final class RobotPose {
 
         for (VisionSource source : sources) {
             if (source instanceof Quest && ((Quest) source).hasDrifted()) {
-                ((Quest) source).setPose(poseEstimator.getEstimatedPose());
+                ((Quest) source).setPose(getEstimatedPose());
             }
             else if (source.shouldUpdate()) {
                 for (TimestampedVisionMeasurement measurement : source.getPoseEstimates()) {
@@ -99,6 +107,8 @@ public final class RobotPose {
                 }
             }
         }
+
+        field.setRobotPose(getEstimatedPose());
     }
 
     /**
@@ -118,6 +128,16 @@ public final class RobotPose {
      */
     public Pose2d getEstimatedPoseAt(double timestampSeconds) {
         return poseEstimator.getPoseAt(timestampSeconds);
+    }
+
+    public Pose2d getFuturePose(double sec) {
+        Pose2d pose = getEstimatedPose();
+        ChassisSpeeds speed = Chassis.getInstance().getChassisSpeedsFieldRel();
+        
+        return new Pose2d(
+            pose.getX() + speed.vxMetersPerSecond * sec,
+            pose.getY() + speed.vyMetersPerSecond * sec,
+            pose.getRotation().plus(Rotation2d.fromRadians(speed.omegaRadiansPerSecond * sec)));
     }
 
     /**
@@ -184,11 +204,10 @@ public final class RobotPose {
      * @param visionConfig           The vision sources to use. They are already created when
      *                               the config is built.
      */
-    public static synchronized void initialize(Supplier<OdometryData> odometryDataSupplier,
-            Translation2d[] moduleLocations, Matrix<N3, N1> stateStd,
-            VisionConfig visionConfig) {
-        instance = new RobotPose(odometryDataSupplier, 
-            moduleLocations, 
+    public static synchronized void initialize(Matrix<N3, N1> stateStd, VisionConfig visionConfig) {
+        instance = new RobotPose(
+            ()->new OdometryData(Chassis.getInstance().getGyroAngle(), Chassis.getInstance().getModulePositions()), 
+            Chassis.getInstance().getModuleLocations(), 
             stateStd, 
             visionConfig.getSources());
     }

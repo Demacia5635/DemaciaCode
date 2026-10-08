@@ -5,6 +5,9 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -218,21 +221,22 @@ public class LogReader {
             }
 
         } else if (type.equals("string[]")) {
-            int bytesRead = 0;
-            int i = 0;
-            while (bytesRead < payloadSize) {
-                int strLen = Integer.reverseBytes(dataInputStream.readInt());
-                bytesRead += 4;
-                
-                byte[] strBytes = new byte[strLen];
-                dataInputStream.readFully(strBytes);
-                bytesRead += strLen;
-                
-                String val = new String(strBytes, "UTF-8");
-                if (i < targets.size() && targets.get(i) != null) {
-                    targets.get(i).data.add(new EntryPoint(val, timestamp));
+            byte[] payload = new byte[payloadSize];
+            dataInputStream.readFully(payload);
+            ByteBuffer buf = ByteBuffer.wrap(payload).order(ByteOrder.LITTLE_ENDIAN);
+
+            if (buf.remaining() >= 4) {
+                int count = buf.getInt();
+                for (int i = 0; i < count && buf.remaining() >= 4; i++) {
+                    int strLen = buf.getInt();
+                    if (strLen < 0 || strLen > buf.remaining()) break;
+                    byte[] strBytes = new byte[strLen];
+                    buf.get(strBytes);
+                    String val = new String(strBytes, StandardCharsets.UTF_8);
+                    if (i < targets.size() && targets.get(i) != null) {
+                        targets.get(i).data.add(new EntryPoint(val, timestamp));
+                    }
                 }
-                i++;
             }
         } else if (type.equals("float")) {
             if (payloadSize >= 4) {
