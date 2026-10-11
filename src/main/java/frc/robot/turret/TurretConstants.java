@@ -12,36 +12,42 @@ public class TurretConstants {
     public static final class TurretMotorConstants {
         public static final String TURRET_MOTOR_NAME = "turret motor";
         public static final int TURRET_MOTOR_ID = 20;
-        public static final Canbus TURRET_MOTOR_CANBUS = Canbus.Rio; // TODO
+        public static final Canbus TURRET_MOTOR_CANBUS = Canbus.Rio;
         public static final boolean TURRET_MOTOR_BRAKE = true;
-        public static final boolean TURRET_MOTOR_INVERT = false;
+        public static final boolean TURRET_MOTOR_INVERT = true;
         public static final double TURRET_MOTOR_GEAR_RATIO = 48.0*112.0/27.0;
-        public static final double TURRET_MOTOR_KP = 0.0; // TODO
-        public static final double TURRET_MOTOR_KI = 0.0; // TODO
-        public static final double TURRET_MOTOR_KD = 0.0; // TODO
-        public static final double TURRET_MOTOR_KS = 0.0; // TODO
-        public static final double TURRET_MOTOR_KV = 0.0; // TODO
-        public static final double TURRET_MOTOR_KA = 0.0; // TODO
-        public static final double TURRET_MOTOR_KG = 0.0; // TODO
-        public static final double TURRET_MOTOR_KV2 = 0.0; // TODO
-        public static final double TURRET_MOTOR_KCOS = 0.0; // TODO
-        public static final double TURRET_MOTOR_MAX_VELOCITY = 0.0; // TODO
-        public static final double TURRET_MOTOR_MAX_ACCELERATION = 0.0; // TODO
-        public static final double TURRET_MOTOR_MAX_JERK = 0.0; // TODO
+        public static final double TURRET_MOTOR_KP = 40;
+        public static final double TURRET_MOTOR_KI = 0.0;
+        public static final double TURRET_MOTOR_KD = 0.0;
+        public static final double TURRET_MOTOR_KS = 0.02372912256018203;
+        public static final double TURRET_MOTOR_KV = 3.6253345888164152;
+        public static final double TURRET_MOTOR_KA = 0.23323206336301763;
+        public static final double TURRET_MOTOR_KG = 0.0;
+        public static final double TURRET_MOTOR_KV2 = 0.0;
+        public static final double TURRET_MOTOR_KCOS = 0.0;
+
+        public static final double TURRET_MOTOR_KP_2 = 50;
+        public static final double TURRET_MOTOR_KS_2 = 0.02372912256018203;
+        public static final double TURRET_MOTOR_KV_2 = 3.6253345888164152;
+        public static final double TURRET_MOTOR_KA_2 = 0.23323206336301763;
+        public static final double TURRET_MOTOR_MAX_VELOCITY = 3;
+        public static final double TURRET_MOTOR_MAX_ACCELERATION = 9;
+        public static final double TURRET_MOTOR_MAX_JERK = 0;
 
         public static final TalonFXConfig TURRET_MOTOR_CONFIG = new TalonFXConfig(TURRET_MOTOR_NAME, TURRET_MOTOR_ID, TURRET_MOTOR_CANBUS)
             .withBrake(TURRET_MOTOR_BRAKE)
             .withInvert(TURRET_MOTOR_INVERT)
             .withRadiansMotor(TURRET_MOTOR_GEAR_RATIO)
             .withPID(TURRET_MOTOR_KP, TURRET_MOTOR_KI, TURRET_MOTOR_KD, TURRET_MOTOR_KS, TURRET_MOTOR_KV, TURRET_MOTOR_KA, TURRET_MOTOR_KG, TURRET_MOTOR_KCOS, TURRET_MOTOR_KV2)
+            .withPID(1, TURRET_MOTOR_KP_2, TURRET_MOTOR_KI, TURRET_MOTOR_KD, TURRET_MOTOR_KS_2, TURRET_MOTOR_KV_2, TURRET_MOTOR_KA_2, TURRET_MOTOR_KG, TURRET_MOTOR_KCOS, TURRET_MOTOR_KV2)
             .withMotionParam(TURRET_MOTOR_MAX_VELOCITY, TURRET_MOTOR_MAX_ACCELERATION, TURRET_MOTOR_MAX_JERK);
 
-        public static final double TURRET_MOTOR_MIN_LIMIT = Math.toRadians(-300); // TODO
-        public static final double TURRET_MOTOR_MAX_LIMIT = Math.toRadians(30); // TODO
+        public static final double TURRET_MOTOR_MIN_LIMIT = Math.toRadians(-317);
+        public static final double TURRET_MOTOR_MAX_LIMIT = Math.toRadians(24);
         public static final double TURRET_MOTOR_ALLOWED_ERROR = Math.toRadians(5);
         public static final double TURRET_MOTOR_CALIBRATION_POWER = -0.1;
-        public static final double TURRET_MOTOR_CMD_CALIBRATION_RESET_POS = Math.toRadians(-300);
-        public static final double TURRET_MOTOR_AUTO_CALIBRATION_RESET_POS = Math.toRadians(-300); // TODO
+        public static final double TURRET_MOTOR_CMD_CALIBRATION_RESET_POS = Math.toRadians(-317);
+        public static final double TURRET_MOTOR_AUTO_CALIBRATION_RESET_POS = Math.toRadians(-317);
     }
 
     public static final class MinLimitSwitchConstants {

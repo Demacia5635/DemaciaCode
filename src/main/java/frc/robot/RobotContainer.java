@@ -33,7 +33,7 @@ import frc.robot.shooter.commands.ShooterCommand;
  */
 public class RobotContainer implements Sendable {
 
-  public static CommandController controller = new CommandController(0, ControllerType.kXbox);
+  public static CommandController controller = new CommandController(0, ControllerType.kPS5);
 
   private Intake intake;
   private Shinua shinua;

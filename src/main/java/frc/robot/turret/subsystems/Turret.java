@@ -49,12 +49,16 @@ public class Turret extends StateBaseMechanism<TurretStates> {
         setPower(TURRET_MOTOR_NAME, power);
     }
 
-    public void setTurretMotorMotion(double motion) {
-        setMotion(TURRET_MOTOR_NAME, motion);
+    public void setTurretAngle(double angle) {
+        setAngle(TURRET_MOTOR_NAME, angle);
     }
 
-    public double getTurretMotorPosition() {
-        return getMotor(TURRET_MOTOR_NAME).getCurrentPosition();
+    public void setTurretMotorPositionVoltage(double position) {
+        setPositionVoltage(TURRET_MOTOR_NAME, position);
+    }
+
+    public double getTurretMotorAngle() {
+        return getMotor(TURRET_MOTOR_NAME).getCurrentAngle();
     }
 
     public boolean isTurretMotorReady() {
