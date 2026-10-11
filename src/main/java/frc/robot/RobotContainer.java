@@ -12,21 +12,7 @@ import frc.demacia.RobotPose.RobotPose;
 import frc.robot.vision.VisionConstants;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
-<<<<<<< HEAD
 import frc.robot.chassis.RobotBChassisConstants;
-import frc.robot.vision.VisionConstants;
-=======
-import frc.robot.chassis.RobotCChassisConstants;
-import frc.robot.intake.subsystems.Intake;
-import frc.robot.intake.commands.IntakeCommand;
-import frc.robot.shinua.subsystems.Shinua;
-import frc.robot.shinua.commands.ShinuaCommand;
-import frc.robot.turret.subsystems.Turret;
-import frc.robot.turret.commands.TurretCommand;
-import frc.robot.shooter.subsystems.Shooter;
-import frc.robot.shooter.commands.ShooterCommand;
->>>>>>> mechanism
-
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -47,25 +33,11 @@ public class RobotContainer implements Sendable {
    */
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
-<<<<<<< HEAD
     Chassis.initialize(RobotBChassisConstants.CHASSIS_CONFIG);
     driveCommand = new DriveCommand(Chassis.getInstance(), controller);
 
     RobotPose.initialize(
-      ()->new OdometryData(Chassis.getInstance().getGyroAngle(), Chassis.getInstance().getModulePositions()), 
-      Chassis.getInstance().getModuleLocations(), 
-      RobotBChassisConstants.STATE_STD, 
-=======
-    Chassis.initialize(RobotCChassisConstants.CHASSIS_CONFIG);
-    driveCommand = new DriveCommand(Chassis.getInstance(), controller);
-    intake = Intake.getInstance();
-    shinua = Shinua.getInstance();
-    turret = Turret.getInstance();
-    shooter = Shooter.getInstance();
-
-    RobotPose.initialize(
-      RobotCChassisConstants.STATE_STD, 
->>>>>>> mechanism
+      RobotBChassisConstants.STATE_STD,
       VisionConstants.visionConfig);
 
     configureBindings();
@@ -79,13 +51,6 @@ public class RobotContainer implements Sendable {
 
   private void setDefaultCommands() {
     Chassis.getInstance().setDefaultCommand(driveCommand);
-<<<<<<< HEAD
-=======
-    intake.setDefaultCommand(new IntakeCommand());
-    shinua.setDefaultCommand(new ShinuaCommand());
-    turret.setDefaultCommand(new TurretCommand());
-    shooter.setDefaultCommand(new ShooterCommand());
->>>>>>> mechanism
   }
 
   private void setController() {
