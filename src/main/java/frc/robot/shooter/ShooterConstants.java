@@ -12,28 +12,30 @@ public class ShooterConstants {
     public static final class FlywheelConstants {
         public static final String FLYWHEEL_NAME = "flywheel";
         public static final int FLYWHEEL_ID = 30;
-        public static final Canbus FLYWHEEL_CANBUS = Canbus.Rio; // TODO
+        public static final Canbus FLYWHEEL_CANBUS = Canbus.Rio;
         public static final boolean FLYWHEEL_BRAKE = false;
         public static final boolean FLYWHEEL_INVERT = false;
         public static final double FLYWHEEL_GEAR_RATIO = 1.0;
         public static final double FLYWHEEL_DIAMETER = 2 * 0.0254;
-        public static final double FLYWHEEL_KP = 0.0; // TODO
-        public static final double FLYWHEEL_KI = 0.0; // TODO
-        public static final double FLYWHEEL_KD = 0.0; // TODO
-        public static final double FLYWHEEL_KS = 0.0; // TODO
-        public static final double FLYWHEEL_KV = 0.0; // TODO
-        public static final double FLYWHEEL_KA = 0.0; // TODO
-        public static final double FLYWHEEL_KG = 0.0; // TODO
-        public static final double FLYWHEEL_KV2 = 0.0; // TODO
-        public static final double FLYWHEEL_KCOS = 0.0; // TODO
+        public static final double RAMP_TIME = 0.6;
+        public static final double FLYWHEEL_KP = 3;
+        public static final double FLYWHEEL_KI = 0.0;
+        public static final double FLYWHEEL_KD = 0.0;
+        public static final double FLYWHEEL_KS = 0.47705;
+        public static final double FLYWHEEL_KV = 0.65384;
+        public static final double FLYWHEEL_KA = 0.21786;
+        public static final double FLYWHEEL_KG = 0.0;
+        public static final double FLYWHEEL_KV2 = 0.00488;
+        public static final double FLYWHEEL_KCOS = 0.0;
 
         public static final TalonFXConfig FLYWHEEL_CONFIG = new TalonFXConfig(FLYWHEEL_NAME, FLYWHEEL_ID, FLYWHEEL_CANBUS)
             .withBrake(FLYWHEEL_BRAKE)
             .withInvert(FLYWHEEL_INVERT)
+            .withRampTime(RAMP_TIME)
             .withMeterMotor(FLYWHEEL_GEAR_RATIO, FLYWHEEL_DIAMETER)
             .withPID(FLYWHEEL_KP, FLYWHEEL_KI, FLYWHEEL_KD, FLYWHEEL_KS, FLYWHEEL_KV, FLYWHEEL_KA, FLYWHEEL_KG, FLYWHEEL_KCOS, FLYWHEEL_KV2);
 
-        public static final double FLYWHEEL_ALLOWED_ERROR = Math.toRadians(0.5);
+        public static final double FLYWHEEL_ALLOWED_ERROR = 0.5;
     }
 
     public static final class HoodConstants {

@@ -153,7 +153,7 @@ public class Quest extends BaseVisionSource {
             hasUpdatedQuestIntialPose = false;
         }
 
-        if (getBattery() <= 20) {
+        if (isConnected() && getBattery() <= 20) {
             Log.alert(name + " has lass than 20 percent");
         }
     }
