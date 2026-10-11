@@ -1,6 +1,7 @@
 package frc.demacia.utils.mechanisms;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.demacia.utils.mechanisms.StateBaseMechanism.MechanismState;
 import frc.demacia.utils.motors.MotorInterface;
 import frc.demacia.utils.motors.MotorInterface.ControlMode;
 
@@ -11,8 +12,8 @@ import frc.demacia.utils.motors.MotorInterface.ControlMode;
  * set method (e.g., setPower, setVelocity) using values retrieved from the mechanism's state.
  * </p>
  */
-public class DefaultCommand extends Command {
-  protected StateBaseMechanism mechanism;
+public class DefaultCommand<S extends MechanismState> extends Command {
+  protected StateBaseMechanism<S> mechanism;
   protected MotorInterface[] motors;
   protected int length;
   protected Runnable[] controls;
@@ -22,7 +23,7 @@ public class DefaultCommand extends Command {
    * * @param mechanism The StateBaseMechanism to control
    * @param controlModes Array of ControlModes, one for each motor in the mechanism
    */
-  public DefaultCommand(StateBaseMechanism mechanism, ControlMode[] controlModes) {
+  public DefaultCommand(StateBaseMechanism<S> mechanism, ControlMode[] controlModes) {
     this.mechanism = mechanism;
     motors = mechanism.getMotors();
     length = Math.min(motors.length, controlModes.length);
@@ -50,7 +51,7 @@ public class DefaultCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (mechanism.getState().equals(mechanism.IDLE_STATE)){
+    if (mechanism.getMechanismState().equals(mechanism.IDLE_STATE)){
       mechanism.stop();
     } else {
       for (int i = 0; i < length; i++) {
@@ -59,9 +60,15 @@ public class DefaultCommand extends Command {
     }
   }
 
+  public void run() {
+    
+  }
+
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    mechanism.stop();
+  }
 
   // Returns true when the command should end.
   @Override

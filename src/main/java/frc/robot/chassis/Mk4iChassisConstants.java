@@ -23,28 +23,28 @@ public class Mk4iChassisConstants {
   public static final double DRIVE_GEAR_RATIO = 8.14; 
   public static final double WHEEL_DIAMETER = 4 * 0.0254; 
 
-  public static final double STEER_KP = 6;  // TODO
-  public static final double STEER_KI = 0;  // TODO
-  public static final double STEER_KD = 0;  // TODO
-  public static final double STEER_KS = 0.07718;  // TODO
-  public static final double STEER_KV = 0.3707;  // TODO
-  public static final double STEER_KA = 0.00589;  // TODO
+  public static final double STEER_KP = 6;
+  public static final double STEER_KI = 0;
+  public static final double STEER_KD = 0;
+  public static final double STEER_KS = 0.07718;
+  public static final double STEER_KV = 0.3707;
+  public static final double STEER_KA = 0.00589;
 
-  public static final double DRIVE_KP = 1;  // TODO
-  public static final double DRIVE_KI = 0;  // TODO
-  public static final double DRIVE_KD = 0;  // TODO
-  public static final double DRIVE_KS = 0.09053;  // TODO
-  public static final double DRIVE_KV = 2.71729;  // TODO
-  public static final double DRIVE_KA = 0.06453;  // TODO
+  public static final double DRIVE_KP = 1;
+  public static final double DRIVE_KI = 0;
+  public static final double DRIVE_KD = 0;
+  public static final double DRIVE_KS = 0.09053;
+  public static final double DRIVE_KV = 2.71729;
+  public static final double DRIVE_KA = 0.06453;
 
   public static final double MAX_DRIVE_VELOCITY = 5; 
   public static final double RAMP_TIME_STEER = 0.25; 
 
   public static final Translation2d[] MODULE_LOCATIONS = {
-    new Translation2d(0.4, -0.36), //FRONT LEFT 
-    new Translation2d(0.4, 0.36), //FRONT RIGHT 
-    new Translation2d(-0.4, -0.36), //BACK LEFT 
-    new Translation2d(-0.4, 0.36), //BACK RIGHT 
+    new Translation2d(0.4, 0.36), //FRONT LEFT 
+    new Translation2d(0.4, -0.36), //FRONT RIGHT 
+    new Translation2d(-0.4, 0.36), //BACK LEFT 
+    new Translation2d(-0.4, -0.36), //BACK RIGHT 
   };
 
   public static final SwerveModuleConfig[] modules = swerveModules(

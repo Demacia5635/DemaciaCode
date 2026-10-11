@@ -90,8 +90,10 @@ public class CalibrationCommand extends Command {
     timer.stop();
     timer.reset();
     motor.stop();
-    motor.setEncoderPosition(resetPos);
-    mechanism.setCalibration(motorName, true);
+    if (!interrupted) {
+      motor.setEncoderPosition(resetPos);
+      mechanism.setCalibration(motorName, true);
+    }
   }
 
   // Returns true when the command should end.

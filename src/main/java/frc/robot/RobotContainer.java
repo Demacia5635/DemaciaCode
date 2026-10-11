@@ -1,25 +1,33 @@
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.demacia.RobotPose.RobotPose;
-import frc.demacia.RobotPose.Estimation.DemaciaPoseEstimator.OdometryData;
+import frc.robot.vision.VisionConstants;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
+<<<<<<< HEAD
 import frc.robot.chassis.RobotBChassisConstants;
 import frc.robot.vision.VisionConstants;
+=======
+import frc.robot.chassis.RobotCChassisConstants;
+import frc.robot.intake.subsystems.Intake;
+import frc.robot.intake.commands.IntakeCommand;
+import frc.robot.shinua.subsystems.Shinua;
+import frc.robot.shinua.commands.ShinuaCommand;
+import frc.robot.turret.subsystems.Turret;
+import frc.robot.turret.commands.TurretCommand;
+import frc.robot.shooter.subsystems.Shooter;
+import frc.robot.shooter.commands.ShooterCommand;
+>>>>>>> mechanism
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
-* the robot (including
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in
@@ -39,6 +47,7 @@ public class RobotContainer implements Sendable {
    */
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
+<<<<<<< HEAD
     Chassis.initialize(RobotBChassisConstants.CHASSIS_CONFIG);
     driveCommand = new DriveCommand(Chassis.getInstance(), controller);
 
@@ -46,6 +55,17 @@ public class RobotContainer implements Sendable {
       ()->new OdometryData(Chassis.getInstance().getGyroAngle(), Chassis.getInstance().getModulePositions()), 
       Chassis.getInstance().getModuleLocations(), 
       RobotBChassisConstants.STATE_STD, 
+=======
+    Chassis.initialize(RobotCChassisConstants.CHASSIS_CONFIG);
+    driveCommand = new DriveCommand(Chassis.getInstance(), controller);
+    intake = Intake.getInstance();
+    shinua = Shinua.getInstance();
+    turret = Turret.getInstance();
+    shooter = Shooter.getInstance();
+
+    RobotPose.initialize(
+      RobotCChassisConstants.STATE_STD, 
+>>>>>>> mechanism
       VisionConstants.visionConfig);
 
     configureBindings();
@@ -55,11 +75,17 @@ public class RobotContainer implements Sendable {
 
   private void configureBindings() {
 
-
   }
 
   private void setDefaultCommands() {
     Chassis.getInstance().setDefaultCommand(driveCommand);
+<<<<<<< HEAD
+=======
+    intake.setDefaultCommand(new IntakeCommand());
+    shinua.setDefaultCommand(new ShinuaCommand());
+    turret.setDefaultCommand(new TurretCommand());
+    shooter.setDefaultCommand(new ShooterCommand());
+>>>>>>> mechanism
   }
 
   private void setController() {
@@ -69,7 +95,6 @@ public class RobotContainer implements Sendable {
   @Override
   public void initSendable(SendableBuilder builder) {
 
-
   }
 
   /**
@@ -78,6 +103,6 @@ public class RobotContainer implements Sendable {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return null;
+    return new RunCommand(() -> Chassis.getInstance().setSpeedsRobotRel(new ChassisSpeeds(0, 0, 1)), Chassis.getInstance());
   }
 }

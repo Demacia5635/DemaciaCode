@@ -63,7 +63,7 @@ public class RobotBChassisConstants {
       MODULES,
       PIGEON_CONFIG);
 
-  public static final Matrix<N3, N1> STATE_STD = new Matrix<>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 })); 
+  public static final Matrix<N3, N1> STATE_STD = new Matrix<>(new SimpleMatrix(new double[] { 0.05, 0.05, 0 })); 
 
   public static final double METERS_FROM_360_DEGS = 0.2;
 

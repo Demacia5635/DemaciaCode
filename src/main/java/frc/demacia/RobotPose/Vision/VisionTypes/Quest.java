@@ -13,6 +13,7 @@ import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.RobotPose.Vision.BaseVisionSource;
 import frc.demacia.RobotPose.Vision.TimestampedVisionMeasurement;
 import frc.demacia.RobotPose.Vision.visionConfigs.QuestConfig;
+import frc.demacia.utils.log.Log;
 import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
 
@@ -151,6 +152,10 @@ public class Quest extends BaseVisionSource {
             hasQuestDisconnected = true;
             hasUpdatedQuestIntialPose = false;
         }
+
+        if (isConnected() && getBattery() <= 20) {
+            Log.alert(name + " has lass than 20 percent");
+        }
     }
 
     /**
@@ -182,7 +187,7 @@ public class Quest extends BaseVisionSource {
     @Override
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
-        builder.addBooleanProperty("shouldUpdate", () -> shouldUpdate(), null);
+        builder.addBooleanProperty("should update", () -> shouldUpdate(), null);
         builder.addIntegerProperty("battery", () -> getBattery(), null);
     }
 }
