@@ -12,7 +12,7 @@ import frc.demacia.RobotPose.RobotPose;
 import frc.robot.vision.VisionConstants;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
-import frc.robot.chassis.RobotBChassisConstants;
+import frc.robot.chassis.RobotCChassisConstants;
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -33,11 +33,11 @@ public class RobotContainer implements Sendable {
    */
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
-    Chassis.initialize(RobotBChassisConstants.CHASSIS_CONFIG);
+    Chassis.initialize(RobotCChassisConstants.CHASSIS_CONFIG);
     driveCommand = new DriveCommand(Chassis.getInstance(), controller);
 
     RobotPose.initialize(
-      RobotBChassisConstants.STATE_STD,
+      RobotCChassisConstants.STATE_STD,
       VisionConstants.visionConfig);
 
     configureBindings();

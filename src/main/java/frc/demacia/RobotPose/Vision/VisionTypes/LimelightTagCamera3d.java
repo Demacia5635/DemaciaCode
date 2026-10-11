@@ -48,7 +48,7 @@ public class LimelightTagCamera3d extends BaseVisionSource {
         limelightName = "limelight-" + config.name;
         LimelightHelpers.setCameraPose_RobotSpace(limelightName, 
             offset.getX(), 
-            -offset.getY(), 
+            offset.getY(), 
             offset.getZ(), 
             Math.toDegrees(offset.getRotation().getX()), 
             Math.toDegrees(offset.getRotation().getY()), 
