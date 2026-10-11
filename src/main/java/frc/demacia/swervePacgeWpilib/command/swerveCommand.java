@@ -8,16 +8,20 @@ import org.ejml.simple.SimpleMatrix;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.swervePacgeWpilib.wpilibPoseEstimator.wpilibPoseEstimator;
 import frc.demacia.swervePacgeWpilib.wpilib_kinmatics.wpilibKinmatics;
 import frc.demacia.swervePacgeWpilib.wpilib_odmetry.wpilivOdmetry;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.controller.CommandController;
+import frc.demacia.utils.log.LogManager;
 import frc.demacia.vision.utils.Vision;
 import frc.robot.RobotContainer;
 
@@ -29,6 +33,9 @@ public class SwerveCommand extends Command {
   private final wpilibPoseEstimator poseEstimator;
   private final CommandController controller;
   private final Vision vision;
+
+  // אובייקט ה-Field2d להצגת תמונה/מיקום ב-Elastic / SmartDashboard
+  private final Field2d field = new Field2d();
 
   private final SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
   private SwerveModuleState[] moduleStates = new SwerveModuleState[4];
@@ -46,13 +53,16 @@ public class SwerveCommand extends Command {
       modulePositions[i] = chassis.modules[i].getModulePosition();
     }
 
-    kinematics = new wpilibKinmatics(chassis.modulePositions);
-    odometry = new wpilivOdmetry(kinematics.kinematics(), chassis.getGyroAngle(), modulePositions);
-    poseEstimator = new wpilibPoseEstimator(kinematics.kinematics(), odometry.getOdometry(),odmetryStd , visionSTD);
-
     this.visionSTD = new Matrix<N3, N1>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 }));
     this.odmetryStd = new Matrix<N3, N1>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 }));
 
+    kinematics = new wpilibKinmatics(chassis.modulePositions);
+    odometry = new wpilivOdmetry(kinematics.kinematics(), chassis.getGyroAngle(), modulePositions);
+    poseEstimator = new wpilibPoseEstimator(kinematics.kinematics(), odometry.getOdometry(), odmetryStd, visionSTD);
+
+    // שליחת אובייקט ה-Field2d ל-NetworkTables תחת השם "Field" כדי ש-Elastic יידע לקרוא אותו
+    SmartDashboard.putData("Field", field);
+    LogManager.log(vision.getPoseEstimation());
     addRequirements(chassis);
   }
 
@@ -63,13 +73,13 @@ public class SwerveCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double direction = RobotContainer.isRed ? 1.0 : -1.0;
+    double direction = RobotContainer.isRed ? -1.0 : 1.0;
     double joyX = controller.getLeftY() * direction;
     double joyY = controller.getLeftX() * direction;
-
+    
     // Calculate rotation from trigger axes
     double rot = controller.getLeftTrigger() - controller.getRightTrigger();
-
+    
     double velX = Math.pow(joyX, 2) * chassis.getConfig().maxDriveVelocity * Math.signum(joyX);
     double velY = Math.pow(joyY, 2) * chassis.getConfig().maxDriveVelocity * Math.signum(joyY);
     double velRot = Math.pow(rot, 2) * chassis.getConfig().maxRotationalVelocity * Math.signum(rot);
@@ -80,18 +90,31 @@ public class SwerveCommand extends Command {
       velRot /= 2.0;
     }
 
-    // במידה והנהיגה היא Robot-Oriented
-    speeds = new ChassisSpeeds(velX, velY, -velRot);
 
-    // במידה ותרצה Field-Oriented, השתמש בשורה הבאה במקום:
-    // speeds = ChassisSpeeds.fromFieldRelativeSpeeds(velX, velY, -velRot, chassis.getGyroAngle());
+
+    // Field-Oriented Driving
+    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(velX, velY, -velRot, chassis.getGyroAngle());
 
     moduleStates = kinematics.kinematics().toSwerveModuleStates(speeds);
+
+    // נרמול מהירויות כדי למנוע חריגה מהמהירות המרבית
+    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, chassis.getConfig().maxDriveVelocity);
+
     chassis.setModuleStates(moduleStates);
 
+    // 1. עדכון מיקומי המודולים המעודכנים
+    for (int i = 0; i < modulePositions.length; i++) {
+      modulePositions[i] = chassis.modules[i].getModulePosition();
+    }
+
+
+    // 3. עדכון ויז'ן אם קיים
     if (vision != null && vision.getPoseEstimation() != null) {
       poseEstimator.updateVision(vision.getPoseEstimation(), 0.02);
     }
+
+    // 4. עדכון מיקום הרובוט ב-Field2d שנשלח ל-Elastic
+    field.setRobotPose(poseEstimator.getPose2d());
   }
 
   // Called once the command ends or is interrupted.
