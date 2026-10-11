@@ -16,6 +16,7 @@ import frc.demacia.utils.chassis.DriveCommand;
 import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
 import frc.demacia.utils.log.LogManager;
+import frc.robot.chassis.MK4iChassisConstants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -36,6 +37,7 @@ public class RobotContainer implements Sendable{
   /** The container for the root. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
+    Chassis.initialize(MK4iChassisConstants.CHASSIS_CONFIG);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
     chassis = Chassis.getInstance();
     chassis.setDefaultCommand(new DriveCommand(Chassis.getInstance(), controller));
