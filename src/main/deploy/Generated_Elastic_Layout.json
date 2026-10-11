@@ -1548,7 +1548,7 @@
             }
           },
           {
-            "type": "Boolean Box",
+            "type": "Text Display",
             "title": "battery quest",
             "x": 256.0,
             "y": 128.0,
@@ -1557,7 +1557,7 @@
             "properties": {
               "topic": "/SmartDashboard/vision/quest/battery",
               "period": 0.06,
-              "data_type": "boolean"
+              "data_type": "double"
             }
           },
           {

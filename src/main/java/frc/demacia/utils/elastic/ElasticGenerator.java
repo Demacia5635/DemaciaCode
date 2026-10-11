@@ -338,7 +338,7 @@ public class ElasticGenerator {
                     widgets.add(createWidget("Command", "Reset Quest Pose", col, 3, 2, 1, visionSourcePath + "/Reset Quest Pose", "\"show_type\": true"));
                     col += 2;
                     widgets.add(createWidget("Boolean Box", "should update " + visionSource.getName(), col + 1, 0, 1, 1, visionSourcePath + "/should update", "\"data_type\": \"boolean\""));
-                    widgets.add(createWidget("Boolean Box", "battery " + visionSource.getName(), col, 1, 1, 1, visionSourcePath + "/battery", "\"data_type\": \"boolean\""));
+                    widgets.add(createWidget("Text Display", "battery " + visionSource.getName(), col, 1, 1, 1, visionSourcePath + "/battery", "\"data_type\": \"double\""));
                 }
 
                 col += VISION_SOURCE_WIDTH;

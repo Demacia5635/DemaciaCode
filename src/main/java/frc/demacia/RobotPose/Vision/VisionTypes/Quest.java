@@ -13,6 +13,7 @@ import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.RobotPose.Vision.BaseVisionSource;
 import frc.demacia.RobotPose.Vision.TimestampedVisionMeasurement;
 import frc.demacia.RobotPose.Vision.visionConfigs.QuestConfig;
+import frc.demacia.utils.log.Log;
 import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
 
@@ -150,6 +151,10 @@ public class Quest extends BaseVisionSource {
         if (!hasQuestDisconnected && !isConnected()) {
             hasQuestDisconnected = true;
             hasUpdatedQuestIntialPose = false;
+        }
+
+        if (getBattery() <= 20) {
+            Log.alert(name + " has lass than 20 percent");
         }
     }
 
