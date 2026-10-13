@@ -23,19 +23,19 @@ public class TurretCommand extends DefaultCommand<TurretStates> {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        // if (mechanism.getMechanismState().equals(mechanism.TESTING_STATE) && Math.abs(turret.getMotor(TURRET_MOTOR_NAME).getCurrentVelocity()) < 0.01){
-        //     Log.alert(Math.abs(turret.getTurretMotorAngle() - turret.getValue(TURRET_MOTOR_NAME)) + "");
-        //     if (Math.abs(turret.getTurretMotorAngle() - turret.getValue(TURRET_MOTOR_NAME)) > Math.toRadians(40)) {
-        //         turret.getMotor(TURRET_MOTOR_NAME).setSlot(0);
-        //         control = () -> turret.setTurretAngle(turret.getValue(TURRET_MOTOR_NAME));
-        //     } else {
-        //         turret.getMotor(TURRET_MOTOR_NAME).setSlot(1);
-        //         control = () -> turret.setTurretMotorPositionVoltage(turret.getValue(TURRET_MOTOR_NAME));
-        //     }
+        if (mechanism.getMechanismState().equals(mechanism.TESTING_STATE) && Math.abs(turret.getMotor(TURRET_MOTOR_NAME).getCurrentVelocity()) < 0.01){
+            Log.alert(Math.abs(turret.getTurretMotorAngle() - turret.getValue(TURRET_MOTOR_NAME)) + "");
+            if (Math.abs(turret.getTurretMotorAngle() - turret.getValue(TURRET_MOTOR_NAME)) > Math.toRadians(40)) {
+                turret.getMotor(TURRET_MOTOR_NAME).setSlot(0);
+                control = () -> turret.setTurretAngle(turret.getValue(TURRET_MOTOR_NAME));
+            } else {
+                turret.getMotor(TURRET_MOTOR_NAME).setSlot(1);
+                control = () -> turret.setTurretMotorPositionVoltage(turret.getValue(TURRET_MOTOR_NAME));
+            }
 
-        //     control.run();
-        //     return;
-        // }
+            control.run();
+            return;
+        }
 
         //if state is testing or idle getState() is null and DefaultCommand will handle it
         if (turret.getState() == null) {

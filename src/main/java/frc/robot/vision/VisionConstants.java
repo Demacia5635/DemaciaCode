@@ -15,10 +15,11 @@ public class VisionConstants {
 
     public static final String QUEST_NAME = "quest";
     public static final Transform3d QUEST_OFFSET = new Transform3d(
-        new Translation3d(0.0, 0.0, 0.0),  // TODO
-        new Rotation3d(0.0, 0.0, 0.0));  // TODO
+        new Translation3d(-0.245, -0.37, 0.0),  // TODO
+        new Rotation3d(Math.toRadians(45), Math.toRadians(0), Math.toRadians(180)));  // TODO
     public static final Matrix<N3, N1> QUEST_STD = new Matrix<>(new SimpleMatrix(new double[] { 0.03, 0.03, 0.0 })); 
     public static final QuestConfig QUEST_CONFIG = new QuestConfig(QUEST_NAME, QUEST_OFFSET, QUEST_STD);
+
 
     public static final String ROBORIO_NAME = "roboio";
     public static final Transform3d ROBORIO_OFFSET = new Transform3d(

@@ -206,8 +206,8 @@ public class SwerveModule {
     }
 
     public void checkMotorAndCancoderOposite() {
-        if (Math.abs(steerMotor.getCurrentVelocity()) > 0.05 && 
-                Math.abs(cancoder.getCurrentVelocity()) > 0.05 && 
+        if (Math.abs(steerMotor.getCurrentVelocity()) > 0.1 && 
+                Math.abs(cancoder.getCurrentVelocity()) > 0.1 && 
                 Math.signum(steerMotor.getCurrentVelocity()) != Math.signum(cancoder.getCurrentVelocity())) {
             if (!motorAndCancoderOpositeTimer.isRunning()) {
                 motorAndCancoderOpositeTimer.restart();
