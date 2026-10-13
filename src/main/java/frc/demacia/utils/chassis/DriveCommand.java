@@ -66,8 +66,8 @@ public class DriveCommand extends Command {
     }
 
     speeds = new ChassisSpeeds(velX, velY, velRot);
-    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, chassis.getGyroAngle());
-    chassis.setSpeedsRobotRel(speeds);
+    // speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, chassis.getGyroAngle());
+    chassis.setSpeedsFieldRelWithAccelLimit(speeds);
   }
 
   // Called once the command ends or is interrupted.

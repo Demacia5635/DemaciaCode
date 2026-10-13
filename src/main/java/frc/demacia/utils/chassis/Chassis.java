@@ -223,6 +223,7 @@ public class Chassis extends SubsystemBase {
         setSpeedsFieldRel(robotRel);
         lastCommandedSpeedsFieldRel = ChassisSpeeds.fromRobotRelativeSpeeds(getSentSpeedsRobotRel(robotRel), heading);
         usedAccelLimit = true;
+        Log.log("wantedSpeedsFieldRel: " + wantedSpeedsFieldRel + " limited: " + limited + " robotRel: " + robotRel + " lastCommandedSpeedsFieldRel: " + lastCommandedSpeedsFieldRel);
     }
 
     /**
