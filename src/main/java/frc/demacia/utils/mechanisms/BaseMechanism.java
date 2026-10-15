@@ -214,7 +214,7 @@ public class BaseMechanism extends SubsystemBase{
      */
     public void addLimit(String motorName, double min,  double max) {
         if (min >= max) {
-            Log.alert("min is greater or equal to max in " + getName());
+            // Log.alert("min is greater or equal to max in " + getName());
         }
 
         MotorNode node = getNode(motorName);
@@ -427,8 +427,8 @@ public class BaseMechanism extends SubsystemBase{
     public void setPositionVoltage(String motorName, double position){
         MotorNode node = getNode(motorName);
         if (node != null && !node.hasCalibrated) {
-            Log.alert(motorName + " is not Calibrated")
-                .withDescription("you tried using setPositionVoltage on " + motorName + " but its not calibrated");
+            // Log.alert(motorName + " is not Calibrated")
+            //     .withDescription("you tried using setPositionVoltage on " + motorName + " but its not calibrated");
         } else if (node != null) {
             node.motor.setPositionVoltage(clampInLimits(node, position));
         }
@@ -453,8 +453,8 @@ public class BaseMechanism extends SubsystemBase{
     public void setMotion(String motorName, double position){
         MotorNode node = getNode(motorName);
         if (node != null && !node.hasCalibrated) {
-            Log.alert(motorName + " is not Calibrated")
-                .withDescription("you tried using setMotion on " + motorName + " but its not calibrated");
+            // Log.alert(motorName + " is not Calibrated")
+            //     .withDescription("you tried using setMotion on " + motorName + " but its not calibrated");
         } else if (node != null) {
             node.motor.setMotion(clampInLimits(node, position));
         }
@@ -479,8 +479,8 @@ public class BaseMechanism extends SubsystemBase{
     public void setAngle(String motorName, double angle){
         MotorNode node = getNode(motorName);
         if (node != null && !node.hasCalibrated) {
-            Log.alert(motorName + " is not Calibrated")
-                .withDescription("you tried using setAngle on " + motorName + " but its not calibrated");
+            // Log.alert(motorName + " is not Calibrated")
+            //     .withDescription("you tried using setAngle on " + motorName + " but its not calibrated");
         } else if (node != null) {
             double targetAngle = clampAngleInLimits(node, angle);
             node.motor.setMotion(targetAngle);
@@ -669,7 +669,7 @@ public class BaseMechanism extends SubsystemBase{
         if (sensor != null){
             sensor.checkElectronics();
         } else {
-            Log.alert("Invalid sensor: " + sensorName + "in " + getName());
+            // Log.alert("Invalid sensor: " + sensorName + "in " + getName());
         }
     }
 
@@ -689,7 +689,7 @@ public class BaseMechanism extends SubsystemBase{
     public MotorInterface getMotor(String motorName) {
         MotorNode node = getNode(motorName);
         if (node == null){
-            Log.alert("Invalid motor: " + motorName + "in " + getName());
+            // Log.alert("Invalid motor: " + motorName + "in " + getName());
             return null;
         }
         return node.motor;
@@ -724,7 +724,7 @@ public class BaseMechanism extends SubsystemBase{
     public SensorInterface getSensor(String sensorName) {
         SensorInterface sensor = sensors.get(sensorName);
         if (sensor == null){
-            Log.alert("Invalid sensor: " + sensorName + " in " + getName());
+            // Log.alert("Invalid sensor: " + sensorName + " in " + getName());
             return null;
         }
         return sensor;

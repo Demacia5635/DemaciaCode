@@ -55,7 +55,7 @@ public class ElasticGenerator {
         try {
             WebServer.start(5800, dir.getPath());
         } catch (Exception e) {
-            Log.alert("Failed to start WebServer for Elastic: " + e.getMessage());
+            // Log.alert("Failed to start WebServer for Elastic: " + e.getMessage());
         }
     }
 
@@ -141,7 +141,7 @@ public class ElasticGenerator {
             SmartDashboard.putString("elastic/Status", "Saved at: " + file.getAbsolutePath());
             Log.log("Elastic layout saved successfully at: " + file.getAbsolutePath());  
         } catch (IOException e) {
-            Log.alert("Failed to save Elastic layout: " + e.getMessage());
+            // Log.alert("Failed to save Elastic layout: " + e.getMessage());
             SmartDashboard.putString("elastic/Status", "Failed to save: " + e.getMessage());
         }
     }

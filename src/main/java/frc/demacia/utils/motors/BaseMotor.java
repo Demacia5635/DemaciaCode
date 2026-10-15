@@ -69,9 +69,9 @@ public abstract class BaseMotor implements MotorInterface {
     this.config = config;
     name = config.name;
     setName(name);
-    if (config.id <= 0) {
-      Log.alert("the " + name + " id is 0 or less").withDescription(name);
-    }
+    // if (config.id <= 0) {
+    //   Log.alert("the " + name + " id is 0 or less").withDescription(name);
+    // }
     createMotor();
     configMotor();
     setSignals();
@@ -261,8 +261,8 @@ public abstract class BaseMotor implements MotorInterface {
   @Override
   public void setVelocity(double velocity, double feedForward) {
     if (isPidFfParamsZero(config.pidFfParams[getSlot()])) {
-      Log.alert(getName() + " pid and FF are all zero")
-        .withDescription("you used setVelocity in" + getName() + " but the pid and FF are all zero");
+      // Log.alert(getName() + " pid and FF are all zero")
+      //   .withDescription("you used setVelocity in" + getName() + " but the pid and FF are all zero");
     }
 
     setMotorVelocity(velocity, feedForward + velocityFeedForward(velocity));
@@ -283,8 +283,8 @@ public abstract class BaseMotor implements MotorInterface {
   @Override
   public void setPositionVoltage(double position, double feedForward) {
     if (isPidFfParamsZero(config.pidFfParams[getSlot()])) {
-      Log.alert(getName() + " pid and FF are all zero")
-        .withDescription("you used setPositionVoltage in" + getName() + " but the pid and FF are all zero");
+      // Log.alert(getName() + " pid and FF are all zero")
+      //   .withDescription("you used setPositionVoltage in" + getName() + " but the pid and FF are all zero");
     }
 
     setMotorPositionVoltage(position, feedForward + positionFeedForward(position));
@@ -300,13 +300,13 @@ public abstract class BaseMotor implements MotorInterface {
   @Override
   public void setMotion(double position, double feedForward) {
     if (isPidFfParamsZero(config.pidFfParams[getSlot()])) {
-      Log.alert(getName() + " pid and FF are all zero")
-        .withDescription("you used setMotion in" + getName() + " but the pid and FF are all zero");
+      // Log.alert(getName() + " pid and FF are all zero")
+        // .withDescription("you used setMotion in" + getName() + " but the pid and FF are all zero");
     }
 
     if (config.maxVelocity == 0) {
-      Log.alert(getName() + " max velocity is zero")
-        .withDescription("you used setMotion in" + getName() + " but max velocity is zero");
+      // Log.alert(getName() + " max velocity is zero")
+        // .withDescription("you used setMotion in" + getName() + " but max velocity is zero");
     }
 
     setMotorMotionMagic(position, feedForward + positionFeedForward(position));
@@ -378,8 +378,8 @@ public abstract class BaseMotor implements MotorInterface {
     if (config.isRadiansMotor) {
       return MathUtil.angleModulus(getCurrentPosition());
     }
-    Log.alert(getName() + " cant use getCurrentAngle")
-      .withDescription(getName() + " is not in Radians so you cant use getCurrentAngle");
+    // Log.alert(getName() + " cant use getCurrentAngle")
+    //   .withDescription(getName() + " is not in Radians so you cant use getCurrentAngle");
     return 0;
   }
 

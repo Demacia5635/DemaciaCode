@@ -20,7 +20,6 @@ import frc.demacia.RobotPose.Vision.VisionConfig;
 import frc.demacia.RobotPose.Vision.VisionSource;
 import frc.demacia.RobotPose.Vision.VisionTypes.Quest;
 import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.utils.log.Log;
 
 /**
  * The robot's field pose. This is the only class the rest of the robot code should use
@@ -51,8 +50,7 @@ public final class RobotPose {
     /** Every configured vision source, including the Quest if there is one. */
     private final List<VisionSource> sources;
     /** Shows the estimated pose on the dashboard ("pose/field"), updated every {@link #periodic()}. */
-    private final Field2d field = new Field2d();
-
+    
     private Field2d field;
 
     private RobotPose(Supplier<OdometryData> odometryDataSupplier, Translation2d[] moduleLocations, 

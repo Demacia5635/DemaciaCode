@@ -212,7 +212,7 @@ public class SwerveModule {
             if (!motorAndCancoderOpositeTimer.isRunning()) {
                 motorAndCancoderOpositeTimer.restart();
             } else if (motorAndCancoderOpositeTimer.hasElapsed(0.1)){
-                Log.alert("cancoder and motor velocity are with opposite sigh in " + name);
+                // Log.alert("cancoder and motor velocity are with opposite sigh in " + name);
                 motorAndCancoderOpositeTimer.stop();
             }
         } else if (motorAndCancoderOpositeTimer.isRunning()) {

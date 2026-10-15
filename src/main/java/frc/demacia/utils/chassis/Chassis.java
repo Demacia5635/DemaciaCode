@@ -57,13 +57,7 @@ public class Chassis extends SubsystemBase {
         for (int i = 0; i < 4; i++) {
             modules[i] = new SwerveModule(chassisConfig.swerveModuleConfig[i]);
             modulePositions[i] = chassisConfig.swerveModuleConfig[i].position;
-            if (modulePositions[i].getNorm() == 0) {
-                Log.alert(getName() + " module location on the robot is 0");
-            }
-
-            if (chassisConfig.swerveModuleConfig[i].steerOffset == 0) {
-                Log.alert(getName() + " steer offset is 0");
-            }
+            
         }
         lastAngles = new Rotation2d[4];
         for (int i = 0; i < lastAngles.length; i++) {
@@ -77,10 +71,6 @@ public class Chassis extends SubsystemBase {
     }
 
     public void addLog() {
-        Log.putData("chassis/gyro angle", () -> getGyroAngle().getDegrees());
-        Log.putData("chassis/commanded vx", () -> lastCommandedSpeeds.vxMetersPerSecond);
-        Log.putData("chassis/commanded vy", () -> lastCommandedSpeeds.vyMetersPerSecond);
-        Log.putData("chassis/commanded omega", () -> lastCommandedSpeeds.omegaRadiansPerSecond);
 
         for (SwerveModule module : modules) {
             Log.putData("chassis/" + module.name + "/steer angle deg", () -> module.getSteerRotation().getDegrees());
