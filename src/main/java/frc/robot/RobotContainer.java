@@ -24,7 +24,7 @@ import frc.robot.chassis.RobotCChassisConstants;
  */
 public class RobotContainer implements Sendable {
 
-  public static CommandController controller = new CommandController(0, ControllerType.kPS5);
+  public static CommandController controller = new CommandController(0, ControllerType.kXbox);
 
   public static DriveCommand driveCommand;
 
