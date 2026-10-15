@@ -45,7 +45,7 @@ public class SysidCommand extends InstantCommand {
                         motor.setConfigPidFf(params, 0);
                         Log.log("Successfully updated PID for: " + rawName);
                     } else {
-                        Log.log("Failed to calculate valid PID for: " + rawName);
+                        Log.alert("Failed to calculate valid PID for: " + rawName);
                     }
 
                     if (maxVelocity > 0) {

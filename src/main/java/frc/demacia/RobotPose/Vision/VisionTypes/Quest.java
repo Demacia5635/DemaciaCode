@@ -5,6 +5,7 @@ import java.util.List;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -12,6 +13,7 @@ import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.RobotPose.Vision.BaseVisionSource;
 import frc.demacia.RobotPose.Vision.TimestampedVisionMeasurement;
 import frc.demacia.RobotPose.Vision.visionConfigs.QuestConfig;
+import frc.demacia.utils.log.Log;
 import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
 
@@ -38,9 +40,6 @@ import gg.questnav.questnav.QuestNav;
  */
 public class Quest extends BaseVisionSource {
     private final QuestNav questNav;
-
-    /** Robot pose from the newest frame (heading copied from the estimate). */
-    private Pose2d pose;
 
     /** Capture time of {@link #pose} (QuestNav's data timestamp, FPGA time). */
     private double timestampSeconds;
@@ -94,7 +93,7 @@ public class Quest extends BaseVisionSource {
      */
     @Override
     public boolean shouldUpdate() {
-        return questNav.isConnected() && hasUpdatedQuestIntialPose && hasNewPose;
+        return isConnected() && hasUpdatedQuestIntialPose && hasNewPose;
     }
 
     /**
@@ -113,6 +112,13 @@ public class Quest extends BaseVisionSource {
         return questNav != null && questNav.isConnected();
     }
 
+    public int getBattery() {
+        if (questNav == null) {
+            return 0;
+        }
+        return questNav.getBatteryPercent().getAsInt();
+    }
+
     /**
      * Runs QuestNav's own update (it must run every loop), reads all unread frames, and
      * builds {@link #pose} from the newest one if it is tracking. Also updates the anchor
@@ -121,6 +127,8 @@ public class Quest extends BaseVisionSource {
      */
     @Override
     public void periodic() {
+        super.periodic();
+        
         questNav.commandPeriodic();
 
         poseFrames = questNav.getAllUnreadPoseFrames();
@@ -143,6 +151,10 @@ public class Quest extends BaseVisionSource {
         if (!hasQuestDisconnected && !isConnected()) {
             hasQuestDisconnected = true;
             hasUpdatedQuestIntialPose = false;
+        }
+
+        if (isConnected() && getBattery() <= 20) {
+            Log.alert(name + " has lass than 20 percent");
         }
     }
 
@@ -170,5 +182,12 @@ public class Quest extends BaseVisionSource {
         poseResetTimestamp = Timer.getFPGATimestamp();
         hasUpdatedQuestIntialPose = false;
         hasQuestDisconnected = false;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        builder.addBooleanProperty("should update", () -> shouldUpdate(), null);
+        builder.addIntegerProperty("battery", () -> getBattery(), null);
     }
 }

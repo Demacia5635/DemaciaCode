@@ -1,6 +1,5 @@
 package frc.demacia.utils.motors;
 
-import java.util.function.Consumer;
 import com.ctre.phoenix6.CANBus;
 
 /**
@@ -85,8 +84,8 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
 
     public double highCurrentThreshold = 0;
     public double lowVelocityThreshold = 0;
-    public double secondsThreshold = 0;
-    public Consumer<T> conditionIsTrue;
+    public double stallConfirmSeconds = 0;
+    public double stuckDurationSeconds = 0;
 
     /**
      * Base constructor.
@@ -289,11 +288,11 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
     }
 
     @SuppressWarnings("unchecked")
-    public T withDetectStallInMotor(double current, double velocity, double seconds, Consumer<T> conditionIsTrue) {
+    public T withDetectStall(double current, double velocity, double stallConfirmSeconds, double stuckDurationSeconds) {
         this.highCurrentThreshold = current;
         this.lowVelocityThreshold = velocity;
-        this.secondsThreshold = seconds;
-        this.conditionIsTrue = conditionIsTrue;
+        this.stallConfirmSeconds = stallConfirmSeconds;
+        this.stuckDurationSeconds = stuckDurationSeconds;
         return (T) this;
     }
 

@@ -26,12 +26,12 @@ import frc.demacia.utils.sensors.SensorInterface;
  * </p>
  */
 public class BaseMechanism extends SubsystemBase{
-
     /**
      * Internal class to hold motor instance, limits, current wanted value, and calibration state.
      */
     protected class MotorNode {
         public MotorInterface motor;
+        public final int index;
         public double minLimit = Double.NEGATIVE_INFINITY;
         public double maxLimit = Double.POSITIVE_INFINITY;
         
@@ -40,7 +40,13 @@ public class BaseMechanism extends SubsystemBase{
 
         public MotorNode(MotorInterface motor) {
             this.motor = motor;
+            index = motors.size();
         }
+    }
+
+    /** Subclasses override this to create their own node type. */
+    protected MotorNode createNode(MotorInterface motor) {
+        return new MotorNode(motor);
     }
 
     /** The name of the mechanism (used for logging and dashboard) */
@@ -77,7 +83,7 @@ public class BaseMechanism extends SubsystemBase{
         
         for (int i = 0; i < motorsAmount; i++){
             motorNames[i] = motors[i].getName();
-            this.motors.put(motors[i].getName(), new MotorNode(motors[i]));
+            this.motors.put(motors[i].getName(), createNode(motors[i]));
         }
 
         // Initialize sensors map
@@ -95,15 +101,17 @@ public class BaseMechanism extends SubsystemBase{
             SmartDashboard.putData(getName() + "/" + motorName + "/set coast " + motorName, 
                 new InstantCommand(() -> setNeutralMode(motorName, false)).ignoringDisable(true));
         }
-
-        // Create global Brake/Coast buttons for the whole mechanism
-        SmartDashboard.putData(getName() + "/set coast " + getName(), 
-                new InstantCommand(() -> setNeutralMode(false)).ignoringDisable(true));
-        SmartDashboard.putData(getName() + "/set brake " + getName(), 
-                new InstantCommand(() -> setNeutralMode(true)).ignoringDisable(true));
         
         SmartDashboard.putData(name, this);
         ElasticGenerator.getInstance().registerMechanism(this);
+    }
+    
+    protected MotorNode getNode(String motorName) {
+        MotorNode node = motors.get(motorName);
+        if (node == null) {
+            Log.log("Invalid motor: " + motorName);
+        }
+        return node;
     }
 
     /**
@@ -112,7 +120,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param powerSupplier The supplier for the power value
      */
     public void withPowerCommand(String motorName, DoubleSupplier powerSupplier) {
-        ElasticGenerator.getInstance().registerPowerCommand(this, motors.get(motorName).motor);
+        ElasticGenerator.getInstance().registerPowerCommand(this, getNode(motorName).motor);
 
         SmartDashboard.putData(getName() + "/" + motorName + "/set power command " + motorName, 
             new PowerCommand(this, motorName, powerSupplier));
@@ -131,7 +139,7 @@ public class BaseMechanism extends SubsystemBase{
      * * @param motorName The name of the motor
      */
     public void withCalibration(String motorName){
-        MotorNode node = motors.get(motorName);
+        MotorNode node = getNode(motorName);
         if (node != null) {
             node.hasCalibrated = false;
         }
@@ -142,7 +150,7 @@ public class BaseMechanism extends SubsystemBase{
      * * @param motorIndex The index of the motor
      */
     public void withCalibration(int motorIndex){
-        withCalibration(motorNames[motorIndex]);
+        withCalibration(isValidMotor(motorIndex) ? motorNames[motorIndex] : "");
     }
 
     /**
@@ -164,7 +172,7 @@ public class BaseMechanism extends SubsystemBase{
      * @return true if calibrated, false otherwise
      */
     public boolean getIsCalibration(String motorName){
-        MotorNode node = motors.get(motorName);
+        MotorNode node = getNode(motorName);
         return node != null && node.hasCalibrated;
     }
 
@@ -174,7 +182,7 @@ public class BaseMechanism extends SubsystemBase{
      * @return true if calibrated, false otherwise
      */
     public boolean getIsCalibration(int motorIndex){
-        return getIsCalibration(motorNames[motorIndex]);
+        return getIsCalibration(isValidMotor(motorIndex) ? motorNames[motorIndex] : "");
     }
 
     /**
@@ -183,7 +191,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param hasCalibrated true if calibrated, false otherwise
      */
     public void setCalibration(String motorName, boolean hasCalibrated){
-        MotorNode node = motors.get(motorName);
+        MotorNode node = getNode(motorName);
         if (node != null) {
             node.hasCalibrated = hasCalibrated;
         }
@@ -195,7 +203,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param hasCalibrated true if calibrated, false otherwise
      */
     public void setCalibration(int motorIndex, boolean hasCalibrated){
-        setCalibration(motorNames[motorIndex], hasCalibrated);
+        setCalibration(isValidMotor(motorIndex) ? motorNames[motorIndex] : "", hasCalibrated);
     }
 
     /**
@@ -205,7 +213,11 @@ public class BaseMechanism extends SubsystemBase{
      * @param max The maximum allowed position
      */
     public void addLimit(String motorName, double min,  double max) {
-        MotorNode node = motors.get(motorName);
+        if (min >= max) {
+            Log.alert("min is greater or equal to max in " + getName());
+        }
+
+        MotorNode node = getNode(motorName);
         if (node != null) {
             node.minLimit = min;
             node.maxLimit = max;
@@ -221,7 +233,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param max The maximum allowed position
      */
     public void addLimit(int motorIndex, double min,  double max) {
-        addLimit(motorNames[motorIndex], min,  max);
+        addLimit(isValidMotor(motorIndex) ? motorNames[motorIndex] : "", min,  max);
     }
 
     /**
@@ -230,7 +242,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param max The maximum allowed position
      */
     public void addLimitMax(String motorName, double max) {
-        MotorNode node = motors.get(motorName);
+        MotorNode node = getNode(motorName);
         if (node != null) {
             node.maxLimit = max;
         } else {
@@ -244,7 +256,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param max The maximum allowed position
      */
     public void addLimitMax(int motorIndex, double max) {
-        addLimitMax(motorNames[motorIndex], max);
+        addLimitMax(isValidMotor(motorIndex) ? motorNames[motorIndex] : "", max);
     }
 
     /**
@@ -253,7 +265,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param min The minimum allowed position
      */
     public void addLimitMin(String motorName, double min) {
-        MotorNode node = motors.get(motorName);
+        MotorNode node = getNode(motorName);
         if (node != null) {
             node.minLimit = min;
         } else {
@@ -267,7 +279,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param min The minimum allowed position
      */
     public void addLimitMin(int motorIndex, double min) {
-        addLimitMin(motorNames[motorIndex], min);
+        addLimitMin(isValidMotor(motorIndex) ? motorNames[motorIndex] : "", min);
     }
 
     /**
@@ -277,7 +289,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param resetPos The position to set the encoder to once calibrated
      */
     public void withAutoCalibration(String motorName, BooleanSupplier atLimit, double resetPos) {
-        MotorNode node = motors.get(motorName);
+        MotorNode node = getNode(motorName);
         if (node == null) {
             Log.log("Invalid motor for auto calibration: " + motorName);
             return;
@@ -287,18 +299,19 @@ public class BaseMechanism extends SubsystemBase{
             if (!node.hasCalibrated && atLimit.getAsBoolean()){
                 node.motor.setEncoderPosition(resetPos);
                 node.hasCalibrated = true;
+                Log.log(motorName + " has auto calibrated");
             }
         };
         node.hasCalibrated = false;
         
-        ElasticGenerator.getInstance().registerAutoCalibration(this, motors.get(motorName).motor);
+        ElasticGenerator.getInstance().registerAutoCalibration(this, getNode(motorName).motor);
     
         SmartDashboard.putData(getName() + "/" + motorName + "/" + motorName + " manual reset", new InstantCommand(() -> {
             node.motor.setEncoderPosition(resetPos);
             node.hasCalibrated = true;
             Log.log(node.hasCalibrated);
         }).ignoringDisable(true));
-        }
+    }
 
     /**
      * Stops all motors in this mechanism and resets their wanted values.
@@ -315,7 +328,7 @@ public class BaseMechanism extends SubsystemBase{
      * * @param motorName The name of the motor to stop
      */
     public void stop(String motorName){
-        MotorNode node = motors.get(motorName);
+        MotorNode node = getNode(motorName);
         if (node != null) {
             node.motor.stop();
         } else {
@@ -328,7 +341,7 @@ public class BaseMechanism extends SubsystemBase{
      * * @param motorIndex The index of the motor to stop
      */
     public void stop(int motorIndex){
-        stop(motorNames[motorIndex]);
+        stop(isValidMotor(motorIndex) ? motorNames[motorIndex] : "");
     }
 
     /**
@@ -348,7 +361,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param power The power to set [-1.0, 1.0]
      */
     public void setPower(String motorName, double power){
-        MotorNode node = motors.get(motorName);
+        MotorNode node = getNode(motorName);
         if (node != null) {
             node.motor.setDuty(power);
         }
@@ -360,7 +373,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param power The power to set [-1.0, 1.0]
      */
     public void setPower(int motorIndex, double power){
-        setPower(motorNames[motorIndex], power);
+        setPower(isValidMotor(motorIndex) ? motorNames[motorIndex] : "", power);
     }
 
     /**
@@ -369,7 +382,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param voltage The voltage to set
      */
     public void setVoltage(String motorName, double voltage){
-        MotorNode node = motors.get(motorName);
+        MotorNode node = getNode(motorName);
         if (node != null) {
             node.motor.setVoltage(voltage);
         }
@@ -381,7 +394,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param voltage The voltage to set
      */
     public void setVoltage(int motorIndex, double voltage){
-        setVoltage(motorNames[motorIndex], voltage);
+        setVoltage(isValidMotor(motorIndex) ? motorNames[motorIndex] : "", voltage);
     }
 
     /**
@@ -390,7 +403,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param velocity The velocity to set
      */
     public void setVelocity(String motorName, double velocity){
-        MotorNode node = motors.get(motorName);
+        MotorNode node = getNode(motorName);
         if (node != null) {
             node.motor.setVelocity(velocity);
         }
@@ -402,7 +415,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param velocity The velocity to set
      */
     public void setVelocity(int motorIndex, double velocity){
-        setVelocity(motorNames[motorIndex], velocity);
+        setVelocity(isValidMotor(motorIndex) ? motorNames[motorIndex] : "", velocity);
     }
 
     /**
@@ -412,8 +425,11 @@ public class BaseMechanism extends SubsystemBase{
      * @param position The position to set
      */
     public void setPositionVoltage(String motorName, double position){
-        MotorNode node = motors.get(motorName);
-        if (node != null && node.hasCalibrated) {
+        MotorNode node = getNode(motorName);
+        if (node != null && !node.hasCalibrated) {
+            Log.alert(motorName + " is not Calibrated")
+                .withDescription("you tried using setPositionVoltage on " + motorName + " but its not calibrated");
+        } else if (node != null) {
             node.motor.setPositionVoltage(clampInLimits(node, position));
         }
     }
@@ -425,7 +441,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param position The position to set
      */
     public void setPositionVoltage(int motorIndex, double position){
-        setPositionVoltage(motorNames[motorIndex], position);
+        setPositionVoltage(isValidMotor(motorIndex) ? motorNames[motorIndex] : "", position);
     }
 
     /**
@@ -435,8 +451,11 @@ public class BaseMechanism extends SubsystemBase{
      * @param position The position to set
      */
     public void setMotion(String motorName, double position){
-        MotorNode node = motors.get(motorName);
-        if (node != null && node.hasCalibrated) {
+        MotorNode node = getNode(motorName);
+        if (node != null && !node.hasCalibrated) {
+            Log.alert(motorName + " is not Calibrated")
+                .withDescription("you tried using setMotion on " + motorName + " but its not calibrated");
+        } else if (node != null) {
             node.motor.setMotion(clampInLimits(node, position));
         }
     }
@@ -448,7 +467,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param position The position to set
      */
     public void setMotion(int motorIndex, double position){
-        setMotion(motorNames[motorIndex], position);
+        setMotion(isValidMotor(motorIndex) ? motorNames[motorIndex] : "", position);
     }
 
     /**
@@ -458,8 +477,11 @@ public class BaseMechanism extends SubsystemBase{
      * @param angle The angle to set
      */
     public void setAngle(String motorName, double angle){
-        MotorNode node = motors.get(motorName);
-        if (node != null && node.hasCalibrated) {
+        MotorNode node = getNode(motorName);
+        if (node != null && !node.hasCalibrated) {
+            Log.alert(motorName + " is not Calibrated")
+                .withDescription("you tried using setAngle on " + motorName + " but its not calibrated");
+        } else if (node != null) {
             double targetAngle = clampAngleInLimits(node, angle);
             node.motor.setMotion(targetAngle);
         }
@@ -472,7 +494,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param angle The angle to set
      */
     public void setAngle(int motorIndex, double angle){
-        setAngle(motorNames[motorIndex], angle);
+        setAngle(isValidMotor(motorIndex) ? motorNames[motorIndex] : "", angle);
     }
 
     /**
@@ -520,7 +542,7 @@ public class BaseMechanism extends SubsystemBase{
             return true;
         }
         for (int i = 0; i < motorsAmount; i++){
-            MotorNode node = motors.get(motorNames[i]);
+            MotorNode node = getNode(motorNames[i]);
             MotorInterface motor = node.motor;
             if (!motor.isReady(allowedErrors[i])){
                 return false;
@@ -536,7 +558,7 @@ public class BaseMechanism extends SubsystemBase{
      * @return true if the motor is within tolerance, false otherwise
      */
     public boolean isReady(String motorName, double allowedError){
-        MotorNode node = motors.get(motorName);
+        MotorNode node = getNode(motorName);
         if (node == null){
             Log.log("Invalid motor: " + motorName);
             return false;
@@ -554,7 +576,7 @@ public class BaseMechanism extends SubsystemBase{
      * @return true if the motor is within tolerance, false otherwise
      */
     public boolean isReady(int motorIndex ,double allowedError){
-        return isReady(motorNames[motorIndex], allowedError);
+        return isReady(isValidMotor(motorIndex) ? motorNames[motorIndex] : "", allowedError);
     }
 
     /**
@@ -574,7 +596,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param isBrake true for Brake mode, false for Coast mode
      */
     public void setNeutralMode(String motorName, boolean isBrake){
-        MotorNode node = motors.get(motorName);
+        MotorNode node = getNode(motorName);
         if (node != null) {
             node.motor.setNeutralMode(isBrake);
         }
@@ -586,7 +608,7 @@ public class BaseMechanism extends SubsystemBase{
      * @param isBrake true for Brake mode, false for Coast mode
      */
     public void setNeutralMode(int motorIndex, boolean isBrake){
-        setNeutralMode(motorNames[motorIndex], isBrake);
+        setNeutralMode(isValidMotor(motorIndex) ? motorNames[motorIndex] : "", isBrake);
     }
 
     /**
@@ -622,7 +644,7 @@ public class BaseMechanism extends SubsystemBase{
      * * @param motorName The name of the motor
      */
     public void checkElectronicsMotor(String motorName){
-        MotorNode node = motors.get(motorName);
+        MotorNode node = getNode(motorName);
         if (node != null) {
             node.motor.checkElectronics();
         } else {
@@ -635,7 +657,7 @@ public class BaseMechanism extends SubsystemBase{
      * * @param motorIndex The index of the motor
      */
     public void checkElectronicsMotor(int motorIndex){
-        checkElectronicsMotor(motorNames[motorIndex]);
+        checkElectronicsMotor(isValidMotor(motorIndex) ? motorNames[motorIndex] : "");
     }
 
     /**
@@ -647,7 +669,7 @@ public class BaseMechanism extends SubsystemBase{
         if (sensor != null){
             sensor.checkElectronics();
         } else {
-            Log.log("Invalid sensor: " + sensorName);
+            Log.alert("Invalid sensor: " + sensorName + "in " + getName());
         }
     }
 
@@ -656,7 +678,7 @@ public class BaseMechanism extends SubsystemBase{
      * * @param sensorIndex The index of the sensor
      */
     public void checkElectronicsSensor(int sensorIndex){
-        checkElectronicsSensor(sensorNames[sensorIndex]);
+        checkElectronicsSensor(isValidSensor(sensorIndex) ? sensorNames[sensorIndex] : "");
     }
 
     /**
@@ -665,9 +687,9 @@ public class BaseMechanism extends SubsystemBase{
      * @return The MotorInterface object, or null if not found
      */
     public MotorInterface getMotor(String motorName) {
-        MotorNode node = motors.get(motorName);
+        MotorNode node = getNode(motorName);
         if (node == null){
-            Log.log("Invalid motor: " + motorName);
+            Log.alert("Invalid motor: " + motorName + "in " + getName());
             return null;
         }
         return node.motor;
@@ -679,7 +701,7 @@ public class BaseMechanism extends SubsystemBase{
      * @return The MotorInterface object, or null if not found
      */
     public MotorInterface getMotor(int motorIndex) {
-        return getMotor(motorNames[motorIndex]);
+        return getMotor(isValidMotor(motorIndex) ? motorNames[motorIndex] : "");
     }
 
     /**
@@ -689,7 +711,7 @@ public class BaseMechanism extends SubsystemBase{
     public MotorInterface[] getMotors() {
         MotorInterface[] motorArray = new MotorInterface[motorsAmount];
         for (int i = 0; i < motorsAmount; i++){
-            motorArray[i] = motors.get(motorNames[i]).motor;
+            motorArray[i] = getNode(motorNames[i]).motor;
         }
         return motorArray;
     }
@@ -702,7 +724,7 @@ public class BaseMechanism extends SubsystemBase{
     public SensorInterface getSensor(String sensorName) {
         SensorInterface sensor = sensors.get(sensorName);
         if (sensor == null){
-            Log.log("Invalid sensor: " + sensorName);
+            Log.alert("Invalid sensor: " + sensorName + " in " + getName());
             return null;
         }
         return sensor;
@@ -714,7 +736,7 @@ public class BaseMechanism extends SubsystemBase{
      * @return The SensorInterface object, or null if not found
      */
     public SensorInterface getSensor(int sensorIndex) {
-        return getSensor(sensorNames[sensorIndex]);
+        return getSensor(isValidSensor(sensorIndex) ? sensorNames[sensorIndex] : "");
     }
     
     /**
@@ -744,6 +766,9 @@ public class BaseMechanism extends SubsystemBase{
      * @return true if valid, false otherwise
      */
     protected boolean isValidMotor(int motorIndex) {
+        if (motorIndex < 0 || motorIndex >= motorsAmount) {
+            return false;
+        }
         return isValidMotor(motorNames[motorIndex]);
     }
 
@@ -762,6 +787,9 @@ public class BaseMechanism extends SubsystemBase{
      * @return true if valid, false otherwise
      */
     protected boolean isValidSensor(int sensorIndex) {
+        if (sensorIndex < 0 || sensorIndex >= motorsAmount) {
+            return false;
+        }
         return isValidSensor(sensorNames[sensorIndex]);
     }
 
@@ -773,8 +801,8 @@ public class BaseMechanism extends SubsystemBase{
 
         for (int i = 0; i < motorsAmount; i++){
             SmartDashboard.putBoolean(getName() + "/" + motorNames[i] + "/" + motorNames[i] + " has Calibrated", getIsCalibration(i));
-            SmartDashboard.putNumber(getName() + "/" + motorNames[i] + "/" + motorNames[i] + " wanted value", motors.get(motorNames[i]).motor.getWantedValue());
-            SmartDashboard.putNumber(getName() + "/" + motorNames[i] + "/" + motorNames[i] + " current Value", motors.get(motorNames[i]).motor.getCurrentValue());
+            SmartDashboard.putNumber(getName() + "/" + motorNames[i] + "/" + motorNames[i] + " wanted value", getNode(motorNames[i]).motor.getWantedValue());
+            SmartDashboard.putNumber(getName() + "/" + motorNames[i] + "/" + motorNames[i] + " current Value", getNode(motorNames[i]).motor.getCurrentValue());
         }
     }
 }

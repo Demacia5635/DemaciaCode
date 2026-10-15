@@ -1,10 +1,13 @@
 package frc.demacia.utils.motors;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -42,6 +45,19 @@ public abstract class BaseMotor implements MotorInterface {
 
   private boolean[] kFlags = { true, true, true, false, false, false };
 
+  private Supplier<Double> displayPositionOverride = null;
+  private Supplier<Double> displayVelocityOverride = null;
+
+  // DetectStallInMotor
+  private static final List<BaseMotor> stallMonitoredMotors = new ArrayList<>();
+  private static boolean stallDetectionScheduled = false;
+
+  private boolean isStuck;
+  private Timer stallConfirmTimer;
+  private Timer stuckDurationTimer;
+
+  private boolean lastIsReady;
+
   protected static final double MAX_SIM_VEL = 50;
 
   /**
@@ -52,11 +68,17 @@ public abstract class BaseMotor implements MotorInterface {
   public BaseMotor(BaseMotorConfig<?> config) {
     this.config = config;
     name = config.name;
+    setName(name);
+    if (config.id <= 0) {
+      Log.alert("the " + name + " id is 0 or less").withDescription(name);
+    }
     createMotor();
     configMotor();
     setSignals();
     addLog();
-    setName(name);
+    configureStallDetection();
+    lastIsReady = true;
+
     SmartDashboard.putData("motors/" + name, this);
     Log.log(name + " motor initialized");
     ElasticGenerator.getInstance().registerMotor(this);
@@ -109,6 +131,7 @@ public abstract class BaseMotor implements MotorInterface {
             velocitySignal,
             accelerationSignal,
             voltageSignal,
+            currentSignal, 
             closedLoopErrorSignal,
             closedLoopSPSignal },
         LogLevel.LOG_ONLY, "motors", false);
@@ -132,6 +155,54 @@ public abstract class BaseMotor implements MotorInterface {
 
     configPidFf(0);
     configMotionMagic();
+  }
+
+  private void configureStallDetection() {
+    if (config.highCurrentThreshold > 0) {
+      if (!stallDetectionScheduled) {
+        stallDetectionScheduled = true;
+        new RunCommand(BaseMotor::updateAllStuckStates).ignoringDisable(true).schedule();
+      }
+
+      stallMonitoredMotors.add(this);
+      stallConfirmTimer = new Timer();
+      stuckDurationTimer = new Timer();
+    }
+  }
+
+  private static void updateAllStuckStates() {
+    for (BaseMotor motor : stallMonitoredMotors) {
+      motor.updateIsStuck();
+    }
+  }
+
+  private void updateIsStuck() {
+    boolean isStuckNow = Math.abs(getCurrentCurrent()) >= config.highCurrentThreshold && 
+      Math.abs(getCurrentVelocity()) <= config.lowVelocityThreshold;
+
+    if (isStuckNow && !stallConfirmTimer.isRunning() && !stuckDurationTimer.isRunning()){
+      stallConfirmTimer.reset();    
+      stallConfirmTimer.start();
+    }
+
+    if (stallConfirmTimer.isRunning() && !isStuckNow) {
+        stallConfirmTimer.stop();
+        stallConfirmTimer.reset();
+    }
+
+    if (isStuckNow && stallConfirmTimer.hasElapsed(config.stallConfirmSeconds) && !stuckDurationTimer.isRunning()) {
+        stallConfirmTimer.stop();
+        stallConfirmTimer.reset();
+        stuckDurationTimer.reset();
+        stuckDurationTimer.start();
+        isStuck = true;
+    }
+
+    if (stuckDurationTimer.hasElapsed(config.stuckDurationSeconds)) {
+        stuckDurationTimer.stop();
+        stuckDurationTimer.reset();
+        isStuck = false;
+    }
   }
 
   @Override
@@ -189,6 +260,11 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setVelocity(double velocity, double feedForward) {
+    if (isPidFfParamsZero(config.pidFfParams[getSlot()])) {
+      Log.alert(getName() + " pid and FF are all zero")
+        .withDescription("you used setVelocity in" + getName() + " but the pid and FF are all zero");
+    }
+
     setMotorVelocity(velocity, feedForward + velocityFeedForward(velocity));
     wantedValue = velocity;
     controlMode = ControlMode.VELOCITY;
@@ -206,6 +282,11 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setPositionVoltage(double position, double feedForward) {
+    if (isPidFfParamsZero(config.pidFfParams[getSlot()])) {
+      Log.alert(getName() + " pid and FF are all zero")
+        .withDescription("you used setPositionVoltage in" + getName() + " but the pid and FF are all zero");
+    }
+
     setMotorPositionVoltage(position, feedForward + positionFeedForward(position));
     wantedValue = position;
     controlMode = ControlMode.POSITION_VOLTAGE;
@@ -218,6 +299,16 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setMotion(double position, double feedForward) {
+    if (isPidFfParamsZero(config.pidFfParams[getSlot()])) {
+      Log.alert(getName() + " pid and FF are all zero")
+        .withDescription("you used setMotion in" + getName() + " but the pid and FF are all zero");
+    }
+
+    if (config.maxVelocity == 0) {
+      Log.alert(getName() + " max velocity is zero")
+        .withDescription("you used setMotion in" + getName() + " but max velocity is zero");
+    }
+
     setMotorMotionMagic(position, feedForward + positionFeedForward(position));
     wantedValue = position;
     controlMode = ControlMode.MAGIC_MOTION;
@@ -253,6 +344,10 @@ public abstract class BaseMotor implements MotorInterface {
     return Math.cos(position * config.posToRad) * config.pidFfParams[slot].kCos();
   }
 
+  private boolean isPidFfParamsZero(CloseLoopParam param) {
+    return param.kP() == 0 && param.kI() == 0 && param.kD() == 0 && param.kP() == 0 && param.kS() == 0 && param.kV() == 0 && param.kA() == 0 && param.kG() == 0 && param.kV2() == 0 && param.kCos() == 0;
+  }
+
   @Override
   public int getCurrentControlModeInteger() {
     return controlMode.ordinal();
@@ -283,6 +378,8 @@ public abstract class BaseMotor implements MotorInterface {
     if (config.isRadiansMotor) {
       return MathUtil.angleModulus(getCurrentPosition());
     }
+    Log.alert(getName() + " cant use getCurrentAngle")
+      .withDescription(getName() + " is not in Radians so you cant use getCurrentAngle");
     return 0;
   }
 
@@ -306,6 +403,23 @@ public abstract class BaseMotor implements MotorInterface {
         return getCurrentVelocity();
       case MAGIC_MOTION, POSITION_VOLTAGE:
         return getCurrentPosition();
+      case ANGLE:
+        return getCurrentAngle();
+      default:
+        return 0.0;
+    }
+  }
+
+  public double getDisplayValue() {
+    ControlMode mode = getCurrentControlMode();
+
+    switch (mode) {
+      case VOLTAGE:
+        return getCurrentVoltage();
+      case VELOCITY:
+        return getDisplayVelocity();
+      case MAGIC_MOTION, POSITION_VOLTAGE:
+        return getDisplayPosition();
       case ANGLE:
         return getCurrentAngle();
       default:
@@ -470,7 +584,13 @@ public abstract class BaseMotor implements MotorInterface {
   }
 
   public boolean isReady(double allowedError) {
-    return Math.abs(getCurrentClosedLoopError()) < allowedError;
+    boolean isReady = Math.abs(getCurrentClosedLoopError()) < allowedError;
+    lastIsReady = isReady;
+    return isReady;
+  }
+
+  public boolean isStuck() {
+    return isStuck;
   }
 
   @Override
@@ -497,19 +617,24 @@ public abstract class BaseMotor implements MotorInterface {
     builder.setSmartDashboardType("Motor");
     builder.addBooleanProperty("Is Connected", this::isConnected, null);
     builder.addDoubleProperty("CloseLoopError", this::getCurrentClosedLoopError, null);
-    builder.addDoubleProperty("Position", this::getCurrentPosition, null);
-    builder.addDoubleProperty("Velocity", this::getCurrentVelocity, null);
+    builder.addDoubleProperty("Position", this::getDisplayPosition, null);
+    builder.addDoubleProperty("Velocity", this::getDisplayVelocity, null);
     builder.addDoubleProperty("Acceleration", this::getCurrentAcceleration, null);
     builder.addDoubleProperty("Voltage", this::getCurrentVoltage, null);
     builder.addDoubleProperty("Current", this::getCurrentCurrent, null);
     if (isRadiansMotor()) {
       builder.addDoubleProperty("Angle", this::getCurrentAngle, null);
     }
-    builder.addDoubleProperty("Value", this::getCurrentValue, null);
+    builder.addDoubleProperty("Value", this::getDisplayValue, null);
     builder.addDoubleProperty("ControlMode", this::getCurrentControlModeInteger, null);
     builder.addDoubleProperty("Wanted Value", this::getWantedValue, null);
 
     builder.addDoubleProperty("test Value", this::getTestValue, (value) -> setTestValue(value));
+  
+    builder.addBooleanProperty("Is Ready", () -> lastIsReady, null);
+    if (config.highCurrentThreshold > 0) {
+      builder.addBooleanProperty("Is Stuck", this::isStuck, null);
+    }
   }
 
   // Raw data Accessors
@@ -539,6 +664,24 @@ public abstract class BaseMotor implements MotorInterface {
 
   public Data<?> getCurrentSignal() {
     return currentSignal;
+  }
+
+  @Override
+  public void setDisplayPositionOverride(Supplier<Double> displayPositionOverride) {
+      this.displayPositionOverride = displayPositionOverride;
+  }
+
+  @Override
+  public void setDisplayVelocityOverride(Supplier<Double> displayVelocityOverride) {
+      this.displayVelocityOverride = displayVelocityOverride;
+  }
+
+  private double getDisplayPosition() {
+      return displayPositionOverride != null ? displayPositionOverride.get() : getCurrentPosition();
+  }
+
+  private double getDisplayVelocity() {
+      return displayVelocityOverride != null ? displayVelocityOverride.get() : getCurrentVelocity();
   }
 
   protected abstract void createMotor();
