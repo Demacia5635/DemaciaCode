@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.demacia.RobotPose.RobotPose;
 import frc.robot.vision.VisionConstants;
@@ -14,12 +15,16 @@ import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
 import frc.robot.chassis.RobotCChassisConstants;
 import frc.robot.intake.subsystems.Intake;
+import frc.robot.intake.IntakeConstants;
 import frc.robot.intake.commands.IntakeCommand;
 import frc.robot.shinua.subsystems.Shinua;
+import frc.robot.shinua.ShinuaConstants;
 import frc.robot.shinua.commands.ShinuaCommand;
 import frc.robot.turret.subsystems.Turret;
+import frc.robot.turret.TurretConstants;
 import frc.robot.turret.commands.TurretCommand;
 import frc.robot.shooter.subsystems.Shooter;
+import frc.robot.shooter.ShooterConstants;
 import frc.robot.shooter.commands.ShooterCommand;
 
 /**
@@ -75,7 +80,30 @@ public class RobotContainer implements Sendable {
   }
 
   private void setController() {
-
+    controller.upButton().onTrue(new InstantCommand(() -> {
+      intake.setState(IntakeConstants.IntakeStates.SHOOTING);
+      shinua.setState(ShinuaConstants.ShinuaStates.SHOOTING);
+      turret.setState(TurretConstants.TurretStates.SHOOTING);
+      shooter.setState(ShooterConstants.ShooterStates.SHOOTING);
+    }));
+    controller.downButton().onTrue(new InstantCommand(() -> {
+      intake.setState(IntakeConstants.IntakeStates.INTAKING);
+      shinua.setState(ShinuaConstants.ShinuaStates.NO_MECANUM);
+      turret.setState(TurretConstants.TurretStates.SHOOTING);
+      shooter.setState(ShooterConstants.ShooterStates.TRANCH);
+    }));
+    controller.upButton().onTrue(new InstantCommand(() -> {
+      intake.setState(IntakeConstants.IntakeStates.CLOSED);
+      shinua.setState(ShinuaConstants.ShinuaStates.NOT_SHOOTING);
+      turret.setState(TurretConstants.TurretStates.SHOOTING);
+      shooter.setState(ShooterConstants.ShooterStates.TRANCH);
+    }));
+    controller.leftButton().onTrue(new InstantCommand(() -> {
+      intake.setState(intake.IDLE_STATE);
+      shinua.setState(intake.IDLE_STATE);
+      turret.setState(intake.IDLE_STATE);
+      shooter.setState(intake.IDLE_STATE);
+    }));
   }
 
   @Override
