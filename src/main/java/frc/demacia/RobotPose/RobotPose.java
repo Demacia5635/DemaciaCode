@@ -49,8 +49,7 @@ public final class RobotPose {
     private final Supplier<OdometryData> odometryDataSupplier;
     /** Every configured vision source, including the Quest if there is one. */
     private final List<VisionSource> sources;
-    /** Shows the estimated pose on the dashboard ("pose/field"), updated every {@link #periodic()}. */
-    
+
     private Field2d field;
 
     private RobotPose(Supplier<OdometryData> odometryDataSupplier, Translation2d[] moduleLocations, 

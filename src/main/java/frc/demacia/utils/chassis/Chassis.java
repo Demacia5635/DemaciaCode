@@ -57,7 +57,13 @@ public class Chassis extends SubsystemBase {
         for (int i = 0; i < 4; i++) {
             modules[i] = new SwerveModule(chassisConfig.swerveModuleConfig[i]);
             modulePositions[i] = chassisConfig.swerveModuleConfig[i].position;
-            
+            if (modulePositions[i].getNorm() == 0) {
+                // Log.alert(getName() + " module location on the robot is 0");
+            }
+
+            if (chassisConfig.swerveModuleConfig[i].steerOffset == 0) {
+                // Log.alert(getName() + " steer offset is 0");
+            }
         }
         lastAngles = new Rotation2d[4];
         for (int i = 0; i < lastAngles.length; i++) {
@@ -71,13 +77,7 @@ public class Chassis extends SubsystemBase {
     }
 
     public void addLog() {
-
-        for (SwerveModule module : modules) {
-            Log.putData("chassis/" + module.name + "/steer angle deg", () -> module.getSteerRotation().getDegrees());
-            Log.putData("chassis/" + module.name + "/odometry angle deg", () -> module.getModulePosition().angle.getDegrees());
-            Log.putData("chassis/" + module.name + "/drive distance", () -> module.getModulePosition().distanceMeters);
-            Log.putData("chassis/" + module.name + "/drive velocity", () -> module.getDriveVel());
-        }
+        Log.putData("chassis/gyro angle", () -> getGyroAngle().getDegrees());
 
         SmartDashboard.putData("chassis/set coast",
                 new InstantCommand(() -> setNeutralMode(false)).ignoringDisable(true));
@@ -191,7 +191,7 @@ public class Chassis extends SubsystemBase {
         }
     }
 
-    public void setSpeedFieldRel(ChassisSpeeds fieldRelSpeeds) {
+    public void setSpeedsFieldRel(ChassisSpeeds fieldRelSpeeds) {
         setSpeedsRobotRel(ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelSpeeds, getGyroAngle()));
     }
 
