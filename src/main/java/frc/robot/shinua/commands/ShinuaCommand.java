@@ -26,7 +26,6 @@ public class ShinuaCommand extends DefaultCommand<ShinuaStates> {
     public void execute() {
         if (shinua.isStuckMecanum() || 
                 shinua.isStuckShinuaRollers() || 
-                Intake.getInstance().isStuckIntakeRollers() || 
                 Shooter.getInstance().isStuckFeeder()) {
             shinua.setState(POOPING);
         }

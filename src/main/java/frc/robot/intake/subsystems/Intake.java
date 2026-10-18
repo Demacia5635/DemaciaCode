@@ -63,9 +63,6 @@ public class Intake extends StateBaseMechanism<IntakeStates> {
         return isIntakeDeployReady();
     }
 
-    public boolean isStuckIntakeRollers() {
-        return getMotor(INTAKE_ROLLERS_NAME).isStuck();
-    }
     public boolean getIntakeDeployMax() {
         return ((LimitSwitch) getSensor(INTAKE_DEPLOY_MAX_LIMIT_SWITCH_NAME)).get();
     }

@@ -3,8 +3,6 @@ package frc.robot.intake.commands;
 import static frc.robot.intake.IntakeConstants.IntakeRollersConstants.*;
 import static frc.robot.intake.IntakeConstants.IntakeDeployConstants.*;
 import static frc.robot.intake.IntakeConstants.IntakeStates.*;
-
-import frc.demacia.utils.log.Log;
 import frc.demacia.utils.mechanisms.DefaultCommand;
 import frc.demacia.utils.motors.MotorInterface.ControlMode;
 import frc.robot.intake.IntakeConstants.IntakeStates;
@@ -27,12 +25,7 @@ public class IntakeCommand extends DefaultCommand<IntakeStates> {
     public void execute() {
         if (Shinua.getInstance().isStuckMecanum() || 
                 Shinua.getInstance().isStuckShinuaRollers() || 
-                intake.isStuckIntakeRollers() || 
                 Shooter.getInstance().isStuckFeeder()) {
-                    Log.alert(Shinua.getInstance().isStuckMecanum() + "isStuckMecanum");
-                    Log.alert(Shinua.getInstance().isStuckShinuaRollers() + "isStuckShinuaRollers");
-                    Log.alert(intake.isStuckIntakeRollers() + "isStuckIntakeRollers");
-                    Log.alert(Shooter.getInstance().isStuckFeeder() + "isStuckFeeder");
                     intake.setState(POOPING);
         }
 
