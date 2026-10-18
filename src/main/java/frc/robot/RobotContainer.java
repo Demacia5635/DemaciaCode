@@ -92,7 +92,7 @@ public class RobotContainer implements Sendable {
       turret.setState(TurretConstants.TurretStates.SHOOTING);
       shooter.setState(ShooterConstants.ShooterStates.TRANCH);
     }));
-    controller.upButton().onTrue(new InstantCommand(() -> {
+    controller.rightButton().onTrue(new InstantCommand(() -> {
       intake.setState(IntakeConstants.IntakeStates.CLOSED);
       shinua.setState(ShinuaConstants.ShinuaStates.NOT_SHOOTING);
       turret.setState(TurretConstants.TurretStates.SHOOTING);
