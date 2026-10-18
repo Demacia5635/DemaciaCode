@@ -148,7 +148,7 @@ public final class RobotPose {
      * @param pose The new field pose.
      */
     public void resetPose(Pose2d pose) {
-        resetEstimator(pose, getGyroAngle());
+        resetEstimator(new Pose2d(pose.getTranslation(), getGyroAngle()), getGyroAngle());
     }
 
     /**

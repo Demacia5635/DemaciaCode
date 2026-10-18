@@ -10,6 +10,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.demacia.utils.chassis.Chassis;
+import frc.demacia.utils.log.Log;
 
 /**
  * Swerve odometry: turns gyro + module encoder readings into how far the robot moved since
@@ -43,6 +47,8 @@ public class DemaciaOdometry {
     /** Module locations relative to the robot centre (meters). */
     private final Translation2d[] moduleLocations;
 
+    private Field2d odometryField;
+
     /**
      * @param initialModulePositions Module readings right now, so the first update only counts
      *                               motion from this point.
@@ -61,6 +67,10 @@ public class DemaciaOdometry {
             moduleDisplacements[i] = Translation2d.kZero;
         }
         this.pose = Pose2d.kZero;
+
+        odometryField = new Field2d();
+        
+        SmartDashboard.putData("odometry/odometryField", odometryField);
     }
 
     /**
@@ -85,6 +95,7 @@ public class DemaciaOdometry {
     public Twist2d updateOdometry(Rotation2d gyroAngle, SwerveModulePosition[] modulePositions) {
         for (int i = 0; i < modulePositions.length; i++) {
             moduleDisplacements[i] = calculateModuleDisplacement(lastModulePositions[i], modulePositions[i]);
+            // Log.log(calculateModuleDisplacement(lastModulePositions[i], modulePositions[i]));
         }
 
         Rotation2d previousRotation = pose.getRotation();
@@ -101,6 +112,7 @@ public class DemaciaOdometry {
             lastModulePositions[i] = modulePositions[i].copy();
         }
 
+        odometryField.setRobotPose(pose);
         return twist;
     }
 
@@ -115,7 +127,7 @@ public class DemaciaOdometry {
     private Translation2d calculateModuleDisplacement(SwerveModulePosition lastPosition,
             SwerveModulePosition currentPosition) {
         double arcLength = currentPosition.distanceMeters - lastPosition.distanceMeters;
-        double deltaAngle = MathUtil.angleModulus(currentPosition.angle.getRadians() - lastPosition.angle.getRadians());
+        double deltaAngle = 0;//MathUtil.angleModulus(currentPosition.angle.getRadians() - lastPosition.angle.getRadians());
 
         if (Math.abs(Math.toDegrees(deltaAngle)) < 1E-6)
             return new Translation2d(arcLength, currentPosition.angle); // case for almost straight line
@@ -138,8 +150,9 @@ public class DemaciaOdometry {
         double y = 0;
         for (int i = 0; i < moduleDisplacements.length; i++) {
             x += (moduleDisplacements[i].getX() + dtheta * moduleLocations[i].getY()) * modulesWeights[i];
-            y += (moduleDisplacements[i].getY() - dtheta * moduleLocations[i].getX()) * modulesWeights[i];
+            y -= (moduleDisplacements[i].getY() - dtheta * moduleLocations[i].getX()) * modulesWeights[i];
         }
+        Log.log(y);
         return new Translation2d(x, y);
     }
 

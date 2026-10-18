@@ -87,6 +87,7 @@ public class RobotCChassisConstants {
           new TalonFXConfig(name + " Drive", i * 3 + 1, CAN_BUS)
               .withPID(DRIVE_KP, DRIVE_KI, DRIVE_KD, DRIVE_KS, DRIVE_KV, DRIVE_KA, 0, 0, 0)
               .withBrake(false)
+              .withInvert(true)
               .withMeterMotor(DRIVE_GEAR_RATIO, WHEEL_DIAMETER),
           new CancoderConfig(name + " Cancoder", i * 3 + 3, CAN_BUS)
             .withInvert(true))
