@@ -12,8 +12,6 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.utils.log.Log;
 
 /**
  * Swerve odometry: turns gyro + module encoder readings into how far the robot moved since
