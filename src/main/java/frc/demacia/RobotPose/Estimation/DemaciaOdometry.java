@@ -152,7 +152,6 @@ public class DemaciaOdometry {
             x += (moduleDisplacements[i].getX() + dtheta * moduleLocations[i].getY()) * modulesWeights[i];
             y -= (moduleDisplacements[i].getY() - dtheta * moduleLocations[i].getX()) * modulesWeights[i];
         }
-        Log.log(y);
         return new Translation2d(x, y);
     }
 
