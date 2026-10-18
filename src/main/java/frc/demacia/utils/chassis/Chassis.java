@@ -191,7 +191,7 @@ public class Chassis extends SubsystemBase {
         }
     }
 
-    public void setSpeedFieldRel(ChassisSpeeds fieldRelSpeeds) {
+    public void setSpeedsFieldRel(ChassisSpeeds fieldRelSpeeds) {
         setSpeedsRobotRel(ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelSpeeds, getGyroAngle()));
     }
 

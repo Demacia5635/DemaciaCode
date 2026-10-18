@@ -12,7 +12,7 @@ public class IntakeDeployCalibrationCommand extends CalibrationCommand {
             INTAKE_DEPLOY_NAME, 
             INTAKE_DEPLOY_CALIBRATION_POWER,
             mechanism::atIntakeDeployResetPos, 
-            INTAKE_DEPLOY_CMD_CALIBRATION_RESET_POS 
+            INTAKE_DEPLOY_CALIBRATION_RESET_POS 
         );
     }
 }

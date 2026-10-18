@@ -66,7 +66,7 @@ public class DriveCommand extends Command {
     }
 
     speeds = new ChassisSpeeds(velX, velY, velRot);
-    chassis.setSpeedFieldRel(speeds);
+    chassis.setSpeedsFieldRel(speeds);
   }
 
   // Called once the command ends or is interrupted.

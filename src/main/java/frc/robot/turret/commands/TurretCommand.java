@@ -1,8 +1,6 @@
 package frc.robot.turret.commands;
 
 import static frc.robot.turret.TurretConstants.TurretMotorConstants.*;
-
-import frc.demacia.utils.log.Log;
 import frc.demacia.utils.mechanisms.DefaultCommand;
 import frc.demacia.utils.motors.MotorInterface.ControlMode;
 import frc.robot.turret.TurretConstants.TurretStates;

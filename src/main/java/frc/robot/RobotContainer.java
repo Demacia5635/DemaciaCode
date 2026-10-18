@@ -48,10 +48,10 @@ public class RobotContainer implements Sendable {
     SmartDashboard.putData("RC", this);
     Chassis.initialize(RobotCChassisConstants.CHASSIS_CONFIG);
     driveCommand = new DriveCommand(Chassis.getInstance(), controller);
-    // intake = Intake.getInstance();
-    // shinua = Shinua.getInstance();
+    intake = Intake.getInstance();
+    shinua = Shinua.getInstance();
     turret = Turret.getInstance();
-    // shooter = Shooter.getInstance();
+    shooter = Shooter.getInstance();
 
     RobotPose.initialize(
       RobotCChassisConstants.STATE_STD, 
@@ -68,10 +68,10 @@ public class RobotContainer implements Sendable {
 
   private void setDefaultCommands() {
     Chassis.getInstance().setDefaultCommand(driveCommand);
-    // intake.setDefaultCommand(new IntakeCommand());
-    // shinua.setDefaultCommand(new ShinuaCommand());
+    intake.setDefaultCommand(new IntakeCommand());
+    shinua.setDefaultCommand(new ShinuaCommand());
     turret.setDefaultCommand(new TurretCommand());
-    // shooter.setDefaultCommand(new ShooterCommand());
+    shooter.setDefaultCommand(new ShooterCommand());
   }
 
   private void setController() {

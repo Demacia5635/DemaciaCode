@@ -29,7 +29,7 @@ public class Intake extends StateBaseMechanism<IntakeStates> {
 
         addLimit(INTAKE_DEPLOY_NAME, INTAKE_DEPLOY_MIN_LIMIT, INTAKE_DEPLOY_MAX_LIMIT);
         withPowerCommand(INTAKE_DEPLOY_NAME, () -> RobotContainer.controller.getRightX());
-        withAutoCalibration(INTAKE_DEPLOY_NAME, this::atIntakeDeployResetPos, INTAKE_DEPLOY_AUTO_CALIBRATION_RESET_POS);
+        withAutoCalibration(INTAKE_DEPLOY_NAME, this::atIntakeDeployResetPos, INTAKE_DEPLOY_CALIBRATION_RESET_POS);
         SmartDashboard.putData(INTAKE_NAME + "/" + INTAKE_DEPLOY_NAME + " Calibration Command", new IntakeDeployCalibrationCommand(this));
     }
 
