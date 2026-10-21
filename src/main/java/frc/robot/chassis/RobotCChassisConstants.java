@@ -50,10 +50,10 @@ public class RobotCChassisConstants {
 
   public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        3.1277868264988222, //FRONT LEFT
-        2.4436313951018263, //FRONT RIGHT
-        3.005068363467971, //BACK LEFT
-        -2.0110488129180757 //BACK RIGHT
+        3.138524692014022, //FRONT LEFT
+        -2.448233337465483, //FRONT RIGHT
+        -2.9943304979527716, //BACK LEFT
+        2.012582793705961 //BACK RIGHT
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);
@@ -81,7 +81,7 @@ public class RobotCChassisConstants {
           new TalonFXConfig(name + " Steer", i * 3 + 2, CAN_BUS)
               .withPID(STEER_KP, STEER_KI, STEER_KD, STEER_KS, STEER_KV, STEER_KA, 0, 0, 0)
               .withBrake(true)
-              .withInvert(true)
+              .withInvert(false)
               .withRadiansMotor(STEER_GEAR_RATIO)
               .withRampTime(RAMP_TIME_STEER),
           new TalonFXConfig(name + " Drive", i * 3 + 1, CAN_BUS)
@@ -90,7 +90,7 @@ public class RobotCChassisConstants {
               .withInvert(true)
               .withMeterMotor(DRIVE_GEAR_RATIO, WHEEL_DIAMETER),
           new CancoderConfig(name + " Cancoder", i * 3 + 3, CAN_BUS)
-            .withInvert(true))
+            .withInvert(false))
           .withPosion(MODULE_LOCATIONS[i])
           .withSteerOffset(offsets[i])
           .withMetersFrom360Degs(METERS_FROM_360_DEGS);
