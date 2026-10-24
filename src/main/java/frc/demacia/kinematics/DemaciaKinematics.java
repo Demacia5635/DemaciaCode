@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
 import static frc.demacia.kinematics.KinematicsConstants.*;
 
 /** Add your docs here. */
@@ -169,9 +168,9 @@ public class DemaciaKinematics {
             double moduleAngleFromCenter = modulePositionOnTheRobot[i].getAngle().getRadians();
             double moduleCurrentAngle = startRobotPosition.getRotation().getRadians();
             Translation2d velocityVector = new Translation2d(
-                    wantedSpeeds.vxMetersPerSecond + omega * modulePositionOnTheRobot[i].getNorm()
+                    wantedSpeeds.vxMetersPerSecond - omega * modulePositionOnTheRobot[i].getNorm()
                             * Math.sin(moduleCurrentAngle + omega * 0.02 + moduleAngleFromCenter),
-                    -wantedSpeeds.vyMetersPerSecond + omega * modulePositionOnTheRobot[i].getNorm()
+                    wantedSpeeds.vyMetersPerSecond + omega * modulePositionOnTheRobot[i].getNorm()
                             * Math.cos(moduleCurrentAngle + omega * 0.02 + moduleAngleFromCenter));
             swerveStates[i] = new SwerveModuleState(velocityVector.getNorm(), new Rotation2d(
                     KinematicsUtilities.getAngleFromVector(velocityVector.getX(), velocityVector.getY())));

@@ -12,8 +12,6 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.utils.log.Log;
 
 /**
  * Swerve odometry: turns gyro + module encoder readings into how far the robot moved since
@@ -95,7 +93,6 @@ public class DemaciaOdometry {
     public Twist2d updateOdometry(Rotation2d gyroAngle, SwerveModulePosition[] modulePositions) {
         for (int i = 0; i < modulePositions.length; i++) {
             moduleDisplacements[i] = calculateModuleDisplacement(lastModulePositions[i], modulePositions[i]);
-            // Log.log(calculateModuleDisplacement(lastModulePositions[i], modulePositions[i]));
         }
 
         Rotation2d previousRotation = pose.getRotation();
@@ -127,10 +124,11 @@ public class DemaciaOdometry {
     private Translation2d calculateModuleDisplacement(SwerveModulePosition lastPosition,
             SwerveModulePosition currentPosition) {
         double arcLength = currentPosition.distanceMeters - lastPosition.distanceMeters;
-        double deltaAngle = 0;//MathUtil.angleModulus(currentPosition.angle.getRadians() - lastPosition.angle.getRadians());
+        double deltaAngle = MathUtil.angleModulus(currentPosition.angle.getRadians() - lastPosition.angle.getRadians());
 
-        if (Math.abs(Math.toDegrees(deltaAngle)) < 1E-6)
+        if (Math.abs(Math.toDegrees(deltaAngle)) < 1E-6){
             return new Translation2d(arcLength, currentPosition.angle); // case for almost straight line
+        }
 
         double centralAngle = deltaAngle;
         double radius = arcLength / centralAngle;
@@ -150,7 +148,7 @@ public class DemaciaOdometry {
         double y = 0;
         for (int i = 0; i < moduleDisplacements.length; i++) {
             x += (moduleDisplacements[i].getX() + dtheta * moduleLocations[i].getY()) * modulesWeights[i];
-            y -= (moduleDisplacements[i].getY() - dtheta * moduleLocations[i].getX()) * modulesWeights[i];
+            y += (moduleDisplacements[i].getY() - dtheta * moduleLocations[i].getX()) * modulesWeights[i];
         }
         return new Translation2d(x, y);
     }
