@@ -100,9 +100,9 @@ public class RobotContainer implements Sendable {
     }));
     controller.leftButton().onTrue(new InstantCommand(() -> {
       intake.setState(intake.IDLE_STATE);
-      shinua.setState(intake.IDLE_STATE);
-      turret.setState(intake.IDLE_STATE);
-      shooter.setState(intake.IDLE_STATE);
+      shinua.setState(shinua.IDLE_STATE);
+      turret.setState(turret.IDLE_STATE);
+      shooter.setState(shooter.IDLE_STATE);
     }));
   }
 
