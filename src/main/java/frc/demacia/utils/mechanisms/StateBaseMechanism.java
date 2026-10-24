@@ -50,6 +50,8 @@ public class StateBaseMechanism<S extends StateBaseMechanism.MechanismState> ext
     
     /** The current active state */
     public MechanismState state;
+
+    private Class<S> stateClass;
     
     /** * Default IDLE state.
      * Sets all motor targets to 0.
@@ -102,6 +104,8 @@ public class StateBaseMechanism<S extends StateBaseMechanism.MechanismState> ext
             ParameterizedType pt = (ParameterizedType) genericSuperclass;
             
             Class<S> enumClass = (Class<S>) pt.getActualTypeArguments()[0];
+
+            stateClass = enumClass;
             
             addNT(enumClass);
         } else {
@@ -179,10 +183,8 @@ public class StateBaseMechanism<S extends StateBaseMechanism.MechanismState> ext
 
     @SuppressWarnings("unchecked")
     public S getState() {
-        return (getMechanismState() == IDLE_STATE || 
-                getMechanismState() == TESTING_STATE || 
-                getMechanismState() == null) ? null
-            : (S) getMechanismState();
+        MechanismState current = getMechanismState();
+        return stateClass.isInstance(current) ? (S) current : null;
     }
 
     protected double getStateValue(int index) {
