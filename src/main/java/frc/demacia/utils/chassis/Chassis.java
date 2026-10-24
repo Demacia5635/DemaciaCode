@@ -187,7 +187,7 @@ public class Chassis extends SubsystemBase {
         setModuleStates(states);
 
         if (RobotBase.isSimulation()) {
-            gyro.getSimState().setRawYaw(Math.toDegrees(gyro.getCurrentYaw() + robotRelSpeeds.omegaRadiansPerSecond * 0.02));
+            gyro.getSimState().addYaw(Math.toDegrees(robotRelSpeeds.omegaRadiansPerSecond * 0.02));
         }
     }
 
