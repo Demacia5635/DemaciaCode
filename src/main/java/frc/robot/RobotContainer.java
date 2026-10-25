@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.demacia.odometry.RobotPose;
+import frc.demacia.swervePacgeWpilib.command.SwerveCommand;
 import frc.demacia.utils.DemaciaUtils;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
@@ -33,14 +35,14 @@ public class RobotContainer implements Sendable{
   public static Chassis chassis;
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandController controller = new CommandController(0, ControllerType.kPS5);
+  private final CommandController controller = new CommandController(1, ControllerType.kXbox);
   /** The container for the root. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
     Chassis.initialize(MK4iChassisConstants.CHASSIS_CONFIG);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
     chassis = Chassis.getInstance();
-    chassis.setDefaultCommand(new DriveCommand(Chassis.getInstance(), controller));
+    chassis.setDefaultCommand(new SwerveCommand(controller, RobotPose.getInstance().getVision()));
     // Configure the trigger bindings
     configureBindings();
   }

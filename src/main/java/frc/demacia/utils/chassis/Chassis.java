@@ -180,6 +180,10 @@ public class Chassis extends SubsystemBase {
             setDrivePower(pow, i);
     }
 
+    public RobotPose getRoobotPose(){
+        return RobotPose.getInstance();
+    }
+
     /**
      * Checks all module electronics for faults and logs them.
      */

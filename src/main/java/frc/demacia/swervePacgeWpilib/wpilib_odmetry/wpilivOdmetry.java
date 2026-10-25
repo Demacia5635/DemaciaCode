@@ -13,6 +13,10 @@ public class wpilivOdmetry{
         odometry = new SwerveDriveOdometry(kinematics, gyroAngle, modulePosition);
     }
 
+    public void resetPose(Pose2d pose){
+        odometry.resetPose(pose);
+    }
+
     public Pose2d getPose(){
         return odometry.getPoseMeters();
     }
