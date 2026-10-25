@@ -45,6 +45,9 @@ public class DemaciaOdometry {
     /** Module locations relative to the robot centre (meters). */
     private final Translation2d[] moduleLocations;
 
+    /** Twist returned by the last {@link #updateOdometry} call. */
+    private Twist2d lastTwist = new Twist2d();
+
     private Field2d odometryField;
 
     /**
@@ -110,6 +113,7 @@ public class DemaciaOdometry {
         }
 
         odometryField.setRobotPose(pose);
+        lastTwist = twist;
         return twist;
     }
 
@@ -167,6 +171,16 @@ public class DemaciaOdometry {
     /** @return The pure-odometry pose (no vision corrections). */
     public Pose2d getOdometryPose() {
         return this.pose;
+    }
+
+    /** @return The robot-relative twist of the last {@link #updateOdometry} call. */
+    public Twist2d getLastTwist() {
+        return lastTwist;
+    }
+
+    /** @return A copy of each module's robot-relative chord from the last update (meters). */
+    public Translation2d[] getLastModuleDisplacements() {
+        return moduleDisplacements.clone();
     }
 
     /**

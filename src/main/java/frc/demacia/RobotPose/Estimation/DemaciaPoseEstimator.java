@@ -198,6 +198,21 @@ public class DemaciaPoseEstimator {
         return latestPose;
     }
 
+    /** @return The pure-odometry pose (no vision corrections). */
+    public Pose2d getOdometryPose() {
+        return odometry.getOdometryPose();
+    }
+
+    /** @return The robot-relative twist of the last odometry update. */
+    public Twist2d getLastOdometryTwist() {
+        return odometry.getLastTwist();
+    }
+
+    /** @return A copy of each module's robot-relative chord from the last odometry update (meters). */
+    public Translation2d[] getLastModuleDisplacements() {
+        return odometry.getLastModuleDisplacements();
+    }
+
     /**
      * Returns the estimated pose at a past timestamp: the history is replayed up to it and the
      * odometry twist that spans it is interpolated. Timestamps newer than the latest odometry

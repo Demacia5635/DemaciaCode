@@ -48,6 +48,13 @@ public class Chassis extends SubsystemBase {
 
     private Rotation2d[] lastAngles;
 
+    private ChassisSpeeds lastCommandedSpeedsRobotRel = new ChassisSpeeds();
+    private SwerveModuleState[] lastCommandedStates = new SwerveModuleState[] {
+        new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState()
+    };
+
+    private ChassisDiagnostics diagnostics;
+
     private Chassis(ChassisConfig chassisConfig) {
         setName(getName());
 
@@ -74,6 +81,8 @@ public class Chassis extends SubsystemBase {
         demaciaKinematics = new DemaciaKinematics(modulePositions);
 
         addLog();
+
+        diagnostics = new ChassisDiagnostics(this);
     }
 
     public void addLog() {
@@ -131,6 +140,10 @@ public class Chassis extends SubsystemBase {
     }
 
     public void stop() {
+        lastCommandedSpeedsRobotRel = new ChassisSpeeds();
+        for (int i = 0; i < lastCommandedStates.length; i++) {
+            lastCommandedStates[i] = new SwerveModuleState(0, lastCommandedStates[i].angle);
+        }
         for (SwerveModule i : modules) {
             i.stop();
         }
@@ -168,6 +181,8 @@ public class Chassis extends SubsystemBase {
     }
 
     public void setSpeedsRobotRel(ChassisSpeeds robotRelSpeeds) {
+        lastCommandedSpeedsRobotRel = robotRelSpeeds;
+
         boolean isStopped = Math.abs(robotRelSpeeds.vxMetersPerSecond) < 0.01 &&
             Math.abs(robotRelSpeeds.vyMetersPerSecond) < 0.01 &&
             Math.abs(robotRelSpeeds.omegaRadiansPerSecond) < 0.01;
@@ -203,8 +218,24 @@ public class Chassis extends SubsystemBase {
 
     public void setModuleStates(SwerveModuleState[] states) {
         for (int i = 0; i < states.length; i++) {
+            lastCommandedStates[i] = new SwerveModuleState(states[i].speedMetersPerSecond, states[i].angle);
             modules[i].setState(states[i]);
         }
+    }
+
+    /** @return The last robot-relative speeds passed to {@link #setSpeedsRobotRel}. */
+    public ChassisSpeeds getLastCommandedSpeedsRobotRel() {
+        return lastCommandedSpeedsRobotRel;
+    }
+
+    /** @return A copy of the last module states passed to {@link #setModuleStates} (before optimization). */
+    public SwerveModuleState[] getLastCommandedStates() {
+        return lastCommandedStates.clone();
+    }
+
+    /** @return The swerve modules. */
+    public SwerveModule[] getModules() {
+        return modules;
     }
 
     public double getMaxDriveVelocity() {
@@ -307,5 +338,7 @@ public class Chassis extends SubsystemBase {
         if (RobotPose.getInstance() != null) {
             RobotPose.getInstance().periodic();
         }
+
+        diagnostics.update();
     }
 }

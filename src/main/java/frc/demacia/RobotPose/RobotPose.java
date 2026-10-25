@@ -7,6 +7,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -117,6 +118,21 @@ public final class RobotPose {
      */
     public Pose2d getEstimatedPose() {
         return poseEstimator.getEstimatedPose();
+    }
+
+    /** @return The pure-odometry pose (no vision corrections). */
+    public Pose2d getOdometryPose() {
+        return poseEstimator.getOdometryPose();
+    }
+
+    /** @return The robot-relative twist of the last odometry update. */
+    public Twist2d getLastOdometryTwist() {
+        return poseEstimator.getLastOdometryTwist();
+    }
+
+    /** @return A copy of each module's robot-relative chord from the last odometry update (meters). */
+    public Translation2d[] getLastModuleDisplacements() {
+        return poseEstimator.getLastModuleDisplacements();
     }
 
     /**
