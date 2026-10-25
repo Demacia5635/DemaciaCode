@@ -93,9 +93,7 @@ public class SwerveCommand extends Command {
     }
 
 
-    velX = velX * dt;
-    velY = velY *dt;
-    velRot = velRot *0.2;
+    velRot = velRot * dt;
 
     // Field-Oriented Driving
     speeds = ChassisSpeeds.fromFieldRelativeSpeeds(velX, velY, velRot, chassis.getGyroAngle());

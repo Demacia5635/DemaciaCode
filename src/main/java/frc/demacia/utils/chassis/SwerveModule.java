@@ -145,7 +145,7 @@ public class SwerveModule {
         if (Math.abs(diff) <= Math.toRadians(0.7)) {
             setSteerPower(0);
         } else {
-            setSteerPosition(steerMotor.getCurrentPosition() + diff);
+            setSteerPosition(steerMotor.getCurrentPosition() + (2 * diff));
         }
 
         if (vel == 0) {
