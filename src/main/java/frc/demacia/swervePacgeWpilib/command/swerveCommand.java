@@ -45,6 +45,8 @@ public class SwerveCommand extends Command {
   private Matrix<N3, N1> visionSTD;
   private Matrix<N3, N1> odmetryStd;
 
+  private double dt;
+
   public SwerveCommand(CommandController controller, Vision vision) {
     this.controller = controller;
     this.vision = vision;
@@ -91,9 +93,12 @@ public class SwerveCommand extends Command {
     }
 
 
+    velX = velX * dt;
+    velY = velY *dt;
+    velRot = velRot *0.2;
 
     // Field-Oriented Driving
-    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(velX, velY, -velRot, chassis.getGyroAngle());
+    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(velX, velY, velRot, chassis.getGyroAngle());
 
     moduleStates = kinematics.kinematics().toSwerveModuleStates(speeds);
 
@@ -122,7 +127,7 @@ public class SwerveCommand extends Command {
   public void end(boolean interrupted) {
     // עצירת הרובוט בעת סיום/הפסקת הפקודה
     chassis.setModuleStates(
-        kinematics.kinematics().toSwerveModuleStates(new ChassisSpeeds(0, 0, 0))
+        kinematics.toSwerveModuleStates(new ChassisSpeeds(0, 0, 0))
     );
   }
 
