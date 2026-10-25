@@ -187,7 +187,32 @@ public class SwerveModule {
         if (config.driveConfig.id == 1) {
             // Log.log(driveMotor.getCurrentPosition());
         }
-        return driveMotor.getCurrentPosition() + config.steerVelToDriveVel * (steerMotor.getCurrentPosition() - initiolazedSteerPosition);
+        return getRawDrivePosition() + getCouplingCorrection();
+    }
+
+    /**
+     * Gets the drive motor position without the steer coupling correction.
+     * 
+     * @return Raw drive position in meters
+     */
+    public double getRawDrivePosition() {
+        return driveMotor.getCurrentPosition();
+    }
+
+    /**
+     * Gets the steer-to-drive coupling correction added to the drive position.
+     * 
+     * @return Correction in meters
+     */
+    public double getCouplingCorrection() {
+        return config.steerVelToDriveVel * (steerMotor.getCurrentPosition() - initiolazedSteerPosition);
+    }
+
+    /**
+     * @return The module name from its config
+     */
+    public String getName() {
+        return name;
     }
 
     /**
