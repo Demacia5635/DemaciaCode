@@ -22,7 +22,7 @@ public class RobotCChassisConstants {
   public static final Canbus PIGEON_CAN_BUS = Canbus.CANIvore;
   public static final double STEER_GEAR_RATIO = Mk5nConstants.STEER_GEAR_RATIO;
   public static final double DRIVE_GEAR_RATIO = Mk5nConstants.R2.driveGearRatio;
-  public static final double WHEEL_DIAMETER = Mk5nConstants.WHEEL_DIAMETER;
+  public static final double WHEEL_DIAMETER = 0.0952;
   public static final double METERS_FROM_360_DEGS = Mk5nConstants.R2.metersFrom360Degs;
   public static final double MAX_DRIVE_VELOCITY = 5;
   public static final double RAMP_TIME_STEER = 0.25;
@@ -50,10 +50,10 @@ public class RobotCChassisConstants {
 
   public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        3.138524692014022, //FRONT LEFT
-        -2.448233337465483, //FRONT RIGHT
-        -2.9943304979527716, //BACK LEFT
-        2.012582793705961 //BACK RIGHT
+        -0.006135923151542565, //FRONT LEFT
+        0.6826214506091103, //FRONT RIGHT
+        -0.010737865515199488, //BACK LEFT
+        -1.1336118022474888  //BACK RIGHT
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);
@@ -86,8 +86,8 @@ public class RobotCChassisConstants {
               .withRampTime(RAMP_TIME_STEER),
           new TalonFXConfig(name + " Drive", i * 3 + 1, CAN_BUS)
               .withPID(DRIVE_KP, DRIVE_KI, DRIVE_KD, DRIVE_KS, DRIVE_KV, DRIVE_KA, 0, 0, 0)
-              .withBrake(false)
-              .withInvert(true)
+              .withBrake(true)
+              .withInvert(false)
               .withMeterMotor(DRIVE_GEAR_RATIO, WHEEL_DIAMETER),
           new CancoderConfig(name + " Cancoder", i * 3 + 3, CAN_BUS)
             .withInvert(false))
