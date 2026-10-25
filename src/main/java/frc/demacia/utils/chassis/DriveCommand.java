@@ -72,6 +72,15 @@ public class DriveCommand extends Command {
   @Override
   public void execute() {
     if (RobotState.isAutonomous()){
+      // clear the cached teleop values so the diag/driver logs don't show stale inputs
+      leftTrigger = 0;
+      rightTrigger = 0;
+      rot = 0;
+      joyX = 0;
+      joyY = 0;
+      velX = 0;
+      velY = 0;
+      velRot = 0;
       return;
     }
 

@@ -81,6 +81,17 @@ public class SwerveModule {
         return cancoder.getCurrentAbsPosition();
     }
     
+    /**
+     * Gets the CANcoder absolute angle with the steer offset applied, exactly as it is used to
+     * seed the steer motor at boot ({@code absolute angle - steerOffset}). Uses the cached
+     * signal value, no CAN refresh. Not wrapped.
+     *
+     * @return Offset-applied absolute steer angle in radians
+     */
+    public double getAbsoluteSteerAngle() {
+        return getAbsoluteAngle() - config.steerOffset;
+    }
+
     public void resetModule() {
         steerMotor.setEncoderPosition(0);
         initiolazedSteerPosition = 0;
