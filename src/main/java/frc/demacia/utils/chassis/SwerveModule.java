@@ -138,9 +138,6 @@ public class SwerveModule {
      * @param state Target state with speed (m/s) and angle (Rotation2d)
      */
     public void setState(SwerveModuleState state) {
-        if (config.driveConfig.id == 1) {
-            // Log.log(state.angle.getRadians());
-        }
         double wantedAngle = state.angle.getRadians();
         double diff = wantedAngle - steerMotor.getCurrentPosition();
         double vel = state.speedMetersPerSecond;
@@ -199,7 +196,7 @@ public class SwerveModule {
      * @return Current drive position (meters) and steer angle
      */
     public SwerveModulePosition getModulePosition() {
-        return new SwerveModulePosition(getDrivePosition(), Rotation2d.fromRadians(steerMotor.getCurrentPosition()));
+        return new SwerveModulePosition(getDrivePosition(), new Rotation2d(steerMotor.getCurrentPosition()));
     }
 
     /**
