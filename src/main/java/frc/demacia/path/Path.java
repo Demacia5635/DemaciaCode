@@ -6,11 +6,12 @@ import frc.demacia.path.points.Point;
 import frc.demacia.path.segmants.CircleSegmant;
 import frc.demacia.path.segmants.LineSegmant;
 import frc.demacia.path.segmants.Segmant;
+import frc.demacia.utils.log.Log;
 
 import static frc.demacia.path.points.Point.*;
 
 public class Path {
-    static public double RADIUS = 4;
+    static public double RADIUS = 10;
 
     private Pose2d[] initinalPoints;
     private Point[] tempereryPoints;

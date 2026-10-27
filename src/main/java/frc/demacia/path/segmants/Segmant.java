@@ -5,12 +5,12 @@ import frc.demacia.path.points.Point;
 import static frc.demacia.path.points.Point.*;
 
 public class Segmant {
-    protected Point startPoing;
+    protected Point startPoint;
     protected Point endPoint;
     protected double distance;
 
     public Segmant(Point startPoing, Point endPoing) {
-        this.startPoing = startPoing;
+        this.startPoint = startPoing;
         this.endPoint = endPoing;
     }
 
@@ -19,7 +19,7 @@ public class Segmant {
     }
 
     public Point getStartPoint() {
-        return startPoing;
+        return startPoint;
     }
 
     public Point getEndPoint() {

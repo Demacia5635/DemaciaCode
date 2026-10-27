@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -10,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.demacia.RobotPose.RobotPose;
+import frc.demacia.path.Path;
+import frc.demacia.path.commands.followPathCommand;
 import frc.robot.vision.VisionConstants;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
@@ -46,6 +50,8 @@ public class RobotContainer implements Sendable {
   private Shooter shooter;
   public static DriveCommand driveCommand;
 
+  private Path path;
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -61,6 +67,18 @@ public class RobotContainer implements Sendable {
     RobotPose.initialize(
       RobotCChassisConstants.STATE_STD, 
       VisionConstants.visionConfig);
+
+    path = new Path(new Pose2d[] {
+      new Pose2d(0,0, new Rotation2d()), 
+      new Pose2d(0, 10, new Rotation2d()), 
+      new Pose2d(4, 1, new Rotation2d()), 
+      new Pose2d(9, 0.5, new Rotation2d()), 
+      new Pose2d(12, 4, new Rotation2d())
+    });
+    // path = new Path(new Pose2d[] {
+    //   new Pose2d(0,3, new Rotation2d()), 
+    //   new Pose2d(10, 5, new Rotation2d())
+    // });
 
     configureBindings();
     setDefaultCommands();
@@ -117,6 +135,7 @@ public class RobotContainer implements Sendable {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new RunCommand(() -> Chassis.getInstance().setSpeedsFieldRel(new ChassisSpeeds(1, 0, 1)), Chassis.getInstance());
+    // return new RunCommand(() -> Chassis.getInstance().setSpeedsFieldRel(new ChassisSpeeds(1, 0, 1)), Chassis.getInstance());
+    return new followPathCommand(path);
   }
 }

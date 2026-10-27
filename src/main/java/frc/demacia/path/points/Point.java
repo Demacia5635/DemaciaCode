@@ -45,6 +45,10 @@ public class Point {
         return Math.sqrt(Math.pow(point1.getPointX() - point2.getPointX(), 2) + Math.pow(point1.getPointY() - point2.getPointY(), 2));
     }
 
+    public static double distance(Pose2d point1, Point point2) {
+        return Math.sqrt(Math.pow(point1.getX() - point2.getPointX(), 2) + Math.pow(point1.getY() - point2.getPointY(), 2));
+    }
+
     public static double sigh(Point point1, Point point2, Point point3) {
         return Math.signum(
             (point1.getPointX() - point2.getPointX())*(point3.getPointY() - point2.getPointY()) - 
