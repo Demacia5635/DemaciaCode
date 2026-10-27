@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "test",
+      "request": "launch",
+      "mainClass": "frc.demacia.path.test",
+      "projectName": "DemaciaCode"
+    },
+    {
+      "type": "java",
       "name": "SysidApp",
       "request": "launch",
       "mainClass": "frc.demacia.sysid.SysidApp",
