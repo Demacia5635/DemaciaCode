@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.demacia.RobotPose.RobotPose;
 import frc.robot.vision.VisionConstants;
@@ -69,6 +70,22 @@ public class RobotContainer implements Sendable {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new RunCommand(() -> Chassis.getInstance().setSpeedsRobotRel(new ChassisSpeeds(0, 0, 1)), Chassis.getInstance());
+    return (new RunCommand(() -> {
+      Chassis.getInstance().modules[0].setSteerPosition(0);
+      Chassis.getInstance().modules[1].setSteerPosition(0);
+      Chassis.getInstance().modules[2].setSteerPosition(0);
+      Chassis.getInstance().modules[3].setSteerPosition(0);
+    }, Chassis.getInstance()).withTimeout(2))
+    .andThen(new InstantCommand(() -> {
+      Chassis.getInstance().modules[0].setSteerPower(0);
+      Chassis.getInstance().modules[1].setSteerPower(0);
+      Chassis.getInstance().modules[2].setSteerPower(0);
+      Chassis.getInstance().modules[3].setSteerPower(0);
+    })).andThen(new InstantCommand(() -> {
+      Chassis.getInstance().modules[0].setDriveVelocity(0.4);
+      Chassis.getInstance().modules[1].setDriveVelocity(0.4);
+      Chassis.getInstance().modules[2].setDriveVelocity(0.4);
+      Chassis.getInstance().modules[3].setDriveVelocity(0.4);
+    }));
   }
 }
