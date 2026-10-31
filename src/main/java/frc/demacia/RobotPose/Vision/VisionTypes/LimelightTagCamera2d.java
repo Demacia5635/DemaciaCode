@@ -56,6 +56,8 @@ public class LimelightTagCamera2d extends BaseVisionSource {
 
     /** Disconnected if the heartbeat hasn't changed for this long. */
     private static final double CAMERA_STALE_TIMEOUT_SECONDS = 0.5;
+    /** tx, ty, latency, tid */
+    private double[] values = new double[4];
 
     /**
      * @param config The camera's config. The table read is {@code "limelight-" + config.name}.
@@ -118,7 +120,7 @@ public class LimelightTagCamera2d extends BaseVisionSource {
     @Override
     public void periodic() {
         super.periodic();
-
+        
         hasNewPose = false;
 
         if (!shouldUpdate()) {
@@ -136,10 +138,31 @@ public class LimelightTagCamera2d extends BaseVisionSource {
         if (aprilTagFieldLayout.getTagPose((int) Table.getEntry("tid").getDouble(0.0)).isEmpty()) {
             return;
         }
-
+        
         updatePose();
         // e.g. a tag at the camera's height makes the range dh / tan(0)
         hasNewPose = Double.isFinite(pose.getX()) && Double.isFinite(pose.getY());
+    }
+
+
+    private void updateValues(){
+        values[0] = Math.toRadians(Table.getEntry("tx").getDouble(0.0));
+        values[1] = Math.toRadians(Table.getEntry("ty").getDouble(0.0));
+        values[2] = (Table.getEntry("tl").getDouble(0.0) + Table.getEntry("cl").getDouble(0.0))/1000.0;
+        values[3] = (int) Table.getEntry("tid").getDouble(0.0);
+    }
+
+    private double getTx(){
+        return values[0];
+    }
+    private double getTy(){
+        return values[1];
+    }
+    private double getLatency(){
+        return values[2];
+    }
+    private int getTid(){
+        return (int)values[3];
     }
 
     /**
@@ -147,7 +170,7 @@ public class LimelightTagCamera2d extends BaseVisionSource {
      * {@link #pose} from the current tag.
      */
     private Pose2d updatePose() {
-        double latency = (Table.getEntry("tl").getDouble(0.0) + Table.getEntry("cl").getDouble(0.0))/1000.0;
+        double latency = getLatency();
         double timestampSeconds = Timer.getFPGATimestamp() - latency;
 
         Rotation2d heading = RobotPose.getInstance().getEstimatedPoseAt(timestampSeconds).getRotation();
@@ -176,7 +199,8 @@ public class LimelightTagCamera2d extends BaseVisionSource {
      */
     private Translation2d getCameraToTag() {
         return new Translation2d(getDistanceFromCamera(),
-            new Rotation2d(Math.toRadians(-Table.getEntry("tx").getDouble(0.0)) + offset.getRotation().getZ()));
+            new Rotation2d(-getTx() + offset.getRotation().getZ()));
+    
     }
 
     /**
@@ -187,7 +211,7 @@ public class LimelightTagCamera2d extends BaseVisionSource {
      */
     private double getDistanceFromCamera() {
         double deltaHeight = getTag().getZ() - offset.getZ();
-        double alpha = offset.getRotation().getY() + Math.toRadians(Table.getEntry("ty").getDouble(0.0));
+        double alpha = offset.getRotation().getY() + getTy();
         double distance = Math.abs(deltaHeight / Math.tan(alpha)) / Math.cos(Math.toRadians(Table.getEntry("tx").getDouble(0.0)));
 
         return distance;   
@@ -195,7 +219,7 @@ public class LimelightTagCamera2d extends BaseVisionSource {
 
     /** Field position of the tag the camera sees ({@code tid}), or (0, 0, 0) if unknown. */
     private Translation3d getTag() {
-        Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose((int) Table.getEntry("tid").getDouble(0.0));
+        Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose(getTid());
         if (tagPose.isEmpty()) {
             return new Translation3d();
         }
