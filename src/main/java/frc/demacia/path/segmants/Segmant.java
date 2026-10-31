@@ -9,9 +9,9 @@ public class Segmant {
     protected Point endPoint;
     protected double distance;
 
-    public Segmant(Point startPoing, Point endPoing) {
+    public Segmant(Point startPoing, Point endPoint) {
         this.startPoint = startPoing;
-        this.endPoint = endPoing;
+        this.endPoint = endPoint;
     }
 
     public double getDistance() {
@@ -26,6 +26,14 @@ public class Segmant {
         return endPoint;
     }
 
+    public double getDistanceFromSegmant(Point pose) {
+        return 0;
+    }
+
+    public double getRemainingDistance(Point robotPose) {
+        return distance(robotPose, endPoint);
+    }
+
     public static LineSegmant createLineSegmant(Point point1, CirclePoint point2, Point point3) {
         double alpha = Math.asin(point2.getRadius() / distance(point1, point2.getMiddlePoint()));
         double sign = sigh(point1, point2, point3);
@@ -36,7 +44,7 @@ public class Segmant {
         double segmantPointX = point1.getPointX() + dist*Math.cos(teta);
         double segmantPointY = point1.getPointY() + dist*Math.sin(teta);
 
-        return new LineSegmant(point1, new Point(segmantPointX, segmantPointY, 0));
+        return new LineSegmant(point1, new Point(segmantPointX, segmantPointY));
     }
 
     public static LineSegmant createLineSegmant(Point point1, CirclePoint point2, CirclePoint point3, Point point4) {
@@ -50,7 +58,7 @@ public class Segmant {
         double segmantPoint2X = point3.getMiddlePoint().getPointX() - point3.getRadius()*Math.cos(teta);
         double segmantPoint2Y = point3.getMiddlePoint().getPointY() - point3.getRadius()*Math.sin(teta);
 
-        return new LineSegmant(new Point(segmantPoint1X, segmantPoint1Y, 0), 
-            new Point(segmantPoint2X, segmantPoint2Y, 0));
+        return new LineSegmant(new Point(segmantPoint1X, segmantPoint1Y), 
+            new Point(segmantPoint2X, segmantPoint2Y));
     }
 }

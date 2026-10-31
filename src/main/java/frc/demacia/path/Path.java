@@ -1,24 +1,22 @@
 package frc.demacia.path;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import frc.demacia.path.points.CirclePoint;
 import frc.demacia.path.points.Point;
 import frc.demacia.path.segmants.CircleSegmant;
 import frc.demacia.path.segmants.LineSegmant;
 import frc.demacia.path.segmants.Segmant;
-import frc.demacia.utils.log.Log;
 
 import static frc.demacia.path.points.Point.*;
 
 public class Path {
     static public double RADIUS = 10;
 
-    private Pose2d[] initinalPoints;
+    private Point[] initinalPoints;
     private Point[] tempereryPoints;
     private Segmant[] segmants;
     private int length;
 
-    public Path(Pose2d... initinalPoints) {
+    public Path(Point... initinalPoints) {
         this.initinalPoints = initinalPoints;
         length = initinalPoints.length;
 
@@ -31,7 +29,7 @@ public class Path {
         tempereryPoints = new Point[length];
         for (int i = 0; i < length; i++) {
             if (i == 0 || i == length - 1) {
-                tempereryPoints[i] = new Point(initinalPoints[i]);
+                tempereryPoints[i] = initinalPoints[i];
             } else {
                 tempereryPoints[i] = new CirclePoint(initinalPoints[i]);
             }
@@ -83,6 +81,14 @@ public class Path {
                 segmants[2*i - 1] = new CircleSegmant(segmants[2*i - 2].getEndPoint(), segmants[2*i].getStartPoint(), (CirclePoint) tempereryPoints[i]);
             }
         }
+    }
+
+    public Point[] getInitinalPoints() {
+        return initinalPoints;
+    }
+
+    public Point[] getTempereryPoints() {
+        return tempereryPoints;
     }
 
     public Segmant[] getSegmants() {

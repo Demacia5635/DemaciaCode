@@ -4,29 +4,30 @@ import frc.demacia.path.points.CirclePoint;
 import frc.demacia.path.points.Point;
 import static frc.demacia.path.points.Point.*;
 
-import edu.wpi.first.math.geometry.Pose2d;
-
 public class CircleSegmant extends Segmant {
     protected CirclePoint circlePoint;
 
-    public CircleSegmant(Point startPoing, Point endPoing, CirclePoint circlePoint) {
-        super(startPoing, endPoing);
+    public CircleSegmant(Point startPoint, Point endPoint, CirclePoint circlePoint) {
+        super(startPoint, endPoint);
         this.circlePoint = circlePoint;
-        distance = circlePoint.getRadius() *
-            Math.acos((Math.pow(distance(startPoing, circlePoint.getMiddlePoint()), 2) + 
-                Math.pow(distance(endPoing, circlePoint.getMiddlePoint()), 2) - 
-                Math.pow(distance(startPoing, endPoing), 2)) / 
-                (2*distance(startPoing, circlePoint.getMiddlePoint())*distance(endPoing, circlePoint.getMiddlePoint())));
+        distance = getRemainingDistance(startPoint);
     }
 
     public CirclePoint getCirclePoint() {
         return circlePoint;
     }
 
-    public double distanceFromCircle(Pose2d pose) {
-        double a = pose.getY() - getCirclePoint().getMiddlePoint().getPointY();
-        double b = pose.getX() - getCirclePoint().getMiddlePoint().getPointX();
+    @Override
+    public double getDistanceFromSegmant(Point robotPose) {
+        return distance(robotPose, getCirclePoint().getMiddlePoint()) - getCirclePoint().getRadius();
+    }
 
-        return Math.hypot(a, b) - getCirclePoint().getRadius();
+    @Override
+    public double getRemainingDistance(Point robotPose) {
+        return circlePoint.getRadius() *
+        Math.acos((Math.pow(distance(robotPose, circlePoint.getMiddlePoint()), 2) + 
+            Math.pow(distance(endPoint, circlePoint.getMiddlePoint()), 2) - 
+            Math.pow(distance(robotPose, endPoint), 2)) / 
+            (2*distance(robotPose, circlePoint.getMiddlePoint())*distance(endPoint, circlePoint.getMiddlePoint())));
     }
 }

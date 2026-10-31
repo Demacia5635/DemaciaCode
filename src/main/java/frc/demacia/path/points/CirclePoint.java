@@ -1,19 +1,23 @@
 package frc.demacia.path.points;
 
-import edu.wpi.first.math.geometry.Pose2d;
-
 public class CirclePoint extends Point{
     private Point middlePoint;
     private double radius;
 
-    public CirclePoint(double pointX, double pointY, double angle) {
-        super(pointX, pointY, angle);
-        middlePoint = new Point(0, 0, 0);
+    public CirclePoint(double pointX, double pointY) {
+        super(pointX, pointY);
+        middlePoint = new Point(0, 0);
     }
 
-    public CirclePoint(Pose2d pose2d) {
-        super(pose2d);
-        middlePoint = new Point(0, 0, 0);
+    public CirclePoint(Point point) {
+        this(point.getPointX(), point.getPointY());
+        if (point.angle != null) {
+            withAngle(point.angle);
+        }
+        if (point.velocity != null) {
+            withVelocity(point.velocity);
+        }
+        middlePoint = new Point(0, 0);
     }
 
     public void setCircleX(double circleX) {

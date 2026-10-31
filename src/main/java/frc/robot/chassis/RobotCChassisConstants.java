@@ -22,8 +22,8 @@ public class RobotCChassisConstants {
   public static final Canbus PIGEON_CAN_BUS = Canbus.CANIvore;
   public static final double STEER_GEAR_RATIO = Mk5nConstants.STEER_GEAR_RATIO;
   public static final double DRIVE_GEAR_RATIO = Mk5nConstants.R2.driveGearRatio;
-  public static final double WHEEL_DIAMETER = Mk5nConstants.WHEEL_DIAMETER;
-  public static final double METERS_FROM_360_DEGS = 0.0963;
+  public static final double WHEEL_DIAMETER = 0.0963;
+  public static final double METERS_FROM_360_DEGS = Mk5nConstants.R2.metersFrom360Degs;
   public static final double MAX_DRIVE_VELOCITY = 5;
   public static final double RAMP_TIME_STEER = 0.25;
 
