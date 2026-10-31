@@ -47,10 +47,10 @@ public class RobotContainer implements Sendable {
 
     path = new Path(
       new Point(0,0).withAngle(new Rotation2d(0.5)), 
-      new Point(0, 10).withAngle(new Rotation2d(1)), 
+      new Point(0, 10).withAngle(new Rotation2d(1)).withVelocity(0.5), 
       new Point(4, 1).withAngle(new Rotation2d(1.5)), 
-      new Point(9, 0.5).withAngle(new Rotation2d(2)), 
-      new Point(12, 4).withAngle(new Rotation2d(2.5)));
+      new Point(9, 0.5).withAngle(new Rotation2d(2)).withVelocity(0.0), 
+      new Point(12, 4).withAngle(new Rotation2d(2.5)).withVelocity(0.0));
 
     configureBindings();
     setDefaultCommands();

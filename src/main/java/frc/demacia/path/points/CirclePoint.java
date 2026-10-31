@@ -32,7 +32,7 @@ public class CirclePoint extends Point{
         this.radius = radius;
     }
 
-    public Point getMiddlePoint() {
+    public Point getCenterPoint() {
         return middlePoint;
     }
 

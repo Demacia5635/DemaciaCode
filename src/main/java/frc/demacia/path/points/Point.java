@@ -21,7 +21,7 @@ public class Point {
     }
 
     public Point withVelocity(Double velocity) {
-        this.velocity = velocity;
+        setVelocity(velocity);
         return this;
     }
 
@@ -37,6 +37,10 @@ public class Point {
         this.angle = angle;
     }
 
+    public void setVelocity(Double velocity) {
+        this.velocity = velocity;
+    }
+
     public double getPointX() {
         return pointX;
     }
@@ -49,15 +53,19 @@ public class Point {
         return angle;
     }
 
+    public Double getVelocity() {
+        return velocity;
+    }
+
     public static double distance(Point point1, Point point2) {
         return Math.sqrt(Math.pow(point1.getPointX() - point2.getPointX(), 2) + Math.pow(point1.getPointY() - point2.getPointY(), 2));
     }
 
     public static double sigh(Point point1, Point point2, Point point3) {
-        return Math.signum(
+        return Math.signum(0.5 + Math.signum(
             (point1.getPointX() - point2.getPointX())*(point3.getPointY() - point2.getPointY()) - 
             (point1.getPointY() - point2.getPointY())*(point3.getPointX() - point2.getPointX())
-        );
+        ));
     }
 
     public static double atan2(Point point1, Point point2) {

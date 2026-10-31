@@ -8,6 +8,7 @@ import frc.demacia.path.points.Point;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.path.Path;
@@ -15,25 +16,27 @@ import frc.demacia.path.segmants.CircleSegmant;
 import frc.demacia.path.segmants.LineSegmant;
 import frc.demacia.path.segmants.Segmant;
 import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.utils.log.Log;
 
 import static frc.demacia.path.points.Point.*;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class followPathCommand extends Command {
   private static double ALOWED_ARROR = 0.1;
-  private static double MAX_VELOCITY = 1.5;
-  private static double MAX_ANGLE_VELOCITY = 4;
-  private static double K_P = 7;
-  private static double ANGLE_K_P = 4;
+  private static double MAX_VELOCITY = 2;
+  private static double MAX_ACCELERATION = 1;
+  private static double MAX_ANGLE_VELOCITY = 5;
+  private static double K_P = 15;
+  private static double ANGLE_K_P = 5;
 
   private Chassis chassis;
   private Path path;
   private Segmant currentSegmant;
   private Point nextAnglePoint;
   private int nextAnglePointIndex;
-  private double nextVelocityPoint;
-  private double fixedDistance;
+  private double fixedDistanceToNextAnglePoint;
+  private Point nextVelocityPoint;
+  private int nextVelocityPointIndex;
+  private double fixedDistanceToNextVelocityPoint;
 
   private int index;
   private int pointIndex;
@@ -52,8 +55,8 @@ public class followPathCommand extends Command {
   public void initialize() {
     index = 0;
     pointIndex = 0;
+    updatePoint();
     updateSegmant();
-    updateNextAnglePoint();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -61,8 +64,6 @@ public class followPathCommand extends Command {
   public void execute() {
     Pose2d robotPose = RobotPose.getInstance().getEstimatedPose();
     Point robotPoint = new Point(robotPose.getX(), robotPose.getY());
-    double velocity = MAX_VELOCITY;
-    double angleVelocity = MAX_ANGLE_VELOCITY;
 
     if (Point.distance(robotPoint, currentSegmant.getEndPoint()) < ALOWED_ARROR) {
       index++;
@@ -75,10 +76,16 @@ public class followPathCommand extends Command {
 
     if (Point.distance(robotPoint, path.getInitinalPoints()[pointIndex + 1]) < ALOWED_ARROR) {
       pointIndex++;
-      updateNextAnglePoint();
+      updatePoint();
+      updateSegmant();
     }
 
-    Log.log(currentSegmant.getDistanceFromSegmant(robotPoint));
+    double distanceToNextVelocityPoint = fixedDistanceToNextVelocityPoint + currentSegmant.getRemainingDistance(robotPoint);
+    double targetVelocity = nextVelocityPoint.getVelocity();
+    double velocity = Math.min(MAX_VELOCITY, Math.sqrt(targetVelocity * targetVelocity + 2 * MAX_ACCELERATION * Math.max(0, distanceToNextVelocityPoint)));
+    
+    SmartDashboard.putNumber("velocity", velocity);
+    SmartDashboard.putNumber("distanceToNextVelocityPoint", distanceToNextVelocityPoint);
 
     double xVel = 0;
     double yVel = 0;
@@ -92,19 +99,17 @@ public class followPathCommand extends Command {
       xVel += sigh*K_P*distanceFromLine*Math.sin(alpha);
       yVel -= sigh*K_P*distanceFromLine*Math.cos(alpha);
     } else if (currentSegmant instanceof CircleSegmant) {
-      double alpha = Math.PI/2 + Point.atan2(((CircleSegmant) currentSegmant).getCirclePoint().getMiddlePoint(), robotPoint);
+      double alpha = Math.PI/2 + Point.atan2(((CircleSegmant) currentSegmant).getCirclePoint().getCenterPoint(), robotPoint);
       double sign = sigh(currentSegmant.getStartPoint(), ((CircleSegmant) currentSegmant).getCirclePoint(), currentSegmant.getEndPoint());
       xVel = sign*velocity*Math.cos(alpha);
       yVel = sign*velocity*Math.sin(alpha);
 
       double distanceFromCircle = currentSegmant.getDistanceFromSegmant(robotPoint);
-      double fixSign = Math.signum(((CircleSegmant) currentSegmant).getCirclePoint().getRadius()-distanceFromCircle);
-      xVel += fixSign*K_P*distanceFromCircle*Math.sin(alpha);
-      yVel -= fixSign*K_P*distanceFromCircle*Math.cos(alpha);
+      xVel += K_P*distanceFromCircle*Math.sin(alpha);
+      yVel -= K_P*distanceFromCircle*Math.cos(alpha);
     }
 
-    double distanceFromNextAnglePoint = (fixedDistance + currentSegmant.getRemainingDistance(robotPoint));
-
+    double distanceToNextAnglePoint = (fixedDistanceToNextAnglePoint + currentSegmant.getRemainingDistance(robotPoint));
     double omega = MathUtil.clamp(ANGLE_K_P * MathUtil.angleModulus(nextAnglePoint.getAngle().getRadians() - chassis.getGyroAngle().getRadians()), -MAX_ANGLE_VELOCITY, MAX_ANGLE_VELOCITY);
 
     chassis.setSpeedsFieldRel(new ChassisSpeeds(xVel, yVel, omega));
@@ -113,16 +118,26 @@ public class followPathCommand extends Command {
   private void updateSegmant() {
     currentSegmant = path.getSegmants()[index];
 
-    fixedDistance = 0;
+    fixedDistanceToNextAnglePoint = 0;
     for (int i = index+1; i < 2*nextAnglePointIndex-3; i++) {
-      fixedDistance += path.getSegmants()[i].getDistance();
+      fixedDistanceToNextAnglePoint += path.getSegmants()[i].getDistance();
     }
     if (nextAnglePointIndex != path.getInitinalPoints().length - 1 && 2*nextAnglePointIndex - 1 >= 0) {
-      fixedDistance -= path.getSegmants()[2*nextAnglePointIndex - 1].getDistance() / 2;
+      fixedDistanceToNextAnglePoint -= path.getSegmants()[2*nextAnglePointIndex - 1].getDistance() / 2;
+    }
+    
+    fixedDistanceToNextVelocityPoint = 0;
+    for (int i = index+1; i < 2*nextVelocityPointIndex; i++) {
+      if (i < path.getSegmants().length) {
+        fixedDistanceToNextVelocityPoint += path.getSegmants()[i].getDistance();
+      }
+    }
+    if (nextVelocityPointIndex != path.getInitinalPoints().length - 1 && 2*nextVelocityPointIndex - 1 >= 0) {
+      fixedDistanceToNextVelocityPoint -= path.getSegmants()[2*nextVelocityPointIndex - 1].getRemainingDistance(path.getInitinalPoints()[nextVelocityPointIndex]);
     }
   }
 
-  private void updateNextAnglePoint() {
+  private void updatePoint() {
     boolean found = false;
     for (int i = pointIndex + 1; i < path.getInitinalPoints().length; i++) {
       if (path.getInitinalPoints()[i].getAngle() != null) {
@@ -137,6 +152,21 @@ public class followPathCommand extends Command {
       nextAnglePoint = path.getInitinalPoints()[path.getInitinalPoints().length - 1];
       nextAnglePoint.setAngle((path.getInitinalPoints()[pointIndex].getAngle() != null) ? 
       path.getInitinalPoints()[pointIndex].getAngle() : chassis.getGyroAngle());
+    }
+
+    found = false;
+    for (int i = pointIndex + 1; i < path.getInitinalPoints().length; i++) {
+      if (path.getInitinalPoints()[i].getVelocity() != null) {
+        nextVelocityPointIndex = i;
+        nextVelocityPoint = path.getInitinalPoints()[i];
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      nextVelocityPointIndex = path.getInitinalPoints().length - 1;
+      nextVelocityPoint = path.getInitinalPoints()[path.getInitinalPoints().length - 1];
+      nextVelocityPoint.setVelocity(0.0);
     }
   }
 

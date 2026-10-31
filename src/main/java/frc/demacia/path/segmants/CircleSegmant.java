@@ -19,15 +19,14 @@ public class CircleSegmant extends Segmant {
 
     @Override
     public double getDistanceFromSegmant(Point robotPose) {
-        return distance(robotPose, getCirclePoint().getMiddlePoint()) - getCirclePoint().getRadius();
+        return distance(robotPose, getCirclePoint().getCenterPoint()) - getCirclePoint().getRadius();
     }
 
     @Override
     public double getRemainingDistance(Point robotPose) {
-        return circlePoint.getRadius() *
-        Math.acos((Math.pow(distance(robotPose, circlePoint.getMiddlePoint()), 2) + 
-            Math.pow(distance(endPoint, circlePoint.getMiddlePoint()), 2) - 
-            Math.pow(distance(robotPose, endPoint), 2)) / 
-            (2*distance(robotPose, circlePoint.getMiddlePoint())*distance(endPoint, circlePoint.getMiddlePoint())));
+        Point center = circlePoint.getCenterPoint();
+        double angle = sigh(startPoint, circlePoint, endPoint) * (atan2(robotPose, center) - atan2(endPoint, center));
+        angle -= 2*Math.PI*Math.floor(angle/(2*Math.PI));
+        return circlePoint.getRadius()*angle;
     }
 }
