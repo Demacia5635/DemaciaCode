@@ -5,10 +5,11 @@
 package frc.demacia.path.commands;
 
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.path.DemaciaTrajectory;
 import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PathCommand extends Command {
@@ -29,8 +30,8 @@ public class PathCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    LogManager.log("current pose" + Chassis.getInstance().getPose());
-    chassis.setVelocities(trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), chassis.getPose()));
+    Log.log("current pose" + Chassis.getInstance().getPose());
+    chassis.setSpeedsRobotRel(ChassisSpeeds.fromRobotRelativeSpeeds(trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), chassis.getPose()), chassis.gyro.getRotation2d()));
   }
 
   // Called once the command ends or is interrupted.

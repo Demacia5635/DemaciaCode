@@ -80,7 +80,7 @@ public class TagPose {
     SmartDashboard.putData("chassis/reset gyro by camera " + camera.getName(),
         Commands.sequence(
             new InstantCommand(() -> changePipeline(5)).ignoringDisable(true),
-            new InstantCommand(() -> chassis.setYaw(getRobotAngle())).ignoringDisable(true),
+            new InstantCommand(() -> chassis.setGyroYaw(getRobotAngle())).ignoringDisable(true),
             new InstantCommand(() -> changePipeline(0)).ignoringDisable(true)).ignoringDisable(true));
 
   }

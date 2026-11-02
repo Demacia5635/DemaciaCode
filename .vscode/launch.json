@@ -6,17 +6,24 @@
   "configurations": [
     {
       "type": "java",
-      "name": "PathSimulatorApp",
+      "name": "SysidApp",
       "request": "launch",
-      "mainClass": "frc.demacia.path.PathSimulatorApp",
-      "projectName": "DemaciaCode-1"
+      "mainClass": "frc.demacia.sysid.SysidApp",
+      "projectName": "DemaciaCode"
     },
     {
       "type": "java",
-      "name": "FRCPathVisualizer",
+      "name": "SysidApp",
       "request": "launch",
-      "mainClass": "frc.robot.app.FRCPathVisualizer",
-      "projectName": "2026UpdateRobotCodeEmpty"
+      "mainClass": "frc.demacia.sysID.SysidApp",
+      "projectName": "DemaciaCode"
+    },
+    {
+      "type": "java",
+      "name": "LogConverter",
+      "request": "launch",
+      "mainClass": "frc.demacia.utils.log.LogConverter",
+      "projectName": "DemaciaCode"
     },
     {
       "type": "wpilib",

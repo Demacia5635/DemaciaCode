@@ -79,18 +79,18 @@ public class MK5nChassisConstansRobotC {
 
       ans[i] = new SwerveModuleConfig(
           name,
-          new TalonFXConfig(i * 3 + 2, CAN_BUS, name + " Steer")
-              .withPID(STEER_KP, STEER_KI, STEER_KD, STEER_KS, STEER_KV, STEER_KA, 0)
+          new TalonFXConfig(name + " Steer", i * 3 + 2, CAN_BUS)
+              .withPID(STEER_KP, STEER_KI, STEER_KD, STEER_KS, STEER_KV, STEER_KA, 0, 0, 0)
               .withMotionParam(MOTION_MAGIC_VEL, MOTION_MAGIC_ACCEL, MOTION_MAGIC_JERK)
               .withBrake(true)
               .withInvert(true)
               .withRadiansMotor(STEER_GEAR_RATIO)
               .withRampTime(RAMP_TIME_STEER),
-          new TalonFXConfig(i * 3 + 1, CAN_BUS, name + " Drive")
-              .withPID(DRIVE_KP, DRIVE_KI, DRIVE_KD, DRIVE_KS, DRIVE_KV, DRIVE_KA, 0)
+          new TalonFXConfig(name + " Drive", i * 3 + 1, CAN_BUS)
+              .withPID(DRIVE_KP, DRIVE_KI, DRIVE_KD, DRIVE_KS, DRIVE_KV, DRIVE_KA, 0, 0, 0)
               .withBrake(true)
               .withMeterMotor(DRIVE_GEAR_RATIO, WHEEL_DIAMETER),
-          new CancoderConfig(i * 3 + 3, CAN_BUS, name + " Cancoder"))
+          new CancoderConfig(name + " Cancoder", i * 3 + 3, CAN_BUS))
               .withPosion(MODULE_LOCATIONS[i])
               .withSteerOffset(offsets[i]);
     }
@@ -108,11 +108,10 @@ public class MK5nChassisConstansRobotC {
         /* Back Right Offset: */  0.316895 * 2 * Math.PI
       });
 
-  public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(PIGEON_ID, PIGEON_CAN_BUS, NAME + "/pigeon");
+  public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + "/pigeon", PIGEON_ID, PIGEON_CAN_BUS);
 
   public static final ChassisConfig CHASSIS_CONFIG = new ChassisConfig(
       NAME,
       modules,
-      PIGEON_CONFIG,
-      new TagPose[] {});
+      PIGEON_CONFIG);
 }

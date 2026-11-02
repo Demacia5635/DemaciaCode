@@ -22,8 +22,8 @@ public class LimitSwitchConfig extends BaseSensorConfig<LimitSwitchConfig>{
      * @param channel DIO channel number (0-9 on RoboRIO)
      * @param name Descriptive name for logging and identification
      */
-    public LimitSwitchConfig(int channel, String name) {
-        super(channel, name);
+    public LimitSwitchConfig(String name, int channel) {
+        super(name, channel);
         sensorType = LimitSwitch.class;
     }
 }

@@ -9,7 +9,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import frc.demacia.path.constans.PathConstants;
 import frc.demacia.path.trapzoid.DemaciaTrapezoid;
 import frc.demacia.path.utils.PathUtils;
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
 
 public class SegmantFollow {
     private DemaciaTrapezoid driveTrapzoid;
@@ -34,7 +34,7 @@ public class SegmantFollow {
             Translation2d VectorToFinish = segmant.getEndPose().minus(chassisPoseAsVector);
             double vel = driveTrapzoid.nextVelocity(VectorToFinish.getNorm(), currentVelVector.getNorm(), finalVel);
             Rotation2d fixeHading = new Rotation2d(2 * VectorToFinish.getAngle().getRadians() - segmant.getTranslation().getAngle().getRadians());
-            LogManager.log("lineCalculatedVel: Norm: " + vel + " Rotation2d: " + fixeHading + " " + new Translation2d(vel, fixeHading));
+            Log.log("lineCalculatedVel: Norm: " + vel + " Rotation2d: " + fixeHading + " " + new Translation2d(vel, fixeHading));
             calculatedVel = new Translation2d(vel, fixeHading);
         }
         
@@ -46,7 +46,7 @@ public class SegmantFollow {
             double heading = baseHeading + (segmant.getIsLeft() ? headingVelOmega * 0.02 : - headingVelOmega * 0.02);
             double distanceLeft = Math.abs(segmant.getFinishAngle().getRadians() - baseHeading) * PathConstants.radius;
             double velocity = driveTrapzoid.nextVelocity(distanceLeft, currentVelVector.getNorm(), finalVel);
-            LogManager.log("arcCalculatedVel: Norm: " + velocity + " Rotation2d: " + heading + " " + new Translation2d(velocity, new Rotation2d(heading)));
+            Log.log("arcCalculatedVel: Norm: " + velocity + " Rotation2d: " + heading + " " + new Translation2d(velocity, new Rotation2d(heading)));
             calculatedVel = new Translation2d(velocity, new Rotation2d(heading));
         }
         // LogManager.log("omega: " + omega);

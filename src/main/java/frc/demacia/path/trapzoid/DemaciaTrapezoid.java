@@ -1,6 +1,6 @@
 package frc.demacia.path.trapzoid;
 
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
 
 public class DemaciaTrapezoid {
     private final double maxVelocity;
@@ -16,7 +16,7 @@ public class DemaciaTrapezoid {
 
     // Distance needed to decelerate from velocity v to finishVelocity
     private double stoppingDistance(double v, double finishVelocity) {
-        LogManager.log("finishVelocity: " + finishVelocity + " v: " + v);
+        Log.log("finishVelocity: " + finishVelocity + " v: " + v);
         if (v <= finishVelocity)
             return 0;
         return (v * v - finishVelocity * finishVelocity) / (2 * maxAccel);

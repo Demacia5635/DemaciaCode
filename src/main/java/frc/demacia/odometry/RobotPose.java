@@ -139,7 +139,7 @@ public class RobotPose {
     public void setAngle3DLimelight() {
         Rotation2d newAngle = vision.getRobotAngle();
         if (newAngle != null)
-            chassis.setYaw(newAngle);
+            chassis.setGyroYaw(newAngle);
 
     }
 

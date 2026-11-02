@@ -15,7 +15,7 @@ import frc.demacia.path.segments.LineSegment;
 import frc.demacia.path.segments.SegmantBase;
 import frc.demacia.path.segments.SegmantFollow;
 import frc.demacia.path.utils.PathUtils;
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
 
 public class DemaciaTrajectory {
 
@@ -43,7 +43,7 @@ public class DemaciaTrajectory {
         this.isFinishedTrajectory = false;
 
         if (demaciaPathPoints.size() < 2) {
-            LogManager.log("Not enough points to build a trajectory");
+            Log.log("Not enough points to build a trajectory");
             this.isFinishedTrajectory = true;
             return;
         }
@@ -58,10 +58,10 @@ public class DemaciaTrajectory {
         this.currentSegment = segments.get(this.currentSegmentIndex);
 
         for (int i = 0; i < segments.size(); i++){
-            LogManager.log("segments.get(" + i + "): " + segments.get(i));
+            Log.log("segments.get(" + i + "): " + segments.get(i));
         }
         for (int i = 0; i < lineSegments.size(); i++){
-            LogManager.log("lineSegments.get(" + i + "): " + lineSegments.get(i));
+            Log.log("lineSegments.get(" + i + "): " + lineSegments.get(i));
         }
 
     }
@@ -135,7 +135,7 @@ public class DemaciaTrajectory {
             Translation2d centerToFinish = arcSegment.getCenter().minus(arcSegment.getEndPose());
             Rotation2d wantedVelocityHeading = centerToFinish.getAngle().minus(Rotation2d.kCW_90deg);
             boolean isHeadingTowardesNextSegment = PathUtils.isVelocityHeadingInRange(currentVelocityHeading, wantedVelocityHeading);
-            LogManager.log("isFinishedSegment " + (distanceFromFinishPoint < PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH) + " " + (distanceFromFinishPoint < (PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH * 3)) + " isHeadingTowardesNextSegment " + isHeadingTowardesNextSegment + " " + currentVelocityHeading + "currentVelocityHeading wantedVelocityHeading" + wantedVelocityHeading + " distanceFromFinishPoint" + distanceFromFinishPoint + " EndPoint: " + arcSegment.getEndPose() + " Current Segmant: " + currentSegment);
+            Log.log("isFinishedSegment " + (distanceFromFinishPoint < PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH) + " " + (distanceFromFinishPoint < (PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH * 3)) + " isHeadingTowardesNextSegment " + isHeadingTowardesNextSegment + " " + currentVelocityHeading + "currentVelocityHeading wantedVelocityHeading" + wantedVelocityHeading + " distanceFromFinishPoint" + distanceFromFinishPoint + " EndPoint: " + arcSegment.getEndPose() + " Current Segmant: " + currentSegment);
             return (distanceFromFinishPoint < PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH) || ((distanceFromFinishPoint < (PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH * 3)) && isHeadingTowardesNextSegment);
         }
     }

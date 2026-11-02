@@ -5,7 +5,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
+import frc.demacia.utils.log.Log;
 import frc.demacia.utils.motors.MotorInterface;
 import frc.demacia.utils.sensors.Cancoder;
 
@@ -25,11 +26,16 @@ import frc.demacia.utils.sensors.Cancoder;
  * reverse drive direction and rotate <90° instead for faster response.</p>
  */
 public class SwerveModule {
-    private SwerveModuleConfig config;
-    public MotorInterface steerMotor;
-    public MotorInterface driveMotor;
-    public Cancoder cancoder;
     public String name;
+    private SwerveModuleConfig config;
+    private MotorInterface steerMotor;
+    private MotorInterface driveMotor;
+    private Cancoder cancoder;
+
+    private double initiolazedSteerPosition;
+    private boolean isDriveStop;
+
+    private Timer motorAndCancoderOpositeTimer;
 
     public SwerveModule(SwerveModuleConfig config) {
         this.config = config;
@@ -39,10 +45,14 @@ public class SwerveModule {
         name = config.name;
 
         steerMotor.setEncoderPosition(getAbsoluteAngle() - config.steerOffset);
-    }
 
-    public MotorInterface getSteerMotor() {
-        return steerMotor;
+        initiolazedSteerPosition = steerMotor.getCurrentPosition();
+        isDriveStop = true;
+
+        driveMotor.setDisplayPositionOverride(this::getDrivePosition);
+        driveMotor.setDisplayVelocityOverride(this::getDriveVel);
+
+        motorAndCancoderOpositeTimer = new Timer();
     }
 
     /**
@@ -59,8 +69,8 @@ public class SwerveModule {
         steerMotor.setNeutralMode(isBrake);
     }
 
-    public void setSteerPower(double power) {
-        steerMotor.setDuty(power);
+    public Cancoder getCancoder() {
+        return cancoder;
     }
 
     /**
@@ -71,23 +81,19 @@ public class SwerveModule {
     public double getAbsoluteAngle() {
         return cancoder.getCurrentAbsPosition();
     }
-
-    public void setDrivePower(double power) {
-        driveMotor.setDuty(power);
+    
+    public void resetModule() {
+        steerMotor.setEncoderPosition(0);
+        initiolazedSteerPosition = 0;
     }
 
-    public void setSteerVelocity(double velocityRadsPerSecond) {
-        steerMotor.setVelocity(velocityRadsPerSecond);
-    }
+    public void setSteerPower(double power) {
+        steerMotor.setDuty(power);
+        checkMotorAndCancoderOposite();
 
-    /**
-     * Sets the drive motor to a target velocity (m/s).
-     * 
-     * @param velocityMetersPerSecond Target velocity
-     */
-    public void setDriveVelocity(double velocityMetersPerSecond) {
-        SmartDashboard.putNumber("Drive Vel", velocityMetersPerSecond);
-        driveMotor.setVelocity(velocityMetersPerSecond);
+        if (isDriveStop){
+            driveMotor.setVelocity(-config.steerVelToDriveVel * steerMotor.getCurrentVelocity());
+        }
     }
 
     /**
@@ -98,24 +104,30 @@ public class SwerveModule {
     public void setSteerPosition(double positionRadians) {
         if(Math.abs(positionRadians - steerMotor.getCurrentPosition()) <= Math.toRadians(0.5) ) steerMotor.setDuty(0);
         steerMotor.setPositionVoltage(positionRadians);
-        // steerMotor.setMotionMagic(positionRadians);
+        checkMotorAndCancoderOposite();
+        
+        if (isDriveStop){
+            driveMotor.setVelocity(-config.steerVelToDriveVel * steerMotor.getCurrentVelocity());
+        }
     }
 
-    public double getSteerAngle() {
-        return steerMotor.getCurrentAngle();
-    }
-    public Rotation2d getSteerRotation() {
-        return new Rotation2d(getSteerAngle());
-    }
-    public double getSteerVel() {
-        return steerMotor.getCurrentVelocity();
-    }
-    public double getSteerAccel() {
-        return steerMotor.getCurrentAcceleration();
+    public void setDrivePower(double power) {
+        if (power == 0) {
+            isDriveStop = true;
+        } else {
+            isDriveStop = false;
+            driveMotor.setDuty(power);
+        }
     }
 
-    public double getDriveVel() {
-        return driveMotor.getCurrentVelocity();
+    /**
+     * Sets the drive motor to a target velocity (m/s).
+     * 
+     * @param velocityMetersPerSecond Target velocity
+     */
+    public void setDriveVelocity(double velocityMetersPerSecond) {
+        isDriveStop = false;
+        driveMotor.setVelocity(velocityMetersPerSecond - config.steerVelToDriveVel * getSteerVel());
     }
 
     /**
@@ -148,8 +160,32 @@ public class SwerveModule {
         if (vel == 0) {
             setDrivePower(0);
         } else {
-            setDriveVelocity(vel - steerMotor.getCurrentVelocity() * config.steerVelToDriveVel);
+            setDriveVelocity(vel);
         }
+    }
+
+    public double getSteerAngle() {
+        return steerMotor.getCurrentAngle();
+    }
+    
+    public Rotation2d getSteerRotation() {
+        return new Rotation2d(getSteerAngle());
+    }
+
+    public double getSteerVel() {
+        return steerMotor.getCurrentVelocity();
+    }
+
+    public double getSteerAccel() {
+        return steerMotor.getCurrentAcceleration();
+    }
+
+    public double getDriveVel() {
+        return driveMotor.getCurrentVelocity() + config.steerVelToDriveVel * steerMotor.getCurrentVelocity();
+    }
+
+    public double getDrivePosition() {
+        return driveMotor.getCurrentPosition() + config.steerVelToDriveVel * (steerMotor.getCurrentPosition() - initiolazedSteerPosition);
     }
 
     /**
@@ -158,7 +194,7 @@ public class SwerveModule {
      * @return Current drive position (meters) and steer angle
      */
     public SwerveModulePosition getModulePosition() {
-        return new SwerveModulePosition(driveMotor.getCurrentPosition(), Rotation2d.fromRadians(steerMotor.getCurrentPosition()));
+        return new SwerveModulePosition(getDrivePosition(), Rotation2d.fromRadians(steerMotor.getCurrentPosition()));
     }
 
     /**
@@ -170,11 +206,27 @@ public class SwerveModule {
         return new SwerveModuleState(getDriveVel(), getSteerRotation());
     }
 
+    public void checkMotorAndCancoderOposite() {
+        if (Math.abs(steerMotor.getCurrentVelocity()) > 0.05 && 
+                Math.abs(cancoder.getCurrentVelocity()) > 0.05 && 
+                Math.signum(steerMotor.getCurrentVelocity()) != Math.signum(cancoder.getCurrentVelocity())) {
+            if (!motorAndCancoderOpositeTimer.isRunning()) {
+                motorAndCancoderOpositeTimer.restart();
+            } else if (motorAndCancoderOpositeTimer.hasElapsed(0.1)){
+                Log.alert("cancoder and motor velocity are with opposite sigh in " + name);
+                motorAndCancoderOpositeTimer.stop();
+            }
+        } else if (motorAndCancoderOpositeTimer.isRunning()) {
+            motorAndCancoderOpositeTimer.stop();
+            motorAndCancoderOpositeTimer.reset();
+        }
+    }
+
     /**
      * Stops both motors immediately.
      */
     public void stop() {
-        steerMotor.setDuty(0);
-        driveMotor.setDuty(0);
+        steerMotor.stop();
+        driveMotor.stop();
     }
 }

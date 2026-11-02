@@ -29,8 +29,8 @@ public class AnalogEncoderConfig extends AnalogSensorConfig<AnalogEncoderConfig>
      * @param channel Analog input port (0-3 on RoboRIO)
      * @param name Descriptive name for logging
      */
-    public AnalogEncoderConfig(int channel, String name) {
-        super(channel, name);
+    public AnalogEncoderConfig(String name, int channel) {
+        super(name, channel);
         sensorType = AnalogEncoder.class;
     }
 

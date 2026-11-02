@@ -3,7 +3,7 @@ package frc.demacia.path.calclator;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.demacia.path.segments.ArcSegment;
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
 
 public class arcCalculator {
     
@@ -15,7 +15,7 @@ public class arcCalculator {
         double angleDiff = MathUtil.angleModulus(MidToPointToAngle - MidPointToFromAngle);
         boolean isLeftTurn = angleDiff < 0;
         Translation2d center = midPoint.plus(new Translation2d(radius * Math.cos(vecAngle), radius * Math.sin(vecAngle)));
-        LogManager.log("angleDiff: " + angleDiff + " midPoint: "  + midPoint + " to: " + to);
+        Log.log("angleDiff: " + angleDiff + " midPoint: "  + midPoint + " to: " + to);
         return new ArcSegment(from, to, center, isLeftTurn, radius);
     }
 }

@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.demacia.path.segments.ArcSegment;
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
 
 /**
  * Static helpers for computing tangent points between points and circles.
@@ -36,7 +36,7 @@ public class LegCalculator {
         Translation2d vector4 = p2.minus(arc.getCenter());
     
         Translation2d pp2 = vector4.rotateBy(vector4.getAngle().minus(vector3.getAngle())).plus(arc.getCenter());
-        LogManager.log("p1: " + p1 + " vector2: " + vector2 + " vector1: " + vector1 + " arc: " + arc);
+        Log.log("p1: " + p1 + " vector2: " + vector2 + " vector1: " + vector1 + " arc: " + arc);
         return new ArrayList<>(){
             {
                 add(pp1);

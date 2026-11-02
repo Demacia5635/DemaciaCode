@@ -9,7 +9,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.path.trapzoid.DemaciaTrapezoid;
 import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class chackDriveng extends Command {
@@ -34,9 +34,9 @@ public class chackDriveng extends Command {
   public void execute() {
     error = new Translation2d(0, 1).minus(chassis.getPose().getTranslation());
     vel = trapezoid.nextVelocity(error.getNorm(), chassis.getChassisSpeedsVector().getNorm(), 0);
-    chassis.setVelocities(new ChassisSpeeds(vel * error.getAngle().getCos(), vel * error.getAngle().getSin(), 0));
-    LogManager.log("distenac left" + error.getNorm() + "vel" + vel);
-    if(vel >= 0) LogManager.log("stop");
+    chassis.setSpeedsRobotRel(new ChassisSpeeds(vel * error.getAngle().getCos(), vel * error.getAngle().getSin(), 0));
+    Log.log("distenac left" + error.getNorm() + "vel" + vel);
+    if(vel >= 0) Log.log("stop");
   }
 
   // Called once the command ends or is interrupted.
