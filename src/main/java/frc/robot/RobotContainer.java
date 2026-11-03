@@ -37,12 +37,12 @@ public class RobotContainer implements Sendable{
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private final SubsystemSnowBlower m_snowBlower = new SubsystemSnowBlower();
   private final RunSnowBlowerCommand m_runSnowBlowerCommand = new RunSnowBlowerCommand(m_snowBlower, 0.5);
-  // private final CommandXboxController m_driverXbox = new CommandXboxController();
+  private final CommandXboxController m_driverXbox = new CommandXboxController(0);
   // private final CommandPS4Controller m_driverPS4 = new CommandPS4Controller(1);
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
-  m_snowBlower.setDefaultCommand(m_runSnowBlowerCommand);
+  // m_snowBlower.setDefaultCommand(m_runSnowBlowerCommand);
   // Configure the trigger bindings
     configureBindings(
     );
@@ -59,7 +59,8 @@ public class RobotContainer implements Sendable{
    */
   private void configureBindings() {
     
-  // m_driverXbox.a().whileTrue(new RunSnowBlowerCommand(m_snowBlower, 0.5));  
+  m_driverXbox.a().whileTrue(new RunSnowBlowerCommand(m_snowBlower, 0.5));
+  m_driverXbox.b().whileTrue(new RunSnowBlowerCommand(m_snowBlower, -0.5));  
   // m_driverPS4.cross().whileTrue(new RunSnowBlowerCommand(m_snowBlower, 0.5));
 }
 
