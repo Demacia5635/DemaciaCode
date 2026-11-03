@@ -19,13 +19,13 @@ public class Vision {
 
     private ArrayList<TagPose> tags;
     private Chassis chassis;
-    public Vision(TagPose[] poses, Chassis chassis) {
+    public Vision(TagPose[] poses) {
 
         this.tags = new ArrayList<>();
         for (TagPose p : poses) {
             tags.add(p);
         }
-        this.chassis = chassis;
+        this.chassis = Chassis.getInstance();
     }
 
     public Vision(ArrayList<TagPose> tags, Chassis chassis) {

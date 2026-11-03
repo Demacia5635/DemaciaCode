@@ -52,11 +52,9 @@ public class Chassis extends SubsystemBase {
 
     private Rotation2d[] lastAngles;
     private SwerveDrivePoseEstimator poseEstimator;
-    private Vision vision;
 
     private Chassis(ChassisConfig chassisConfig) {
         setName(getName());
-        vision = new Vision(VisionConstants.Tags.TAGS_ARRAY, this);
         this.chassisConfig = chassisConfig;
         modules = new SwerveModule[4];
         Translation2d[] modulePositions = new Translation2d[4];

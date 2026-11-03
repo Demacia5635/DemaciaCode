@@ -45,7 +45,7 @@ public class RobotPose {
     private BuiltInAccelerometer accelerometer;
 
     private RobotPose(Translation2d[] modulePositions, Matrix<N3, N1> stateSTD,Matrix<N3, N1> questSTD, Chassis chassis) {
-        this.vision = new Vision((VisionConstants.Tags.TAGS_ARRAY), chassis);
+        this.vision = new Vision(VisionConstants.Tags.TAGS_ARRAY);
 
         this.quest = new Quest();
         this.questSTD = questSTD;

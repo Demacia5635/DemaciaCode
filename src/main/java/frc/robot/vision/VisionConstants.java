@@ -10,6 +10,7 @@ import edu.wpi.first.math.numbers.N3;
 import frc.demacia.RobotPose.Vision.VisionConfig;
 import frc.demacia.RobotPose.Vision.visionConfigs.LimelightTagCamera3dConfig;
 import frc.demacia.RobotPose.Vision.visionConfigs.QuestConfig;
+import frc.demacia.vision.TagPose;
 
 public class VisionConstants {
 
@@ -29,6 +30,9 @@ public class VisionConstants {
 
     public static final VisionConfig visionConfig = new VisionConfig()
         .addSource(QUEST_CONFIG)
-        .addSource(ROBORIO_CONFIG)
-        ;
+        .addSource(ROBORIO_CONFIG);
+
+    public static class Tags {
+        public static final TagPose[] TAGS_ARRAY = {};
+    }
 }

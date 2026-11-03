@@ -5,6 +5,8 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
+import frc.demacia.vision.utils.Vision;
+import frc.demacia.wpilibSwerve.command.SwerveCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.RobotPose.RobotPose;
 import frc.robot.vision.VisionConstants;
@@ -25,7 +27,7 @@ public class RobotContainer implements Sendable {
 
   public static CommandController controller = new CommandController(0, ControllerType.kPS5);
 
-  public static DriveCommand driveCommand;
+  public static SwerveCommand driveCommand;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -33,7 +35,7 @@ public class RobotContainer implements Sendable {
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
     Chassis.initialize(RobotCChassisConstants.CHASSIS_CONFIG);
-    driveCommand = new DriveCommand(controller);
+    driveCommand = new SwerveCommand(controller, new Vision((VisionConstants.Tags.TAGS_ARRAY)));
 
     RobotPose.initialize(
       RobotCChassisConstants.STATE_STD, 
