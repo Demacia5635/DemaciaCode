@@ -2,11 +2,14 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.demacia.utils.motors.TalonFXMotor;
+import frc.robot.constants.ConstantsGripper;
+
 import static frc.robot.constants.ConstantsGripper.*;
 
 public class SubsystemSnowBlower extends SubsystemBase {
 
-    private final TalonFX m_snowBlowerMotor = new TalonFX(kSnowblowerID, kSnowBlowerCanbus.toString());
+    private final TalonFXMotor m_snowBlowerMotor = new TalonFXMotor(ConstantsGripper.kSnowBlowerConfig);
 
     public SubsystemSnowBlower() {
       
