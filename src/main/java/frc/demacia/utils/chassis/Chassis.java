@@ -4,7 +4,21 @@
 
 package frc.demacia.utils.chassis;
 
+<<<<<<< HEAD
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+=======
+import org.ejml.simple.SimpleMatrix;
+
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.StatusSignal;
+
+import choreo.trajectory.SwerveSample;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
+>>>>>>> wpilib_kinmatics
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -50,20 +64,46 @@ public class Chassis extends SubsystemBase {
     private double lastOmega = 0;
     private double lastOmegaTime = Timer.getFPGATimestamp();
 
+<<<<<<< HEAD
     private Rotation2d[] lastAngles;
     private SwerveDrivePoseEstimator poseEstimator;
 
+=======
+    private Rotation2d lastGyroYaw;
+    private double lastGyroAngularVelocity;
+
+    private final PIDController xController = new PIDController(0.2, 0.0, 0.0);
+
+    private final PIDController yController = new PIDController(0.2, 0.0, 0.0);
+    private final PIDController headingController = new PIDController(0.03, 0.0, 0) {
+        {
+            enableContinuousInput(-Math.PI, Math.PI);
+        }
+    };
+    private int index = 0;
+
+    private boolean isRotateToHub = false;
+
+    Rotation2d gyroAngle;
+
+    OdometryObservation observation;
+    public Translation2d[] modulePositions;
+>>>>>>> wpilib_kinmatics
     private Chassis(ChassisConfig chassisConfig) {
         setName(getName());
         this.chassisConfig = chassisConfig;
         modules = new SwerveModule[4];
-        Translation2d[] modulePositions = new Translation2d[4];
+        modulePositions = new Translation2d[4];
         for (int i = 0; i < 4; i++) {
             modules[i] = new SwerveModule(chassisConfig.swerveModuleConfig[i]);
             modulePositions[i] = chassisConfig.swerveModuleConfig[i].position;
+<<<<<<< HEAD
             if (modulePositions[i].getNorm() == 0) {
                 Log.alert(getName() + " module location on the robot is 0");
             }
+=======
+        }
+>>>>>>> wpilib_kinmatics
 
             if (chassisConfig.swerveModuleConfig[i].steerOffset == 0) {
                 Log.alert(getName() + " steer offset is 0");
@@ -90,6 +130,25 @@ public class Chassis extends SubsystemBase {
         SmartDashboard.putData("chassis/reset moduls", new InstantCommand(()-> resetMudolse()).ignoringDisable(true));
     }
 
+<<<<<<< HEAD
+=======
+    public void setDrivePower(double pow, int id) {
+        modules[id].setDrivePower(pow);
+    }
+
+    public void setDrivePower(double pow) {
+        for (int i = 0; i < 4; i++)
+            setDrivePower(pow, i);
+    }
+
+    public RobotPose getRoobotPose(){
+        return RobotPose.getInstance();
+    }
+
+    /**
+     * Checks all module electronics for faults and logs them.
+     */
+>>>>>>> wpilib_kinmatics
     public void checkElectronics() {
         for (SwerveModule module : modules) {
             module.checkElectronics();
@@ -124,8 +183,31 @@ public class Chassis extends SubsystemBase {
         return gyro.getGyroAngle();
     }
 
+<<<<<<< HEAD
     public double getGyroAngularVelocity() {
         return gyro.getZVelocity();
+=======
+    /**
+     * Sets chassis velocities without acceleration limiting.
+     * 
+     * <p>
+     * Applies discrete kinematics for accurate odometry.
+     * Use this for precise path following where acceleration is pre-profiled.
+     * </p>
+     * 
+     * @param speeds Desired chassis speeds (field-relative)
+     */
+
+    public void setVelocities(ChassisSpeeds speeds) {
+
+        SwerveModuleState[] states = demaciaKinematics
+                .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getGyroAngle()));
+        // SwerveModuleState[] states = demaciaKinematics.toSwerveModuleStatesWithLimit(
+        // speeds,
+        // getChassisSpeedsFieldRel(),
+        // getGyroAngle());
+        setModuleStates(states);
+>>>>>>> wpilib_kinmatics
     }
 
     public void setGyroYaw(Rotation2d angle) {
@@ -207,6 +289,7 @@ public class Chassis extends SubsystemBase {
         }
     }
 
+<<<<<<< HEAD
     public double getMaxDriveVelocity() {
         return chassisConfig.maxDriveVelocity;
     }
@@ -214,6 +297,32 @@ public class Chassis extends SubsystemBase {
     public double getMaxRotationalVelocity() {
         return chassisConfig.maxRotationalVelocity;
     }
+=======
+    @Override
+    public void periodic() {
+        // updateCommon(); TODO: ROBOT COMOON
+
+        observation = new OdometryObservation(
+                Timer.getFPGATimestamp(),
+                getGyroAngle(),
+                getModulePositions());
+
+        RobotPose.getInstance().update(observation);
+        field.setRobotPose(getPose());
+        // field.getObject("Turret").setPose(new Pose2d(RobotCommon.getCurrentRobotPose().getTranslation()
+        //         .plus(TurretConstants.TURRET_POSITION_ON_ROBOT.rotateBy(RobotCommon.getRobotAngle())),
+        //         Rotation2d.fromRadians(RobotCommon.getRobotAngle().getRadians()
+        //                 + MathUtil.angleModulus(Turret.getInstance().getTurretAngle()))));
+        // field.getObject("estimation").setPose(ShooterUtils.computeFuturePosition(getChassisSpeedsFieldRel(), RobotCommon.getCurrentRobotPose(), 0.1));
+    }
+    //TODO: ROBOT COMMON
+    // public void updateCommon() {
+    //     RobotCommon.setRobotAngle(getGyroAngle());
+    //     RobotCommon.setCurrentRobotPose(getPose());
+    //     RobotCommon.setFieldRelativeSpeeds(getChassisSpeedsFieldRel());
+    //     RobotCommon.setFutureRobotPose(getFuturePose(0.2));
+    // }
+>>>>>>> wpilib_kinmatics
 
     public Translation2d getVelocityAsVector() {
         return new Translation2d(
@@ -312,4 +421,31 @@ public class Chassis extends SubsystemBase {
     public Pose2d getPose() {
         return poseEstimator.getEstimatedPosition();
     }
+<<<<<<< HEAD
+=======
+
+    /**
+     * Stops all swerve modules immediately.
+     */
+    public void stop() {
+        for (SwerveModule i : modules) {
+            i.stop();
+        }
+    }
+
+    private void addStatus() {
+        gyroYawStatus = gyro.getYaw();
+        lastGyroYaw = new Rotation2d(gyroYawStatus.getValueAsDouble());
+        gyroAngularVelocityStatus = gyro.getAngularVelocityZWorld();
+        lastGyroAngularVelocity = gyroAngularVelocityStatus.getValue().in(Units.RadiansPerSecond);
+    }
+
+    private SwerveModulePosition[] getModulePositions() {
+        SwerveModulePosition[] arr = new SwerveModulePosition[modules.length];
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = modules[i].getModulePosition();
+        }
+        return arr;
+    }
+>>>>>>> wpilib_kinmatics
 }

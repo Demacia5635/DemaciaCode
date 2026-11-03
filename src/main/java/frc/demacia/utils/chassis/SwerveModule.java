@@ -1,6 +1,8 @@
 
 package frc.demacia.utils.chassis;
 
+import java.util.logging.LogManager;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -8,6 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.motors.MotorInterface;
+import frc.demacia.utils.motors.TalonFXMotor;
 import frc.demacia.utils.sensors.Cancoder;
 
 /**
@@ -28,14 +31,10 @@ import frc.demacia.utils.sensors.Cancoder;
 public class SwerveModule {
     public String name;
     private SwerveModuleConfig config;
-    private MotorInterface steerMotor;
-    private MotorInterface driveMotor;
-    private Cancoder cancoder;
-
-    private double initiolazedSteerPosition;
-    private boolean isDriveStop;
-
-    private Timer motorAndCancoderOpositeTimer;
+    public MotorInterface steerMotor;
+    public MotorInterface driveMotor;
+    public Cancoder cancoder;
+    public String name;
 
     public SwerveModule(SwerveModuleConfig config) {
         this.config = config;
@@ -45,14 +44,11 @@ public class SwerveModule {
         name = config.name;
 
         steerMotor.setEncoderPosition(getAbsoluteAngle() - config.steerOffset);
+        ((TalonFXMotor)steerMotor).configPidFf(0);
+    }
 
-        initiolazedSteerPosition = steerMotor.getCurrentPosition();
-        isDriveStop = true;
-
-        driveMotor.setDisplayPositionOverride(this::getDrivePosition);
-        driveMotor.setDisplayVelocityOverride(this::getDriveVel);
-
-        motorAndCancoderOpositeTimer = new Timer();
+    public MotorInterface getSteerMotor() {
+        return steerMotor;
     }
 
     /**
@@ -140,6 +136,7 @@ public class SwerveModule {
      */
     public void setState(SwerveModuleState state) {
         double wantedAngle = state.angle.getRadians();
+        // if(state.speedMetersPerSecond != 0) pfrc.demacia.utils.log.LogManager.log(name + " wanted - " + Math.toDegrees(wantedAngle) + " " + state.speedMetersPerSecond);
         double diff = wantedAngle - steerMotor.getCurrentPosition();
         double vel = state.speedMetersPerSecond;
         diff = MathUtil.angleModulus(diff);
@@ -154,38 +151,14 @@ public class SwerveModule {
         if (Math.abs(diff) <= Math.toRadians(0.7)) {
             setSteerPower(0);
         } else {
-            setSteerPosition(steerMotor.getCurrentPosition() + diff);
+            setSteerPosition(steerMotor.getCurrentPosition() + (2 * diff));
         }
 
         if (vel == 0) {
             setDrivePower(0);
         } else {
-            setDriveVelocity(vel);
+            setDriveVelocity(vel - steerMotor.getCurrentVelocity() * config.steerVelToDriveVel);
         }
-    }
-
-    public double getSteerAngle() {
-        return steerMotor.getCurrentAngle();
-    }
-    
-    public Rotation2d getSteerRotation() {
-        return new Rotation2d(getSteerAngle());
-    }
-
-    public double getSteerVel() {
-        return steerMotor.getCurrentVelocity();
-    }
-
-    public double getSteerAccel() {
-        return steerMotor.getCurrentAcceleration();
-    }
-
-    public double getDriveVel() {
-        return driveMotor.getCurrentVelocity() + config.steerVelToDriveVel * steerMotor.getCurrentVelocity();
-    }
-
-    public double getDrivePosition() {
-        return driveMotor.getCurrentPosition() + config.steerVelToDriveVel * (steerMotor.getCurrentPosition() - initiolazedSteerPosition);
     }
 
     /**
