@@ -9,7 +9,7 @@ public class RunSnowBlowerCommand extends Command {
   /** Creates a new RunSnowBlowerCommand. */
     public RunSnowBlowerCommand(SubsystemSnowBlower subsystem, double speed) {
         this.snowBlower = subsystem;
-        this.speed = speed;
+        this.speed = 1;
         addRequirements(this.snowBlower);
     }
 
