@@ -50,10 +50,10 @@ public class RobotCChassisConstants {
 
   public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        0.009203884727313847, //FRONT LEFT
-        0.6734175658817965, //FRONT RIGHT
-        0.1641359443037636, //BACK LEFT
-        -1.2716700731571966 //BACK RIGHT
+        3.124718864923051, //FRONT LEFT
+        2.462039164556454, //FRONT RIGHT
+        2.9989324403164286, //BACK LEFT
+        -2.0156507552817327 //BACK RIGHT
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);
