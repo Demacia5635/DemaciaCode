@@ -1,11 +1,9 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.utils.motors.TalonFXMotor;
 import frc.robot.constants.ConstantsGripper;
 
-import static frc.robot.constants.ConstantsGripper.*;
 
 public class SubsystemSnowBlower extends SubsystemBase {
 
@@ -15,8 +13,8 @@ public class SubsystemSnowBlower extends SubsystemBase {
       
     }
 
-    public void setPower(double speed) {
-        m_snowBlowerMotor.set(speed);
+    public void setPower(double duty) {
+        m_snowBlowerMotor.setDuty(duty);
     }
 
     public void stop() {

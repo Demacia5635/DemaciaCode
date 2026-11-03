@@ -4,12 +4,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SubsystemSnowBlower;
 
 public class RunSnowBlowerCommand extends Command {
-  final double speed;
+  final double duty;
   final SubsystemSnowBlower snowBlower;
   /** Creates a new RunSnowBlowerCommand. */
-    public RunSnowBlowerCommand(SubsystemSnowBlower subsystem, double speed) {
+    public RunSnowBlowerCommand(SubsystemSnowBlower subsystem, double duty) {
         this.snowBlower = subsystem;
-        this.speed = 1;
+        this.duty = duty;
         addRequirements(this.snowBlower);
     }
 
@@ -20,7 +20,7 @@ public class RunSnowBlowerCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    snowBlower.setPower(speed);
+    snowBlower.setPower(duty);
   }
 
   // Called once the command ends or is interrupted.
