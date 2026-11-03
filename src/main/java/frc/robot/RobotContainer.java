@@ -27,7 +27,7 @@ public class RobotContainer implements Sendable {
 
   public static CommandController controller = new CommandController(0, ControllerType.kPS5);
 
-  public static SwerveCommand driveCommand;
+  public static SwerveCommand SwerveCommand;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -35,8 +35,8 @@ public class RobotContainer implements Sendable {
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
     Chassis.initialize(RobotCChassisConstants.CHASSIS_CONFIG);
-    driveCommand = new SwerveCommand(controller, new Vision((VisionConstants.Tags.TAGS_ARRAY)));
-
+    SwerveCommand = new SwerveCommand(controller, new Vision((VisionConstants.Tags.TAGS_ARRAY)));
+    Chassis.getInstance().setDefaultCommand(SwerveCommand);
     RobotPose.initialize(
       RobotCChassisConstants.STATE_STD, 
       VisionConstants.visionConfig);
@@ -51,7 +51,7 @@ public class RobotContainer implements Sendable {
   }
 
   private void setDefaultCommands() {
-    Chassis.getInstance().setDefaultCommand(driveCommand);
+    Chassis.getInstance().setDefaultCommand(SwerveCommand);
   }
 
   private void setController() {
