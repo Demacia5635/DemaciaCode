@@ -15,7 +15,7 @@ public class arcCalculator {
         double angleDiff = MathUtil.angleModulus(MidToPointToAngle - MidPointToFromAngle);
         boolean isLeftTurn = angleDiff < 0;
         Translation2d center = midPoint.plus(new Translation2d(radius * Math.cos(vecAngle), radius * Math.sin(vecAngle)));
-        Log.log("angleDiff: " + angleDiff + " midPoint: "  + midPoint + " to: " + to);
+        Log.log("angleDiff: " + angleDiff + " from: " + from + " midPoint: "  + midPoint + " to: " + to + " vecAngle: " + vecAngle + " center: " + center + " isLeftTurn: " + isLeftTurn + " MidPointToFromAngle: " + MidPointToFromAngle + " MidToPointToAngle: " + MidToPointToAngle);
         return new ArcSegment(from, to, center, isLeftTurn, radius);
     }
 }

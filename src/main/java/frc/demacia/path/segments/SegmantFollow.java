@@ -34,7 +34,7 @@ public class SegmantFollow {
             Translation2d VectorToFinish = segmant.getEndPose().minus(chassisPoseAsVector);
             double vel = driveTrapzoid.nextVelocity(VectorToFinish.getNorm(), currentVelVector.getNorm(), finalVel);
             Rotation2d fixeHading = new Rotation2d(2 * VectorToFinish.getAngle().getRadians() - segmant.getTranslation().getAngle().getRadians());
-            Log.log("lineCalculatedVel: Norm: " + vel + " Rotation2d: " + fixeHading + " " + new Translation2d(vel, fixeHading));
+            // Log.log("lineCalculatedVel: Norm: " + vel + " Rotation2d: " + fixeHading + " " + new Translation2d(vel, fixeHading));
             calculatedVel = new Translation2d(vel, fixeHading);
         }
         

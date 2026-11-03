@@ -83,7 +83,7 @@ public class MK5nChassisConstansRobotC {
               .withPID(STEER_KP, STEER_KI, STEER_KD, STEER_KS, STEER_KV, STEER_KA, 0, 0, 0)
               .withMotionParam(MOTION_MAGIC_VEL, MOTION_MAGIC_ACCEL, MOTION_MAGIC_JERK)
               .withBrake(true)
-              .withInvert(true)
+              .withInvert(false)
               .withRadiansMotor(STEER_GEAR_RATIO)
               .withRampTime(RAMP_TIME_STEER),
           new TalonFXConfig(name + " Drive", i * 3 + 1, CAN_BUS)
@@ -102,10 +102,10 @@ public class MK5nChassisConstansRobotC {
 
   public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        /* Front Left Offset: */ -0.497803 * 2 * Math.PI,
-        /* Front Right Offset: */  -0.38501 * 2 * Math.PI,
-        /* Back Left Offset: */  -0.478271 * 2 * Math.PI,
-        /* Back Right Offset: */  0.316895 * 2 * Math.PI
+        /* Front Left Offset: */ -3.1231848841351653,
+        /* Front Right Offset: */  -2.4436313951018263,
+        /* Back Left Offset: */  -3.0066023442558567,
+        /* Back Right Offset: */  2.014116774493847
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + "/pigeon", PIGEON_ID, PIGEON_CAN_BUS);
