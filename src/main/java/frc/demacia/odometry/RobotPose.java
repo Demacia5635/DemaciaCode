@@ -52,7 +52,7 @@ public class RobotPose {
         this.chassis = chassis;
         this.poseEstimator = new DemaciaPoseEstimator(modulePositions, stateSTD, visionSTD, chassis);
         this.accelerometer = new BuiltInAccelerometer(); 
-        SmartDashboard.putData("resetPoseTo0", new InstantCommand(this::resetPose));
+        // SmartDashboard.putData("resetPoseTo0", new InstantCommand(this::resetPose));
     }
 
     public Quest getQuest() {
@@ -139,6 +139,7 @@ public class RobotPose {
     public void setAngle3DLimelight() {
         Rotation2d newAngle = vision.getRobotAngle();
         if (newAngle != null)
+            
             chassis.setGyroYaw(newAngle);
 
     }

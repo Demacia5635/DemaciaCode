@@ -23,7 +23,6 @@ import frc.demacia.swervePacgeWpilib.wpilib_kinmatics.wpilibKinmatics;
 import frc.demacia.swervePacgeWpilib.wpilib_odmetry.wpilivOdmetry;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.controller.CommandController;
-import frc.demacia.utils.log.LogManager;
 import frc.demacia.vision.utils.Vision;
 import frc.robot.RobotContainer;
 
@@ -67,7 +66,7 @@ public class SwerveCommand extends Command {
     // שליחת אובייקט ה-Field2d ל-NetworkTables תחת השם "Field" כדי ש-Elastic יידע לקרוא אותו
     SmartDashboard.putData("real Field", field);
     SmartDashboard.putData("resat pose", new InstantCommand(()-> odometry.resetPose(Pose2d.kZero)));
-    LogManager.log(vision.getPoseEstimation());
+    // LogManager.log(vision.getPoseEstimation());
     addRequirements(chassis);
   }
 
