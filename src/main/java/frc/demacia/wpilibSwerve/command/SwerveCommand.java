@@ -31,7 +31,7 @@ public class SwerveCommand extends Command {
 
   private final Chassis chassis = Chassis.getInstance();
   private final WPILibKinmatics kinematics;
-  private final WPILibOdemetry odometry;
+  public final WPILibOdemetry odometry;
   private final WPILibPoseEstimator poseEstimator;
   private final CommandController controller;
   private final Vision vision;
@@ -73,6 +73,20 @@ public class SwerveCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {}
+
+  public void setVel(double velX, double velY, double velRot) {
+    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(velX, velY, velRot, chassis.getGyroAngle());
+    moduleStates = kinematics.kinematics().toSwerveModuleStates(speeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, chassis.getConfig().maxDriveVelocity);
+    chassis.setModuleStates(moduleStates);
+  }
+
+  public void setVelRobotRel(ChassisSpeeds speeds) {
+    speeds = ChassisSpeeds.fromRobotRelativeSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, chassis.getGyroAngle());
+    moduleStates = kinematics.kinematics().toSwerveModuleStates(speeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, chassis.getConfig().maxDriveVelocity);
+    chassis.setModuleStates(moduleStates);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -118,6 +132,7 @@ public class SwerveCommand extends Command {
     if (vision != null && vision.getPoseEstimation() != null) {
       poseEstimator.updateVision(vision.getPoseEstimation(), 0.02);
     }
+
 
     // 4. עדכון מיקום הרובוט ב-Field2d שנשלח ל-Elastic
     field.setRobotPose(poseEstimator.getPose2d());

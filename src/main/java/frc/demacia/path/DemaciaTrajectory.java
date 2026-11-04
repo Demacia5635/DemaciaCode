@@ -50,8 +50,10 @@ public class DemaciaTrajectory {
         else if (demaciaPathPoints.size() == 2) {
             LineSegment segment = new LineSegment(demaciaPathPoints.get(0), demaciaPathPoints.get(1));
             segments.add(segment);
+            Log.log("2 points, only line segment: " + segment);
         }
         else {
+            Log.log("more than 2 points");
             buildPath();
         }
         this.currentSegmentIndex = 0;
