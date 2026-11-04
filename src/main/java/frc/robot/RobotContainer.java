@@ -47,7 +47,7 @@ public class RobotContainer implements Sendable {
     SmartDashboard.putData("RC", this);
     Chassis.initialize(MK5nChassisConstansRobotC.CHASSIS_CONFIG);
     driveCommand = new SwerveCommand(controller, new Vision((VisionConstants.Tags.TAGS_ARRAY)));
-    addPoint();
+    addPoints();
 
     RobotPose.initialize(
       RobotCChassisConstants.STATE_STD, 
@@ -76,11 +76,12 @@ public class RobotContainer implements Sendable {
 
   }
 
-  public void addPoint(){
+  public void addPoints(){
     points.add(new Translation2d(0, 0));
-    points.add(new Translation2d(1, 1));
-    points.add(new Translation2d(2, 1));
-    points.add(new Translation2d(3, 0));
+    points.add(new Translation2d(2, 0));
+    points.add(new Translation2d(2, 2));
+    points.add(new Translation2d(0, 2));
+    points.add(new Translation2d(0, 0));
   }
 
   /**

@@ -1,7 +1,7 @@
 package frc.demacia.path.utils;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.demacia.path.constans.PathConstants;
+import frc.demacia.path.constants.PathConstants;
 import frc.demacia.path.segments.LineSegment;
 import frc.demacia.path.segments.SegmantBase;
 

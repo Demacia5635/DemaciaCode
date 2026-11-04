@@ -4,85 +4,22 @@
 
 package frc.demacia.utils.chassis;
 
-import org.ejml.simple.SimpleMatrix;
-
-import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.StatusSignal;
-
-import choreo.trajectory.SwerveSample;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.kinematics.DemaciaKinematics;
-import frc.demacia.odometry.DemaciaPoseEstimator.OdometryObservation;
-import frc.demacia.odometry.RobotPose;
-import frc.demacia.utils.log.LogManager;
+import frc.demacia.utils.log.Log;
+import frc.demacia.utils.sensors.Cancoder;
 import frc.demacia.utils.sensors.Pigeon;
-import frc.demacia.vision.utils.VisionConstants;
 
-/**
- * Main swerve drive chassis controller.
- * 
- * <p>
- * Manages four swerve modules, odometry, and provides high-level drive control
- * with acceleration limiting and smooth motion profiling.
- * </p>
- * <p>
- * Manages four swerve modules, odometry, and provides high-level drive control
- * with acceleration limiting and smooth motion profiling.
- * </p>
- * 
- * <p>
- * <b>Features:</b>
- * </p>
- * <ul>
- * <li>Field-relative and robot-relative control</li>
- * <li>Pose estimation with vision integration</li>
- * <li>Smooth acceleration limiting</li>
- * <li>Path following capabilities</li>
- * <li>Auto-rotate to target angle</li>
- * </ul>
- * 
- * <p>
- * <b>Example Usage:</b>
- * </p>
- * 
- * <p>
- * <b>Example Usage:</b>
- * </p>
- * 
- * <pre>
- * ChassisConfig config = new ChassisConfig(
- *         "MainChassis",
- *         swerveModueles[] swerveModulesConfig,
- *         pigeonConfig,
- * );
- * 
- * Chassis chassis = new Chassis(config);
- * 
- * // Field-relative drive with acceleration limiting
- * chassis.setVelocitiesWithAccel(new ChassisSpeeds(vx, vy, omega));
- * </pre>
- */
 public class Chassis extends SubsystemBase {
 
     private static Chassis instance;
@@ -99,183 +36,103 @@ public class Chassis extends SubsystemBase {
     private final ChassisConfig chassisConfig;
 
     public SwerveModule[] modules;
-    private Pigeon gyro;
+    public Pigeon gyro;
+    
     private DemaciaKinematics demaciaKinematics;
-    private SwerveDriveKinematics wpilibKinematics;
 
-    private Field2d field;
+    private ChassisSpeeds lastSpeedsFieldRel = new ChassisSpeeds();
+    private double lastAccelTime = Timer.getFPGATimestamp();
 
-    private StatusSignal<Angle> gyroYawStatus;
-    private StatusSignal<AngularVelocity> gyroAngularVelocityStatus;
+    private double lastOmega = 0;
+    private double lastOmegaTime = Timer.getFPGATimestamp();
 
-    private Rotation2d lastGyroYaw;
-    private double lastGyroAngularVelocity;
+    private Rotation2d[] lastAngles;
 
-    private final PIDController xController = new PIDController(0.2, 0.0, 0.0);
-
-    private final PIDController yController = new PIDController(0.2, 0.0, 0.0);
-    private final PIDController headingController = new PIDController(0.03, 0.0, 0) {
-        {
-            enableContinuousInput(-Math.PI, Math.PI);
-        }
-    };
-    private int index = 0;
-
-    private boolean isRotateToHub = false;
-
-    Rotation2d gyroAngle;
-
-    OdometryObservation observation;
-    public Translation2d[] modulePositions;
     private Chassis(ChassisConfig chassisConfig) {
         setName(getName());
 
         this.chassisConfig = chassisConfig;
-
         modules = new SwerveModule[4];
-        modulePositions = new Translation2d[4];
+        Translation2d[] modulePositions = new Translation2d[4];
         for (int i = 0; i < 4; i++) {
             modules[i] = new SwerveModule(chassisConfig.swerveModuleConfig[i]);
             modulePositions[i] = chassisConfig.swerveModuleConfig[i].position;
-        }
+            if (modulePositions[i].getNorm() == 0) {
+                Log.alert(getName() + " module location on the robot is 0");
+            }
 
+            if (chassisConfig.swerveModuleConfig[i].steerOffset == 0) {
+                Log.alert(getName() + " steer offset is 0");
+            }
+        }
+        lastAngles = new Rotation2d[4];
+        for (int i = 0; i < lastAngles.length; i++) {
+            lastAngles[i] = new Rotation2d(modules[i].getSteerAngle());
+        }
         gyro = new Pigeon(chassisConfig.pigeonConfig);
 
-        addStatus();
         demaciaKinematics = new DemaciaKinematics(modulePositions);
-        wpilibKinematics = new SwerveDriveKinematics(modulePositions);
-      
-        field = new Field2d();
-        SmartDashboard.putData("chassis/reset gyro",
-                new InstantCommand(() -> setYaw(Rotation2d.kZero)).ignoringDisable(true));
-        SmartDashboard.putData("chassis/reset gyro 180",
-                new InstantCommand(() -> setYaw(Rotation2d.kPi)).ignoringDisable(true));
-        SmartDashboard.putData("chassis/field", field);
-        // SmartDashboard.putData("chassis/quest field", questField);
-        // SmartDashboard.putData("chassis/tags field", tagsField);
+
+        addLog();
+    }
+
+    public void addLog() {
+        Log.putData("chassis/gyro angle", () -> getGyroAngle().getDegrees());
+
         SmartDashboard.putData("chassis/set coast",
                 new InstantCommand(() -> setNeutralMode(false)).ignoringDisable(true));
         SmartDashboard.putData("chassis/set brake",
                 new InstantCommand(() -> setNeutralMode(true)).ignoringDisable(true));
-
-        RobotPose.initialize(modulePositions, new Matrix<>(
-                new SimpleMatrix(
-                        new double[] { 0.03, 0.03, 0 })),
-                VisionConstants.QUEST_STD);
-
-        SmartDashboard.putData("reset with 3d",
-                new InstantCommand(() -> RobotPose.getInstance().setAngle3DLimelight()).ignoringDisable(true));
-
-        headingController.enableContinuousInput(-Math.PI, Math.PI);
-
-        LogManager.log(chassisConfig.name + " initalize");
+        SmartDashboard.putData("chassis/reset moduls", new InstantCommand(()-> resetMudolse()).ignoringDisable(true));
     }
 
-    public void setDrivePower(double pow, int id) {
-        modules[id].setDrivePower(pow);
-    }
-
-    public void setDrivePower(double pow) {
-        for (int i = 0; i < 4; i++)
-            setDrivePower(pow, i);
-    }
-
-    public RobotPose getRoobotPose(){
-        return RobotPose.getInstance();
-    }
-
-    /**
-     * Checks all module electronics for faults and logs them.
-     */
     public void checkElectronics() {
         for (SwerveModule module : modules) {
             module.checkElectronics();
         }
     }
 
-    /**
-     * Sets neutral mode (brake/coast) for all modules.
-     * 
-     * @param isBrake true for brake mode, false for coast
-     */
     public void setNeutralMode(boolean isBrake) {
         for (SwerveModule module : modules) {
             module.setNeutralMode(isBrake);
         }
     }
 
-    public void resetPose(Pose2d pose) {
-        RobotPose.getInstance().resetPose(pose);
+    public ChassisConfig getConfig() {
+        return chassisConfig;
     }
 
-    /**
-     * Gets the current estimated robot pose on the field.
-     * 
-     * @return Current pose (position and rotation) using odometry fusion
-     */
-    public Pose2d getPose() {
-        return RobotPose.getInstance().getPose();
+    public void resetMudolse(){
+        for (int i = 0; i < modules.length; i++) {
+            modules[i].resetModule();
+        }
     }
 
-    public Pose2d getPoseWithVelocity(double dt) {
-        Pose2d currentPose = getPose();
-        ChassisSpeeds currentSpeeds = getChassisSpeedsFieldRel();
-        return new Pose2d(currentPose.getX() + (currentSpeeds.vxMetersPerSecond * dt),
-                currentPose.getY() + (currentSpeeds.vyMetersPerSecond * dt),
-                currentPose.getRotation().plus(new Rotation2d(currentSpeeds.omegaRadiansPerSecond * dt)));
+    public Cancoder[] getCancoders() {
+        Cancoder[] cancoders = new Cancoder[modules.length];
+        for (int i = 0; i < modules.length; i++) {
+            cancoders[i] = modules[i].getCancoder();
+        }
+        return cancoders;
     }
 
-    public void setRotateToHub() {
-        this.isRotateToHub = !isRotateToHub;
+    public Rotation2d getGyroAngle() {
+        return gyro.getGyroAngle();
     }
 
-    /**
-     * Sets chassis velocities without acceleration limiting.
-     * 
-     * <p>
-     * Applies discrete kinematics for accurate odometry.
-     * Use this for precise path following where acceleration is pre-profiled.
-     * </p>
-     * 
-     * @param speeds Desired chassis speeds (field-relative)
-     */
-
-    public void setVelocities(ChassisSpeeds speeds) {
-
-        SwerveModuleState[] states = demaciaKinematics
-                .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getGyroAngle()));
-        // SwerveModuleState[] states = demaciaKinematics.toSwerveModuleStatesWithLimit(
-        // speeds,
-        // getChassisSpeedsFieldRel(),
-        // getGyroAngle());
-        setModuleStates(states);
+    public double getGyroAngularVelocity() {
+        return gyro.getZVelocity();
     }
 
-    public Translation2d getVelocityAsVector() {
-        return new Translation2d(getChassisSpeedsFieldRel().vxMetersPerSecond,
-                getChassisSpeedsFieldRel().vyMetersPerSecond);
+    public void setGyroYaw(Rotation2d angle) {
+        if (angle != null) {
+            gyro.setYaw(angle.getDegrees());
+        }
     }
 
-    /**
-     * Sets robot-relative velocities with acceleration limiting.
-     * 
-     * <p>
-     * Useful for manual control where joystick inputs are in robot frame.
-     * </p>
-     * <p>
-     * Useful for manual control where joystick inputs are in robot frame.
-     * </p>
-     * 
-     * @param speeds Desired chassis speeds (robot-relative)
-     */
-    public void setRobotRelSpeedsWithAccel(ChassisSpeeds speeds) {
-        ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(speeds, getGyroAngle());
-        setVelocities(fieldSpeeds);
-    }
-
-    public void setSteerPositions(double[] positions) {
-        for (int i = 0; i < positions.length; i++) {
-            modules[i].setSteerPosition(positions[i]);
+    public void stop() {
+        for (SwerveModule i : modules) {
+            i.stop();
         }
     }
 
@@ -292,16 +149,16 @@ public class Chassis extends SubsystemBase {
     }
 
     public void setSteerPositions(double position) {
-        setSteerPositions(new double[] { position, position, position, position });
+        setSteerPositions(new double[]{position, position, position, position});
     }
 
-    public ChassisSpeeds getRobotRelVelocities() {
-        return ChassisSpeeds.fromFieldRelativeSpeeds(getChassisSpeedsFieldRel(), getGyroAngle());
+    public void setDrivePower(double pow, int id) {
+        modules[id].setDrivePower(pow);
     }
 
-    public void setRobotRelVelocities(ChassisSpeeds speeds) {
-        SwerveModuleState[] states = wpilibKinematics.toSwerveModuleStates(speeds);
-        setModuleStates(states);
+    public void setDrivePower(double pow) {
+        for (int i = 0; i < 4; i++)
+            setDrivePower(pow, i);
     }
 
     public void setDriveVelocities(double[] velocities) {
@@ -310,28 +167,34 @@ public class Chassis extends SubsystemBase {
         }
     }
 
-    public void setDriveVelocities(double velocity) {
-        setDriveVelocities(new double[] { velocity, velocity, velocity, velocity });
-    }
+    public void setSpeedsRobotRel(ChassisSpeeds robotRelSpeeds) {
+        boolean isStopped = Math.abs(robotRelSpeeds.vxMetersPerSecond) < 0.01 &&
+            Math.abs(robotRelSpeeds.vyMetersPerSecond) < 0.01 &&
+            Math.abs(robotRelSpeeds.omegaRadiansPerSecond) < 0.01;
 
-    public Rotation2d getGyroAngle() {
-        gyroYawStatus.refresh();
-        if (gyroYawStatus.getStatus() == StatusCode.OK) {
-            lastGyroYaw = new Rotation2d(gyroYawStatus.getValue());
+        SwerveModuleState[] states = new SwerveModuleState[4];
+        if (isStopped) {
+            for (int i = 0; i < states.length; i++) {
+                states[i] = new SwerveModuleState(0, lastAngles[i]);
+            }
+        } else {
+            states = demaciaKinematics.toSwerveModuleStates(robotRelSpeeds);
+
+            for (int i = 0; i < lastAngles.length; i++) {
+                lastAngles[i] = states[i].angle;
+            }
         }
-        return lastGyroYaw;
-    }
+        setModuleStates(states);
 
-    public double getGyroAngularVelocity() {
-        gyroAngularVelocityStatus.refresh();
-        if (gyroAngularVelocityStatus.getStatus() == StatusCode.OK) {
-            lastGyroAngularVelocity = gyroAngularVelocityStatus.getValue().in(Units.RadiansPerSecond);
+        if (RobotBase.isSimulation()) {
+            gyro.getSimState().setRawYaw(Math.toDegrees(gyro.getCurrentYaw() + robotRelSpeeds.omegaRadiansPerSecond * 0.02));
         }
-        return lastGyroAngularVelocity;
     }
 
-    public void setModuleState(SwerveModuleState state) {
-        setModuleStates(new SwerveModuleState[] { state, state, state, state });
+    public void setSteerPositions(double[] positions) {
+        for (int i = 0; i < positions.length; i++) {
+            modules[i].setSteerPosition(positions[i]);
+        }
     }
 
     public void setModuleStates(SwerveModuleState[] states) {
@@ -340,58 +203,69 @@ public class Chassis extends SubsystemBase {
         }
     }
 
-    @Override
-    public void periodic() {
-        // updateCommon(); TODO: ROBOT COMOON
-
-        observation = new OdometryObservation(
-                Timer.getFPGATimestamp(),
-                getGyroAngle(),
-                getModulePositions());
-
-        RobotPose.getInstance().update(observation);
-        field.setRobotPose(getPose());
-        // field.getObject("Turret").setPose(new Pose2d(RobotCommon.getCurrentRobotPose().getTranslation()
-        //         .plus(TurretConstants.TURRET_POSITION_ON_ROBOT.rotateBy(RobotCommon.getRobotAngle())),
-        //         Rotation2d.fromRadians(RobotCommon.getRobotAngle().getRadians()
-        //                 + MathUtil.angleModulus(Turret.getInstance().getTurretAngle()))));
-        // field.getObject("estimation").setPose(ShooterUtils.computeFuturePosition(getChassisSpeedsFieldRel(), RobotCommon.getCurrentRobotPose(), 0.1));
+    public double getMaxDriveVelocity() {
+        return chassisConfig.maxDriveVelocity;
     }
-    //TODO: ROBOT COMMON
-    // public void updateCommon() {
-    //     RobotCommon.setRobotAngle(getGyroAngle());
-    //     RobotCommon.setCurrentRobotPose(getPose());
-    //     RobotCommon.setFieldRelativeSpeeds(getChassisSpeedsFieldRel());
-    //     RobotCommon.setFutureRobotPose(getFuturePose(0.2));
-    // }
 
-    public Pose2d getFuturePose(double dtSeconds) {
-        return getPose().exp(new Twist2d(
-                (getChassisSpeedsFieldRel().vxMetersPerSecond * dtSeconds),
-                (getChassisSpeedsFieldRel().vyMetersPerSecond * dtSeconds),
-                getChassisSpeedsFieldRel().omegaRadiansPerSecond * dtSeconds));
+    public double getMaxRotationalVelocity() {
+        return chassisConfig.maxRotationalVelocity;
+    }
+
+    public Translation2d getVelocityAsVector() {
+        return new Translation2d(
+                getChassisSpeedsFieldRel().vxMetersPerSecond,
+                getChassisSpeedsFieldRel().vyMetersPerSecond);
+    }
+
+    public ChassisSpeeds getSpeedsRobotRel() {
+        return ChassisSpeeds.fromFieldRelativeSpeeds(getChassisSpeedsFieldRel(), getGyroAngle());
     }
 
     /**
-     * Gets the current chassis speeds in robot-relative frame.
-     * 
-     * @return Current velocities in robot frame
+     * Returns linear acceleration [ax, ay] in m/s² (field-relative)
+     * and angular acceleration [alpha] in rad/s², derived from velocity delta.
      */
+    public double[] getAcceleration() {
+        double now = Timer.getFPGATimestamp();
+        double dt = now - lastAccelTime;
+
+        ChassisSpeeds currentSpeedsFieldRel = getChassisSpeedsFieldRel();
+
+        double ax = (currentSpeedsFieldRel.vxMetersPerSecond - lastSpeedsFieldRel.vxMetersPerSecond) / dt;
+        double ay = (currentSpeedsFieldRel.vyMetersPerSecond - lastSpeedsFieldRel.vyMetersPerSecond) / dt;
+        double aOmga = (currentSpeedsFieldRel.omegaRadiansPerSecond - lastSpeedsFieldRel.omegaRadiansPerSecond) / dt;
+
+        lastSpeedsFieldRel = currentSpeedsFieldRel;
+        lastAccelTime = now;
+
+        return new double[]{ax, ay, aOmga};
+    }
+
+    /**
+     * Returns angular acceleration (alpha) in rad/s² from the gyro.
+     */
+    public double getAngularAcceleration() {
+        double now = Timer.getFPGATimestamp();
+        double dt = now - lastOmegaTime;
+
+        double currentOmega = getGyroAngularVelocity();
+        double alpha = (currentOmega - lastOmega) / dt;
+
+        lastOmega = currentOmega;
+        lastOmegaTime = now;
+
+        return alpha;
+    }
+
     public ChassisSpeeds getChassisSpeedsRobotRel() {
         return demaciaKinematics.toChassisSpeeds(
                 getModuleStates(),
-                Math.toRadians(gyroYawStatus.getValueAsDouble()));
+                getGyroAngularVelocity());
     }
 
-    /**
-     * Gets the current chassis speeds in field-relative frame.
-     * 
-     * @return Current velocities transformed to field frame
-     */
     public ChassisSpeeds getChassisSpeedsFieldRel() {
         return ChassisSpeeds.fromRobotRelativeSpeeds(
-                demaciaKinematics.toChassisSpeeds(getModuleStates(),
-                        getGyroAngularVelocity()),
+                demaciaKinematics.toChassisSpeeds(getModuleStates(), getGyroAngularVelocity()),
                 getGyroAngle());
     }
 
@@ -400,12 +274,22 @@ public class Chassis extends SubsystemBase {
         return new Translation2d(s.vxMetersPerSecond, s.vyMetersPerSecond);
     }
 
-    /**
-     * Returns the state of every module
-     * 
-     * 
-     * @return Velocity in m/s, angle in Rotation2d
-     */
+    public SwerveModulePosition[] getModulePositions() {
+        SwerveModulePosition[] res = new SwerveModulePosition[modules.length];
+        for (int i = 0; i < modules.length; i++) {
+            res[i] = modules[i].getModulePosition();
+        }
+        return res;
+    }
+
+    public Translation2d[] getModuleLocations() {
+        Translation2d[] res = new Translation2d[modules.length];
+        for (int i = 0; i < modules.length; i++) {
+            res[i] = chassisConfig.swerveModuleConfig[i].position;
+        }
+        return res;
+    }
+
     public SwerveModuleState[] getModuleStates() {
         SwerveModuleState[] res = new SwerveModuleState[modules.length];
         for (int i = 0; i < modules.length; i++) {
@@ -414,50 +298,10 @@ public class Chassis extends SubsystemBase {
         return res;
     }
 
-    /**
-     * Sets the gyro yaw angle (for field-relative reset).
-     * 
-     * <p>
-     * Call this at the start of autonomous to set known field orientation.
-     * </p>
-     * 
-     * @param angle New yaw angle (null to skip)
-     */
-    public void setYaw(Rotation2d angle) {
-        if (angle != null) {
-            gyro.setYaw(angle.getDegrees());
-            RobotPose.getInstance().setQuestHeading(angle);
-            RobotPose.getInstance()
-                    .resetPose(
-                            new Pose2d(Translation2d.kZero, gyro.getRotation2d()));
+    @Override
+    public void periodic() {
+        if (RobotPose.getInstance() != null) {
+            RobotPose.getInstance().periodic();
         }
-    }
-
-    public ChassisConfig getConfig() {
-        return chassisConfig;
-    }
-
-    /**
-     * Stops all swerve modules immediately.
-     */
-    public void stop() {
-        for (SwerveModule i : modules) {
-            i.stop();
-        }
-    }
-
-    private void addStatus() {
-        gyroYawStatus = gyro.getYaw();
-        lastGyroYaw = new Rotation2d(gyroYawStatus.getValueAsDouble());
-        gyroAngularVelocityStatus = gyro.getAngularVelocityZWorld();
-        lastGyroAngularVelocity = gyroAngularVelocityStatus.getValue().in(Units.RadiansPerSecond);
-    }
-
-    private SwerveModulePosition[] getModulePositions() {
-        SwerveModulePosition[] arr = new SwerveModulePosition[modules.length];
-        for (int i = 0; i < arr.length; i++) {
-            arr[i] = modules[i].getModulePosition();
-        }
-        return arr;
     }
 }

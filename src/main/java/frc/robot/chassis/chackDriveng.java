@@ -7,6 +7,7 @@ package frc.robot.chassis;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.demacia.odometry.RobotPose;
 import frc.demacia.path.trapzoid.DemaciaTrapezoid;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.log.Log;
@@ -32,7 +33,7 @@ public class chackDriveng extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    error = new Translation2d(0, 1).minus(chassis.getPose().getTranslation());
+    error = new Translation2d(0, 1).minus(RobotPose.getInstance().getPose().getTranslation());
     vel = trapezoid.nextVelocity(error.getNorm(), chassis.getChassisSpeedsVector().getNorm(), 0);
     chassis.setSpeedsRobotRel(new ChassisSpeeds(vel * error.getAngle().getCos(), vel * error.getAngle().getSin(), 0));
     Log.log("distenac left" + error.getNorm() + "vel" + vel);

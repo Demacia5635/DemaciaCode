@@ -1,4 +1,4 @@
-package frc.demacia.path.constans;
+package frc.demacia.path.constants;
 
 public class PathConstants {
     public static final double TOLERANCE = 0.5;

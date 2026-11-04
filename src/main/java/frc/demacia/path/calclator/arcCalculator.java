@@ -11,6 +11,7 @@ public class arcCalculator {
         double MidPointToFromAngle = from.minus(midPoint).getAngle().getRadians();
         double MidToPointToAngle = to.minus(midPoint).getAngle().getRadians();
         double vecAngle = (MidPointToFromAngle + MidToPointToAngle) / 2;
+        if (Math.abs(MidPointToFromAngle - MidToPointToAngle) > Math.PI) vecAngle += Math.PI;
         // double toMidPointAngle = MidPointToFromAngle + Math.PI;
         double angleDiff = MathUtil.angleModulus(MidToPointToAngle - MidPointToFromAngle);
         boolean isLeftTurn = angleDiff < 0;

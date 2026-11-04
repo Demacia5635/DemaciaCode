@@ -7,8 +7,9 @@ package frc.demacia.utils.chassis;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
-
+import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.controller.CommandController;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 public class DriveCommand extends Command {
@@ -26,7 +27,7 @@ public class DriveCommand extends Command {
   }
 
   private void driveByJoystick() {
-    direction = RobotContainer.isRed ? 1 : -1;
+    double direction = RobotCommon.getIsRed() ? 1 : -1;
     double joyX = controller.getLeftY() * direction;
     double joyY = controller.getLeftX() * direction;
 
@@ -45,7 +46,7 @@ public class DriveCommand extends Command {
 
     speeds = new ChassisSpeeds(velX, velY, -velRot);
 
-    chassis.setVelocities(speeds);
+    chassis.setSpeedsRobotRel(speeds);
   }
 
   public static void setPrecisionMode() {

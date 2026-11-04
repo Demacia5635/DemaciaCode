@@ -3,13 +3,15 @@ package frc.demacia.path;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.path.calclator.LegCalculator;
 import frc.demacia.path.calclator.arcCalculator;
-import frc.demacia.path.constans.PathConstants;
+import frc.demacia.path.constants.PathConstants;
 import frc.demacia.path.segments.ArcSegment;
 import frc.demacia.path.segments.LineSegment;
 import frc.demacia.path.segments.SegmantBase;
@@ -101,7 +103,7 @@ public class DemaciaTrajectory {
         double finishVelocity = currentSegmentIndex == segments.size() - 1 ? 0 : PathConstants.MAX_VELOCITY;
         // LogManager.log("currentSegmentIndex:" + currentSegmentIndex + " segments: " + segments.get(currentSegmentIndex) + " finishVelocity:" + finishVelocity);
         ChassisSpeeds speeds = segmentFollow.getChassisSpeeds(segments.get(currentSegmentIndex), currentPose, currentSpeeds, finishVelocity);
-        // LogManager.log("speeds: " + speeds);// + " currentSegmentIndex: " + currentSegmentIndex + " segments.get(currentSegmentIndex): " + segments.get(currentSegmentIndex) + " currentPose: " + currentPose + " currentSpeeds: " + currentSpeeds + " finishVelocity: " + finishVelocity);
+        Log.log("speeds: " + speeds + " currentSegmentIndex: " + currentSegmentIndex + " segments.get(currentSegmentIndex): " + segments.get(currentSegmentIndex) + " currentPose: " + currentPose + " currentSpeeds: " + currentSpeeds + " finishVelocity: " + finishVelocity);
         if(isFinishedSegment(currentSpeeds, currentPose, currentSegment)){
             if(currentSegmentIndex == segments.size() - 1) {
                 isFinishedTrajectory = true;
@@ -116,7 +118,8 @@ public class DemaciaTrajectory {
 
     private boolean isFinishedSegment(ChassisSpeeds currentSpeeds, Pose2d currentPose, SegmantBase segment) {
 
-        double distanceFromFinishPoint = currentSegment.getEndPose().getDistance(currentPose.getTranslation());
+        Translation2d toEnd = segment.getEndPose().minus(currentPose.getTranslation());
+        double distanceFromFinishPoint = toEnd.getNorm();
         Rotation2d currentVelocityHeading = Rotation2d.kZero;
         if (!(currentSpeeds.vxMetersPerSecond == 0 && currentSpeeds.vyMetersPerSecond == 0))
             currentVelocityHeading = new Translation2d(currentSpeeds.vxMetersPerSecond, currentSpeeds.vyMetersPerSecond).getAngle();
@@ -125,11 +128,14 @@ public class DemaciaTrajectory {
 
             LineSegment lineSegment = (LineSegment) currentSegment;
 
+            Rotation2d toEndRot = toEnd.getAngle().minus(lineSegment.getTranslation().getAngle());
+            boolean passed = MathUtil.angleModulus(toEndRot.getRadians()) > Math.toRadians(60); //TODO: change it to a constant
             boolean isVelocityHeadingTowardesFinishPoint = PathUtils.isVelocityHeadingInRange(currentVelocityHeading, lineSegment.getTranslation().getAngle());
             if(currentSegmentIndex == segments.size() -1){
                 return (distanceFromFinishPoint < PathConstants.MAX_POSITION_THRESHOLD_FINAL_POINT);
             }
-            return (distanceFromFinishPoint < PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH);// || ((distanceFromFinishPoint < (PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH * 3)) && isVelocityHeadingTowardesFinishPoint);
+            Log.log("isFinishedLeg number: " + currentSegmentIndex + " distanceFromFinishPoint: " + distanceFromFinishPoint + " toEndRot: " + toEndRot + " Pose: " + RobotPose.getInstance().getEstimatedPose() + " passed: " + passed);
+            return (distanceFromFinishPoint < PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH) || passed;
         }
 
         else{

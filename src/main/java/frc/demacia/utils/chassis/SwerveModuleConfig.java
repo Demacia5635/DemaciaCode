@@ -30,11 +30,7 @@ public class SwerveModuleConfig {
 
     public Translation2d position = Translation2d.kZero;
 
-<<<<<<< HEAD
     public double steerVelToDriveVel = Mk5nConstants.R3.metersFrom360Degs / (2*Math.PI);
-=======
-    public double steerVelToDriveVel = 0;
->>>>>>> wpilib_kinmatics
 
         /**
      * Constructor
@@ -57,11 +53,6 @@ public class SwerveModuleConfig {
      * @param steerOffset Offset in radians
      * @return this config for chaining
      */
-
-    public Translation2d getModulePose(){
-        return position;
-    }
-    
     public SwerveModuleConfig withSteerOffset(double steerOffset) {
         this.steerOffset = steerOffset;
         return this;
@@ -72,8 +63,8 @@ public class SwerveModuleConfig {
         return this;
     }
 
-    public SwerveModuleConfig withDrivePowerToSteerPower(double drivePowerToSteerPower){
-        this.steerVelToDriveVel = drivePowerToSteerPower;
+    public SwerveModuleConfig withMetersFrom360Degs(double metersFrom360Degs) {
+        steerVelToDriveVel = metersFrom360Degs / (2 * Math.PI);
         return this;
     }
 }

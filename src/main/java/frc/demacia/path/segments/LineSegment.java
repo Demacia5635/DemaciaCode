@@ -1,7 +1,7 @@
 package frc.demacia.path.segments;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.demacia.path.constans.PathConstants;
+import frc.demacia.path.constants.PathConstants;
 
 public class LineSegment extends SegmantBase {
     private Translation2d startToEndVector;
