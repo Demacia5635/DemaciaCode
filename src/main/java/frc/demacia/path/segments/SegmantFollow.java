@@ -46,7 +46,7 @@ public class SegmantFollow {
             double heading = baseHeading + (segmant.getIsLeft() ? headingVelOmega * 0.02 : - headingVelOmega * 0.02);
             double distanceLeft = Math.abs(segmant.getFinishAngle().getRadians() - baseHeading) * PathConstants.radius;
             double velocity = driveTrapzoid.nextVelocity(distanceLeft, currentVelVector.getNorm(), finalVel);
-            Log.log("arcCalculatedVel: Norm: " + velocity + " Rotation2d: " + heading + " " + new Translation2d(velocity, new Rotation2d(heading)));
+            // Log.log("arcCalculatedVel: Norm: " + velocity + " Rotation2d: " + heading + " " + new Translation2d(velocity, new Rotation2d(heading)));
             calculatedVel = new Translation2d(velocity, new Rotation2d(heading));
         }
         // LogManager.log("omega: " + omega);

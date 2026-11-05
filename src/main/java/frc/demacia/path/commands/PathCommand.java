@@ -33,6 +33,7 @@ public class PathCommand extends Command {
   @Override
   public void initialize() {
     swerveCommand.odometry.resetPose(Pose2d.kZero);
+    trajectory.startTrajectory();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -52,6 +53,6 @@ public class PathCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return trajectory.isFinishedTrajectory; //(RobotPose.getInstance().getEstimatedPose().getTranslation().minus(trajectory.getEndPoint()).getNorm() < 0.08);
+    return trajectory.getIsFinishedTrajectory(); //(RobotPose.getInstance().getEstimatedPose().getTranslation().minus(trajectory.getEndPoint()).getNorm() < 0.08);
   }
 }

@@ -14,7 +14,8 @@ public class PathUtils {
 
     public static boolean isVelocityHeadingInRange(Rotation2d currentVelocityHeading,
             Rotation2d wantedVelocityHeading) {
-        return Math.abs(currentVelocityHeading.minus(wantedVelocityHeading)
+        return Math.abs(
+            currentVelocityHeading.minus(wantedVelocityHeading)
                 .getRadians()) < PathConstants.MAX_VELOCITY_HEADING_TO_FINISH_SEGMENT;
     }
 }
