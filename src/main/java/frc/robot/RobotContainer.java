@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.demacia.utils.DemaciaUtils;
 import frc.demacia.utils.log.LogManager;
+import frc.robot.commands.Gripperprototypecommand;
+import frc.robot.subsystems.GreeperPro;
 import frc.robot.subsystems.SubsystemSnowBlower;
 
 /**
@@ -27,23 +29,26 @@ public class RobotContainer implements Sendable{
   public static boolean isComp = false;
   private static boolean hasRemovedFromLog = false;
   public static boolean isRed = false;
-
+private final GreeperPro greeperPro;
+private final Gripperprototypecommand gripperCommand;
   // The robot's subsystems and commands are defined here...
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  private final SubsystemSnowBlower m_snowBlower = new SubsystemSnowBlower();
   private final CommandXboxController m_driverXbox = new CommandXboxController(0);
   // private final CommandPS4Controller m_driverPS4 = new CommandPS4Controller(1);
   public RobotContainer() {
-    SmartDashboard.putData("RC", this);
-    new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
+    greeperPro = new GreeperPro();
+    gripperCommand = new Gripperprototypecommand(greeperPro);
+    greeperPro.setDefaultCommand(gripperCommand);
+
+    // SmartDashboard.putData("RC", this);
+    // new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
   // m_snowBlower.setDefaultCommand(m_runSnowBlowerCommand);
   // Configure the trigger bindings
-    configureBindings(
-    );
+    configureBindings();
   }
 
   /**
