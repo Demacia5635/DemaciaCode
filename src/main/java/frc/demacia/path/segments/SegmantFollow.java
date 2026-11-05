@@ -9,7 +9,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import frc.demacia.path.constants.PathConstants;
 import frc.demacia.path.trapzoid.DemaciaTrapezoid;
 import frc.demacia.path.utils.PathUtils;
-import frc.demacia.utils.log.Log;
 
 public class SegmantFollow {
     private DemaciaTrapezoid driveTrapzoid;

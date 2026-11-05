@@ -11,9 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.path.DemaciaTrajectory;
 import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.utils.log.Log;
 import frc.demacia.wpilibSwerve.command.SwerveCommand;
-import frc.robot.Robot;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PathCommand extends Command {
