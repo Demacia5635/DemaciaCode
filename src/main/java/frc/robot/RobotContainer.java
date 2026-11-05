@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.demacia.utils.DemaciaUtils;
 import frc.demacia.utils.log.LogManager;
 import frc.robot.subsystems.SubsystemSnowBlower;
-import frc.robot.commands.RunSnowBlowerCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -36,7 +35,6 @@ public class RobotContainer implements Sendable{
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   private final SubsystemSnowBlower m_snowBlower = new SubsystemSnowBlower();
-  private final RunSnowBlowerCommand m_runSnowBlowerCommand = new RunSnowBlowerCommand(m_snowBlower, 0.5);
   private final CommandXboxController m_driverXbox = new CommandXboxController(0);
   // private final CommandPS4Controller m_driverPS4 = new CommandPS4Controller(1);
   public RobotContainer() {
@@ -57,11 +55,7 @@ public class RobotContainer implements Sendable{
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {
-    
-  m_driverXbox.a().whileTrue(new RunSnowBlowerCommand(m_snowBlower, 0.5));
-  m_driverXbox.b().whileTrue(new RunSnowBlowerCommand(m_snowBlower, -0.5));  
-  // m_driverPS4.cross().whileTrue(new RunSnowBlowerCommand(m_snowBlower, 0.5));
+  private void configureBindings() {  
 }
 
   public static boolean getIsRed() {

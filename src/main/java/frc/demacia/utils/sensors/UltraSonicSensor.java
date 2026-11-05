@@ -113,6 +113,8 @@ public class UltraSonicSensor extends Ultrasonic implements AnalogSensorInterfac
     public double getRangeMeters() {
         return getRangeMM() / 1000d;
     }
+    public double getrangeinches() {
+        return getRangeInches();}
 
         private static final int average_Window = 5;
     private final Queue<Double> samples = new ArrayDeque<>();
@@ -140,4 +142,5 @@ public class UltraSonicSensor extends Ultrasonic implements AnalogSensorInterfac
         builder.addDoubleProperty("avg range", this::getAverage, null);
         
     }
+
 }
