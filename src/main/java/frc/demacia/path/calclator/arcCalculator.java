@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import frc.demacia.path.segments.ArcSegment;
 import frc.demacia.utils.log.Log;
 
-public class arcCalculator {
+public class ArcCalculator {
     
     public static ArcSegment calclateCenter(Translation2d from, Translation2d midPoint,Translation2d to, double radius){
         double MidPointToFromAngle = from.minus(midPoint).getAngle().getRadians();
