@@ -9,27 +9,31 @@ import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeCommand extends Command {
 
-  final private double duty;
-  final private IntakeSubsystem subsystem;
+  private final IntakeSubsystem intake;
 
 
-  public IntakeCommand(double duty, IntakeSubsystem subsystem) {
-    this.duty = duty;
-    this.subsystem = subsystem;
-    addRequirements(this.subsystem);
+  public IntakeCommand(IntakeSubsystem intake) {
+    this.intake = intake;
+
+    addRequirements(intake);
     }
 
   @Override
-  public void initialize() {}
-
-  @Override
-  public void execute() {
-    subsystem.setPower(duty); // Set power
+  public void initialize() {
+    // Deploy the mechanism and start the rollers
+    intake.deployIntake();
+    intake.intakeCoral();
+  
   }
 
   @Override
+  public void execute() {}
+
+  @Override
   public void end(boolean interrupted) {
-    subsystem.setPower(0); // Stop
+    // Retract the mechanism and stop the rollers
+    intake.retractIntake();
+    intake.stopRollers(); 
   }
 
   @Override

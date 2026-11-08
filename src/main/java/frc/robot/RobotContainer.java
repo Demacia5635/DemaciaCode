@@ -13,9 +13,10 @@ import frc.demacia.utils.DemaciaUtils;
 import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
 import frc.demacia.utils.log.LogManager;
-import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.EjectCommand;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.commands.IntakeCommand;
 
 
 public class RobotContainer implements Sendable{
@@ -25,9 +26,9 @@ public class RobotContainer implements Sendable{
   public static boolean isRed = false;
 
 
-  private final IntakeSubsystem subsystem = new IntakeSubsystem();
-  private final IntakeCommand command = new IntakeCommand(0.5, subsystem); // change  
-  private final CommandController controller = new CommandController(Constants.ControllerConstants.kPS5ControllerPort, ControllerType.kPS5); 
+  // Subsystem & controller:
+  private final IntakeSubsystem intake = new IntakeSubsystem();
+  private final CommandController controller = new CommandController(Constants.ControllerConstants.kPS5ControllerPort, ControllerType.kPS5); // Make sure the port and the controller type are corect.
 
 
 
@@ -42,8 +43,8 @@ public class RobotContainer implements Sendable{
 
   private void configureBindings() {
 
-    controller.leftBumper().whileTrue(new IntakeCommand(0.5, subsystem));
-    controller.rightBumper().whileTrue(new IntakeCommand(-0.5, subsystem));
+    controller.downButton().whileTrue(new IntakeCommand(intake));
+    controller.upButton().whileTrue(new EjectCommand(intake));
 
   }
 

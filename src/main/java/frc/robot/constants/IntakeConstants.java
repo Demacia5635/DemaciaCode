@@ -7,23 +7,45 @@ package frc.robot.constants;
 import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
 import frc.demacia.utils.motors.TalonFXConfig;
 
-/**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
- * globally (i.e. public static). Do not put anything functional in this class.
- *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
- * constants are needed, to reduce verbosity.
- */
+
 public final class IntakeConstants {
 
-    public static final int kMotorID = 1;
-    public static final boolean kIsBrake = true;
-    public static final Canbus kMotorCanbus = Canbus.Rio;
-    public static final String kMotorName = "Motor";
-       
-    public static final TalonFXConfig kMotorConfig = new TalonFXConfig(kMotorID, kMotorCanbus,kMotorName)
-        .withBrake(kIsBrake);
 
+    // Adjust as needed
+    public static final double DEPLOY_SPEED = 0.3;
+    public static final double RETRACT_SPEED = -0.3;
+
+    public static final double INTAKE_SPEED = 0.5;
+    public static final double EJECT_SPEED = -0.5;
+
+
+    public static final boolean IS_BRAKE = true; // Right now I use the same IS_BREAK for all motors but it can be changed if needed
+    public static final Canbus CANBUS = Canbus.Rio;
+
+
+    public static final int ROLLERS_MOTOR_ID = 1; // Change
+    public static final String ROLLERS_MOTOR_NAME = "Rollers Motor";
+
+    public static final TalonFXConfig ROLLERS_MOTOR_CONFIG = new TalonFXConfig(ROLLERS_MOTOR_ID, CANBUS, ROLLERS_MOTOR_NAME)
+            .withBrake(IS_BRAKE);
+
+
+
+    public static final int DEPLOY_MOTOR_ID = 2; // Change
+    public static final Canbus DEPLOY_MOTOR_CANBUS = Canbus.Rio;
+    public static final String DEPLOY_MOTOR_NAME = "Deploy Motor";
+
+    public static final TalonFXConfig DEPLOY_MOTOR_CONFIG = new TalonFXConfig(DEPLOY_MOTOR_ID, CANBUS, DEPLOY_MOTOR_NAME)
+            .withBrake(IS_BRAKE);
+
+
+        
+
+
+    // public static final int TEMPLATE_MOTOR_ID = 2;
+    // public static final Canbus TEMPLATE_MOTOR_CANBUS = Canbus.Rio;
+    // public static final String TEMPLATE_MOTOR_NAME = "Template Motor";
+
+    // public static final TalonFXConfig TEMPLATE_MOTOR_CONFIG = new TalonFXConfig(TEMPLATE_MOTOR_ID, CANBUS, TEMPLATE_MOTOR_NAME)
+    //         .withBrake(IS_BRAKE);
 }
-
