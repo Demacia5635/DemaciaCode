@@ -205,6 +205,14 @@ public abstract class BaseMotor implements MotorInterface {
     }
   }
 
+  public void releaseStuck() {
+    isStuck = false;
+    stallConfirmTimer.stop();
+    stallConfirmTimer.reset();
+    stuckDurationTimer.stop();
+    stuckDurationTimer.reset();
+  }
+
   @Override
   public void setSlot(int slot) {
     if (slot < 0 || slot > 2) {
