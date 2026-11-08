@@ -24,6 +24,7 @@ import frc.demacia.wpilibSwerve.odemetry.WPILibOdemetry;
 import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.controller.CommandController;
+import frc.demacia.utils.log.Log;
 import frc.demacia.vision.utils.Vision;
 import frc.robot.RobotContainer;
 
@@ -108,20 +109,14 @@ public class SwerveCommand extends Command {
       velRot /= 2.0;
     }
 
-
-    // velRot = velRot * dt;
-
-    // Field-Oriented Driving
+    
     speeds = ChassisSpeeds.fromFieldRelativeSpeeds(velX, velY, velRot, chassis.getGyroAngle());
-
     moduleStates = kinematics.kinematics().toSwerveModuleStates(speeds);
 
-    // נרמול מהירויות כדי למנוע חריגה מהמהירות המרבית
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, chassis.getConfig().maxDriveVelocity);
 
     chassis.setModuleStates(moduleStates);
 
-    // 1. עדכון מיקומי המודולים המעודכנים
     for (int i = 0; i < modulePositions.length; i++) {
       odometry.resetPose(new Pose2d(vision.getPoseEstimation().getTranslation(), Chassis.getInstance().getGyroAngle()));
       modulePositions[i] = chassis.modules[i].getModulePosition();

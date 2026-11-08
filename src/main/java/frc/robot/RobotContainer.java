@@ -78,10 +78,9 @@ public class RobotContainer implements Sendable {
 
   public void addPoints(){
     points.add(new Translation2d(0, 0));
-    points.add(new Translation2d(3, 0));
-    points.add(new Translation2d(3, 3));
-    points.add(new Translation2d(0, 3));
-    points.add(new Translation2d(0, 0));
+    points.add(new Translation2d(2, 3));
+    points.add(new Translation2d(4, 0)); 
+    // points.add(new Translation2d(6.5, 0));
   }
 
   /**

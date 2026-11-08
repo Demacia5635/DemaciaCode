@@ -110,9 +110,8 @@ public class DemaciaTrajectory {
     public ChassisSpeeds calculateSpeeds(ChassisSpeeds currentSpeeds, Pose2d currentPose) {
         
         double finishVelocity = currentSegmentIndex == segments.size() - 1 ? 0 : PathConstants.MAX_VELOCITY;
-        // LogManager.log("currentSegmentIndex:" + currentSegmentIndex + " segments: " + segments.get(currentSegmentIndex) + " finishVelocity:" + finishVelocity);
         ChassisSpeeds speeds = segmentFollow.getChassisSpeeds(segments.get(currentSegmentIndex), currentPose, currentSpeeds, finishVelocity);
-        // Log.log("speeds: " + speeds + " currentSegmentIndex: " + currentSegmentIndex + " segments.get(currentSegmentIndex): " + segments.get(currentSegmentIndex) + " currentPose: " + currentPose + " currentSpeeds: " + currentSpeeds + " finishVelocity: " + finishVelocity);
+        Log.log("wanted speed: "+speeds+" currentSpeeds: "+currentSpeeds+" currentPose: "+currentPose+" currentSegment: "+currentSegment+ "point: "+currentSegment.getEndPose()+" currentSegmentIndex: "+currentSegmentIndex+" segments.size(): "+segments.size());
         if(isFinishedSegment(currentSpeeds, currentPose, currentSegment)){
             if(currentSegmentIndex == segments.size() - 1) {
                 isFinishedTrajectory = true;
@@ -121,7 +120,6 @@ public class DemaciaTrajectory {
             currentSegmentIndex++;
             currentSegment = segments.get(currentSegmentIndex);
         }
-        // LogManager.log("wanted speed" + speeds + " current speed: " + chassis.getVelocityAsVector());
         return speeds;
     }
 
@@ -145,7 +143,6 @@ public class DemaciaTrajectory {
             if(currentSegmentIndex == segments.size() -1){
                 return (distanceFromFinishPoint < PathConstants.MAX_POSITION_THRESHOLD_FINAL_POINT);
             }
-            // Log.log("isFinishedLeg number: " + currentSegmentIndex + " distanceFromFinishPoint: " + distanceFromFinishPoint + " toEndRot: " + toEndRot + " Pose: " + RobotPose.getInstance().getEstimatedPose() + " passed: " + passed);
             return (distanceFromFinishPoint < PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH) || passed;
         }
 
