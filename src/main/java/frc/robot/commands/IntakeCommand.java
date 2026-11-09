@@ -14,16 +14,15 @@ public class IntakeCommand extends Command {
 
   public IntakeCommand(IntakeSubsystem intake) {
     this.intake = intake;
-
     addRequirements(intake);
     }
 
   @Override
   public void initialize() {
-    // Deploy the mechanism and start the rollers
+    // Deploy the mechanism, start the rollers and start the aligner
     intake.deployIntake();
     intake.intakeCoral();
-  
+    intake.alignCoral();
   }
 
   @Override
@@ -31,9 +30,10 @@ public class IntakeCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    // Retract the mechanism and stop the rollers
+    // Retract the mechanism, stop the rollers and stop the aligner
     intake.retractIntake();
     intake.stopRollers(); 
+    intake.stopAligner();
   }
 
   @Override
