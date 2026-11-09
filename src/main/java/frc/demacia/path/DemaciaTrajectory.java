@@ -40,7 +40,7 @@ public class DemaciaTrajectory {
         this.segments = new ArrayList<SegmantBase>();
         radius = PathConstants.radius;
 
-        this.segmentFollow = new SegmantFollow();
+        this.segmentFollow = new SegmantFollow();   
         this.isFinishedTrajectory = false;
 
         if (demaciaPathPoints.size() < 2) {
@@ -138,7 +138,7 @@ public class DemaciaTrajectory {
             LineSegment lineSegment = (LineSegment) currentSegment;
 
             Rotation2d toEndRot = toEnd.getAngle().minus(lineSegment.getTranslation().getAngle());
-            boolean passed = MathUtil.angleModulus(toEndRot.getRadians()) > Math.toRadians(PathConstants.MAX_ANGLE_TO_PASS);
+            boolean passed = MathUtil.angleModulus(toEndRot.getRadians()) > PathConstants.MAX_ANGLE_TO_PASS;
             // boolean isVelocityHeadingTowardesFinishPoint = PathUtils.isVelocityHeadingInRange(currentVelocityHeading, lineSegment.getTranslation().getAngle());
             if(currentSegmentIndex == segments.size() -1){
                 return (distanceFromFinishPoint < PathConstants.MAX_POSITION_THRESHOLD_FINAL_POINT);

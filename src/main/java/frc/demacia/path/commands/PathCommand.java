@@ -37,7 +37,7 @@ public class PathCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    swerveCommand.setVelRobotRel(ChassisSpeeds.fromRobotRelativeSpeeds(trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), RobotPose.getInstance().getEstimatedPose()), chassis.gyro.getRotation2d()));
+    swerveCommand.setVelRobotRel(trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), swerveCommand.odometry.getPose()), chassis.gyro.getRotation2d());
   }
 
   // Called once the command ends or is interrupted.
