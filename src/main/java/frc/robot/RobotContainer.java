@@ -13,9 +13,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.demacia.utils.DemaciaUtils;
+import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.log.LogManager;
-import frc.robot.subsystems.SubsystemSnowBlower;
-import frc.robot.commands.RunSnowBlowerCommand;
+import frc.robot.subsystems.SubsystemKraken;
+import frc.robot.subsystems.SubsystemKraken;
+import frc.robot.commands.Krakenforwadbackcommand;
+import frc.robot.commands.Krakenleftrightcommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -35,9 +38,11 @@ public class RobotContainer implements Sendable{
   // Replace with CommandPS4Controller or CommandJoystick if needed
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  private final SubsystemSnowBlower m_snowBlower = new SubsystemSnowBlower();
-  private final CommandXboxController m_driverXbox = new CommandXboxController(0);
+  private final SubsystemKraken m_KrakenMotor1 = new SubsystemKraken();
+  private final SubsystemKraken m_KrakenMotor2 = new SubsystemKraken();
   // private final CommandPS4Controller m_driverPS4 = new CommandPS4Controller(1);
+  private final CommandXboxController m_driverXbox = new CommandXboxController(0);
+  // private final CommandController m_driverController = new CommandController();                                   try to do later
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
@@ -56,7 +61,11 @@ public class RobotContainer implements Sendable{
    * joysticks}.
    */
   private void configureBindings() {
-  m_driverXbox.a().whileTrue(new RunSnowBlowerCommand(m_snowBlower, 0.5));  
+    SmartDashboard.putBoolean("ForwardButton", false);
+    SmartDashboard.putBoolean("BackwardButton", false);
+    SmartDashboard.putBoolean("LeftButton", false);
+    SmartDashboard.putBoolean("RightButton", false);
+
   // m_driverPS4.cross().whileTrue(new RunSnowBlowerCommand(m_snowBlower, 0.5));
 }
 
@@ -84,6 +93,7 @@ public class RobotContainer implements Sendable{
   public void initSendable(SendableBuilder builder) {
     builder.addBooleanProperty("isRed", RobotContainer::getIsRed, RobotContainer::setIsRed);
     builder.addBooleanProperty("isComp", RobotContainer::getIsComp, RobotContainer::setIsComp);
+    
   }
 
   /**
