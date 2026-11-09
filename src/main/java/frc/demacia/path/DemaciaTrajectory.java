@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.demacia.path.calclator.LegCalculator;
-import frc.demacia.path.calclator.arcCalculator;
+import frc.demacia.path.calclator.ArcCalculator;
 import frc.demacia.path.constants.PathConstants;
 import frc.demacia.path.segments.ArcSegment;
 import frc.demacia.path.segments.LineSegment;
@@ -86,7 +86,7 @@ public class DemaciaTrajectory {
         }
 
         for (int i = 0; i < lineSegments.size() - 1; i++) {
-            ArcSegment arc = arcCalculator.calclateCenter(lineSegments.get(i).getStartPose(), lineSegments.get(i).getEndPose(), lineSegments.get(i+1).getEndPose(),radius);
+            ArcSegment arc = ArcCalculator.calclateCenter(lineSegments.get(i).getStartPose(), lineSegments.get(i).getEndPose(), lineSegments.get(i+1).getEndPose(),radius);
             this.arcSegmants.add(arc);
         }
 
