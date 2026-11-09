@@ -2,12 +2,12 @@ package frc.demacia.path.segments;
 
 import edu.wpi.first.math.geometry.Translation2d;
 
-public class SegmantBase {
+public class SegmentBase {
 
     private Translation2d startPose;
     private Translation2d endPose;
 
-    public SegmantBase(Translation2d startPose, Translation2d endPose) {
+    public SegmentBase(Translation2d startPose, Translation2d endPose) {
         this.startPose = startPose;
         this.endPose = endPose;
     }

@@ -3,20 +3,18 @@ package frc.demacia.path.segments;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.demacia.path.constants.PathConstants;
 
-public class LineSegment extends SegmantBase {
+public class LineSegment extends SegmentBase {
     private Translation2d startToEndVector;
-    private double FinalVelocity;
-    // public boolean isRight;
+    private double finalVelocity;
 
-    public LineSegment(double FinalVelocity, Translation2d startPoint, Translation2d endPoint/*, boolean isRight*/) {
+    public LineSegment(double finalVelocity, Translation2d startPoint, Translation2d endPoint) {
         super(startPoint, endPoint);
-        // this.isRight = isRight;
         this.startToEndVector = endPoint.minus(startPoint);
-        this.FinalVelocity = FinalVelocity;
+        this.finalVelocity = finalVelocity;
     }
 
-    public LineSegment(Translation2d startPoint, Translation2d endPoint/*, boolean isRight*/) {
-        this(PathConstants.MAX_VELOCITY, startPoint, endPoint/*, isRight*/);
+    public LineSegment(Translation2d startPoint, Translation2d endPoint) {
+        this(PathConstants.MAX_VELOCITY, startPoint, endPoint);
     }
 
     public Translation2d getTranslation() {
@@ -24,6 +22,6 @@ public class LineSegment extends SegmantBase {
     }
 
     public double getFinalVelocity() {
-        return FinalVelocity;
+        return finalVelocity;
     }
 }

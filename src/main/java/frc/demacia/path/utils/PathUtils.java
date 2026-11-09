@@ -3,12 +3,12 @@ package frc.demacia.path.utils;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.demacia.path.constants.PathConstants;
 import frc.demacia.path.segments.LineSegment;
-import frc.demacia.path.segments.SegmantBase;
+import frc.demacia.path.segments.SegmentBase;
 
 public class PathUtils {
-    public static boolean isLineSegment(SegmantBase segmant) {
+    public static boolean isLineSegment(SegmentBase segment) {
         // Check if the start and end poses are the same
-        return segmant instanceof LineSegment;
+        return segment instanceof LineSegment;
         
     }
 

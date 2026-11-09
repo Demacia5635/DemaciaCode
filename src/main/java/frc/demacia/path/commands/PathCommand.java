@@ -6,9 +6,7 @@ package frc.demacia.path.commands;
 
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.path.DemaciaTrajectory;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.wpilibSwerve.command.SwerveCommand;
@@ -37,7 +35,7 @@ public class PathCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    swerveCommand.setVelRobotRel(trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), swerveCommand.odometry.getPose()), chassis.gyro.getRotation2d());
+    swerveCommand.setVelRobotRel(trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), swerveCommand.odometry.getPose()));
   }
 
   // Called once the command ends or is interrupted.

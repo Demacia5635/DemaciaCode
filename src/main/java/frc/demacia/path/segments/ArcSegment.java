@@ -3,7 +3,7 @@ package frc.demacia.path.segments;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
-public class ArcSegment extends SegmantBase {
+public class ArcSegment extends SegmentBase {
 
     private Translation2d center;
     private Translation2d centerToStart;
