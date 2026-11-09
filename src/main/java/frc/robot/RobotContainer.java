@@ -73,6 +73,7 @@ public class RobotContainer implements Sendable{
     SmartDashboard.putBoolean("BackwardButton", false);
     SmartDashboard.putBoolean("LeftButton", false);
     SmartDashboard.putBoolean("RightButton", false);
+    SmartDashboard.putData("position",)
 
   // m_driverPS4.cross().whileTrue(new RunSnowBlowerCommand(m_snowBlower, 0.5));
 }
