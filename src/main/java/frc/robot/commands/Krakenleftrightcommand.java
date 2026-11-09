@@ -6,13 +6,11 @@ import frc.robot.subsystems.SubsystemKraken;
 public class Krakenleftrightcommand extends Command {
   final double speed;
   final SubsystemKraken Kraken1;
-  final SubsystemKraken Kraken2;
   /** Creates a new RunSnowBlowerCommand. */
     public Krakenleftrightcommand(SubsystemKraken subsystem, double speed) {
         this.Kraken1 = subsystem;
-        this.Kraken2 = subsystem;
         this.speed = speed;
-        addRequirements(this.Kraken1, this.Kraken2);
+        addRequirements(this.Kraken1);
 
     }
 
@@ -29,6 +27,7 @@ public class Krakenleftrightcommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    Kraken1.stop();
   }
 
 

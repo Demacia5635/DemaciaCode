@@ -4,16 +4,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SubsystemKraken;
 
 public class Krakenforwadbackcommand extends Command {
-  final double speed;
-  final SubsystemKraken Kraken1;
-  final SubsystemKraken Kraken2;
+  private double speed;
+  private SubsystemKraken Kraken1;
   /** Creates a new RunSnowBlowerCommand. */
     public Krakenforwadbackcommand(SubsystemKraken subsystem, double speed) {
         this.Kraken1 = subsystem;
-        this.Kraken2 = subsystem;
         this.speed = speed;
-        addRequirements(this.Kraken1, this.Kraken2);
-
+        addRequirements(Kraken1);
     }
 
   // Called when the command is initially scheduled.

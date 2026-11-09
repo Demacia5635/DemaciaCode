@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.demacia.utils.DemaciaUtils;
 import frc.demacia.utils.controller.CommandController;
+import frc.demacia.utils.controller.CommandController.ControllerType;
 import frc.demacia.utils.log.LogManager;
 import frc.robot.subsystems.SubsystemKraken;
 import frc.robot.subsystems.SubsystemKraken;
@@ -41,8 +42,9 @@ public class RobotContainer implements Sendable{
   private final SubsystemKraken m_KrakenMotor1 = new SubsystemKraken();
   private final SubsystemKraken m_KrakenMotor2 = new SubsystemKraken();
   // private final CommandPS4Controller m_driverPS4 = new CommandPS4Controller(1);
-  private final CommandXboxController m_driverXbox = new CommandXboxController(0);
-  // private final CommandController m_driverController = new CommandController();                                   try to do later
+  // private final CommandXboxController m_driverXbox = new CommandXboxController(0);
+  // private final CommandController m_driverController = new CommandController();       
+  private final CommandController controller = new CommandController(0, ControllerType.kPS5);   
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
@@ -61,6 +63,12 @@ public class RobotContainer implements Sendable{
    * joysticks}.
    */
   private void configureBindings() {
+    controller.downButton().whileTrue(new Krakenforwadbackcommand(m_KrakenMotor1, 0.5));//way 1
+    controller.upButton().whileTrue(new Krakenforwadbackcommand(m_KrakenMotor1, -0.5));//oppose way 1
+
+    controller.rightButton().whileTrue(new Krakenleftrightcommand(m_KrakenMotor1, 1));//way 1
+    controller.leftButton().whileTrue(new Krakenleftrightcommand(m_KrakenMotor1, -1));//oppoesite way 1
+
     SmartDashboard.putBoolean("ForwardButton", false);
     SmartDashboard.putBoolean("BackwardButton", false);
     SmartDashboard.putBoolean("LeftButton", false);

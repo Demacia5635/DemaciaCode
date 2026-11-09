@@ -13,7 +13,7 @@ public class SubsystemKraken extends SubsystemBase {
       
     }
 
-    public void setPowerforwadandback(double speed) {
+    public void setPowerforwadandback(double speed) { // TODO: change to CAPS LETER
         m_KRAKEN1.set(speed);
         m_KRAKEN2.set(speed);
     }
@@ -25,6 +25,8 @@ public class SubsystemKraken extends SubsystemBase {
     public void stop() {
         m_KRAKEN1.stopMotor();
         m_KRAKEN2.stopMotor();
+    }
+    public void position1(){
     }
 
     @Override
