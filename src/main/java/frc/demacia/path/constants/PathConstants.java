@@ -11,5 +11,5 @@ public class PathConstants {
     public static final double MAX_POSITION_THRESHOLD_DURING_PATH = 0.3; // m
     public static final double MAX_ANGLE_TO_PASS = Math.toRadians(60); // rad
     public static final double radius = 0.25;
-    //TODO: CANGE THIS
+    //TODO: CHANGE THIS
 }

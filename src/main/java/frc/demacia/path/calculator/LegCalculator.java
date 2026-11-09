@@ -1,4 +1,4 @@
-package frc.demacia.path.calclator;
+package frc.demacia.path.calculator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class LegCalculator {
     public static List<Translation2d> returnPoint(Translation2d p1, Translation2d p2, ArcSegment arc, double radius){
         Translation2d distance = arc.getCenter().minus(p1);
 
-        //the base angle in 90 degress trangole
+        //the base angle in 90 degrees triangle
         double alpha = /*Math.acos*/Math.asin(radius/(distance.getNorm()));
 
         Translation2d vector1 = distance.rotateBy(new Rotation2d(arc.getIsLeft() ? -alpha : alpha));
@@ -46,7 +46,7 @@ public class LegCalculator {
         // Pose2d[]{
         //     new Pose2d(p1, vector3.getAngle()),
         //     new Pose2d(vector2, vector3.getAngle())
-        // }.asLi;
+        // }.asList;
     }
 
 
