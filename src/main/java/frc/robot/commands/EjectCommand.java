@@ -20,8 +20,10 @@ public class EjectCommand extends Command {
 
   @Override
   public void initialize() {
+    // Deplot the mechanism, start the rollers to eject the coral (spin them the other way) and reverse the aligner.
     intake.deployIntake();
     intake.ejectCoral();
+    intake.reverseAligner();
   
   }
 
@@ -30,9 +32,8 @@ public class EjectCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    // Retract the mechanism and stop the rollers
+    // Retract the mechanism, stop the rollers, and stop the aligner.
     intake.retractIntake();
-    intake.stopRollers(); 
   }
 
   @Override

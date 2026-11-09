@@ -28,12 +28,13 @@ public class RobotContainer implements Sendable{
 
   // Subsystem & controller:
   private final IntakeSubsystem intake = new IntakeSubsystem();
-  private final CommandController controller = new CommandController(Constants.ControllerConstants.kPS5ControllerPort, ControllerType.kPS5); // Make sure the port and the controller type are corect.
-
+  private final CommandController controller = new CommandController(Constants.ControllerConstants.kPS5ControllerPort, ControllerType.kPS5); 
+  // Make sure the port and the controller type are corect
 
 
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
+    SmartDashboard.putData("IntakeSubsystem", intake);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
     
     // Configure the trigger bindings
