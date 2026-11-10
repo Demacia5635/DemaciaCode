@@ -1,4 +1,4 @@
-package frc.demacia.path.trapzoid;
+package frc.demacia.path.trapezoid;
 
 import frc.demacia.utils.log.Log;
 
@@ -27,12 +27,12 @@ public class DemaciaTrapezoid {
         double vmax = Math.sqrt((distance * 2 * maxAccel + currentVelocity*currentVelocity + endVelocity*endVelocity) / 2);
         if(vmax > currentVelocity) { // we can accelerate
             return Math.min(currentVelocity + maxAccel * 0.02, maxVelocity);
-        } else { // we need to deccelerate
-            double deaccelTime = 2 * distance / (currentVelocity + endVelocity);
-            if(deaccelTime < 0.08) {
+        } else { // we need to decelerate
+            double decelTime = 2 * distance / (currentVelocity + endVelocity);
+            if(decelTime < 0.08) {
                 return endVelocity;
             } else {
-                return currentVelocity - (currentVelocity - endVelocity) * 0.02 / deaccelTime;
+                return currentVelocity - (currentVelocity - endVelocity) * 0.02 / decelTime;
             }
         }
     }

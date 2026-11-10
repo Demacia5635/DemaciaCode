@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.odometry.RobotPose;
-import frc.demacia.path.trapzoid.DemaciaTrapezoid;
+import frc.demacia.path.trapezoid.DemaciaTrapezoid;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.log.Log;
 

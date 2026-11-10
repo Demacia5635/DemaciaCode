@@ -1,4 +1,4 @@
-package frc.demacia.path.calclator;
+package frc.demacia.path.calculator;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -7,7 +7,7 @@ import frc.demacia.utils.log.Log;
 
 public class ArcCalculator {
     
-    public static ArcSegment calclateCenter(Translation2d from, Translation2d midPoint,Translation2d to, double radius){
+    public static ArcSegment calculateCenter(Translation2d from, Translation2d midPoint,Translation2d to, double radius){
         double MidPointToFromAngle = from.minus(midPoint).getAngle().getRadians();
         double MidToPointToAngle = to.minus(midPoint).getAngle().getRadians();
         double vecAngle = (MidPointToFromAngle + MidToPointToAngle) / 2;

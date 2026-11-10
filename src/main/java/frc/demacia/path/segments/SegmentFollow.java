@@ -7,15 +7,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import frc.demacia.path.constants.PathConstants;
-import frc.demacia.path.trapzoid.DemaciaTrapezoid;
+import frc.demacia.path.trapezoid.DemaciaTrapezoid;
 import frc.demacia.path.utils.PathUtils;
 
 public class SegmentFollow {
-    private DemaciaTrapezoid driveTrapzoid;
+    private DemaciaTrapezoid driveTrapezoid;
     private ProfiledPIDController rotationPid;
 
     public SegmentFollow() {
-        driveTrapzoid = new DemaciaTrapezoid(PathConstants.MAX_VELOCITY, PathConstants.MAX_ACCELERATION);
+        driveTrapezoid = new DemaciaTrapezoid(PathConstants.MAX_VELOCITY, PathConstants.MAX_ACCELERATION);
         rotationPid = new ProfiledPIDController(1, 0, 0, new Constraints(PathConstants.MAX_ANGULAR_VELOCITY, PathConstants.MAX_ANGULAR_ACCELERATION));
     }
 
@@ -23,7 +23,7 @@ public class SegmentFollow {
         Translation2d currentVelVector = new Translation2d(currentVelocity.vxMetersPerSecond, currentVelocity.vyMetersPerSecond);
         Translation2d chassisPoseAsVector = currentPose.getTranslation();
 
-        // double angleError = MathUtil.angleModulus(Currentsegment.getEndPose().getAngle().getRadians() - currentPose.getRotation().getRadians());
+        // double angleError = MathUtil.angleModulus(currentSegment.getEndPose().getAngle().getRadians() - currentPose.getRotation().getRadians());
         // double omega = rotationPid.calculate(angleError, currentVelocity.omegaRadiansPerSecond);
 
         Translation2d calculatedVel;
@@ -56,7 +56,7 @@ public class SegmentFollow {
         double headingVelOmega = currentVelVector.getNorm() / PathConstants.radius;
         double heading = baseHeading + (arcSegment.getIsLeft() ? headingVelOmega * 0.02 : - headingVelOmega * 0.02);
         double distanceLeft = Math.abs(arcSegment.getFinishAngle().getRadians() - baseHeading) * PathConstants.radius;
-        double velocity = driveTrapzoid.nextVelocity(distanceLeft, currentVelVector.getNorm(), finalVel);
+        double velocity = driveTrapezoid.nextVelocity(distanceLeft, currentVelVector.getNorm(), finalVel);
         // Log.log("arcCalculatedVel: Norm: " + velocity + " Rotation2d: " + heading + " " + new Translation2d(velocity, new Rotation2d(heading)));
         return new Translation2d(velocity, new Rotation2d(heading));
     }
