@@ -167,7 +167,7 @@ public class DemaciaTrajectory {
         double distanceFromFinishPoint = toEnd.getNorm();
         
         Rotation2d toEndRot = toEnd.getAngle().minus(lineSegment.getTranslation().getAngle());
-        boolean passed = MathUtil.angleModulus(toEndRot.getRadians()) > PathConstants.MAX_ANGLE_TO_PASS;
+        boolean passed = Math.abs(MathUtil.angleModulus(toEndRot.getRadians())) > PathConstants.MAX_ANGLE_TO_PASS;
         // boolean isVelocityHeadingTowardsFinishPoint = PathUtils.isVelocityHeadingInRange(currentVelocityHeading, lineSegment.getTranslation().getAngle());
         if(currentSegmentIndex == segments.size() -1){
             return (distanceFromFinishPoint < PathConstants.MAX_POSITION_THRESHOLD_FINAL_POINT);
