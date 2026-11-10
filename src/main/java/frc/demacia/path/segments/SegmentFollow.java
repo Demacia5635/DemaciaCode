@@ -42,11 +42,11 @@ public class SegmentFollow {
     }
 
     private Translation2d calcVelInLineSegment(LineSegment lineSegment, Translation2d chassisPoseAsVector, Translation2d currentVelVector, double finalVel) {
-        Translation2d VectorToFinish = lineSegment.getEndPose().minus(chassisPoseAsVector);
-        double vel = driveTrapzoid.nextVelocity(VectorToFinish.getNorm(), currentVelVector.getNorm(), finalVel);
-        Rotation2d fixeHading = new Rotation2d(2 * VectorToFinish.getAngle().getRadians() - lineSegment.getTranslation().getAngle().getRadians());
+        Translation2d vectorToFinish = lineSegment.getEndPose().minus(chassisPoseAsVector);
+        double vel = driveTrapzoid.nextVelocity(vectorToFinish.getNorm(), currentVelVector.getNorm(), finalVel);
+        Rotation2d fixedHading = new Rotation2d(2 * vectorToFinish.getAngle().getRadians() - lineSegment.getTranslation().getAngle().getRadians());
         // Log.log("lineCalculatedVel: Norm: " + vel + " Rotation2d: " + fixeHading + " " + new Translation2d(vel, fixeHading));
-        return new Translation2d(vel, fixeHading);
+        return new Translation2d(vel, fixedHading);
     }
 
     private Translation2d calcVelInArcSegment(ArcSegment arcSegment, Translation2d chassisPoseAsVector, Translation2d currentVelVector, double finalVel){

@@ -19,10 +19,6 @@ public class SegmentBase {
     public Translation2d getEndPose() {
         return endPose;
     }
-    
-    public Translation2d getTranslation(){
-        return getStartPose().minus(getEndPose());
-    }
 
     @Override
     public String toString(){
