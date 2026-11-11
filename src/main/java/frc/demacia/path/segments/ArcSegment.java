@@ -12,14 +12,14 @@ public class ArcSegment extends SegmentBase {
     private boolean isLeft;
 
 
-    public ArcSegment(Translation2d startingPoint, Translation2d finishPoint, Translation2d centerCircle, boolean isLeft, double radius, Rotation2d endRotation){
-        super(startingPoint, new Pose2d(finishPoint, endRotation));
+    public ArcSegment(Translation2d startingPoint, Pose2d endPoint, Translation2d centerCircle, boolean isLeft, double radius, double endVelocity, double maxVelocity){
+        super(startingPoint, endPoint, endVelocity, maxVelocity);
 
         this.center = centerCircle;
         this.isLeft = isLeft;
 
         this.centerToStart = startingPoint.minus(centerCircle);
-        this.centerToFinish = finishPoint.minus(centerCircle);
+        this.centerToFinish = endPoint.getTranslation().minus(centerCircle);
     }
 
     public Translation2d getCenter(){return this.center;}

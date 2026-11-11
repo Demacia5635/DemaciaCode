@@ -22,39 +22,39 @@ public class SegmentFollow {
     }
 
     public ChassisSpeeds getChassisSpeeds(SegmentBase currentSegment, Pose2d currentPose, ChassisSpeeds currentVelocity, double finalVel) {
-        Translation2d currentVelVector = new Translation2d(currentVelocity.vxMetersPerSecond, currentVelocity.vyMetersPerSecond);
+        Translation2d chassisTranslation = new Translation2d(currentVelocity.vxMetersPerSecond, currentVelocity.vyMetersPerSecond);
         Translation2d chassisPoseAsVector = currentPose.getTranslation();
 
-        double angleError = MathUtil.angleModulus(currentSegment.getEndRotation().getRadians() - currentPose.getRotation().getRadians());
-        double omega = rotationPid.calculate(angleError, currentVelocity.omegaRadiansPerSecond);
+        // double angleError = MathUtil.angleModulus(currentSegment.getEndRotation().getRadians() - currentPose.getRotation().getRadians());
+        // double omega = rotationPid.calculate(angleError, currentVelocity.omegaRadiansPerSecond);
         // Log.log("angleError: " + angleError + " omega: " + omega);
 
         Translation2d calculatedVel;
 
         if(PathUtils.isLineSegment(currentSegment)){
             LineSegment lineSegment = (LineSegment) currentSegment;
-            calculatedVel = calcVelInLineSegment(lineSegment, chassisPoseAsVector, currentVelVector, finalVel);
+            calculatedVel = calcVelInLineSegment(lineSegment, chassisPoseAsVector, chassisTranslation, finalVel);
         }
         
         else{
             ArcSegment ArcSegment = (ArcSegment) currentSegment;
-            calculatedVel = calcVelInArcSegment(ArcSegment, chassisPoseAsVector, currentVelVector, finalVel);
+            calculatedVel = calcVelInArcSegment(ArcSegment, chassisPoseAsVector, chassisTranslation, finalVel);
         }
         // LogManager.log("omega: " + omega);
-        return new ChassisSpeeds(calculatedVel.getX(), calculatedVel.getY(), omega);
+        return new ChassisSpeeds(calculatedVel.getX(), calculatedVel.getY(), 0);
     }
 
-    private Translation2d calcVelInLineSegment(LineSegment lineSegment, Translation2d chassisPoseAsVector, Translation2d currentVelVector, double finalVel) {
-        Translation2d vectorToFinish = lineSegment.getEndPose().minus(chassisPoseAsVector);
+    private Translation2d calcVelInLineSegment(LineSegment lineSegment, Translation2d chassisTranslation, Translation2d currentVelVector, double finalVel) {
+        Translation2d vectorToFinish = lineSegment.getEndPose().getTranslation().minus(chassisTranslation);
         double vel = driveTrapezoid.nextVelocity(vectorToFinish.getNorm(), currentVelVector.getNorm(), finalVel);
         Rotation2d fixedHading = new Rotation2d(2 * vectorToFinish.getAngle().getRadians() - lineSegment.getTranslation().getAngle().getRadians());
         // Log.log("lineCalculatedVel: Norm: " + vel + " Rotation2d: " + fixeHading + " " + new Translation2d(vel, fixeHading));
         return new Translation2d(vel, fixedHading);
     }
 
-    private Translation2d calcVelInArcSegment(ArcSegment arcSegment, Translation2d chassisPoseAsVector, Translation2d currentVelVector, double finalVel){
+    private Translation2d calcVelInArcSegment(ArcSegment arcSegment, Translation2d chassisTranslation, Translation2d currentVelVector, double finalVel){
         
-        Translation2d centerToChassis = chassisPoseAsVector.minus(arcSegment.getCenter());
+        Translation2d centerToChassis = chassisTranslation.minus(arcSegment.getCenter());
         double baseHeading = centerToChassis.getAngle().getRadians() + (arcSegment.getIsLeft() ? Math.PI/2 : -Math.PI/2);
         double headingVelOmega = currentVelVector.getNorm() / PathConstants.radius;
         double heading = baseHeading + (arcSegment.getIsLeft() ? headingVelOmega * 0.02 : - headingVelOmega * 0.02);

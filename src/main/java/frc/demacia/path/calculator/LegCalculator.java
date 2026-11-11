@@ -39,8 +39,8 @@ public class LegCalculator {
         Log.log("p1: " + p1 + " vector2: " + vector2 + " vector1: " + vector1 + " arc: " + arc);
         return new ArrayList<>(){
             {
-                add(new Pose2d(pp1, arc.getEndRotation()));
-                add(new Pose2d(pp2, arc.getEndRotation()));
+                add(new Pose2d(pp1, null));
+                add(new Pose2d(pp2, null));
             }
         };
         // Pose2d[]{

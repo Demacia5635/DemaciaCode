@@ -80,9 +80,9 @@ public class RobotContainer implements Sendable {
 
   public void addPoints(){
     points.add(new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
-    points.add(new Pose2d(new Translation2d(2, 2), new Rotation2d(Math.toRadians(90))));
-    points.add(new Pose2d(new Translation2d(4, 0), new Rotation2d(Math.toRadians(180))));
-    points.add(new Pose2d(new Translation2d(2.5, 2.5), new Rotation2d(Math.toRadians(270))));
+    points.add(new Pose2d(new Translation2d(2, -2), new Rotation2d(Math.toRadians(90))));
+    points.add(new Pose2d(new Translation2d(2, 0), new Rotation2d(Math.toRadians(180))));
+    points.add(new Pose2d(new Translation2d(1.5, -1), new Rotation2d(Math.toRadians(270))));
     points.add(new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
   }
 

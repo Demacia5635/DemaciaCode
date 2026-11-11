@@ -7,34 +7,32 @@ import edu.wpi.first.math.geometry.Translation2d;
 public class SegmentBase {
 
     private Translation2d startPose;
-    private Translation2d endPose;
-    private Rotation2d endRotation;
+    private Pose2d endPose;
+    private double endVelocity;
+    private double maxVelocity;
 
-    public SegmentBase(Translation2d startPose, Translation2d endPose, Rotation2d endRotation) {
+    public SegmentBase(Translation2d startPose, Pose2d endPose, double endVelocity, double maxVelocity) {
         this.startPose = startPose;
         this.endPose = endPose;
-        this.endRotation = endRotation;
+        this.endVelocity = endVelocity;
+        this.maxVelocity = maxVelocity;
     }
 
-    public SegmentBase(Translation2d startPose, Pose2d endPose){
-        this(startPose, endPose.getTranslation(), endPose.getRotation());
-    }
-
-    public Translation2d getStartPose() {
+    public Translation2d getStartTranslation() {
         return startPose;
     }
 
-    public Translation2d getEndPose() {
+    public Pose2d getEndPose() {
         return endPose;
     }
     
     public Translation2d getTranslation(){
-        return getStartPose().minus(getEndPose());
+        return getStartTranslation().minus(getEndPose().getTranslation());
     }
 
-    public Rotation2d getEndRotation(){
-        return endRotation;
-    }
+    public double getMaxVelocity(){return this.maxVelocity;}
+
+    public double getEndVelocity(){return this.endVelocity;}
 
     @Override
     public String toString(){

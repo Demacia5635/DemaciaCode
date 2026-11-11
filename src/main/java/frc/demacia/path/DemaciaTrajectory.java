@@ -17,6 +17,7 @@ import frc.demacia.path.segments.SegmentBase;
 import frc.demacia.path.segments.SegmentFollow;
 import frc.demacia.path.utils.PathUtils;
 import frc.demacia.utils.chassis.Chassis;
+import frc.demacia.utils.geometry.Transform2dDemacia;
 import frc.demacia.utils.log.Log;
 
 public class DemaciaTrajectory {
@@ -52,7 +53,7 @@ public class DemaciaTrajectory {
             return;
         }
         else if (demaciaPathPoints.size() == 2) {
-            LineSegment segment = new LineSegment(demaciaPathPoints.get(0).getTranslation(), demaciaPathPoints.get(1));
+            LineSegment segment = new LineSegment(demaciaPathPoints.get(0).getTranslation(), demaciaPathPoints.get(1).getTranslation());
             segments.add(segment);
             pathPoints.add(demaciaPathPoints.get(0));
             pathPoints.add(demaciaPathPoints.get(1));
@@ -64,6 +65,7 @@ public class DemaciaTrajectory {
         }
         this.currentSegmentIndex = 0;
         this.currentSegment = segments.get(this.currentSegmentIndex);
+        this.currentPathPointIndex = 0;
 
         for (int i = 0; i < segments.size(); i++){
             Log.log("segments.get(" + i + "): " + segments.get(i));
@@ -89,7 +91,7 @@ public class DemaciaTrajectory {
 
     private void buildLinesBetweenDemaciaPathPoints(){
         for (int i = 0; i < demaciaPathPoints.size() - 1; i++) {
-            LineSegment line = new LineSegment(demaciaPathPoints.get(i).getTranslation(), demaciaPathPoints.get(i + 1));
+            LineSegment line = new LineSegment(demaciaPathPoints.get(i).getTranslation(), demaciaPathPoints.get(i + 1), , );
             this.lineSegments.add(line);
         }
     }
@@ -117,7 +119,7 @@ public class DemaciaTrajectory {
 
     private void buildArcs(){
         for (int i = 0; i < lineSegments.size() - 1; i++) {
-            ArcSegment arc = ArcCalculator.calculateCenter(lineSegments.get(i).getStartPose(), lineSegments.get(i).getEndPose(), new Pose2d(lineSegments.get(i+1).getEndPose(), lineSegments.get(i+1).getEndRotation()),radius);
+            ArcSegment arc = ArcCalculator.calculateCenter(lineSegments.get(i).getStartPose(), lineSegments.get(i).getEndPose(), lineSegments.get(i+1).getEndPose(),radius);
             this.arcSegments.add(arc);
         }
     }
@@ -133,13 +135,13 @@ public class DemaciaTrajectory {
 
     private void buildSegments(){
         for (int i = 0; i < pathPoints.size() - 2; i += 2) {
-            LineSegment line = new LineSegment(pathPoints.get(i).getTranslation(), pathPoints.get(i + 1));
+            LineSegment line = new LineSegment(pathPoints.get(i).getTranslation(), pathPoints.get(i + 1).getTranslation());
             segments.add(line);
 
-            ArcSegment arc = new ArcSegment(pathPoints.get(i + 1).getTranslation(), pathPoints.get(i + 2).getTranslation(), arcSegments.get(i / 2).getCenter(), arcSegments.get(i / 2).getIsLeft(), radius, pathPoints.get(i + 2).getRotation());
+            ArcSegment arc = new ArcSegment(pathPoints.get(i + 1).getTranslation(), pathPoints.get(i + 2).getTranslation(), arcSegments.get(i / 2).getCenter(), arcSegments.get(i / 2).getIsLeft(), radius);
             segments.add(arc);
         }
-        segments.add(new LineSegment(pathPoints.get(pathPoints.size() - 2).getTranslation(), pathPoints.get(pathPoints.size() - 1)));
+        segments.add(new LineSegment(pathPoints.get(pathPoints.size() - 2).getTranslation(), pathPoints.get(pathPoints.size() - 1).getTranslation()));
     }
 
     public ChassisSpeeds calculateSpeeds(ChassisSpeeds currentSpeeds, Pose2d currentPose) {
@@ -148,10 +150,11 @@ public class DemaciaTrajectory {
         ChassisSpeeds speeds = segmentFollow.getChassisSpeeds(segments.get(currentSegmentIndex), currentPose, currentSpeeds, finishVelocity);
 
         // Log.log("wanted speed: "+speeds+" \ncurrentSpeeds: "+currentSpeeds);
-        // if(currentSegment instanceof ArcSegment){
-        //     ArcSegment arcSegment = (ArcSegment) currentSegment;
-        //     arcSegment.getStartPose();
-        // }        
+        if(currentSegment instanceof ArcSegment){
+            ArcSegment arcSegment = (ArcSegment) currentSegment;
+            Translation2d centerToChassis = currentPose.getTranslation().minus(arcSegment.getCenter());
+
+        }        
 
         if(!isFinishedSegment(currentSpeeds, currentPose, currentSegment)) 
             return speeds;
