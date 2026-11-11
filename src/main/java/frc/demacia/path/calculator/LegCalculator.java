@@ -20,7 +20,7 @@ import frc.demacia.utils.log.Log;
 public class LegCalculator {
 
 
-    public static List<Translation2d> returnPoint(Translation2d p1, Translation2d p2, ArcSegment arc, double radius){
+    public static List<Pose2d> returnPoint(Translation2d p1, Translation2d p2, ArcSegment arc, double radius){
         Translation2d distance = arc.getCenter().minus(p1);
 
         //the base angle in 90 degrees triangle
@@ -39,8 +39,8 @@ public class LegCalculator {
         Log.log("p1: " + p1 + " vector2: " + vector2 + " vector1: " + vector1 + " arc: " + arc);
         return new ArrayList<>(){
             {
-                add(pp1);
-                add(pp2);
+                add(new Pose2d(pp1, arc.getEndRotation()));
+                add(new Pose2d(pp2, arc.getEndRotation()));
             }
         };
         // Pose2d[]{

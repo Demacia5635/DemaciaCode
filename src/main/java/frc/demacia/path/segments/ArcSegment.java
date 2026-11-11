@@ -1,5 +1,6 @@
 package frc.demacia.path.segments;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
@@ -11,8 +12,8 @@ public class ArcSegment extends SegmentBase {
     private boolean isLeft;
 
 
-    public ArcSegment(Translation2d startingPoint, Translation2d finishPoint, Translation2d centerCircle, boolean isLeft, double radius){
-        super(startingPoint, finishPoint);
+    public ArcSegment(Translation2d startingPoint, Translation2d finishPoint, Translation2d centerCircle, boolean isLeft, double radius, Rotation2d endRotation){
+        super(startingPoint, new Pose2d(finishPoint, endRotation));
 
         this.center = centerCircle;
         this.isLeft = isLeft;

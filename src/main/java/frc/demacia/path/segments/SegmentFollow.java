@@ -1,5 +1,6 @@
 package frc.demacia.path.segments;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -9,6 +10,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import frc.demacia.path.constants.PathConstants;
 import frc.demacia.path.trapezoid.DemaciaTrapezoid;
 import frc.demacia.path.utils.PathUtils;
+import frc.demacia.utils.log.Log;
 
 public class SegmentFollow {
     private DemaciaTrapezoid driveTrapezoid;
@@ -23,8 +25,9 @@ public class SegmentFollow {
         Translation2d currentVelVector = new Translation2d(currentVelocity.vxMetersPerSecond, currentVelocity.vyMetersPerSecond);
         Translation2d chassisPoseAsVector = currentPose.getTranslation();
 
-        // double angleError = MathUtil.angleModulus(currentSegment.getEndPose().getAngle().getRadians() - currentPose.getRotation().getRadians());
-        // double omega = rotationPid.calculate(angleError, currentVelocity.omegaRadiansPerSecond);
+        double angleError = MathUtil.angleModulus(currentSegment.getEndRotation().getRadians() - currentPose.getRotation().getRadians());
+        double omega = rotationPid.calculate(angleError, currentVelocity.omegaRadiansPerSecond);
+        // Log.log("angleError: " + angleError + " omega: " + omega);
 
         Translation2d calculatedVel;
 
@@ -38,12 +41,12 @@ public class SegmentFollow {
             calculatedVel = calcVelInArcSegment(ArcSegment, chassisPoseAsVector, currentVelVector, finalVel);
         }
         // LogManager.log("omega: " + omega);
-        return new ChassisSpeeds(calculatedVel.getX(), calculatedVel.getY(), 0);
+        return new ChassisSpeeds(calculatedVel.getX(), calculatedVel.getY(), omega);
     }
 
     private Translation2d calcVelInLineSegment(LineSegment lineSegment, Translation2d chassisPoseAsVector, Translation2d currentVelVector, double finalVel) {
         Translation2d vectorToFinish = lineSegment.getEndPose().minus(chassisPoseAsVector);
-        double vel = driveTrapzoid.nextVelocity(vectorToFinish.getNorm(), currentVelVector.getNorm(), finalVel);
+        double vel = driveTrapezoid.nextVelocity(vectorToFinish.getNorm(), currentVelVector.getNorm(), finalVel);
         Rotation2d fixedHading = new Rotation2d(2 * vectorToFinish.getAngle().getRadians() - lineSegment.getTranslation().getAngle().getRadians());
         // Log.log("lineCalculatedVel: Norm: " + vel + " Rotation2d: " + fixeHading + " " + new Translation2d(vel, fixeHading));
         return new Translation2d(vel, fixedHading);

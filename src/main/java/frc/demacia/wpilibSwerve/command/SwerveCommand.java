@@ -82,6 +82,13 @@ public class SwerveCommand extends Command {
     chassis.setModuleStates(moduleStates);
   }
 
+  public void setVelFieldRel(ChassisSpeeds speeds){
+    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, chassis.getGyroAngle());
+    moduleStates = kinematics.kinematics().toSwerveModuleStates(speeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, chassis.getConfig().maxDriveVelocity);
+    chassis.setModuleStates(moduleStates);
+  }
+
   public void setVelRobotRel(ChassisSpeeds speeds) {
     speeds = ChassisSpeeds.fromRobotRelativeSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, chassis.getGyroAngle());
     moduleStates = kinematics.kinematics().toSwerveModuleStates(speeds);
