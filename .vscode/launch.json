@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "CreateLogXlsx",
+      "request": "launch",
+      "mainClass": "frc.demacia.utils.log.CreateLogXlsx",
+      "projectName": "DemaciaCode"
+    },
+    {
+      "type": "java",
       "name": "SysidApp",
       "request": "launch",
       "mainClass": "frc.demacia.sysid.SysidApp",
