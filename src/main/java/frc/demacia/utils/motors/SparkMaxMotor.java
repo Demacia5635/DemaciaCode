@@ -219,7 +219,12 @@ public class SparkMaxMotor extends BaseMotor {
     motor.getClosedLoopController().setSetpoint(position, ControlType.kPosition, closedLoopSlot, feedForward);
   
     if (RobotBase.isSimulation()) {
-      encoderSim.setPosition(position);
+      if (Math.abs(position - getCurrentPosition()) < SIM_VEL_POS_CONTROL) {
+        encoderSim.setPosition(position);
+        encoderSim.setVelocity(0);
+      } else {
+        encoderSim.setVelocity(Math.signum(position - getCurrentPosition())*SIM_VEL_POS_CONTROL);
+      }
     }
   }
 
@@ -228,7 +233,12 @@ public class SparkMaxMotor extends BaseMotor {
         feedForward);
 
     if (RobotBase.isSimulation()) {
-      encoderSim.setPosition(position);
+      if (Math.abs(position - getCurrentPosition()) < SIM_VEL_POS_CONTROL) {
+        encoderSim.setPosition(position);
+        encoderSim.setVelocity(0);
+      } else {
+        encoderSim.setVelocity(Math.signum(position - getCurrentPosition())*SIM_VEL_POS_CONTROL);
+      }
     }
   }
 

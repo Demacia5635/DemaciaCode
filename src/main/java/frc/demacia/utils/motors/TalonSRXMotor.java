@@ -222,7 +222,12 @@ public class TalonSRXMotor extends BaseMotor {
         DemandType.ArbitraryFeedForward, feedForward / config.maxVolt);
         
     if (RobotBase.isSimulation()) {
-      motor.getSimCollection().setQuadratureRawPosition((int) nativePosition);
+      if (Math.abs(position - getCurrentPosition()) < SIM_VEL_POS_CONTROL) {
+        motor.getSimCollection().setQuadratureRawPosition((int) nativePosition);
+        motor.getSimCollection().setQuadratureVelocity(0);
+      } else {
+        motor.getSimCollection().setQuadratureVelocity((int) (Math.signum(position - getCurrentPosition())*SIM_VEL_POS_CONTROL * getTicksPerUnit() / 10.0));
+      }
     }
   }
 
@@ -231,9 +236,14 @@ public class TalonSRXMotor extends BaseMotor {
     double nativePosition = position * getTicksPerUnit();
     motor.set(com.ctre.phoenix.motorcontrol.ControlMode.MotionMagic, nativePosition,
         DemandType.ArbitraryFeedForward, feedForward / config.maxVolt);
-        
+
     if (RobotBase.isSimulation()) {
-      motor.getSimCollection().setQuadratureRawPosition((int) nativePosition);
+      if (Math.abs(position - getCurrentPosition()) < SIM_VEL_POS_CONTROL) {
+        motor.getSimCollection().setQuadratureRawPosition((int) nativePosition);
+        motor.getSimCollection().setQuadratureVelocity(0);
+      } else {
+        motor.getSimCollection().setQuadratureVelocity((int) (Math.signum(position - getCurrentPosition())*SIM_VEL_POS_CONTROL * getTicksPerUnit() / 10.0));
+      }
     }
   }
 
