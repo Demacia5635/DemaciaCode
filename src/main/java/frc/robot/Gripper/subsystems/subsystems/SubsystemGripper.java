@@ -6,7 +6,6 @@ package frc.robot.Gripper.subsystems.subsystems;
 
 import static frc.robot.Gripper.subsystems.constants.ConstantsGripper.*;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,30 +19,31 @@ import frc.demacia.utils.sensors.UltraSonicSensor;
 
 public class SubsystemGripper extends SubsystemBase {
 
-  // GreeperPro members
+  // Gripper intake members
   public TalonSRXMotor m_SRXSensorMotor;
   public OpticalSensor m_opticSensor;
   public UltraSonicSensor ultraSonicSensor;
 
-  // SubsystemKraken members
+  // Differential wrist (Kraken) members
   private final TalonFXMotor m_KRAKEN1Pitch;
   private final TalonFXMotor m_KRAKEN2Roll;
   private final LimitSwitch limitSwitchPitch;
   private final LimitSwitch limitSwitchRoll;
 
   public SubsystemGripper() {
-    // GreeperPro init
-    m_SRXSensorMotor = new TalonSRXMotor(frc.robot.Gripper.subsystems.constants.ConstantsGripper.kSnowBlowerConfig);
-    // m_opticSensor = new OpticalSensor(ConstantsGripper.kOpticSensorConfig);
-    ultraSonicSensor = new UltraSonicSensor(frc.robot.Gripper.subsystems.constants.ConstantsGripper.kUltraSonicSensorConfig);
-    SmartDashboard.putData(new InstantCommand(() -> setPower(-0.6)));
+    // Gripper intake initialization
+    m_SRXSensorMotor = new TalonSRXMotor(kSnowBlowerConfig);
+    // m_opticSensor = new OpticalSensor(kOpticSensorConfig); // Uncomment when sensor is connected
+    ultraSonicSensor = new UltraSonicSensor(kUltraSonicSensorConfig);
+    SmartDashboard.putData("Run Intake", new InstantCommand(() -> setPower(-0.6)));
 
-    // SubsystemKraken init
+    // Differential wrist initialization
     m_KRAKEN1Pitch = new TalonFXMotor(CONFIG);
     m_KRAKEN2Roll = new TalonFXMotor(CONFIG2);
     limitSwitchPitch = new LimitSwitch(LIMIT_SWITCH_CONFIG_PITCH);
     limitSwitchRoll = new LimitSwitch(LIMIT_SWITCH_CONFIG_ROLL);
 
+    // Initialize dashboard target inputs
     SmartDashboard.putNumber("Differential Pitch (Degrees)", 0.0);
     SmartDashboard.putNumber("Differential Roll (Degrees)", 0.0);
     SmartDashboard.putData(this);
@@ -51,12 +51,20 @@ public class SubsystemGripper extends SubsystemBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.addDoubleProperty("OpticSensorState", () -> ultraSonicSensor.get(), null);
-    builder.addDoubleProperty("Current", () -> m_SRXSensorMotor.getCurrentCurrent(), null);
+    // Automatically update telemetry values on the dashboard
+    builder.addDoubleProperty("UltraSonicDistance", () -> ultraSonicSensor.get(), null);
+    builder.addDoubleProperty("IntakeCurrent", () -> m_SRXSensorMotor.getCurrentCurrent(), null);
+    builder.addDoubleProperty("Actual Pitch (Degrees)", this::getActualPitchDeg, null);
+    builder.addDoubleProperty("Actual Roll (Degrees)", this::getActualRollDeg, null);
   }
 
-  // GreeperPro methods
+  // --- Intake Methods ---
+
   public double getOpticSensor() {
+    // Prevent NullPointerException if sensor is not initialized
+    if (m_opticSensor == null) {
+      return 0.0;
+    }
     return m_opticSensor.get();
   }
 
@@ -72,7 +80,12 @@ public class SubsystemGripper extends SubsystemBase {
     return m_SRXSensorMotor.getCurrentCurrent();
   }
 
-  // SubsystemKraken methods
+  // --- Differential Wrist Methods ---
+
+  /**
+   * Sets the target pitch and roll angles using differential kinematics.
+   * Assumes motors are configured with radians as position units.
+   */
   public void setPosition(double pitchRadians, double rollRadians) {
     m_KRAKEN1Pitch.setPositionVoltage(pitchRadians + rollRadians);
     m_KRAKEN2Roll.setPositionVoltage(pitchRadians - rollRadians);
@@ -91,63 +104,69 @@ public class SubsystemGripper extends SubsystemBase {
     m_KRAKEN2Roll.stop();
   }
 
-  public final double getPitchPosition() {
+  public final double getMotor1Position() {
     return m_KRAKEN1Pitch.getPosition().getValueAsDouble();
   }
 
-  public final double getRollPosition() {
+  public final double getMotor2Position() {
     return m_KRAKEN2Roll.getPosition().getValueAsDouble();
   }
 
-  public final double getPitchPositionDegrees() {
-    return Math.toDegrees(getPitchPosition());
+  /**
+   * Calculates the actual pitch angle in degrees from both differential motors.
+   */
+  public double getActualPitchDeg() {
+    return Math.toDegrees((getMotor1Position() + getMotor2Position()) / 2.0);
   }
 
-  public final double getRollPositionDegrees() {
-    return Math.toDegrees(getRollPosition());
+  /**
+   * Calculates the actual roll angle in degrees from both differential motors.
+   */
+  public double getActualRollDeg() {
+    return Math.toDegrees((getMotor1Position() - getMotor2Position()) / 2.0);
   }
 
-  public final void Is_Out_Max() {
-    if (getPitchPositionDegrees() > 90 || getRollPositionDegrees() > 90) {
-      stop();
-    }
+  /**
+   * Safety check to stop motors if either axis exceeds +/- 90 degrees.
+   */
+  public final boolean isOutOfBounds() {
+    return Math.abs(getActualPitchDeg()) > 90.0 || Math.abs(getActualRollDeg()) > 90.0;
   }
 
-  public void resetPitchEncoder() {
-    m_KRAKEN1Pitch.getCurrentPosition();
+  public void resetEncoders() {
+    m_KRAKEN1Pitch.setPosition(0);
+    m_KRAKEN2Roll.setPosition(0);
   }
 
-  public void Pitchmove(double speed) {
-    m_KRAKEN1Pitch.setVoltage(speed);
-    m_KRAKEN2Roll.setVoltage(speed);
+  public void pitchMove(double voltage) {
+    m_KRAKEN1Pitch.setVoltage(voltage);
+    m_KRAKEN2Roll.setVoltage(voltage);
   }
 
-  public void rollmove(double speed) {
-    m_KRAKEN1Pitch.setVoltage(speed);
-    m_KRAKEN2Roll.setVoltage(-speed);
+  public void rollMove(double voltage) {
+    m_KRAKEN1Pitch.setVoltage(voltage);
+    m_KRAKEN2Roll.setVoltage(-voltage);
   }
 
   @Override
   public void periodic() {
-    // SubsystemKraken periodic logic
+    // Zero encoders when both limit switches are pressed at the home position
     if (isPitchLimitSwitchTriggered() && isRollLimitSwitchTriggered()) {
-      m_KRAKEN1Pitch.setPosition(0);
-      m_KRAKEN2Roll.setPosition(0);
+      resetEncoders();
     }
 
+    // Safety cutoff if the mechanism exceeds physical limits
+    if (isOutOfBounds()) {
+      stop();
+      return;
+    }
+
+    // Read target angles from SmartDashboard (Note: remove this when using Commands)
     double targetPitchDeg = MathUtil.clamp(
         SmartDashboard.getNumber("Differential Pitch (Degrees)", 0.0), -90.0, 90.0);
     double targetRollDeg = MathUtil.clamp(
         SmartDashboard.getNumber("Differential Roll (Degrees)", 0.0), -90.0, 90.0);
 
     setPosition(Math.toRadians(targetPitchDeg), Math.toRadians(targetRollDeg));
-
-    double motor1Rad = getPitchPosition();
-    double motor2Rad = getRollPosition();
-    double actualPitchDeg = Math.toDegrees((motor1Rad + motor2Rad) / 2.0);
-    double actualRollDeg = Math.toDegrees((motor1Rad - motor2Rad) / 2.0);
-
-    SmartDashboard.putNumber("Actual Pitch (Degrees)", actualPitchDeg);
-    SmartDashboard.putNumber("Actual Roll (Degrees)", actualRollDeg);
   }
 }

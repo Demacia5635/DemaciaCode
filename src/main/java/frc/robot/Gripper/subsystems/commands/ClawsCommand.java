@@ -37,22 +37,20 @@ public class  ClawsCommand extends Command {
   @Override
   public void execute() {
       isCurrentReady = gripper_sub.getCurrent() > 3.5;
+
       if(ConstantsGripper.DISTANCE_TO_BOTTLE < gripper_sub.getUltraSonicSensor() && ConstantsGripper.DISTANCE_TO_BOTTLE_CLAMP > gripper_sub.getUltraSonicSensor() && !isCurrentReady){
         gripper_sub.setPower(0);
-        LogManager.log("stop");
       }
+
       else if(ConstantsGripper.DISTANCE_TO_BOTTLE > gripper_sub.getUltraSonicSensor() && ConstantsGripper.DISTANCE_TO_BOTTLE_CLAMP > gripper_sub.getUltraSonicSensor() && !isCurrentReady ){
         gripper_sub.setPower(0.6);
-          LogManager.log("move");
       }
-      
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-  gripper_sub.setPower(0);
-
+    gripper_sub.setPower(0);
   }
 
   // Returns true when the command should end.
