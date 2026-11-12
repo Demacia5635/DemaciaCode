@@ -53,7 +53,7 @@ public class DemaciaTrajectory {
             return;
         }
         else if (demaciaPathPoints.size() == 2) {
-            LineSegment segment = new LineSegment(demaciaPathPoints.get(0).getTranslation(), demaciaPathPoints.get(1).getTranslation());
+            LineSegment segment = new LineSegment(demaciaPathPoints.get(0).getTranslation(), demaciaPathPoints.get(1), PathConstants.MAX_VELOCITY, PathConstants.MAX_VELOCITY);
             segments.add(segment);
             pathPoints.add(demaciaPathPoints.get(0));
             pathPoints.add(demaciaPathPoints.get(1));
@@ -91,7 +91,7 @@ public class DemaciaTrajectory {
 
     private void buildLinesBetweenDemaciaPathPoints(){
         for (int i = 0; i < demaciaPathPoints.size() - 1; i++) {
-            LineSegment line = new LineSegment(demaciaPathPoints.get(i).getTranslation(), demaciaPathPoints.get(i + 1), , );
+            LineSegment line = new LineSegment(demaciaPathPoints.get(i).getTranslation(), demaciaPathPoints.get(i + 1), PathConstants.MAX_VELOCITY, PathConstants.MAX_VELOCITY);
             this.lineSegments.add(line);
         }
     }
@@ -119,7 +119,7 @@ public class DemaciaTrajectory {
 
     private void buildArcs(){
         for (int i = 0; i < lineSegments.size() - 1; i++) {
-            ArcSegment arc = ArcCalculator.calculateCenter(lineSegments.get(i).getStartPose(), lineSegments.get(i).getEndPose(), lineSegments.get(i+1).getEndPose(),radius);
+            ArcSegment arc = ArcCalculator.calculateCenter(lineSegments.get(i).getStartTranslation(), lineSegments.get(i).getEndPose().getTranslation(), lineSegments.get(i+1).getEndPose().getTranslation(),radius);
             this.arcSegments.add(arc);
         }
     }
@@ -127,7 +127,7 @@ public class DemaciaTrajectory {
     private void buildPathPoints(){
         this.pathPoints.add(demaciaPathPoints.get(0));
         for (int i = 0; i < lineSegments.size() - 1; i++) {
-            List<Pose2d> points = LegCalculator.returnPoint(lineSegments.get(i).getStartPose(), lineSegments.get(i).getEndPose(), arcSegments.get(i), radius);
+            List<Pose2d> points = LegCalculator.returnPoint(lineSegments.get(i).getStartTranslation(), lineSegments.get(i).getEndPose().getTranslation(), arcSegments.get(i), radius);
             this.pathPoints.addAll(points);
         }
         this.pathPoints.add(demaciaPathPoints.get(demaciaPathPoints.size() - 1));
@@ -135,13 +135,13 @@ public class DemaciaTrajectory {
 
     private void buildSegments(){
         for (int i = 0; i < pathPoints.size() - 2; i += 2) {
-            LineSegment line = new LineSegment(pathPoints.get(i).getTranslation(), pathPoints.get(i + 1).getTranslation());
+            LineSegment line = new LineSegment(pathPoints.get(i).getTranslation(), pathPoints.get(i + 1));
             segments.add(line);
 
-            ArcSegment arc = new ArcSegment(pathPoints.get(i + 1).getTranslation(), pathPoints.get(i + 2).getTranslation(), arcSegments.get(i / 2).getCenter(), arcSegments.get(i / 2).getIsLeft(), radius);
+            ArcSegment arc = new ArcSegment(pathPoints.get(i + 1).getTranslation(), pathPoints.get(i + 2), arcSegments.get(i / 2).getCenter(), arcSegments.get(i / 2).getIsLeft(), radius);
             segments.add(arc);
         }
-        segments.add(new LineSegment(pathPoints.get(pathPoints.size() - 2).getTranslation(), pathPoints.get(pathPoints.size() - 1).getTranslation()));
+        segments.add(new LineSegment(pathPoints.get(pathPoints.size() - 2).getTranslation(), pathPoints.get(pathPoints.size() - 1)));
     }
 
     public ChassisSpeeds calculateSpeeds(ChassisSpeeds currentSpeeds, Pose2d currentPose) {
@@ -174,7 +174,7 @@ public class DemaciaTrajectory {
 
     private boolean isFinishedSegment(ChassisSpeeds currentSpeeds, Pose2d currentPose, SegmentBase segment) {
 
-        Translation2d toEnd = segment.getEndPose().minus(currentPose.getTranslation());
+        Translation2d toEnd = segment.getEndPose().getTranslation().minus(currentPose.getTranslation());
 
         Rotation2d currentVelocityHeading = Rotation2d.kZero;
         if (!(currentSpeeds.vxMetersPerSecond == 0 && currentSpeeds.vyMetersPerSecond == 0))
@@ -197,7 +197,7 @@ public class DemaciaTrajectory {
 
         double distanceFromFinishPoint = toEnd.getNorm();
         
-        Rotation2d toEndRot = toEnd.getAngle().minus(lineSegment.getTranslation().getAngle());
+        Rotation2d toEndRot = toEnd.getAngle().minus(lineSegment.getStartToEndVector().getAngle());
         boolean passed = Math.abs(MathUtil.angleModulus(toEndRot.getRadians())) > PathConstants.MAX_ANGLE_TO_PASS;
         // boolean isVelocityHeadingTowardsFinishPoint = PathUtils.isVelocityHeadingInRange(currentVelocityHeading, lineSegment.getTranslation().getAngle());
         if(currentSegmentIndex == segments.size() -1){
@@ -208,7 +208,7 @@ public class DemaciaTrajectory {
 
     private boolean isFinishedArcSegment(ArcSegment arcSegment, Rotation2d currentVelocityHeading){
 
-        Translation2d centerToFinish = arcSegment.getEndPose().minus(arcSegment.getCenter());
+        Translation2d centerToFinish = arcSegment.getEndPose().getTranslation().minus(arcSegment.getCenter());
         Rotation2d wantedVelocityHeading = centerToFinish.getAngle().plus(arcSegment.getIsLeft() ? Rotation2d.kCCW_90deg : Rotation2d.kCW_90deg);
         boolean isHeadingTowardesNextSegment = PathUtils.isVelocityHeadingInRange(currentVelocityHeading, wantedVelocityHeading);
         // Log.log("isFinishedSegment " + (distanceFromFinishPoint < PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH) + " " + (distanceFromFinishPoint < (PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH * 3)) + " isHeadingTowardesNextSegment " + isHeadingTowardesNextSegment + " " + currentVelocityHeading + "currentVelocityHeading wantedVelocityHeading" + wantedVelocityHeading + " distanceFromFinishPoint" + distanceFromFinishPoint + " EndPoint: " + arcSegment.getEndPose() + " Current segment: " + currentSegment);

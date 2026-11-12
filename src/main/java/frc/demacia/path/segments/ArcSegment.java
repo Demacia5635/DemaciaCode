@@ -3,6 +3,7 @@ package frc.demacia.path.segments;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import frc.demacia.path.constants.PathConstants;
 
 public class ArcSegment extends SegmentBase {
 
@@ -20,6 +21,10 @@ public class ArcSegment extends SegmentBase {
 
         this.centerToStart = startingPoint.minus(centerCircle);
         this.centerToFinish = endPoint.getTranslation().minus(centerCircle);
+    }
+
+    public ArcSegment(Translation2d startingPoint, Pose2d endPoint, Translation2d centerCircle, boolean isLeft, double radius){
+        this(startingPoint, endPoint, centerCircle, isLeft, radius, PathConstants.MAX_VELOCITY, PathConstants.MAX_VELOCITY);
     }
 
     public Translation2d getCenter(){return this.center;}

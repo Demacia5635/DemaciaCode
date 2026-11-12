@@ -29,7 +29,7 @@ public class SegmentFollow {
         // double omega = rotationPid.calculate(angleError, currentVelocity.omegaRadiansPerSecond);
         // Log.log("angleError: " + angleError + " omega: " + omega);
 
-        Translation2d calculatedVel;
+        Translation2d calculatedVel = Translation2d.kZero;
 
         if(PathUtils.isLineSegment(currentSegment)){
             LineSegment lineSegment = (LineSegment) currentSegment;
@@ -47,7 +47,7 @@ public class SegmentFollow {
     private Translation2d calcVelInLineSegment(LineSegment lineSegment, Translation2d chassisTranslation, Translation2d currentVelVector, double finalVel) {
         Translation2d vectorToFinish = lineSegment.getEndPose().getTranslation().minus(chassisTranslation);
         double vel = driveTrapezoid.nextVelocity(vectorToFinish.getNorm(), currentVelVector.getNorm(), finalVel);
-        Rotation2d fixedHading = new Rotation2d(2 * vectorToFinish.getAngle().getRadians() - lineSegment.getTranslation().getAngle().getRadians());
+        Rotation2d fixedHading = new Rotation2d(2 * vectorToFinish.getAngle().getRadians() - lineSegment.getStartToEndVector().getAngle().getRadians());
         // Log.log("lineCalculatedVel: Norm: " + vel + " Rotation2d: " + fixeHading + " " + new Translation2d(vel, fixeHading));
         return new Translation2d(vel, fixedHading);
     }

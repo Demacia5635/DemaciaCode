@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
-public class SegmentBase {
+public abstract class SegmentBase {
 
     private Translation2d startPose;
     private Pose2d endPose;
@@ -26,9 +26,6 @@ public class SegmentBase {
         return endPose;
     }
     
-    public Translation2d getTranslation(){
-        return getStartTranslation().minus(getEndPose().getTranslation());
-    }
 
     public double getMaxVelocity(){return this.maxVelocity;}
 
