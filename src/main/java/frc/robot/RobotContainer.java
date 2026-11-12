@@ -4,11 +4,13 @@
 
 package frc.robot;
 
-
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.demacia.utils.DemaciaUtils;
 import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
@@ -17,35 +19,56 @@ import frc.robot.commands.EjectCommand;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.StopCommand;
 
-
-public class RobotContainer implements Sendable{
+public class RobotContainer implements Sendable {
 
   public static boolean isComp = false;
   private static boolean hasRemovedFromLog = false;
   public static boolean isRed = false;
 
-
   // Subsystem & controller:
   private final IntakeSubsystem intake = new IntakeSubsystem();
-  private final CommandController controller = new CommandController(Constants.ControllerConstants.kPS5ControllerPort, ControllerType.kPS5); 
+  private final CommandController controller = new CommandController(Constants.ControllerConstants.XboxControllerPort,
+      ControllerType.kXbox);
+  private final CommandXboxController xboxController = new CommandXboxController(
+      Constants.ControllerConstants.XboxControllerPort); // CommandController class doesnt have a vibrate/rumble option,
+                                                         // so I used the CommandXboxController class, which does have
+                                                         // one.
   // Make sure the port and the controller type are corect
-
 
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
     SmartDashboard.putData("IntakeSubsystem", intake);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
-    
+
     // Configure the trigger bindings
     configureBindings();
   }
 
-
   private void configureBindings() {
 
-    controller.downButton().whileTrue(new IntakeCommand(intake));
-    controller.upButton().whileTrue(new EjectCommand(intake));
+    // Runs intake command
+    controller.leftBumper().toggleOnTrue(
+        new IntakeCommand(intake)
+            .alongWith(
+                Commands.startEnd(
+                    () -> xboxController.getHID().setRumble(RumbleType.kRightRumble, 0.5), // start vibrating
+                    () -> xboxController.getHID().setRumble(RumbleType.kRightRumble, 0.0) // stop vibrating
+                )));
+
+    // Runs eject command
+    controller.rightBumper().toggleOnTrue(
+        new EjectCommand(intake)
+            .alongWith(
+                Commands.startEnd(
+                    () -> xboxController.getHID().setRumble(RumbleType.kRightRumble, 0.5), // start vibrating
+                    () -> xboxController.getHID().setRumble(RumbleType.kRightRumble, 0.0) // stop vibrating
+                )));
+
+    controller.downButton().onTrue(
+      new StopCommand(intake)
+    );
 
   }
 
@@ -63,7 +86,7 @@ public class RobotContainer implements Sendable{
 
   public static void setIsComp(boolean isComp) {
     RobotContainer.isComp = isComp;
-    if(!hasRemovedFromLog && isComp) {
+    if (!hasRemovedFromLog && isComp) {
       hasRemovedFromLog = true;
       LogManager.removeInComp();
     }
@@ -75,8 +98,7 @@ public class RobotContainer implements Sendable{
     builder.addBooleanProperty("isComp", RobotContainer::getIsComp, RobotContainer::setIsComp);
   }
 
-
   public Command getAutonomousCommand() {
-   return null;
+    return null;
   }
 }

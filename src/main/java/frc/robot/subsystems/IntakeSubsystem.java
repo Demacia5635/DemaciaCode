@@ -8,7 +8,8 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.utils.motors.TalonFXMotor;
 import frc.demacia.utils.sensors.Cancoder;
-import frc.robot.constants.IntakeConstants;
+
+import static frc.robot.constants.IntakeConstants .*;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -19,13 +20,13 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public IntakeSubsystem() {
 
-    rollersMotor = new TalonFXMotor(IntakeConstants.ROLLERS_MOTOR_CONFIG);
+    rollersMotor = new TalonFXMotor(ROLLERS_MOTOR_CONFIG);
 
-    deployMotor = new TalonFXMotor(IntakeConstants.DEPLOY_MOTOR_CONFIG);
+    deployMotor = new TalonFXMotor(DEPLOY_MOTOR_CONFIG);
 
-    alignerMotor = new TalonFXMotor(IntakeConstants.ALIGNER_MOTOR_CONFIG);
+    alignerMotor = new TalonFXMotor(ALIGNER_MOTOR_CONFIG);
 
-    deployCancoder = new Cancoder(IntakeConstants.CANCODER_CONFIG);
+    deployCancoder = new Cancoder(CANCODER_CONFIG);
 
   }
 
@@ -48,40 +49,40 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public boolean isFullyDeployed() {
     double currentRadians = getDeployPositionRadians();
-    return currentRadians >= (IntakeConstants.TARGET_DEPLOY_RADIANS - IntakeConstants.TOLORANCE_RADIANS);
+    return currentRadians >= (TARGET_DEPLOY_RADIANS - TOLORANCE_RADIANS);
    }
 
   public boolean isFullyRetracted() {
     double currentRadians = getDeployPositionRadians();
-    return currentRadians <= (IntakeConstants.TARGET_RETRACT_RADIANS + IntakeConstants.TOLORANCE_RADIANS);
+    return currentRadians <= (TARGET_RETRACT_RADIANS + TOLORANCE_RADIANS);
    }
 
   // Intake/Eject the coral
   public void intakeCoral() {
-    setRollersPower(IntakeConstants.INTAKE_SPEED);
+    setRollersPower(INTAKE_SPEED);
   }
   public void ejectCoral() {
-    setRollersPower(IntakeConstants.EJECT_SPEED);
+    setRollersPower(EJECT_SPEED);
   }
 
   // Deploy/Retract the mechanism
   public void deployIntake() {
-    setDeployPower(IntakeConstants.DEPLOY_SPEED);
+    setDeployPower(DEPLOY_SPEED);
 
   }
   public void retractIntake() {
-    setDeployPower(IntakeConstants.RETRACT_SPEED);
+    setDeployPower(RETRACT_SPEED);
     stopRollers();
     stopAligner();
   }
 
   // Align/Reverse the aligner
   public void alignCoral() {
-    setAlignerPower(IntakeConstants.ALIGNER_SPEED);
+    setAlignerPower(ALIGNER_SPEED);
   }
 
   public void reverseAligner() {
-    setAlignerPower(-IntakeConstants.ALIGNER_SPEED);
+    setAlignerPower(-ALIGNER_SPEED);
   }
   
   // Stop
@@ -95,9 +96,9 @@ public class IntakeSubsystem extends SubsystemBase {
     setAlignerPower(0);
   }
   public void stopAll() {
-    setRollersPower(0);
-    setDeployPower(0);
-    setAlignerPower(0);
+    stopRollers();
+    stopDeploy();
+    stopAligner();
   }
 
 

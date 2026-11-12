@@ -8,62 +8,62 @@ import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
 import frc.demacia.utils.sensors.CancoderConfig;
 import frc.demacia.utils.motors.TalonFXConfig;
 
-
 public final class IntakeConstants {
 
+        // Adjust as needed
+        public static final double DEPLOY_SPEED = 0.3;
+        public static final double RETRACT_SPEED = -0.3;
 
-    // Adjust as needed
-    public static final double DEPLOY_SPEED = 0.3;
-    public static final double RETRACT_SPEED = -0.3;
+        public static final double INTAKE_SPEED = 0.5;
+        public static final double EJECT_SPEED = -0.5;
 
-    public static final double INTAKE_SPEED = 0.5;
-    public static final double EJECT_SPEED = -0.5;
+        public static final double ALIGNER_SPEED = 0.6;
 
-    public static final double ALIGNER_SPEED = 0.6;
+        public static final double TARGET_DEPLOY_RADIANS = Math.toRadians(90);
+        public static final double TOLORANCE_RADIANS = 0.1; // estimate
 
-    public static final double TARGET_DEPLOY_RADIANS = Math.toRadians(90);
-    public static final double TOLORANCE_RADIANS = 0.1; // estimate
+        public static final double TARGET_RETRACT_RADIANS = 0;
 
-    public static final double TARGET_RETRACT_RADIANS = 0;
+        public static final boolean IS_BRAKE = true; // Right now I use the same IS_BREAK for all motors but it can be
+                                                     // changed if needed
+        public static final Canbus CANBUS = Canbus.Rio;
 
+        // Rollers motor config
+        public static final int ROLLERS_MOTOR_ID = 1; // Change
+        public static final String ROLLERS_MOTOR_NAME = "Rollers Motor";
 
+        public static final TalonFXConfig ROLLERS_MOTOR_CONFIG = new TalonFXConfig(ROLLERS_MOTOR_ID, CANBUS,
+                        ROLLERS_MOTOR_NAME)
+                        .withBrake(IS_BRAKE);
 
-    public static final boolean IS_BRAKE = true; // Right now I use the same IS_BREAK for all motors but it can be changed if needed
-    public static final Canbus CANBUS = Canbus.Rio;
+        // Deploy motor config
+        public static final int DEPLOY_MOTOR_ID = 2; // Change
+        public static final String DEPLOY_MOTOR_NAME = "Deploy Motor";
 
+        public static final TalonFXConfig DEPLOY_MOTOR_CONFIG = new TalonFXConfig(DEPLOY_MOTOR_ID, CANBUS,
+                        DEPLOY_MOTOR_NAME)
+                        .withBrake(IS_BRAKE);
 
-    public static final int ROLLERS_MOTOR_ID = 1; // Change
-    public static final String ROLLERS_MOTOR_NAME = "Rollers Motor";
+        // Aligner motor config
+        public static final int ALIGNER_MOTOR_ID = 3; // Change
+        public static final String ALIGNER_MOTOR_NAME = "Aligner Motor";
 
-    public static final TalonFXConfig ROLLERS_MOTOR_CONFIG = new TalonFXConfig(ROLLERS_MOTOR_ID, CANBUS, ROLLERS_MOTOR_NAME)
-            .withBrake(IS_BRAKE);
+        public static final TalonFXConfig ALIGNER_MOTOR_CONFIG = new TalonFXConfig(ALIGNER_MOTOR_ID, CANBUS,
+                        ALIGNER_MOTOR_NAME)
+                        .withBrake(IS_BRAKE);
 
+        public static final int CANCODER_ID = 1; // Change
+        public static final String CANCODER_NAME = "Cancoder";
 
+        public static final CancoderConfig CANCODER_CONFIG = new CancoderConfig(CANCODER_ID, CANBUS, CANCODER_NAME);
 
-    public static final int DEPLOY_MOTOR_ID = 2; // Change
-    public static final String DEPLOY_MOTOR_NAME = "Deploy Motor";
+        // if you need to add more (template):
 
-    public static final TalonFXConfig DEPLOY_MOTOR_CONFIG = new TalonFXConfig(DEPLOY_MOTOR_ID, CANBUS, DEPLOY_MOTOR_NAME)
-            .withBrake(IS_BRAKE);
+        // public static final int TEMPLATE_MOTOR_ID = 2;
+        // public static final Canbus TEMPLATE_MOTOR_CANBUS = Canbus.Rio;
+        // public static final String TEMPLATE_MOTOR_NAME = "Template Motor";
 
-
-    public static final int ALIGNER_MOTOR_ID = 3; // Change
-    public static final String ALIGNER_MOTOR_NAME = "Aligner Motor";
-
-    public static final TalonFXConfig ALIGNER_MOTOR_CONFIG = new TalonFXConfig(ALIGNER_MOTOR_ID, CANBUS, ALIGNER_MOTOR_NAME)
-            .withBrake(IS_BRAKE);      
-            
-    
-    public static final int CANCODER_ID = 1; // Change
-    public static final String CANCODER_NAME = "Cancoder";
-    
-    public static final CancoderConfig CANCODER_CONFIG = new CancoderConfig(CANCODER_ID ,CANBUS, CANCODER_NAME);
-
-
-    // public static final int TEMPLATE_MOTOR_ID = 2;
-    // public static final Canbus TEMPLATE_MOTOR_CANBUS = Canbus.Rio;
-    // public static final String TEMPLATE_MOTOR_NAME = "Template Motor";
-
-    // public static final TalonFXConfig TEMPLATE_MOTOR_CONFIG = new TalonFXConfig(TEMPLATE_MOTOR_ID, CANBUS, TEMPLATE_MOTOR_NAME)
-    //         .withBrake(IS_BRAKE);
+        // public static final TalonFXConfig TEMPLATE_MOTOR_CONFIG = new
+        // TalonFXConfig(TEMPLATE_MOTOR_ID, CANBUS, TEMPLATE_MOTOR_NAME)
+        // .withBrake(IS_BRAKE);
 }
