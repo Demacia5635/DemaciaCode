@@ -119,7 +119,7 @@ public class DemaciaTrajectory {
 
     private void buildArcs(){
         for (int i = 0; i < lineSegments.size() - 1; i++) {
-            ArcSegment arc = ArcCalculator.calculateCenter(lineSegments.get(i).getStartTranslation(), lineSegments.get(i).getEndPose().getTranslation(), lineSegments.get(i+1).getEndPose().getTranslation(),radius);
+            ArcSegment arc = ArcCalculator.calculateCenter(lineSegments.get(i).getStartTranslation(), lineSegments.get(i).getEndPose().getTranslation(), lineSegments.get(i+1).getEndPose(),radius);
             this.arcSegments.add(arc);
         }
     }

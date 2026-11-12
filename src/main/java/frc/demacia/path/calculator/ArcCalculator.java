@@ -8,9 +8,9 @@ import frc.demacia.utils.log.Log;
 
 public class ArcCalculator {
     
-    public static ArcSegment calculateCenter(Translation2d from, Translation2d midPoint,Translation2d to, double radius){
+    public static ArcSegment calculateCenter(Translation2d from, Translation2d midPoint,Pose2d to, double radius){
         double MidPointToFromAngle = from.minus(midPoint).getAngle().getRadians();
-        double MidToPointToAngle = to.minus(midPoint).getAngle().getRadians();
+        double MidToPointToAngle = to.getTranslation().minus(midPoint).getAngle().getRadians();
         double vecAngle = (MidPointToFromAngle + MidToPointToAngle) / 2;
         if (Math.abs(MidPointToFromAngle - MidToPointToAngle) > Math.PI) vecAngle += Math.PI;
         // double toMidPointAngle = MidPointToFromAngle + Math.PI;

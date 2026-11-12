@@ -25,8 +25,8 @@ public class SegmentFollow {
         Translation2d chassisTranslation = new Translation2d(currentVelocity.vxMetersPerSecond, currentVelocity.vyMetersPerSecond);
         Translation2d chassisPoseAsVector = currentPose.getTranslation();
 
-        // double angleError = MathUtil.angleModulus(currentSegment.getEndRotation().getRadians() - currentPose.getRotation().getRadians());
-        // double omega = rotationPid.calculate(angleError, currentVelocity.omegaRadiansPerSecond);
+        double angleError = MathUtil.angleModulus(currentSegment.getEndPose().getRotation().getRadians() - currentPose.getRotation().getRadians());
+        double omega = rotationPid.calculate(angleError, currentVelocity.omegaRadiansPerSecond);
         // Log.log("angleError: " + angleError + " omega: " + omega);
 
         Translation2d calculatedVel = Translation2d.kZero;
@@ -37,11 +37,11 @@ public class SegmentFollow {
         }
         
         else{
-            ArcSegment ArcSegment = (ArcSegment) currentSegment;
-            calculatedVel = calcVelInArcSegment(ArcSegment, chassisPoseAsVector, chassisTranslation, finalVel);
+            ArcSegment arcSegment = (ArcSegment) currentSegment;
+            calculatedVel = calcVelInArcSegment(arcSegment, chassisPoseAsVector, chassisTranslation, finalVel);
         }
         // LogManager.log("omega: " + omega);
-        return new ChassisSpeeds(calculatedVel.getX(), calculatedVel.getY(), 0);
+        return new ChassisSpeeds(calculatedVel.getX(), calculatedVel.getY(), omega);
     }
 
     private Translation2d calcVelInLineSegment(LineSegment lineSegment, Translation2d chassisTranslation, Translation2d currentVelVector, double finalVel) {
