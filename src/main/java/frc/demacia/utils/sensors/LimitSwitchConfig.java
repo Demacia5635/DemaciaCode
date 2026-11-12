@@ -26,4 +26,8 @@ public class LimitSwitchConfig extends BaseSensorConfig<LimitSwitchConfig>{
         super(channel, name);
         sensorType = LimitSwitch.class;
     }
+
+    public LimitSwitchConfig(LimitSwitchConfig limitSwitchConfig) {
+        //TODO Auto-generated constructor stub
+    }
 }

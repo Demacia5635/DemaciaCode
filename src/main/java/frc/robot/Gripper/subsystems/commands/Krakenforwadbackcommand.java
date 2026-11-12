@@ -1,16 +1,19 @@
-package frc.robot.commands;
+package frc.robot.Gripper.subsystems.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.SubsystemKraken;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.demacia.utils.controller.CommandController;
+import frc.robot.Gripper.subsystems.Subsystem.SubsystemKraken;
 
 public class Krakenforwadbackcommand extends Command {
   private double speed;
   private SubsystemKraken Kraken1;
-  /** Creates a new RunSnowBlowerCommand. */
+  public CommandController controller;
     public Krakenforwadbackcommand(SubsystemKraken subsystem, double speed) {
         this.Kraken1 = subsystem;
         this.speed = speed;
         addRequirements(Kraken1);
+        this.controller = controller;
     }
 
   // Called when the command is initially scheduled.
@@ -20,6 +23,8 @@ public class Krakenforwadbackcommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    Kraken1.Pitchmove(speed);
+    Kraken1.Is_Out_Max();
   }
 
   // Called once the command ends or is interrupted.

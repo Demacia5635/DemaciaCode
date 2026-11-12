@@ -64,7 +64,7 @@ public class DigitalEncoderConfig extends BaseSensorConfig<DigitalEncoderConfig>
         this.maxRange = maxRange;
         return this;
     }
-
+    
     /**
      * Sets only the minimum duty cycle range.
      * 
