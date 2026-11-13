@@ -14,7 +14,7 @@ import frc.demacia.wpilibSwerve.command.SwerveCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.path.DemaciaTrajectory;
-import frc.demacia.path.commands.PathCommand;
+import frc.demacia.path.commands.FollowTrajectoryCommand;
 import frc.robot.vision.VisionConstants;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
@@ -38,7 +38,7 @@ public class RobotContainer implements Sendable {
   public static CommandController controller = new CommandController(0, ControllerType.kPS5);
 
   public static SwerveCommand driveCommand;
-  public static PathCommand pathCommand;
+  public static FollowTrajectoryCommand pathCommand;
   public List<Pose2d> points = new ArrayList<Pose2d>();
   public DemaciaTrajectory trajectory;
 
@@ -66,7 +66,7 @@ public class RobotContainer implements Sendable {
 
   private void setDefaultCommands() {
     Chassis.getInstance().setDefaultCommand(driveCommand);
-    controller.leftButton().onTrue(new PathCommand(new DemaciaTrajectory(points), driveCommand));
+    controller.leftButton().onTrue(new FollowTrajectoryCommand(new DemaciaTrajectory(points), driveCommand));
   }
 
   private void setController() {

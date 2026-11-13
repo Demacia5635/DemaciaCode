@@ -4,21 +4,21 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.demacia.path.constants.PathConstants;
 
-public class LineSegment extends SegmentBase {
-    private Translation2d startToEndVector;
+/** A straight piece of the trajectory. */
+public class LineSegment extends PathSegment {
 
-    public LineSegment(Translation2d startPoint, Pose2d endPoint, double endVelocity, double maxVelocity) {
-        super(startPoint, endPoint, endVelocity, maxVelocity);
-        this.startToEndVector = endPoint.getTranslation().minus(startPoint);
+    private final Translation2d startToEndVector;
+
+    public LineSegment(Translation2d startTranslation, Pose2d endPose, double endVelocityMps, double maxVelocityMps) {
+        super(startTranslation, endPose, endVelocityMps, maxVelocityMps);
+        this.startToEndVector = endPose.getTranslation().minus(startTranslation);
     }
 
-    public LineSegment(Translation2d startPoint, Pose2d endPoint){
-        this(startPoint, endPoint, PathConstants.MAX_VELOCITY, PathConstants.MAX_VELOCITY);
+    public LineSegment(Translation2d startTranslation, Pose2d endPose) {
+        this(startTranslation, endPose, PathConstants.MAX_VELOCITY_MPS, PathConstants.MAX_VELOCITY_MPS);
     }
-
 
     public Translation2d getStartToEndVector() {
         return startToEndVector;
     }
-
 }
