@@ -36,11 +36,10 @@ public class LegCalculator {
         Translation2d vector4 = p2.minus(arc.getCenter());
     
         Translation2d pp2 = vector4.rotateBy(vector4.getAngle().minus(vector3.getAngle())).plus(arc.getCenter());
-        Log.log("p1: " + p1 + " vector2: " + vector2 + " vector1: " + vector1 + " arc: " + arc);
         return new ArrayList<>(){
             {
-                add(new Pose2d(pp1, null));
-                add(new Pose2d(pp2, null));
+                add(new Pose2d(pp1, arc.getEndPose().getRotation()));
+                add(new Pose2d(pp2, arc.getEndPose().getRotation()));
             }
         };
         // Pose2d[]{

@@ -2,6 +2,7 @@ package frc.demacia.path;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.LogManager;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -147,14 +148,15 @@ public class DemaciaTrajectory {
     public ChassisSpeeds calculateSpeeds(ChassisSpeeds currentSpeeds, Pose2d currentPose) {
         
         double finishVelocity = currentSegmentIndex == segments.size() - 1 ? 0 : PathConstants.MAX_VELOCITY;
+        // Log.log("Segment index: " + currentSegmentIndex + " current pose: " + currentPose + " current segment: " + segments.get(currentSegmentIndex));
         ChassisSpeeds speeds = segmentFollow.getChassisSpeeds(segments.get(currentSegmentIndex), currentPose, currentSpeeds, finishVelocity);
 
         // Log.log("wanted speed: "+speeds+" \ncurrentSpeeds: "+currentSpeeds);
-        if(currentSegment instanceof ArcSegment){
-            ArcSegment arcSegment = (ArcSegment) currentSegment;
-            Translation2d centerToChassis = currentPose.getTranslation().minus(arcSegment.getCenter());
+        // if(currentSegment instanceof ArcSegment){
+        //     ArcSegment arcSegment = (ArcSegment) currentSegment;
+        //     Translation2d centerToChassis = currentPose.getTranslation().minus(arcSegment.getCenter());
 
-        }        
+        // }        
 
         if(!isFinishedSegment(currentSpeeds, currentPose, currentSegment)) 
             return speeds;
