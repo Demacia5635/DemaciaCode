@@ -21,22 +21,20 @@ public class IntakeCommand extends Command {
 
   @Override
   public void initialize() {
-    // Deploy the mechanism, start the rollers and start the aligner
+    // Deploy the mechanism, and intake the coral
     deploy.deployIntake();
     intake.intakeCoral();
-    intake.alignCoral();
   }
 
   @Override
-  public void execute() {
-  }
+  public void execute() {}
 
   @Override
   public void end(boolean interrupted) {
     // Retract the mechanism, stop the rollers and stop the aligner
     deploy.retractIntake();
-    intake.stopRollers();
-    intake.stopAligner();
+    intake.stopRollersAndAligner();
+    intake.setHasCoral();
   }
 
   @Override

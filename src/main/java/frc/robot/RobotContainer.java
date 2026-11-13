@@ -41,7 +41,7 @@ public class RobotContainer implements Sendable {
 
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
-    SmartDashboard.putData("IntkaeSubsystem", intake);
+    SmartDashboard.putData("IntakeSubsystem", intake);
     SmartDashboard.putData("DeploySubsystem", deploy);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
 

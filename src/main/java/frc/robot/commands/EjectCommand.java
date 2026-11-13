@@ -23,11 +23,9 @@ public class EjectCommand extends Command {
 
   @Override
   public void initialize() {
-    // Deploy the mechanism, start the rollers to eject the coral (spin them the other way) and reverse the aligner.
+    // Deploy the mechanism, and the eject the coral
     deploy.deployIntake();
     intake.ejectCoral();
-    intake.reverseAligner();
-
   }
 
   @Override
@@ -35,15 +33,14 @@ public class EjectCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    // Retract the mechanism, stop the rollers, and stop the aligner.
-    intake.stopRollerAndAligner();
+    // Retract the mechanism, stop the rollers and the aligner.
+    intake.stopRollersAndAligner();
     deploy.retractIntake();
     
   }
 
   @Override
   public boolean isFinished() {
-    // Check if the mechanism has retracted and if it has stop the command.
     return false;
   }
 }

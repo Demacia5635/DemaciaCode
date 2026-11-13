@@ -23,7 +23,7 @@ public class StopCommand extends Command {
   @Override
   public void initialize() {
     // Stop all
-    intake.stopRollerAndAligner();
+    intake.stopRollersAndAligner();
     deploy.stopDeploy();
   }
 
