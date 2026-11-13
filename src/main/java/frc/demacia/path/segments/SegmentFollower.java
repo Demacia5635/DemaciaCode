@@ -8,7 +8,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import frc.demacia.path.constants.PathConstants;
-import frc.demacia.path.following.TrapezoidVelocityProfile;
+import frc.demacia.path.following.DemaciaTrapezoid;
+import frc.demacia.path.following.DemaciaTrapezoid;
 import frc.demacia.path.segments.ArcSegment;
 import frc.demacia.path.segments.LineSegment;
 import frc.demacia.path.segments.PathSegment;
@@ -16,11 +17,11 @@ import frc.demacia.path.segments.PathSegment;
 /** Calculates the field-relative chassis speeds needed to follow one segment. */
 public class SegmentFollower {
 
-    private final TrapezoidVelocityProfile velocityProfile;
+    private final DemaciaTrapezoid velocityProfile;
     private final ProfiledPIDController headingController;
 
     public SegmentFollower() {
-        velocityProfile = new TrapezoidVelocityProfile(
+        velocityProfile = new DemaciaTrapezoid(
                 PathConstants.MAX_VELOCITY_MPS, PathConstants.MAX_ACCELERATION_MPS2);
         headingController = new ProfiledPIDController(1, 0, 0, new Constraints(
                 PathConstants.MAX_ANGULAR_VELOCITY_RAD_PER_SEC, PathConstants.MAX_ANGULAR_ACCELERATION_RAD_PER_SEC2));
@@ -55,7 +56,7 @@ public class SegmentFollower {
     private Translation2d calculateVelocityOnLine(LineSegment line, Translation2d currentPosition,
             Translation2d currentVelocityVector, double endVelocityMps) {
         Translation2d vectorToEnd = line.getEndPose().getTranslation().minus(currentPosition);
-        double speed = velocityProfile.calculateNextVelocity(
+        double speed = velocityProfile.nextVelocity(
                 vectorToEnd.getNorm(), currentVelocityVector.getNorm(), endVelocityMps);
 
         // Mirror the direction-to-end across the line direction, to steer back towards the line
@@ -75,12 +76,12 @@ public class SegmentFollower {
         // Turn the heading ahead by one control cycle of rotation around the center
         double angularSpeedAroundCenter = currentVelocityVector.getNorm() / arc.getRadiusMeters();
         double lookAheadHeadingRad = tangentHeadingRad + (arc.isLeftTurn()
-                ? angularSpeedAroundCenter * PathConstants.CONTROL_LOOP_PERIOD_SECONDS
-                : -angularSpeedAroundCenter * PathConstants.CONTROL_LOOP_PERIOD_SECONDS);
+                ? angularSpeedAroundCenter * PathConstants.DT
+                : -angularSpeedAroundCenter * PathConstants.DT);
 
         double remainingArcLength = Math.abs(arc.getEndAngleFromCenter().getRadians() - tangentHeadingRad)
                 * arc.getRadiusMeters();
-        double speed = velocityProfile.calculateNextVelocity(
+        double speed = velocityProfile.nextVelocity(
                 remainingArcLength, currentVelocityVector.getNorm(), endVelocityMps);
 
         return new Translation2d(speed, new Rotation2d(lookAheadHeadingRad));

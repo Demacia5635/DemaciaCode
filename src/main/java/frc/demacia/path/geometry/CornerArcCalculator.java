@@ -23,10 +23,10 @@ public final class CornerArcCalculator {
      * @param nextPose      the waypoint after the corner
      * @param radiusMeters  radius of the rounding circle
      */
-    public static ArcSegment calculateCornerArc(Translation2d previousPoint, Translation2d cornerPoint,
-            Pose2d nextPose, double radiusMeters) {
-        double cornerToPreviousAngleRad = previousPoint.minus(cornerPoint).getAngle().getRadians();
-        double cornerToNextAngleRad = nextPose.getTranslation().minus(cornerPoint).getAngle().getRadians();
+    public static ArcSegment calculateCornerArc(Translation2d previousPoint, Pose2d cornerPoint,
+            Translation2d nextPose, double radiusMeters) {
+        double cornerToPreviousAngleRad = previousPoint.minus(cornerPoint.getTranslation()).getAngle().getRadians();
+        double cornerToNextAngleRad = nextPose.minus(cornerPoint.getTranslation()).getAngle().getRadians();
 
         double bisectorAngleRad = (cornerToPreviousAngleRad + cornerToNextAngleRad) / 2;
         if (Math.abs(cornerToPreviousAngleRad - cornerToNextAngleRad) > Math.PI) {
@@ -36,7 +36,7 @@ public final class CornerArcCalculator {
         double turnAngleRad = MathUtil.angleModulus(cornerToNextAngleRad - cornerToPreviousAngleRad);
         boolean isLeftTurn = turnAngleRad < 0;
 
-        Translation2d center = cornerPoint.plus(
+        Translation2d center = cornerPoint.getTranslation().plus(
                 new Translation2d(radiusMeters * Math.cos(bisectorAngleRad), radiusMeters * Math.sin(bisectorAngleRad)));
 
         Log.log("turnAngle: " + turnAngleRad + " previous: " + previousPoint + " corner: " + cornerPoint
@@ -44,6 +44,6 @@ public final class CornerArcCalculator {
                 + " isLeftTurn: " + isLeftTurn + " cornerToPreviousAngle: " + cornerToPreviousAngleRad
                 + " cornerToNextAngle: " + cornerToNextAngleRad);
 
-        return new ArcSegment(previousPoint, nextPose, center, isLeftTurn, radiusMeters);
+        return new ArcSegment(previousPoint, new Pose2d(nextPose, cornerPoint.getRotation()), center, isLeftTurn, radiusMeters);
     }
 }

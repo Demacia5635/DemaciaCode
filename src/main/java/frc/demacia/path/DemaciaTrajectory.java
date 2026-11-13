@@ -34,7 +34,7 @@ public class DemaciaTrajectory {
     /** The final sequence the robot follows: line, arc, line, arc, ..., line. */
     private final List<PathSegment> pathSegments = new ArrayList<>();
 
-    private final double cornerRadiusMeters = PathConstants.CORNER_ARC_RADIUS_METERS;
+    private final double cornerRadius = PathConstants.CORNER_ARC_RADIUS;
     private final SegmentFollower segmentFollower = new SegmentFollower();
 
     private int currentSegmentIndex = 0;
@@ -94,9 +94,9 @@ public class DemaciaTrajectory {
             LineSegment lineOutOfCorner = waypointLines.get(cornerIndex + 1);
             cornerArcs.add(CornerArcCalculator.calculateCornerArc(
                     lineIntoCorner.getStartTranslation(),
-                    lineIntoCorner.getEndPose().getTranslation(),
-                    lineOutOfCorner.getEndPose(),
-                    cornerRadiusMeters));
+                    lineIntoCorner.getEndPose(),
+                    lineOutOfCorner.getEndPose().getTranslation(),
+                    cornerRadius));
         }
     }
 
@@ -108,7 +108,7 @@ public class DemaciaTrajectory {
                     lineIntoCorner.getStartTranslation(),
                     lineIntoCorner.getEndPose().getTranslation(),
                     cornerArcs.get(cornerIndex),
-                    cornerRadiusMeters));
+                    cornerRadius));
         }
         roundedPathPoints.add(waypoints.get(waypoints.size() - 1));
     }
@@ -123,7 +123,7 @@ public class DemaciaTrajectory {
 
             pathSegments.add(new LineSegment(lineStart.getTranslation(), arcEntry));
             pathSegments.add(new ArcSegment(arcEntry.getTranslation(), arcExit,
-                    cornerArc.getCenter(), cornerArc.isLeftTurn(), cornerRadiusMeters));
+                    cornerArc.getCenter(), cornerArc.isLeftTurn(), cornerRadius));
         }
 
         Pose2d lastLineStart = roundedPathPoints.get(roundedPathPoints.size() - 2);
@@ -153,12 +153,16 @@ public class DemaciaTrajectory {
             return speeds;
         }
 
+        if (isLastSegment()) {
+            if(Math.abs(currentPose.getRotation().minus(pathSegments.get(currentSegmentIndex).getEndPose().getRotation()).getRadians()) < Math.toRadians(5)){ //TODO: put this in a constant
+                isTrajectoryFinished = true;
+                return new ChassisSpeeds(0, 0, 0);
+            }
+            return new ChassisSpeeds(0, 0, speeds.omegaRadiansPerSecond);
+        }
+
         Log.log("currentPose: " + currentPose + " speeds: " + speeds + " finished segment: " + currentSegment);
 
-        if (isLastSegment()) {
-            isTrajectoryFinished = true;
-            return new ChassisSpeeds(0, 0, 0);
-        }
         currentSegmentIndex++;
         return speeds;
     }
