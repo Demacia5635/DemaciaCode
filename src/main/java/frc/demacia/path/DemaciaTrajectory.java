@@ -17,10 +17,17 @@ import frc.demacia.utils.log.Log;
  */
 public class DemaciaTrajectory {
 
-    /** The sequence the robot follows: line, arc, line, arc, ..., line. */
-    private final List<PathSegment> pathSegments;
-    /** First waypoint, where the robot is when the trajectory starts. */
-    private final Pose2d startPose;
+    private final List<Pose2d> waypoints;
+    /** Raw straight lines from each waypoint to the next one (before rounding the corners). */
+    private final List<LineSegment> waypointLines = new ArrayList<>();
+    /** One arc per corner (every waypoint except the first and the last). */
+    private final List<ArcSegment> cornerArcs = new ArrayList<>();
+    /** First waypoint, then [arc entry, arc exit] for each corner, then last waypoint. */
+    private final List<Pose2d> roundedPathPoints = new ArrayList<>();
+    /** The final sequence the robot follows: line, arc, line, arc, ..., line. */
+    private final List<PathSegment> pathSegments = new ArrayList<>();
+
+    private final double cornerRadius = PathConstants.CORNER_ARC_RADIUS;
     private final SegmentFollower segmentFollower = new SegmentFollower();
 
     private int currentSegmentIndex = 0;
@@ -46,6 +53,66 @@ public class DemaciaTrajectory {
         return isTrajectoryFinished;
     }
 
+    // ---------------------------------------------------------------- building
+
+    private void buildPathWithCornerArcs() {
+        buildLinesBetweenWaypoints();
+        buildCornerArcs();
+        buildRoundedPathPoints();
+        buildSegmentsFromRoundedPoints();
+    }
+
+    private void buildLinesBetweenWaypoints() {
+        for (int i = 0; i < waypoints.size() - 1; i++) {
+            waypointLines.add(new LineSegment(waypoints.get(i).getTranslation(), waypoints.get(i + 1)));
+        }
+    }
+
+    private void buildCornerArcs() {
+        for (int cornerIndex = 0; cornerIndex < waypointLines.size() - 1; cornerIndex++) {
+            LineSegment lineIntoCorner = waypointLines.get(cornerIndex);
+            LineSegment lineOutOfCorner = waypointLines.get(cornerIndex + 1);
+            cornerArcs.add(CornerArcCalculator.calculateCornerArc(
+                    lineIntoCorner.getStartTranslation(),
+                    lineIntoCorner.getEndPose(),
+                    lineOutOfCorner.getEndPose().getTranslation(),
+                    cornerRadius));
+        }
+    }
+
+    private void buildRoundedPathPoints() {
+        roundedPathPoints.add(waypoints.get(0));
+        for (int cornerIndex = 0; cornerIndex < cornerArcs.size(); cornerIndex++) {
+            LineSegment lineIntoCorner = waypointLines.get(cornerIndex);
+            roundedPathPoints.addAll(TangentCalculator.calculateArcEntryAndExitPoses(
+                    lineIntoCorner.getStartTranslation(),
+                    lineIntoCorner.getEndPose().getTranslation(),
+                    cornerArcs.get(cornerIndex),
+                    cornerRadius));
+        }
+        roundedPathPoints.add(waypoints.get(waypoints.size() - 1));
+    }
+
+    private void buildSegmentsFromRoundedPoints() {
+        for (int cornerIndex = 0; cornerIndex < cornerArcs.size(); cornerIndex++) {
+            int lineStartIndex = 2 * cornerIndex;
+            Pose2d lineStart = roundedPathPoints.get(lineStartIndex);
+            Pose2d arcEntry = roundedPathPoints.get(lineStartIndex + 1);
+            Pose2d arcExit = roundedPathPoints.get(lineStartIndex + 2);
+            ArcSegment cornerArc = cornerArcs.get(cornerIndex);
+
+            pathSegments.add(new LineSegment(lineStart.getTranslation(), arcEntry));
+            pathSegments.add(new ArcSegment(arcEntry.getTranslation(), arcExit,
+                    cornerArc.getCenter(), cornerArc.isLeftTurn(), cornerRadius));
+        }
+
+        Pose2d lastLineStart = roundedPathPoints.get(roundedPathPoints.size() - 2);
+        Pose2d lastPoint = roundedPathPoints.get(roundedPathPoints.size() - 1);
+        pathSegments.add(new LineSegment(lastLineStart.getTranslation(), lastPoint));
+    }
+
+    // ---------------------------------------------------------------- following
+
     /**
      * Calculates the speeds to command now, and moves on to the next segment when the current one is finished.
      *
@@ -68,10 +135,8 @@ public class DemaciaTrajectory {
             return speeds;
         }
 
-        if (isLastSegment) {
-            double headingErrorRad = currentPose.getRotation()
-                    .minus(currentSegment.getEndPose().getRotation()).getRadians();
-            if (Math.abs(headingErrorRad) < PathConstants.FINAL_HEADING_TOLERANCE_RAD) {
+        if (isLastSegment()) {
+            if(Math.abs(currentPose.getRotation().minus(pathSegments.get(currentSegmentIndex).getEndPose().getRotation()).getRadians()) < Math.toRadians(5)){ //TODO: put this in a constant
                 isTrajectoryFinished = true;
                 return new ChassisSpeeds(0, 0, 0);
             }

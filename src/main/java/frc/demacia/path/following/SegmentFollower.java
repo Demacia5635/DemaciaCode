@@ -8,6 +8,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import frc.demacia.path.constants.PathConstants;
+<<<<<<< HEAD:src/main/java/frc/demacia/path/following/SegmentFollower.java
+=======
+import frc.demacia.path.following.DemaciaTrapezoid;
+import frc.demacia.path.following.DemaciaTrapezoid;
+>>>>>>> d25a385 (Working maybe need to change the omega for the robot to be propertional to the length of a lineSegment):src/main/java/frc/demacia/path/segments/SegmentFollower.java
 import frc.demacia.path.segments.ArcSegment;
 import frc.demacia.path.segments.LineSegment;
 import frc.demacia.path.segments.PathSegment;
