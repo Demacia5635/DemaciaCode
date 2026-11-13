@@ -155,6 +155,9 @@ public abstract class BaseMotor implements MotorInterface {
     SmartDashboard.putData("motors/" + getName() + "/Value Control Mode Chooser", valueControlModeChooser);
 
     configPidFf(0);
+    configPidFf(1);
+    configPidFf(2);
+    configPidFf(3);
     configMotionMagic();
   }
 
@@ -220,13 +223,12 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setSlot(int slot) {
-    if (slot < 0 || slot > 2) {
-      Log.log("Slot must be between 0 and 2", AlertType.kError);
+    if (slot < 0 || slot > 3) {
+      Log.log("Slot must be between 0 and 3", AlertType.kError);
       return;
     }
     this.slot = slot;
     changeMotorSlot(slot);
-    configPidFf(slot);
   }
 
   @Override
