@@ -17,6 +17,7 @@ import frc.demacia.utils.controller.CommandController.ControllerType;
 import frc.demacia.utils.log.LogManager;
 import frc.robot.commands.EjectCommand;
 import frc.robot.constants.Constants;
+import frc.robot.subsystems.DeploySubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.StopCommand;
@@ -29,6 +30,7 @@ public class RobotContainer implements Sendable {
 
   // Subsystem & controller:
   private final IntakeSubsystem intake = new IntakeSubsystem();
+  private final DeploySubsystem deploy = new DeploySubsystem();
   private final CommandController controller = new CommandController(Constants.ControllerConstants.XboxControllerPort,
       ControllerType.kXbox);
   private final CommandXboxController xboxController = new CommandXboxController(
@@ -39,7 +41,8 @@ public class RobotContainer implements Sendable {
 
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
-    SmartDashboard.putData("IntakeSubsystem", intake);
+    SmartDashboard.putData("IntkaeSubsystem", intake);
+    SmartDashboard.putData("DeploySubsystem", deploy);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
 
     // Configure the trigger bindings
@@ -50,7 +53,7 @@ public class RobotContainer implements Sendable {
 
     // Runs intake command
     controller.leftBumper().toggleOnTrue(
-        new IntakeCommand(intake)
+        new IntakeCommand(intake,deploy)
             .alongWith(
                 Commands.startEnd(
                     () -> xboxController.getHID().setRumble(RumbleType.kRightRumble, 0.5), // start vibrating
@@ -59,15 +62,16 @@ public class RobotContainer implements Sendable {
 
     // Runs eject command
     controller.rightBumper().toggleOnTrue(
-        new EjectCommand(intake)
+        new EjectCommand(intake,deploy)
             .alongWith(
                 Commands.startEnd(
                     () -> xboxController.getHID().setRumble(RumbleType.kRightRumble, 0.5), // start vibrating
                     () -> xboxController.getHID().setRumble(RumbleType.kRightRumble, 0.0) // stop vibrating
                 )));
 
+    // Runs stop command
     controller.downButton().onTrue(
-      new StopCommand(intake)
+      new StopCommand(intake,deploy)
     );
 
   }

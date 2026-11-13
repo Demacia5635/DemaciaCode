@@ -19,8 +19,10 @@ public final class IntakeConstants {
 
         public static final double ALIGNER_SPEED = 0.6;
 
-        public static final double TARGET_DEPLOY_RADIANS = Math.toRadians(90);
-        public static final double TOLORANCE_RADIANS = 0.1; // estimate
+
+        public static final double DEPLOYED_POSITION = 0.5; // Change
+        public static final double RETRACTED_POSITION = 0.; // Change
+        public static final double POSITION_TOLORANCE = 0.05; // Change
 
         public static final double TARGET_RETRACT_RADIANS = 0;
 
@@ -28,6 +30,8 @@ public final class IntakeConstants {
                                                      // changed if needed
         public static final Canbus CANBUS = Canbus.Rio;
 
+
+        
         // Rollers motor config
         public static final int ROLLERS_MOTOR_ID = 1; // Change
         public static final String ROLLERS_MOTOR_NAME = "Rollers Motor";
@@ -36,6 +40,8 @@ public final class IntakeConstants {
                         ROLLERS_MOTOR_NAME)
                         .withBrake(IS_BRAKE);
 
+
+
         // Deploy motor config
         public static final int DEPLOY_MOTOR_ID = 2; // Change
         public static final String DEPLOY_MOTOR_NAME = "Deploy Motor";
@@ -43,6 +49,8 @@ public final class IntakeConstants {
         public static final TalonFXConfig DEPLOY_MOTOR_CONFIG = new TalonFXConfig(DEPLOY_MOTOR_ID, CANBUS,
                         DEPLOY_MOTOR_NAME)
                         .withBrake(IS_BRAKE);
+
+
 
         // Aligner motor config
         public static final int ALIGNER_MOTOR_ID = 3; // Change

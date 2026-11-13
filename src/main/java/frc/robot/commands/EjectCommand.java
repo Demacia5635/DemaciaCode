@@ -5,26 +5,29 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.DeploySubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class EjectCommand extends Command {
 
   private final IntakeSubsystem intake;
+  private final DeploySubsystem deploy;
 
 
-  public EjectCommand(IntakeSubsystem intake) {
+  public EjectCommand(IntakeSubsystem intake, DeploySubsystem deploy) {
     this.intake = intake;
+    this.deploy = deploy;
 
-    addRequirements(intake);
+    addRequirements(intake, deploy);
     }
 
   @Override
   public void initialize() {
     // Deploy the mechanism, start the rollers to eject the coral (spin them the other way) and reverse the aligner.
-    intake.deployIntake();
+    deploy.deployIntake();
     intake.ejectCoral();
     intake.reverseAligner();
-  
+
   }
 
   @Override
@@ -33,7 +36,9 @@ public class EjectCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     // Retract the mechanism, stop the rollers, and stop the aligner.
-    intake.retractIntake();
+    intake.stopRollerAndAligner();
+    deploy.retractIntake();
+    
   }
 
   @Override

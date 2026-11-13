@@ -5,22 +5,26 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.DeploySubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class StopCommand extends Command {
 
   private final IntakeSubsystem intake;
+  private final DeploySubsystem deploy;
 
 
-  public StopCommand(IntakeSubsystem intake) {
+  public StopCommand(IntakeSubsystem intake, DeploySubsystem deploy) {
     this.intake = intake;
-    addRequirements(intake);
+    this.deploy = deploy;
+    addRequirements(intake, deploy);
     }
 
   @Override
   public void initialize() {
     // Stop all
-    intake.stopAll();
+    intake.stopRollerAndAligner();
+    deploy.stopDeploy();
   }
 
   @Override

@@ -5,34 +5,37 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.DeploySubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeCommand extends Command {
 
   private final IntakeSubsystem intake;
+  private final DeploySubsystem deploy;
 
-
-  public IntakeCommand(IntakeSubsystem intake) {
+  public IntakeCommand(IntakeSubsystem intake, DeploySubsystem deploy) {
     this.intake = intake;
-    addRequirements(intake);
-    }
+    this.deploy = deploy;
+    addRequirements(intake, deploy);
+  }
 
   @Override
   public void initialize() {
     // Deploy the mechanism, start the rollers and start the aligner
-    intake.deployIntake();
+    deploy.deployIntake();
     intake.intakeCoral();
     intake.alignCoral();
   }
 
   @Override
-  public void execute() {}
+  public void execute() {
+  }
 
   @Override
   public void end(boolean interrupted) {
     // Retract the mechanism, stop the rollers and stop the aligner
-    intake.retractIntake();
-    intake.stopRollers(); 
+    deploy.retractIntake();
+    intake.stopRollers();
     intake.stopAligner();
   }
 
