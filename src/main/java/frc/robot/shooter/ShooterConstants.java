@@ -35,7 +35,7 @@ public class ShooterConstants {
             .withMeterMotor(FLYWHEEL_GEAR_RATIO, FLYWHEEL_DIAMETER)
             .withPID(FLYWHEEL_KP, FLYWHEEL_KI, FLYWHEEL_KD, FLYWHEEL_KS, FLYWHEEL_KV, FLYWHEEL_KA, FLYWHEEL_KG, FLYWHEEL_KCOS, FLYWHEEL_KV2);
 
-        public static final double FLYWHEEL_ALLOWED_ERROR = 0.5;
+        public static final double FLYWHEEL_ALLOWED_ERROR = 0.3;
     }
 
     public static final class HoodConstants {

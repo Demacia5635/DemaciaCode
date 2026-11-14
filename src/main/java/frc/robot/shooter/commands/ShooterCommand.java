@@ -38,7 +38,7 @@ public class ShooterCommand extends DefaultCommand<ShooterStates> {
                         Shinua.getInstance().isStuckShinuaRollers() || 
                         shooter.isStuckFeeder()) {
                     shooter.setFeederPower(FEEDER_POOPING_POWER);
-                } else if (Shooter.getInstance().isShooterReady() && 
+                } else if (shooter.isShooterReady() && 
                         Turret.getInstance().isTurretReady()) {
                     shooter.setFeederPower(0);
                 } else {

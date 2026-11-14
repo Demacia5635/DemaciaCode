@@ -49,7 +49,7 @@ public class IntakeConstants {
 
         public static final double INTAKE_DEPLOY_MIN_LIMIT = Math.toRadians(-10); // TODO
         public static final double INTAKE_DEPLOY_MAX_LIMIT = Math.toRadians(140); // TODO
-        public static final double INTAKE_DEPLOY_ALLOWED_POS = Math.toRadians(45); // TODO
+        public static final double INTAKE_DEPLOY_ALLOWED_POS = Math.toRadians(105); // TODO
         public static final double INTAKE_DEPLOY_CALIBRATION_POWER = 0.2;
         public static final double INTAKE_DEPLOY_CALIBRATION_RESET_POS = Math.toRadians(130);
 

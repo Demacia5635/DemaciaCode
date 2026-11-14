@@ -472,9 +472,9 @@ public abstract class BaseMotor implements MotorInterface {
       return getCalculatedError();
     }
 
-    double hardwareError = closedLoopErrorSignal.getDouble();
+    // double hardwareError = closedLoopErrorSignal.getDouble();
 
-    return hardwareError;
+    return getCalculatedError();
   }
 
   @Override
