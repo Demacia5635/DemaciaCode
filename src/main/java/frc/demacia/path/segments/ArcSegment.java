@@ -1,5 +1,6 @@
 package frc.demacia.path.segments;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -8,39 +9,66 @@ import frc.demacia.path.constants.PathConstants;
 public class ArcSegment extends SegmentBase {
 
     private Translation2d center;
-    private Translation2d centerToStart;
-    private Translation2d centerToFinish;
-    private boolean isLeft;
+    private boolean isLeft; // left = counter-clockwise
+    private double radius; // m
+    private double startAngle; // rad, center to start
+    private double sweep; // rad, start to end in the turn direction, [0, 2PI)
 
-
-    public ArcSegment(Translation2d startingPoint, Pose2d endPoint, Translation2d centerCircle, boolean isLeft, double radius, double endVelocity, double maxVelocity){
-        super(startingPoint, endPoint, endVelocity, maxVelocity);
-
-        this.center = centerCircle;
+    public ArcSegment(Translation2d start, Pose2d end, Translation2d center, boolean isLeft, double radius, double endVelocity, double maxVelocity) {
+        super(start, end, endVelocity, maxVelocity);
+        this.center = center;
         this.isLeft = isLeft;
-
-        this.centerToStart = startingPoint.minus(centerCircle);
-        this.centerToFinish = endPoint.getTranslation().minus(centerCircle);
+        this.radius = radius;
+        this.startAngle = start.minus(center).getAngle().getRadians();
+        this.sweep = MathUtil.inputModulus(turnDirection(end.getTranslation().minus(center).getAngle().getRadians() - startAngle), 0, 2 * Math.PI);
     }
 
-    public ArcSegment(Translation2d startingPoint, Pose2d endPoint, Translation2d centerCircle, boolean isLeft, double radius){
-        this(startingPoint, endPoint, centerCircle, isLeft, radius, PathConstants.MAX_VELOCITY, PathConstants.MAX_VELOCITY);
+    public Translation2d getCenter() {
+        return center;
     }
 
-    public Translation2d getCenter(){return this.center;}
-    
-    public boolean getIsLeft() {return this.isLeft;}
-
-    public Rotation2d getAngleBetweenRadius(){
-        return centerToFinish.getAngle().minus(centerToStart.getAngle());
+    public boolean getIsLeft() {
+        return isLeft;
     }
 
-    public Rotation2d getFinishAngle(){
-        return centerToFinish.getAngle();
+    private double turnDirection(double angle) {
+        return isLeft ? angle : -angle;
+    }
+
+    // angle left to turn from position to the end, positive = still before the end
+    private double remainingAngle(Translation2d position) {
+        double robotFromStart = turnDirection(position.minus(center).getAngle().getRadians() - startAngle);
+        // wrap opposite the arc's middle so arcs over 180 deg are measured correctly
+        double travelled = MathUtil.angleModulus(robotFromStart - sweep / 2) + sweep / 2;
+        return sweep - travelled;
     }
 
     @Override
-    public String toString(){
-        return super.toString() + " Center Circle: " + this.center;
+    public Rotation2d getDirection(Translation2d position, double currentVelocity) {
+        Translation2d centerToChassis = position.minus(center);
+        double baseHeading = centerToChassis.getAngle().getRadians() + (isLeft ? Math.PI / 2 : -Math.PI / 2);
+        double lookAhead = (currentVelocity / radius) * 0.02;
+        return new Rotation2d(baseHeading + (isLeft ? lookAhead : -lookAhead));
+    }
+
+    @Override
+    public double getDistanceLeft(Translation2d position) {
+        return Math.max(0, remainingAngle(position)) * radius;
+    }
+
+    @Override
+    public boolean isFinished(Translation2d position) {
+        return remainingAngle(position) <= 0
+                || position.getDistance(getEndPose().getTranslation()) < PathConstants.MAX_POSITION_THRESHOLD_DURING_PATH;
+    }
+
+    @Override
+    public double getLength() {
+        return radius * sweep;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " Center Circle: " + center + " Radius: " + radius + " Sweep: " + sweep;
     }
 }

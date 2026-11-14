@@ -14,13 +14,13 @@ import frc.demacia.wpilibSwerve.command.SwerveCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.path.DemaciaTrajectory;
+import frc.demacia.path.PathPoint;
 import frc.demacia.path.commands.PathCommand;
 import frc.robot.vision.VisionConstants;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
 import frc.robot.chassis.MK5nChassisConstansRobotC;
 import frc.robot.chassis.RobotCChassisConstants;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
@@ -39,7 +39,7 @@ public class RobotContainer implements Sendable {
 
   public static SwerveCommand driveCommand;
   public static PathCommand pathCommand;
-  public List<Pose2d> points = new ArrayList<Pose2d>();
+  public List<PathPoint> points = new ArrayList<PathPoint>();
   public DemaciaTrajectory trajectory;
 
   /**
@@ -79,11 +79,11 @@ public class RobotContainer implements Sendable {
   }
 
   public void addPoints(){
-    points.add(new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
-    points.add(new Pose2d(new Translation2d(2, -2), new Rotation2d(Math.toRadians(90))));
-    points.add(new Pose2d(new Translation2d(2, 0), new Rotation2d(Math.toRadians(180))));
-    points.add(new Pose2d(new Translation2d(1.5, -1), new Rotation2d(Math.toRadians(270))));
-    points.add(new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
+    points.add(new PathPoint(new Translation2d(0, 0), new Rotation2d(Math.toRadians(0))));
+    points.add(new PathPoint(new Translation2d(2, -2), new Rotation2d(Math.toRadians(90))));
+    points.add(new PathPoint(new Translation2d(2, 0), new Rotation2d(Math.toRadians(180))));
+    points.add(new PathPoint(new Translation2d(1.5, -1), new Rotation2d(Math.toRadians(270))));
+    points.add(new PathPoint(new Translation2d(0, 0), new Rotation2d(Math.toRadians(0))));
   }
 
   /**
