@@ -4,37 +4,61 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.DeploySubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeCommand extends Command {
 
-  private final IntakeSubsystem intake;
-  private final DeploySubsystem deploy;
+  // for TESTING:
+  private double targetDeployAngle;
+  private double targetRollersDuty;
+  private double targetAlignerDuty;
 
-  public IntakeCommand(IntakeSubsystem intake, DeploySubsystem deploy) {
+  private final IntakeSubsystem intake;
+
+  public IntakeCommand(IntakeSubsystem intake) {
     this.intake = intake;
-    this.deploy = deploy;
-    addRequirements(intake, deploy);
+    addRequirements(intake);
+  }
+
+  // for TESTING:
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.addDoubleProperty("Target Deploy Angle (Degrees)", () -> targetDeployAngle, (angle) -> targetDeployAngle = Math.toRadians(angle));
+    builder.addDoubleProperty("Target Rollers Duty", () -> targetRollersDuty, (duty) -> targetRollersDuty = duty);
+    builder.addDoubleProperty("Target Aligner Duty", () -> targetAlignerDuty, (duty) -> targetAlignerDuty = duty);
   }
 
   @Override
   public void initialize() {
-    // Deploy the mechanism, and intake the coral
-    deploy.deployIntake();
-    intake.intakeCoral();
   }
 
   @Override
-  public void execute() {}
+  public void execute() {
+    switch (intake.getState()) {
+      case INTAKING, EJECTING, DEPLOYED_IDLE, CLOSED:
+        intake.setDeployAngle(intake.getState().deployAngle);
+        intake.setRollersDuty(intake.getState().rollersDuty);
+        intake.setAlignerDuty(intake.getState().alignerDuty);
+        break;
+
+      case TESTING:
+        intake.setDeployAngle(targetDeployAngle);
+        intake.setRollersDuty(targetRollersDuty);
+        intake.setAlignerDuty(targetAlignerDuty);
+        break;
+
+      case IDLE:
+      intake.stopAll();
+      break;
+    }
+  }
 
   @Override
   public void end(boolean interrupted) {
-    // Retract the mechanism, stop the rollers and stop the aligner
-    deploy.retractIntake();
-    intake.stopRollersAndAligner();
-    intake.setHasCoral();
+    intake.stopAll();
   }
 
   @Override

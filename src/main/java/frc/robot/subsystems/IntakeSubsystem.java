@@ -4,106 +4,129 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.utils.motors.TalonFXMotor;
+import frc.robot.constants.IntakeConstants.IntakeState;
 
 import static frc.robot.constants.IntakeConstants.*;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  public enum IntakeState {
-    IDLE, // both motors aren't working
-    INTAKING, // rollers and align motors are moving and intaking the coral
-    EJECTING, // rollers and align motors are moving and ejecting the coral
-    HAS_CORAL; // the coral is secured inside the robot's perimeter
-  }
-
   private final TalonFXMotor rollersMotor;
   private final TalonFXMotor alignerMotor;
 
-  private IntakeState currentIntakeState = IntakeState.IDLE; // defualt is idle
+  private final TalonFXMotor deployMotor;
+  private final DigitalInput deployLimitSwitch;
+
+  private IntakeState state;
+
+  private boolean isCalibrated;
 
   public IntakeSubsystem() {
     rollersMotor = new TalonFXMotor(ROLLERS_MOTOR_CONFIG);
     alignerMotor = new TalonFXMotor(ALIGNER_MOTOR_CONFIG);
+    deployMotor = new TalonFXMotor(DEPLOY_MOTOR_CONFIG);
+    deployLimitSwitch = new DigitalInput(LIMIT_SWITCH_ID);
+
+    state = IntakeState.IDLE; // default
+    addStateChooser();
+  }
+
+  public void addStateChooser() {
+    SendableChooser<IntakeState> stateChooser = new SendableChooser<>();
+    for (IntakeState state : IntakeState.values()) {
+      stateChooser.addOption(state.name(), state);
+    }
+    stateChooser.onChange(newState -> this.state = newState);
+    SmartDashboard.putData("State Chooser", stateChooser);
   }
 
   // Set power for all motors
-  public void setRollersPower(double power) {
-    rollersMotor.setDuty(power);
+  public void setRollersDuty(double duty) {
+    rollersMotor.setDuty(duty);
   }
 
-  public void setAlignerPower(double power) {
-    alignerMotor.setDuty(power);
+  public void setAlignerDuty(double duty) {
+    alignerMotor.setDuty(duty);
   }
 
+  public void setDeployDuty(double duty) {
+    deployMotor.setDuty(duty);
+  }
+
+  public void setDeployPosition(double position) {
+    deployMotor.setMotion(position);
+  }
+
+  public void setDeployAngle(double deployAngle) {
+    double currentAngle = deployMotor.getCurrentAngle();
+    if (Math.abs(currentAngle - deployAngle) < ANGLE_TOLORANCE) {
+      stopDeploy();
+    } else {
+      deployAngle = MathUtil.clamp(deployAngle, CLOSED_DEPLOY_ANGLE, OPEN_DEPLOY_ANGLE); // limit the angle to only
+                                                                                         // between the closed angle to
+                                                                                         // the open angle
+      setDeployPosition(deployAngle);
+    }
+
+  }
+
+  public void setCalibrated() {
+    isCalibrated = true;
+  }
+
+  public boolean isCalibrated() {
+    return isCalibrated;
+  }
   // Getters
-
-  public double getAlignerVelocity() {
-    return alignerMotor.getCurrentVelocity();
-  }
 
   public double getRollersVelocity() {
     return rollersMotor.getCurrentVelocity();
   }
 
-  // Intake/Eject the coral
-  public void intakeCoral() {
-    currentIntakeState = IntakeState.INTAKING;
-    setRollersPower(INTAKE_SPEED);
-    alignCoral();
+  public double getIntakeDeployAngle() {
+    return Math.toDegrees(deployMotor.getCurrentPosition());
   }
 
-  public void ejectCoral() {
-    currentIntakeState = IntakeState.EJECTING;
-    setRollersPower(EJECT_SPEED);
-    reverseAligner();
-  }
-
-  // Align/Reverse the aligner
-  public void alignCoral() {
-    setAlignerPower(ALIGNER_SPEED);
-  }
-
-  public void reverseAligner() {
-    setAlignerPower(-ALIGNER_SPEED);
+  public boolean isDeployedClosed() {
+    return !deployLimitSwitch.get(); // if it's not pressed it returns true so just invert it
   }
 
   // Stop
   public void stopRollers() {
-    setRollersPower(0);
+    rollersMotor.stop();
   }
 
   public void stopAligner() {
-    setAlignerPower(0);
+    alignerMotor.stop();
   }
 
-  public void stopRollersAndAligner() {
-    currentIntakeState = IntakeState.IDLE;
+  public void stopDeploy() {
+    deployMotor.stop();
+  }
+
+  public void stopAll() {
+    stopDeploy();
     stopRollers();
     stopAligner();
   }
 
-  public void setHasCoral() {
-    currentIntakeState = IntakeState.HAS_CORAL;
+  // Intake state
+  public void setState(IntakeState newState) {
+    state = newState;
   }
 
-  // Get current intake state
-  public IntakeState getCurrentIntakeState() {
-    return currentIntakeState;
+  public IntakeState getState() {
+    return state;
   }
+
 
   @Override
-  public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder);
-    builder.setSmartDashboardType("DeploySubsystem");
-
-    builder.addDoubleProperty("Rollers Velocity", () -> getRollersVelocity(), null);
-    builder.addDoubleProperty("Aligner Velocity", () -> getAlignerVelocity(), null);
-    builder.addStringProperty("Current Intake State", () -> currentIntakeState.name(), null);
+  public void periodic() {
   }
-
-  @Override
-  public void periodic() {}
 }

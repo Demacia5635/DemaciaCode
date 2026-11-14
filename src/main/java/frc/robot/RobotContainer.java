@@ -6,21 +6,17 @@ package frc.robot;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.demacia.utils.DemaciaUtils;
 import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
 import frc.demacia.utils.log.LogManager;
-import frc.robot.commands.EjectCommand;
 import frc.robot.constants.Constants;
-import frc.robot.subsystems.DeploySubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.commands.CalibrationCommand;
+import frc.robot.commands.ControllerTestingCommand;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.StopCommand;
 
 public class RobotContainer implements Sendable {
 
@@ -29,51 +25,27 @@ public class RobotContainer implements Sendable {
   public static boolean isRed = false;
 
   // Subsystem & controller:
-  private final IntakeSubsystem intake = new IntakeSubsystem();
-  private final DeploySubsystem deploy = new DeploySubsystem();
-  private final CommandController controller = new CommandController(Constants.ControllerConstants.XboxControllerPort,
-      ControllerType.kXbox);
-  private final CommandXboxController xboxController = new CommandXboxController(
-      Constants.ControllerConstants.XboxControllerPort); // CommandController class doesnt have a vibrate/rumble option,
-                                                         // so I used the CommandXboxController class, which does have
-                                                         // one.
-  // Make sure the port and the controller type are corect
+  private final IntakeSubsystem intake;
+  private final CommandController controller;
+  private final ControllerTestingCommand controllerTestingCommand;
 
   public RobotContainer() {
+    intake = new IntakeSubsystem();
+    controller = new CommandController(Constants.ControllerConstants.XBOX_CONTROLLER_PORT, ControllerType.kXbox);
+
     SmartDashboard.putData("RC", this);
     SmartDashboard.putData("IntakeSubsystem", intake);
-    SmartDashboard.putData("DeploySubsystem", deploy);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
-
+    controllerTestingCommand = new ControllerTestingCommand(controller,intake);
+    intake.setDefaultCommand(new IntakeCommand(intake)); 
+    // intake.setDefaultCommand(new ControllerTestingCommand(controller,intake)); // change to controllerTestingCommand if you want to test with a controller
     // Configure the trigger bindings
     configureBindings();
   }
 
   private void configureBindings() {
-
-    // Runs intake command
-    controller.leftBumper().toggleOnTrue(
-        new IntakeCommand(intake,deploy)
-            .alongWith(
-                Commands.startEnd(
-                    () -> xboxController.getHID().setRumble(RumbleType.kRightRumble, 0.5), // start vibrating
-                    () -> xboxController.getHID().setRumble(RumbleType.kRightRumble, 0.0) // stop vibrating
-                )));
-
-    // Runs eject command
-    controller.rightBumper().toggleOnTrue(
-        new EjectCommand(intake,deploy)
-            .alongWith(
-                Commands.startEnd(
-                    () -> xboxController.getHID().setRumble(RumbleType.kRightRumble, 0.5), // start vibrating
-                    () -> xboxController.getHID().setRumble(RumbleType.kRightRumble, 0.0) // stop vibrating
-                )));
-
-    // Runs stop command
     controller.downButton().onTrue(
-      new StopCommand(intake,deploy)
-    );
-
+      new CalibrationCommand(intake));
   }
 
   public static boolean getIsRed() {
