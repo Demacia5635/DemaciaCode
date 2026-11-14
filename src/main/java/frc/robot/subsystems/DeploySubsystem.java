@@ -15,9 +15,9 @@ public class DeploySubsystem extends SubsystemBase {
 
   public enum DeployState {
     RETRACTED, // the mechanism has fully retracted
+    RETRACTING, // the mechanism is in the proccess of retracting
     DEPLOYING, // the mechanism is in the proccess of deploying
     DEPLOYED, // the mechanism has fully deployed
-    RERACTING, // the mechanism is in the proccess of retracting
     STOPPED // the mechanism has been emergency stopped
   }
 
@@ -31,7 +31,7 @@ public class DeploySubsystem extends SubsystemBase {
     deployCancoder = new Cancoder(CANCODER_CONFIG);
   }
 
-  // Set power for all motors
+  // Set power & position
 
   public void setDeployPower(double power) {
     deployMotor.setDuty(power);
@@ -64,12 +64,12 @@ public class DeploySubsystem extends SubsystemBase {
   // Deploy/Retract the mechanism
   public void deployIntake() {
     currentDeployState = DeployState.DEPLOYING;
-    deployMotor.setMotion(DEPLOYED_POSITION);
+    setDeployPosition(DEPLOYED_POSITION);
   }
 
   public void retractIntake() {
-    currentDeployState = DeployState.RERACTING;
-    deployMotor.setMotion(RETRACTED_POSITION);
+    currentDeployState = DeployState.RETRACTING;
+    setDeployPosition(RETRACTED_POSITION);
   }
 
   // Stop
@@ -94,12 +94,13 @@ public class DeploySubsystem extends SubsystemBase {
     builder.addBooleanProperty("Is Fully Retracted", () -> isFullyRetracted(), null);
     builder.addStringProperty("Current Deploy State", () -> currentDeployState.name(), null);
   }
+  
 
   @Override
   public void periodic() {
     if (currentDeployState == DeployState.DEPLOYING && isFullyDeployed()) {
       currentDeployState = DeployState.DEPLOYED;
-    } else if (currentDeployState == DeployState.RERACTING && isFullyRetracted()) {
+    } else if (currentDeployState == DeployState.RETRACTING && isFullyRetracted()) {
       currentDeployState = DeployState.RETRACTED;
     }
 

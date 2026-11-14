@@ -101,7 +101,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     builder.addDoubleProperty("Rollers Velocity", () -> getRollersVelocity(), null);
     builder.addDoubleProperty("Aligner Velocity", () -> getAlignerVelocity(), null);
-    builder.addStringProperty("Current Intake State", () -> currentIntakeState.name(), null); // TODO: change to .name()
+    builder.addStringProperty("Current Intake State", () -> currentIntakeState.name(), null);
   }
 
   @Override
