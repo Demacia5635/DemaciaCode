@@ -66,7 +66,11 @@ public class RobotContainer implements Sendable {
 
   private void setDefaultCommands() {
     Chassis.getInstance().setDefaultCommand(driveCommand);
-    controller.leftButton().onTrue(new PathCommand(new DemaciaTrajectory(points), driveCommand));
+    controller.leftButton().onTrue(new PathCommand(new DemaciaTrajectory(points),
+        () -> RobotPose.getInstance().getEstimatedPose(),
+        () -> Chassis.getInstance().getChassisSpeedsFieldRel(),
+        driveCommand::setVelFieldRel,
+        Chassis.getInstance()));
   }
 
   private void setController() {

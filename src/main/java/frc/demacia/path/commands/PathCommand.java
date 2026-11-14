@@ -1,22 +1,27 @@
 package frc.demacia.path.commands;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.demacia.RobotPose.RobotPose;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.demacia.path.DemaciaTrajectory;
-import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.wpilibSwerve.command.SwerveCommand;
 
 public class PathCommand extends Command {
   DemaciaTrajectory trajectory;
-  Chassis chassis;
-  SwerveCommand swerveCommand;
+  Supplier<Pose2d> poseSupplier;
+  Supplier<ChassisSpeeds> speedsSupplier; // field relative
+  Consumer<ChassisSpeeds> speedsConsumer; // field relative
 
-  public PathCommand(DemaciaTrajectory trajectory, SwerveCommand swerveCommand) {
-    this.chassis = Chassis.getInstance();
+  public PathCommand(DemaciaTrajectory trajectory, Supplier<Pose2d> poseSupplier,
+      Supplier<ChassisSpeeds> speedsSupplier, Consumer<ChassisSpeeds> speedsConsumer, Subsystem... requirements) {
     this.trajectory = trajectory;
-    this.swerveCommand = swerveCommand;
-    addRequirements(chassis);
+    this.poseSupplier = poseSupplier;
+    this.speedsSupplier = speedsSupplier;
+    this.speedsConsumer = speedsConsumer;
+    addRequirements(requirements);
   }
 
   @Override
@@ -26,13 +31,12 @@ public class PathCommand extends Command {
 
   @Override
   public void execute() {
-    ChassisSpeeds speeds = trajectory.calculateSpeeds(chassis.getChassisSpeedsFieldRel(), RobotPose.getInstance().getEstimatedPose());
-    swerveCommand.setVelFieldRel(speeds);
+    speedsConsumer.accept(trajectory.calculateSpeeds(speedsSupplier.get(), poseSupplier.get()));
   }
 
   @Override
   public void end(boolean interrupted) {
-    chassis.stop();
+    speedsConsumer.accept(new ChassisSpeeds());
   }
 
   @Override
