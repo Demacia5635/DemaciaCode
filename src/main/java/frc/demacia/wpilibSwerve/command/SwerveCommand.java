@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.wpilibSwerve.poseEstimator.WPILibPoseEstimator;
 import frc.demacia.wpilibSwerve.kinematics.WPILibKinmatics;
 import frc.demacia.wpilibSwerve.odemetry.WPILibOdemetry;
@@ -83,7 +84,8 @@ public class SwerveCommand extends Command {
   }
 
   public void setVelFieldRel(ChassisSpeeds speeds){
-    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, chassis.getGyroAngle());
+    // field heading from the pose estimator, not the raw gyro (they differ after a pose reset)
+    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, RobotPose.getInstance().getEstimatedPose().getRotation());
     moduleStates = kinematics.kinematics().toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, chassis.getConfig().maxDriveVelocity);
     chassis.setModuleStates(moduleStates);
