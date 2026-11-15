@@ -43,7 +43,8 @@ public class DriveCommand extends Command {
       velRot /= 2;
     }
 
-    speeds = new ChassisSpeeds(velX, velY, -velRot);
+    // WPILib kinematics: positive omega = CCW (DemaciaKinematics was CW-positive, hence the old minus)
+    speeds = new ChassisSpeeds(velX, velY, velRot);
 
     chassis.setVelocities(speeds);
   }

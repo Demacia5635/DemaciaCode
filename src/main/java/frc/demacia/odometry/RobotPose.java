@@ -11,12 +11,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Timer;
-import frc.demacia.odometry.DemaciaPoseEstimator.OdometryObservation;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.log.LogManager;
 import frc.demacia.vision.subsystem.Quest;
@@ -25,10 +26,14 @@ import frc.demacia.vision.utils.VisionConstants;
 
 public class RobotPose {
 
+    /** One odometry sample: FPGA timestamp, gyro yaw and module positions. */
+    public record OdometryObservation(double timeStamp, Rotation2d gyroAngle, SwerveModulePosition[] swerveModules) {
+    }
+
     private static RobotPose instance;
 
     private Vision vision;
-    private DemaciaPoseEstimator poseEstimator;
+    private SwerveDrivePoseEstimator poseEstimator;
     private Quest quest;
 
     private Matrix<N3, N1> questSTD;
@@ -41,8 +46,8 @@ public class RobotPose {
     
     private BuiltInAccelerometer accelerometer;
 
-    private RobotPose(Translation2d[] modulePositions, Matrix<N3, N1> stateSTD,
-            Matrix<N3, N1> questSTD) {
+    private RobotPose(SwerveDriveKinematics kinematics, Rotation2d gyroAngle,
+            SwerveModulePosition[] modulePositions, Matrix<N3, N1> stateSTD, Matrix<N3, N1> questSTD) {
         this.vision = new Vision((VisionConstants.Tags.TAGS_ARRAY));
 
         this.quest = new Quest();
@@ -51,7 +56,8 @@ public class RobotPose {
         this.visionSTD = new Matrix<N3, N1>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 }));
         this.hasUpdatedQuestIntialPose = false;
         this.hasQuestDisconnected = false;
-        this.poseEstimator = new DemaciaPoseEstimator(modulePositions, stateSTD, visionSTD);
+        this.poseEstimator = new SwerveDrivePoseEstimator(kinematics, gyroAngle, modulePositions, Pose2d.kZero,
+                stateSTD, visionSTD);
         this.accelerometer = new BuiltInAccelerometer(); 
     }
 
@@ -64,24 +70,24 @@ public class RobotPose {
     }
 
     public Pose2d getPose() {
-
-        return poseEstimator.getEstimatedPose();
+        return poseEstimator.getEstimatedPosition();
     }
 
-    public static void initialize(Translation2d[] modulePositions, Matrix<N3, N1> stateSTD,
-            Matrix<N3, N1> questSTD) {
+    public static void initialize(SwerveDriveKinematics kinematics, Rotation2d gyroAngle,
+            SwerveModulePosition[] modulePositions, Matrix<N3, N1> stateSTD, Matrix<N3, N1> questSTD) {
 
         if (instance == null)
-            instance = new RobotPose(modulePositions, stateSTD, questSTD);
+            instance = new RobotPose(kinematics, gyroAngle, modulePositions, stateSTD, questSTD);
     }
 
-    public void resetPose() {
-        resetPose(Pose2d.kZero);
-    }
-
-    public void resetPose(Pose2d pose) {
+    /**
+     * Resets the estimator to {@code pose}. {@code gyroAngle} and {@code modulePositions} must be the
+     * current sensor readings (what the next {@link #update} will receive), otherwise the next
+     * update sees a false jump.
+     */
+    public void resetPose(Rotation2d gyroAngle, SwerveModulePosition[] modulePositions, Pose2d pose) {
         System.out.println(pose);
-        poseEstimator.resetPose(pose);
+        poseEstimator.resetPosition(gyroAngle, modulePositions, pose);
     }
 
     public static RobotPose getInstance() {
@@ -89,7 +95,8 @@ public class RobotPose {
     }
 
     public void addOdometryCalculation(OdometryObservation odometryObservation) {
-        poseEstimator.addOdometryCalculation(odometryObservation);
+        poseEstimator.updateWithTime(odometryObservation.timeStamp(), odometryObservation.gyroAngle(),
+                odometryObservation.swerveModules());
     }
 
     public void addOdometryCalculation(Pose2d odometryPose, Rotation2d gyroAngle,

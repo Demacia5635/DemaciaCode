@@ -32,9 +32,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.demacia.kinematics.DemaciaKinematics;
-import frc.demacia.odometry.DemaciaPoseEstimator.OdometryObservation;
 import frc.demacia.odometry.RobotPose;
+import frc.demacia.odometry.RobotPose.OdometryObservation;
 import frc.demacia.utils.log.LogManager;
 import frc.demacia.utils.sensors.Pigeon;
 import frc.demacia.vision.utils.VisionConstants;
@@ -100,7 +99,6 @@ public class Chassis extends SubsystemBase {
 
     public SwerveModule[] modules;
     private Pigeon gyro;
-    private DemaciaKinematics demaciaKinematics;
     private SwerveDriveKinematics wpilibKinematics;
 
     private Field2d field;
@@ -142,7 +140,6 @@ public class Chassis extends SubsystemBase {
         gyro = new Pigeon(chassisConfig.pigeonConfig);
 
         addStatus();
-        demaciaKinematics = new DemaciaKinematics(modulePositions);
         wpilibKinematics = new SwerveDriveKinematics(modulePositions);
       
         field = new Field2d();
@@ -158,7 +155,7 @@ public class Chassis extends SubsystemBase {
         SmartDashboard.putData("chassis/set brake",
                 new InstantCommand(() -> setNeutralMode(true)).ignoringDisable(true));
 
-        RobotPose.initialize(modulePositions, new Matrix<>(
+        RobotPose.initialize(wpilibKinematics, getGyroAngle(), getModulePositions(), new Matrix<>(
                 new SimpleMatrix(
                         new double[] { 0.03, 0.03, 0 })),
                 VisionConstants.QUEST_STD);
@@ -205,7 +202,7 @@ public class Chassis extends SubsystemBase {
     }
 
     public void resetPose(Pose2d pose) {
-        RobotPose.getInstance().resetPose(pose);
+        RobotPose.getInstance().resetPose(getGyroAngle(), getModulePositions(), pose);
     }
 
     /**
@@ -242,8 +239,9 @@ public class Chassis extends SubsystemBase {
 
     public void setVelocities(ChassisSpeeds speeds) {
 
-        SwerveModuleState[] states = demaciaKinematics
+        SwerveModuleState[] states = wpilibKinematics
                 .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getGyroAngle()));
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, chassisConfig.maxDriveVelocity);
         // SwerveModuleState[] states = demaciaKinematics.toSwerveModuleStatesWithLimit(
         // speeds,
         // getChassisSpeedsFieldRel(),
@@ -378,9 +376,10 @@ public class Chassis extends SubsystemBase {
      * @return Current velocities in robot frame
      */
     public ChassisSpeeds getChassisSpeedsRobotRel() {
-        return demaciaKinematics.toChassisSpeeds(
-                getModuleStates(),
-                Math.toRadians(gyroYawStatus.getValueAsDouble()));
+        ChassisSpeeds wheelSpeeds = wpilibKinematics.toChassisSpeeds(getModuleStates());
+        // omega from the gyro, translation from the wheels
+        return new ChassisSpeeds(wheelSpeeds.vxMetersPerSecond, wheelSpeeds.vyMetersPerSecond,
+                getGyroAngularVelocity());
     }
 
     /**
@@ -389,10 +388,7 @@ public class Chassis extends SubsystemBase {
      * @return Current velocities transformed to field frame
      */
     public ChassisSpeeds getChassisSpeedsFieldRel() {
-        return ChassisSpeeds.fromRobotRelativeSpeeds(
-                demaciaKinematics.toChassisSpeeds(getModuleStates(),
-                        getGyroAngularVelocity()),
-                getGyroAngle());
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeedsRobotRel(), getGyroAngle());
     }
 
     public Translation2d getChassisSpeedsVector() {
@@ -427,9 +423,9 @@ public class Chassis extends SubsystemBase {
         if (angle != null) {
             gyro.setYaw(angle.getDegrees());
             RobotPose.getInstance().setQuestHeading(angle);
+            // The gyro was just set to `angle`, so that is the gyro reading the next update will see.
             RobotPose.getInstance()
-                    .resetPose(
-                            new Pose2d(Translation2d.kZero, gyro.getRotation2d()));
+                    .resetPose(angle, getModulePositions(), new Pose2d(Translation2d.kZero, angle));
         }
     }
 
