@@ -49,12 +49,13 @@ public class ClimbConstants {
     public static final double POSITION_TOLERANCE = 0.0;
     public static final double BALANCE_TOLERANCE = Math.toRadians(10);
 
-    public enum ClimbStage {
+    public enum ClimbState {
         OPENING,
         DRIVING,
         CLIMBING,
         BALANCING,
-        FINISHED
+        FINISHED,
+        AUTO_CLIMB
     }
 
 }

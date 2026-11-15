@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.utils.chassis.Chassis;
@@ -15,6 +16,7 @@ import frc.demacia.utils.sensors.Pigeon;
 import frc.robot.chassis.Mk4iChassisConstants;
 import frc.robot.commands.ClimbCalibrationCommand;
 import frc.robot.constants.ClimbConstants;
+import frc.robot.constants.ClimbConstants.ClimbState;
 
 public class ClimbSubsystem extends SubsystemBase {
   /** Creates a new ClimbSubsystem. */
@@ -27,6 +29,7 @@ public class ClimbSubsystem extends SubsystemBase {
   private final Pigeon pigeon;
   private boolean leftCalibrated;
   private boolean rightCalibrated;
+  private ClimbState state;
 
   public ClimbSubsystem() {
     leftMotor = new TalonFXMotor(ClimbConstants.LEFT_MOTOR_CONFIG);
@@ -38,7 +41,7 @@ public class ClimbSubsystem extends SubsystemBase {
     pigeon = chassis.gyro;
     SmartDashboard.putData("Climb Subsystem", this);
     SmartDashboard.putData("Climb Calibration Command", new ClimbCalibrationCommand(this));
-
+    addSendableChooser();
   }
 
   public void stop() {
@@ -140,6 +143,24 @@ public class ClimbSubsystem extends SubsystemBase {
     builder.addBooleanProperty("Left Limit Switch", this::isLeftClosed, null);
     builder.addBooleanProperty("Right Limit Switch", this::isRightClosed, null);
     builder.addBooleanProperty("Is Calibrated", this::isCalibrated, null);
+  }
+
+  public void setState(ClimbState newState){
+    state = newState;
+  }
+
+  public ClimbState getState(){
+    return state;
+  }
+
+  public void addSendableChooser() {
+    SendableChooser<ClimbState> stateChooser = new SendableChooser<>();
+    for (ClimbState state : ClimbState.values()) {
+      stateChooser.addOption(state.name(), state);
+    }
+    stateChooser.onChange(newState -> this.state = newState);
+    SmartDashboard.putData("Climb State Chooser", stateChooser);
+
   }
 
   @Override
