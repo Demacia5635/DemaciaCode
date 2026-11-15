@@ -6,6 +6,7 @@ import java.util.List;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -61,14 +62,23 @@ public class DemaciaTrajectory {
     }
 
     private void buildSegments(List<PathPoint> points) {
-        Translation2d currentStart = points.get(0).getTranslation();
+        int size = points.size();
+        Translation2d[] centers = new Translation2d[size]; // the point itself when it has no arc
+        double[] signedRadius = new double[size]; // m, positive = left arc, negative = right arc, 0 = no arc
+        double[] velocities = new double[size]; // m/s, when passing the point
+        Translation2d[] entry = new Translation2d[size]; // where the leg from the previous point ends
+        Translation2d[] exit = new Translation2d[size]; // where the leg to the next point starts
 
-        for (int i = 1; i < points.size() - 1; i++) {
-            PathPoint point = points.get(i);
+        for (int i = 0; i < size; i++) {
+            centers[i] = points.get(i).getTranslation();
+        }
+
+        // the corner circle of every point
+        for (int i = 1; i < size - 1; i++) {
             Translation2d prev = points.get(i - 1).getTranslation();
-            Translation2d here = point.getTranslation();
+            Translation2d here = points.get(i).getTranslation();
             Translation2d next = points.get(i + 1).getTranslation();
-            double v = point.getVelocity();
+            double v = points.get(i).getVelocity();
 
             double turn = Math.abs(MathUtil.angleModulus(
                     next.minus(here).getAngle().getRadians() - here.minus(prev).getAngle().getRadians()));
@@ -76,8 +86,7 @@ public class DemaciaTrajectory {
             boolean reversal = turn > Math.PI - PathConstants.MIN_TURN_FOR_ARC;
 
             if (v == 0 || reversal || turn < PathConstants.MIN_TURN_FOR_ARC || maxR < 1e-6) {
-                segments.add(new LineSegment(currentStart, point, reversal ? 0 : v, PathConstants.MAX_VELOCITY));
-                currentStart = here;
+                velocities[i] = reversal ? 0 : v;
                 continue;
             }
 
@@ -87,14 +96,60 @@ public class DemaciaTrajectory {
                 v = Math.sqrt(PathConstants.MAX_LATERAL_ACCELERATION * r);
             }
             ArcSegment corner = ArcCalculator.calculateCenter(prev, here, next, r);
-            List<Pose2d> arcPoints = LegCalculator.returnPoint(prev, here, corner, r, point.getRotation());
-
-            segments.add(new LineSegment(currentStart, arcPoints.get(0), v, PathConstants.MAX_VELOCITY));
-            segments.add(new ArcSegment(arcPoints.get(0).getTranslation(), arcPoints.get(1),
-                    corner.getCenter(), corner.getIsLeft(), r, v, v));
-            currentStart = arcPoints.get(1).getTranslation();
+            centers[i] = corner.getCenter();
+            signedRadius[i] = corner.getIsLeft() ? r : -r;
+            velocities[i] = v;
         }
-        segments.add(new LineSegment(currentStart, points.get(points.size() - 1), 0, PathConstants.MAX_VELOCITY));
+
+        // every leg is the line that touches both of its corner circles
+        // an arc that can't be built is removed and its point becomes a plain point, then the legs are built again
+        boolean removedArc = true;
+        while (removedArc) {
+            removedArc = false;
+            for (int i = 0; i < size - 1; i++) {
+                List<Translation2d> leg = LegCalculator.tangentPoints(centers[i], signedRadius[i], centers[i + 1], signedRadius[i + 1]);
+                if (leg.isEmpty()) {
+                    centers[i] = points.get(i).getTranslation();
+                    signedRadius[i] = 0;
+                    centers[i + 1] = points.get(i + 1).getTranslation();
+                    signedRadius[i + 1] = 0;
+                    removedArc = true;
+                    break;
+                }
+                exit[i] = leg.get(0);
+                entry[i + 1] = leg.get(1);
+            }
+            if (removedArc) {
+                continue;
+            }
+            for (int i = 1; i < size - 1; i++) {
+                if (signedRadius[i] != 0 && !isArcValid(centers[i], signedRadius[i] > 0, entry[i], points.get(i).getTranslation(), exit[i])) {
+                    Log.log("removed the arc of point " + i);
+                    centers[i] = points.get(i).getTranslation();
+                    signedRadius[i] = 0;
+                    removedArc = true;
+                }
+            }
+        }
+
+        for (int i = 1; i < size; i++) {
+            Rotation2d heading = points.get(i).getRotation();
+            segments.add(new LineSegment(exit[i - 1], new Pose2d(entry[i], heading), velocities[i], PathConstants.MAX_VELOCITY));
+            if (signedRadius[i] != 0) {
+                segments.add(new ArcSegment(entry[i], new Pose2d(exit[i], heading), centers[i], signedRadius[i] > 0,
+                        Math.abs(signedRadius[i]), velocities[i], velocities[i]));
+            }
+        }
+    }
+
+    // the arc must go from the entry through its point to the exit without going almost all the way around
+    private boolean isArcValid(Translation2d center, boolean isLeft, Translation2d entry, Translation2d point, Translation2d exit) {
+        double entryAngle = entry.minus(center).getAngle().getRadians();
+        double pointAngle = point.minus(center).getAngle().getRadians();
+        double exitAngle = exit.minus(center).getAngle().getRadians();
+        double entryToPoint = MathUtil.inputModulus(isLeft ? pointAngle - entryAngle : entryAngle - pointAngle, 0, 2 * Math.PI);
+        double pointToExit = MathUtil.inputModulus(isLeft ? exitAngle - pointAngle : pointAngle - exitAngle, 0, 2 * Math.PI);
+        return entryToPoint + pointToExit < PathConstants.MAX_ARC_SWEEP;
     }
 
     // lower each end velocity so the next segment can still slow down to its own end velocity
