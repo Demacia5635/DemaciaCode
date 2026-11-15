@@ -6,15 +6,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.demacia.RobotPose.RobotPose;
 import frc.robot.vision.VisionConstants;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
+import frc.robot.chassis.Mk4iChassisConstants;
 import frc.robot.chassis.RobotCChassisConstants;
 import frc.robot.commands.ClimbCommand;
-import frc.robot.constants.ClimbConstants.ClimbState;
 import frc.robot.subsystems.ClimbSubsystem;
 
 /**
@@ -38,8 +37,9 @@ public class RobotContainer implements Sendable {
    */
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
+    Chassis.initialize(Mk4iChassisConstants.CHASSIS_CONFIG);
     chassis = Chassis.getInstance();
-    climbSubsystem = new ClimbSubsystem();
+    climbSubsystem = new ClimbSubsystem(chassis.gyro);
     RobotPose.initialize(
         RobotCChassisConstants.STATE_STD,
         VisionConstants.visionConfig);
@@ -50,12 +50,9 @@ public class RobotContainer implements Sendable {
   }
 
   private void configureBindings() {
-    controller.downButton().onTrue(Commands.runOnce(() -> {
-      if (climbSubsystem.isCalibrated()) {
-        climbSubsystem.setState(ClimbState.AUTO_CLIMB);
-        CommandScheduler.getInstance().schedule(new ClimbCommand(climbSubsystem, chassis));    
-      }
-    }));
+    controller.downButton().onTrue(new ClimbCommand(climbSubsystem, chassis)
+      .beforeStarting(new InstantCommand(()-> climbSubsystem.enableAutoClimb()))
+      .onlyIf(climbSubsystem::isCalibrated));
   }
 
   private void setDefaultCommands() {

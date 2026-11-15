@@ -9,12 +9,10 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.motors.TalonFXMotor;
 import frc.demacia.utils.sensors.LimitSwitch;
 import frc.demacia.utils.sensors.Pigeon;
-import frc.robot.chassis.Mk4iChassisConstants;
 import frc.robot.commands.ClimbCalibrationCommand;
 import frc.robot.constants.ClimbConstants;
 import frc.robot.constants.ClimbConstants.ClimbState;
@@ -26,20 +24,18 @@ public class ClimbSubsystem extends SubsystemBase {
   private final TalonFXMotor rightMotor;
   private final LimitSwitch leftSwitch;
   private final LimitSwitch rightSwitch;
-  private final Chassis chassis;
   private final Pigeon pigeon;
   private boolean leftCalibrated;
   private boolean rightCalibrated;
-  private ClimbState state;
+  private ClimbState state = ClimbState.IDLE;
+  private boolean autoClimb;
 
-  public ClimbSubsystem() {
+  public ClimbSubsystem(Pigeon gyro) {
     leftMotor = new TalonFXMotor(ClimbConstants.LEFT_MOTOR_CONFIG);
     rightMotor = new TalonFXMotor(ClimbConstants.RIGHT_MOTOR_CONFIG);
     leftSwitch = new LimitSwitch(ClimbConstants.LEFT_SWITCH_CONFIG);
     rightSwitch = new LimitSwitch(ClimbConstants.RIGHT_SWITCH_CONFIG);
-    Chassis.initialize(Mk4iChassisConstants.CHASSIS_CONFIG);
-    chassis = Chassis.getInstance();
-    pigeon = chassis.gyro;
+    pigeon = gyro;
     SmartDashboard.putData("Climb Subsystem", this);
     SmartDashboard.putData("Climb Calibration Command", new ClimbCalibrationCommand(this));
     addSendableChooser();
@@ -107,6 +103,14 @@ public class ClimbSubsystem extends SubsystemBase {
 
   public boolean isCalibrated() {
     return leftCalibrated && rightCalibrated;
+  }
+
+  public void enableAutoClimb(){
+    autoClimb = true;
+  }
+
+  public boolean isAutoClimb(){
+    return autoClimb;
   }
 
   public void setPosition(double left, double right) {

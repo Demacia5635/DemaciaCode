@@ -18,11 +18,6 @@ public class ClimbCommand extends Command {
   private final ClimbSubsystem climbSubsystem;
   private final Chassis chassis;
   private final Timer driveTimer = new Timer();
-  private ClimbState state;
-  private boolean finishedOpening;
-  private boolean finishedDriving;
-  private boolean finishedClimbing;
-  private boolean finishedBalancing;
 
   /** Creates a new ClimbCommand. */
   public ClimbCommand(ClimbSubsystem climbSubsystem, Chassis chassis) {
@@ -44,16 +39,20 @@ public class ClimbCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    switch (state) {
+    switch (climbSubsystem.getState()) {
       case IDLE:
       chassis.stop();
       climbSubsystem.stop();
+      break;
+
       case OPENING:
         climbSubsystem.setPosition(ClimbConstants.OPEN_POSITION, ClimbConstants.OPEN_POSITION);
         if (climbSubsystem.isAtTarget(ClimbConstants.OPEN_POSITION)) {
           climbSubsystem.stop();
           driveTimer.restart();
-          finishedOpening = true;
+          if(climbSubsystem.isAutoClimb()){
+            climbSubsystem.setState(ClimbState.DRIVING);
+          }
         }
         break;
 
@@ -61,7 +60,9 @@ public class ClimbCommand extends Command {
         if (driveTimer.hasElapsed(ClimbConstants.DRIVE_TIME)) {
           driveTimer.stop();
           chassis.stop();
-          finishedDriving = true;
+          if(climbSubsystem.isAutoClimb()){
+            climbSubsystem.setState(ClimbState.CLIMBING);
+          }
         } else {
           chassis.setSpeedsRobotRel((new ChassisSpeeds(ClimbConstants.DRIVE_SPEED, 0, 0)));
         }
@@ -70,14 +71,18 @@ public class ClimbCommand extends Command {
       case CLIMBING:
         climbSubsystem.setPosition(ClimbConstants.BALANCE_START_DISTANCE, ClimbConstants.BALANCE_START_DISTANCE);
         if (climbSubsystem.isAtTarget(ClimbConstants.BALANCE_START_DISTANCE)) {
-          finishedClimbing = true;
+          if(climbSubsystem.isAutoClimb()){
+            climbSubsystem.setState(ClimbState.BALANCING);
+          }
         }
         break;
 
       case BALANCING:
         climbSubsystem.balance(ClimbConstants.BALANCE_START_DISTANCE);
         if (climbSubsystem.isBalanced()) {
-          finishedBalancing = true;
+          if(climbSubsystem.isAutoClimb()){
+            climbSubsystem.setState(ClimbState.FINISHED);
+          }
         }
         break;
 
@@ -85,20 +90,9 @@ public class ClimbCommand extends Command {
         climbSubsystem.stop();
         break;
 
-      case AUTO_CLIMB:
-        climbSubsystem.setState(ClimbState.OPENING);
-        if (finishedOpening) {
-          climbSubsystem.setState(ClimbState.DRIVING);
-        }
-        if (finishedDriving) {
-          climbSubsystem.setState(ClimbState.CLIMBING);
-        }
-        if(finishedClimbing){
-          climbSubsystem.setState(ClimbState.BALANCING);
-        }
-        if(finishedBalancing){
-          climbSubsystem.setState(ClimbState.FINISHED);
-        }
+      case GET_OFF_CLIMB:
+        climbSubsystem.setPosition(ClimbConstants.OPEN_POSITION, ClimbConstants.OPEN_POSITION);
+      break;
       default:
         climbSubsystem.setState(ClimbState.IDLE);
     }
@@ -113,6 +107,6 @@ public class ClimbCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return state == ClimbState.FINISHED;
+    return false;
   }
 }

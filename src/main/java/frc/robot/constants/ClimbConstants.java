@@ -56,7 +56,8 @@ public class ClimbConstants {
         CLIMBING,
         BALANCING,
         FINISHED,
-        AUTO_CLIMB
+        AUTO_CLIMB,
+        GET_OFF_CLIMB
     }
 
 }
