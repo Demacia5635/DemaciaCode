@@ -4,12 +4,9 @@
 
 package frc.demacia.wpilib_kinmatics;
 
-import com.ctre.phoenix6.swerve.SwerveModule;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.Kinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
@@ -34,10 +31,7 @@ public class wpilibKinmatics {
     }
 
     public SwerveModuleState[] toSwerveModuleStates(ChassisSpeeds speeds){
-        return kinematics.toSwerveModuleStates(speeds);
-    }
-
-    public SwerveDriveKinematics kinematics(){
-        return kinematics;
+        SwerveModuleState[] moduleState = kinematics.toSwerveModuleStates(speeds);
+        return moduleState;
     }
 }
