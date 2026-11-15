@@ -50,6 +50,7 @@ public class ClimbConstants {
     public static final double BALANCE_TOLERANCE = Math.toRadians(10);
 
     public enum ClimbState {
+        IDLE,
         OPENING,
         DRIVING,
         CLIMBING,

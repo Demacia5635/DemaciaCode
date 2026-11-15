@@ -45,6 +45,9 @@ public class ClimbCommand extends Command {
   @Override
   public void execute() {
     switch (state) {
+      case IDLE:
+      chassis.stop();
+      climbSubsystem.stop();
       case OPENING:
         climbSubsystem.setPosition(ClimbConstants.OPEN_POSITION, ClimbConstants.OPEN_POSITION);
         if (climbSubsystem.isAtTarget(ClimbConstants.OPEN_POSITION)) {
@@ -96,6 +99,8 @@ public class ClimbCommand extends Command {
         if(finishedBalancing){
           climbSubsystem.setState(ClimbState.FINISHED);
         }
+      default:
+        climbSubsystem.setState(ClimbState.IDLE);
     }
   }
 

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.utils.chassis.Chassis;
+import frc.demacia.utils.log.Log;
 import frc.demacia.utils.motors.TalonFXMotor;
 import frc.demacia.utils.sensors.LimitSwitch;
 import frc.demacia.utils.sensors.Pigeon;
@@ -42,6 +43,7 @@ public class ClimbSubsystem extends SubsystemBase {
     SmartDashboard.putData("Climb Subsystem", this);
     SmartDashboard.putData("Climb Calibration Command", new ClimbCalibrationCommand(this));
     addSendableChooser();
+    Log.putData("State", ()-> getState());
   }
 
   public void stop() {

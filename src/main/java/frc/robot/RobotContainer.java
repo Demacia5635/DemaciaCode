@@ -14,6 +14,7 @@ import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
 import frc.robot.chassis.RobotCChassisConstants;
 import frc.robot.commands.ClimbCommand;
+import frc.robot.constants.ClimbConstants.ClimbState;
 import frc.robot.subsystems.ClimbSubsystem;
 
 /**
@@ -51,6 +52,7 @@ public class RobotContainer implements Sendable {
   private void configureBindings() {
     controller.downButton().onTrue(Commands.runOnce(() -> {
       if (climbSubsystem.isCalibrated()) {
+        climbSubsystem.setState(ClimbState.AUTO_CLIMB);
         CommandScheduler.getInstance().schedule(new ClimbCommand(climbSubsystem, chassis));    
       }
     }));
