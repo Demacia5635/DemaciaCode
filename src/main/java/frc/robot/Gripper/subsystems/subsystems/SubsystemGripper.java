@@ -22,6 +22,9 @@ public class SubsystemGripper extends SubsystemBase {
   // ------------------------------------------------- Snowblower Claw (TalonSRX) -----------------------------------------------------
   public TalonSRXMotor m_snowblowerClawMotor;
   private boolean isBottleSecured = false;
+  private double ZeroPosition;
+
+
 
   // ------------------------------------------------------- Ultrasonic Sensor --------------------------------------------------------
   public UltraSonicSensor m_ultraSonicSensor;
@@ -105,12 +108,9 @@ public class SubsystemGripper extends SubsystemBase {
 
   // ------------------------------------------------ Kraken Motor Methods ------------------------------------------------------------
   public void setWristPositionRadians(double targetPitchRadians, double targetRollRadians) {
+    MathUtil.clamp(targetPitchRadians, KRAKEN_PITCH_MIN_RADIANS, KRAKEN_PITCH_MAX_RADIANS);
     m_krakenPitch.setPositionVoltage(targetPitchRadians + targetRollRadians);
     m_krakenRoll.setPositionVoltage(targetPitchRadians - targetRollRadians);
-  }
-
-  public void setWristPositionDegrees(double targetPitchDegrees, double targetRollDegrees) {
-    setWristPositionRadians(Math.toRadians(targetPitchDegrees), Math.toRadians(targetRollDegrees));
   }
 
   public void moveWristPitchVoltage(double volts) {
@@ -147,6 +147,21 @@ public class SubsystemGripper extends SubsystemBase {
 
   public final double getActualWristRollRadians() {
     return (getPitchMotorPositionRadians() - getRollMotorPositionRadians()) / 2.0;
+  }
+  //-------------------------------------------------------Calibrate-------------------------------------------
+  public final void calibrate() {
+    if (Is_Calibraete){
+      
+      setWristPositionRadians(1.57079633,1.57079633 );
+      setWristPositionRadians(1.57079633,1.57079633 );
+        if (isPitchAtHomeLimit()){
+
+
+        }
+      
+      
+    }
+
   }
 
 

@@ -7,6 +7,9 @@ import frc.demacia.utils.sensors.LimitSwitchConfig;
 import frc.demacia.utils.sensors.UltraSonicSensorConfig;
 
 public class ConstantsGripper {
+
+    //---------------------------------------------------------all----------------------------------------
+    public static final boolean Is_Calibraete = true; //change to the right one
     // --------------------------------------------------------- Limit Switches ---------------------------------------------------------
     public static final int KRAKEN_ROLL_LIMIT_SWITCH_ID = -1;
     public static final String KRAKEN_ROLL_LIMIT_SWITCH_NAME = "Kraken_Roll_Limit_Switch";
@@ -31,6 +34,8 @@ public class ConstantsGripper {
     private static final double RAMP_TIME = 0;
     private static final double MAX_VOLT = 12;
     private static final double MAX_CURRENT = 40;
+    public static final double KRAKEN_PITCH_MIN_RADIANS = -1.57079633 ; // -90 degrees
+    public static final double KRAKEN_PITCH_MAX_RADIANS = 1.57079633 ; // 90 degrees
 
     // --------------------------------------------------- Kraken Roll (TalonFX) --------------------------------------------------------
     public static final double ROLL_KP = 0;
