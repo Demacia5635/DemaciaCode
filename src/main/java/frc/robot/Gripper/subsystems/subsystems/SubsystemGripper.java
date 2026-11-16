@@ -19,37 +19,43 @@ import frc.demacia.utils.sensors.UltraSonicSensor;
 
 public class SubsystemGripper extends SubsystemBase {
 
-  // ------------------------------------------------- Snowblower Claw (TalonSRX) -----------------------------------------------------
+  // =========================================================================
+  // Hardware & State
+  // =========================================================================
+
+  // --- Snowblower Claw (TalonSRX) ---
   public TalonSRXMotor m_snowblowerClawMotor;
   private boolean isBottleSecured = false;
   private double ZeroPosition;
 
-
-
-  // ------------------------------------------------------- Ultrasonic Sensor --------------------------------------------------------
+  // --- Ultrasonic Sensor ---
   public UltraSonicSensor m_ultraSonicSensor;
 
-  // -------------------------------------------------- Kraken Motors (TalonFX) -------------------------------------------------------
+  // --- Kraken Motors (TalonFX) ---
   private final TalonFXMotor m_krakenPitch;
   private final TalonFXMotor m_krakenRoll;
 
-  // --------------------------------------------------------- Limit Switches ---------------------------------------------------------
+  // --- Limit Switches ---
   private final LimitSwitch m_limitSwitchPitch;
   private final LimitSwitch m_limitSwitchRoll;
 
+  // =========================================================================
+  // Constructor & Telemetry
+  // =========================================================================
+
   public SubsystemGripper() {
-    // ----------------------------------------------- Snowblower Claw Init -----------------------------------------------------------
+    // Snowblower Claw Init
     m_snowblowerClawMotor = new TalonSRXMotor(SNOWBLOWER_CLAW_CONFIG);
     SmartDashboard.putData("Test Claw Reverse", new InstantCommand(() -> setClawPower(-0.6)));
 
-    // ---------------------------------------------- Ultrasonic Sensor Init ----------------------------------------------------------
+    // Ultrasonic Sensor Init
     m_ultraSonicSensor = new UltraSonicSensor(ULTRASONIC_SENSOR_CONFIG);
 
-    // ----------------------------------------------- Kraken Motors Init -------------------------------------------------------------
+    // Kraken Motors Init
     m_krakenPitch = new TalonFXMotor(KRAKEN_PITCH_CONFIG);
     m_krakenRoll = new TalonFXMotor(KRAKEN_ROLL_CONFIG);
 
-    // ------------------------------------------------ Limit Switches Init -----------------------------------------------------------
+    // Limit Switches Init
     m_limitSwitchPitch = new LimitSwitch(KRAKEN_PITCH_LIMIT_SWITCH_CONFIG);
     m_limitSwitchRoll = new LimitSwitch(KRAKEN_ROLL_LIMIT_SWITCH_CONFIG);
 
@@ -64,7 +70,10 @@ public class SubsystemGripper extends SubsystemBase {
     builder.addDoubleProperty("Current", this::getClawMotorCurrent, null);
   }
 
-  // ----------------------------------------------- Snowblower Claw Methods ----------------------------------------------------------
+  // =========================================================================
+  // Snowblower Claw Control
+  // =========================================================================
+
   public void setClawPower(double power) {
     m_snowblowerClawMotor.setDuty(power);
   }
@@ -88,12 +97,14 @@ public class SubsystemGripper extends SubsystemBase {
     }
   }
 
-  // ---------------------------------------------- Ultrasonic Sensor Methods ---------------------------------------------------------
+  // =========================================================================
+  // Sensors & Limit Switches
+  // =========================================================================
+
   public double getBottleDistanceMeters() {
     return m_ultraSonicSensor.get();
   }
 
-  // ------------------------------------------------ Limit Switch Methods ------------------------------------------------------------
   public boolean isPitchAtHomeLimit() {
     return m_limitSwitchPitch.get();
   }
@@ -106,7 +117,10 @@ public class SubsystemGripper extends SubsystemBase {
     return isPitchAtHomeLimit() && isRollAtHomeLimit();
   }
 
-  // ------------------------------------------------ Kraken Motor Methods ------------------------------------------------------------
+  // =========================================================================
+  // Kraken Wrist Control & Calibration
+  // =========================================================================
+
   public void setWristPositionRadians(double targetPitchRadians, double targetRollRadians) {
     MathUtil.clamp(targetPitchRadians, KRAKEN_PITCH_MIN_RADIANS, KRAKEN_PITCH_MAX_RADIANS);
     m_krakenPitch.setPositionVoltage(targetPitchRadians + targetRollRadians);
@@ -148,25 +162,29 @@ public class SubsystemGripper extends SubsystemBase {
   public final double getActualWristRollRadians() {
     return (getPitchMotorPositionRadians() - getRollMotorPositionRadians()) / 2.0;
   }
-  //-------------------------------------------------------Calibrate-------------------------------------------
-  public final void calibrate() {
-    if (Is_Calibraete){
-      
-      setWristPositionRadians(1.57079633,1.57079633 );
-      setWristPositionRadians(1.57079633,1.57079633 );
-        if (isPitchAtHomeLimit()){
 
-
-        }
-      
-      
+  public void Rightcalibrate() {
+    if (Is_Right_Calibraete) {
+      setWristPositionRadians(1.57079633, 1.57079633);
+      if (isPitchAtHomeLimit()) {
+        ZeroPositionCalibrte = 0;
+      }
     }
-
   }
 
+  public void Leftcalibrate() {
+    if (Is_Left_Calibrate) { // Note: kept original variable name below
+      setWristPositionRadians(-1.57079633, -1.57079633);
+      if (isPitchAtHomeLimit()) {
+        ZeroPositionCalibrte = 0;
+      }
+    }
+  }
 
-  // ------------------------------------------------------- Periodic Loop ------------------------------------------------------------
+  // =========================================================================
+  // Periodic Loop
+  // =========================================================================
+
   @Override
-  public void periodic() {
-  }
+  public void periodic() {}
 }
