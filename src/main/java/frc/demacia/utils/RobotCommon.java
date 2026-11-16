@@ -5,6 +5,8 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotCommon implements Sendable {
+    public static final double CYCLE_DT = 0.02;
+    
     private static boolean isRed = true;
     private static boolean isComp = false;
 

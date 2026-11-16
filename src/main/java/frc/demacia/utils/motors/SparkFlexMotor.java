@@ -193,7 +193,7 @@ public class SparkFlexMotor extends BaseMotor {
     motor.set(power);
 
     if (RobotBase.isSimulation()) {
-      encoderSim.setVelocity(power * MAX_SIM_VEL);
+      encoderSim.setVelocity(power);
     }
   }
 
@@ -202,7 +202,7 @@ public class SparkFlexMotor extends BaseMotor {
 
     if (RobotBase.isSimulation()) {
       double power = voltage / 12.0;
-      encoderSim.setVelocity(power * MAX_SIM_VEL);
+      encoderSim.setVelocity(power);
     }
   }
 

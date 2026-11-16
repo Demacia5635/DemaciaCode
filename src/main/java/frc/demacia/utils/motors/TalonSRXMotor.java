@@ -189,7 +189,7 @@ public class TalonSRXMotor extends BaseMotor {
     motor.set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, power);
 
     if (RobotBase.isSimulation()) {
-      double nativeVelocity = (power * MAX_SIM_VEL * getTicksPerUnit()) / 10.0;
+      double nativeVelocity = (power * getTicksPerUnit()) / 10.0;
       motor.getSimCollection().setQuadratureVelocity((int) nativeVelocity);
     }
   }
@@ -199,7 +199,7 @@ public class TalonSRXMotor extends BaseMotor {
     motor.set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, voltage / config.maxVolt);
 
     if (RobotBase.isSimulation()) {
-      double nativeVelocity = (voltage / config.maxVolt * MAX_SIM_VEL * getTicksPerUnit()) / 10.0;
+      double nativeVelocity = (voltage / config.maxVolt * getTicksPerUnit()) / 10.0;
       motor.getSimCollection().setQuadratureVelocity((int) nativeVelocity);
     }
   }

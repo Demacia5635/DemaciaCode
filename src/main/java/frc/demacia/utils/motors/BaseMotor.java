@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.demacia.sysid.Sysid;
 import frc.demacia.utils.Data;
+import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.elastic.ElasticGenerator;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.log.Log.LogLevel;
@@ -25,7 +26,7 @@ public abstract class BaseMotor implements MotorInterface {
   protected BaseMotorConfig<?> config;
   private String name;
 
-  private int slot = 0;
+  protected int slot = 0;
 
   protected Data<?> positionSignal;
   protected Data<?> velocitySignal;
@@ -58,6 +59,7 @@ public abstract class BaseMotor implements MotorInterface {
 
   private boolean lastIsReady;
 
+  protected double lastSimVelocity = 0;
   protected static final double MAX_SIM_VEL = 50;
   protected static double SIM_VEL_POS_CONTROL = Double.POSITIVE_INFINITY;
 
@@ -548,7 +550,7 @@ public abstract class BaseMotor implements MotorInterface {
    */
   private void configMotionMagic() {
     Command configMotionMagicCmd = new InstantCommand(()-> {
-      configMotionMagic(testValue, slot, MAX_SIM_VEL);
+      configMotionMagic(config.maxVelocity, config.maxAcceleration, config.maxJerk);
       applyMotionMagicConfigs();
   }).ignoringDisable(true);
 
@@ -697,6 +699,33 @@ public abstract class BaseMotor implements MotorInterface {
 
   private double getDisplayVelocity() {
       return displayVelocityOverride != null ? displayVelocityOverride.get() : getCurrentVelocity();
+  }
+
+  protected double calculateSimVelocity(double voltage) {
+    double accTerm = config.pidFfParams[slot].kA() / RobotCommon.CYCLE_DT;
+    double kVTotal = config.pidFfParams[slot].kV() + accTerm;
+
+    double net = voltage +
+      accTerm * lastSimVelocity -
+      config.pidFfParams[slot].kG() -
+      Math.cos(getCurrentPosition() * config.posToRad) * config.pidFfParams[slot].kCos();
+    double effective = Math.abs(net) - config.pidFfParams[slot].kS();
+
+    double velocity;
+    if (kVTotal == 0 && config.pidFfParams[slot].kV2() == 0) {
+      velocity = voltage / 12 * MAX_SIM_VEL;
+    } else if (effective <= 0) {
+      velocity = 0;
+    } else if (config.pidFfParams[slot].kV2() == 0) {
+      velocity = Math.signum(net) * effective / kVTotal;
+    } else {
+      velocity = Math.signum(net) *
+        (-kVTotal + Math.sqrt(kVTotal * kVTotal + 4 * config.pidFfParams[slot].kV2() * effective)) /
+        (2 * config.pidFfParams[slot].kV2());
+    }
+    lastSimVelocity = velocity;
+
+    return velocity;
   }
 
   protected abstract void createMotor();

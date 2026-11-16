@@ -193,7 +193,7 @@ public class SparkMaxMotor extends BaseMotor {
     motor.set(power);
 
     if (RobotBase.isSimulation()) {
-      encoderSim.setVelocity(power * MAX_SIM_VEL);
+      encoderSim.setVelocity(calculateSimVelocity(power * 12));
     }
   }
 
@@ -201,8 +201,7 @@ public class SparkMaxMotor extends BaseMotor {
     motor.setVoltage(voltage);
 
     if (RobotBase.isSimulation()) {
-      double power = voltage / 12.0;
-      encoderSim.setVelocity(power * MAX_SIM_VEL);
+      encoderSim.setVelocity(calculateSimVelocity(voltage));
     }
   }
 
