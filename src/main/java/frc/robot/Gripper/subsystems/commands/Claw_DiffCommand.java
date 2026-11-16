@@ -1,31 +1,51 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.Gripper.subsystems.commands;
 
 import static frc.robot.Gripper.subsystems.constants.ConstantsGripper.Is_Left_Calibrate;
 import static frc.robot.Gripper.subsystems.constants.ConstantsGripper.Is_Right_Calibraete;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Gripper.subsystems.subsystems.SubsystemGripper;
 
-public class ClawCommand extends Command {
+public class Claw_DiffCommand extends Command {
 
   // =========================================================================
-  // Subsystem & Dependencies
+  // Subsystem & Target Angles
   // =========================================================================
 
   private final SubsystemGripper gripperSub;
+  // Removed 'final' so Elastic can update these values live
+  private double targetPitchRadians;
+  private double targetRollRadians;
 
   // =========================================================================
   // Constructor
   // =========================================================================
 
-  /** Creates a new ClawCommand. */
-  public ClawCommand(SubsystemGripper gripperSub) {
+  /** Creates a new Claw_DiffCommand. */
+  public Claw_DiffCommand(
+      SubsystemGripper gripperSub,
+      double targetPitchRadians,
+      double targetRollRadians) {
     this.gripperSub = gripperSub;
+    this.targetPitchRadians = targetPitchRadians;
+    this.targetRollRadians = targetRollRadians;
     addRequirements(gripperSub);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.addDoubleProperty(
+        "Target Pitch", 
+        () -> targetPitchRadians, 
+        (x) -> targetPitchRadians = x
+    );
+    builder.addDoubleProperty(
+        "Target Roll", 
+        () -> targetRollRadians, 
+        (x) -> targetRollRadians = x
+    );
   }
 
   // =========================================================================
@@ -37,6 +57,7 @@ public class ClawCommand extends Command {
 
   @Override
   public void execute() {
+    // 1. Calibration checks
     if (Is_Right_Calibraete) {
       gripperSub.Rightcalibrate();
     }
@@ -44,21 +65,22 @@ public class ClawCommand extends Command {
     if (Is_Left_Calibrate) {
       gripperSub.Leftcalibrate();
     }
+
+    // 2. Move Pitch and Roll simultaneously to target angles
+    gripperSub.setWristPositionRadians(targetPitchRadians, targetRollRadians);
+
+    // 3. Auto bottle intake
     gripperSub.runAutoBottleIntake();
   }
-  
 
   @Override
   public void end(boolean interrupted) {
-    // Stop the gripper motor when the command finishes or is canceled
-    // Replace with your actual stop method name (e.g., gripperSub.stop();)
     gripperSub.stopClaw();
+    gripperSub.stopWristMotors();
   }
 
   @Override
   public boolean isFinished() {
-    // If your subsystem has a method to check if the bottle is caught, return it here:
-    // return gripperSub.hasBottle();
     return false;
   }
 }

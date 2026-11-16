@@ -121,47 +121,27 @@ public class SubsystemGripper extends SubsystemBase {
   // Kraken Wrist Control & Calibration
   // =========================================================================
 
-  public void setWristPositionRadians(double targetPitchRadians, double targetRollRadians) {
-    MathUtil.clamp(targetPitchRadians, KRAKEN_PITCH_MIN_RADIANS, KRAKEN_PITCH_MAX_RADIANS);
-    m_krakenPitch.setPositionVoltage(targetPitchRadians + targetRollRadians);
-    m_krakenRoll.setPositionVoltage(targetPitchRadians - targetRollRadians);
-  }
+    public void setWristPositionRadians(double targetPitchRadians, double targetRollRadians) {
+      MathUtil.clamp(targetPitchRadians, KRAKEN_PITCH_MIN_RADIANS, KRAKEN_PITCH_MAX_RADIANS);
+      m_krakenPitch.setPositionVoltage(targetPitchRadians + targetRollRadians);
+      m_krakenRoll.setPositionVoltage(targetPitchRadians - targetRollRadians);
+    }
 
-  public void moveWristPitchVoltage(double volts) {
-    m_krakenPitch.setVoltage(volts);
-    m_krakenRoll.setVoltage(volts);
-  }
+public void moveWristVoltage(double voltsPitch, double voltsRoll) {
+  m_krakenPitch.setVoltage(voltsPitch + voltsRoll);
+  m_krakenRoll.setVoltage(voltsPitch - voltsRoll);
+}
 
-  public void moveWristRollVoltage(double volts) {
-    m_krakenPitch.setVoltage(volts);
-    m_krakenRoll.setVoltage(-volts);
-  }
 
-  public void stopWristMotors() {
-    m_krakenPitch.stop();
-    m_krakenRoll.stop();
-  }
 
-  public void resetWristEncoders() {
-    m_krakenPitch.setPosition(0);
-    m_krakenRoll.setPosition(0);
-  }
 
-  public final double getPitchMotorPositionRadians() {
-    return m_krakenPitch.getPosition().getValueAsDouble();
-  }
+    public void stopWristMotors() {
+      m_krakenPitch.stop();
+      m_krakenRoll.stop();
+    }
 
-  public final double getRollMotorPositionRadians() {
-    return m_krakenRoll.getPosition().getValueAsDouble();
-  }
 
-  public final double getActualWristPitchRadians() {
-    return (getPitchMotorPositionRadians() + getRollMotorPositionRadians()) / 2.0;
-  }
 
-  public final double getActualWristRollRadians() {
-    return (getPitchMotorPositionRadians() - getRollMotorPositionRadians()) / 2.0;
-  }
 
   public void Rightcalibrate() {
     if (Is_Right_Calibraete) {
