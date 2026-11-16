@@ -28,6 +28,9 @@ public final class PathConstants {
     /** A line segment is also finished when the end point is behind the robot by more than this angle. */
     public static final double MAX_ANGLE_TO_CONSIDER_POINT_PASSED_RAD = Math.toRadians(60);
 
+    /** The trajectory is finished when the robot heading is within this angle of the final pose heading. */
+    public static final double FINAL_HEADING_TOLERANCE_RAD = Math.toRadians(5);
+
     // TODO: CHANGE THIS
     public static final double CORNER_ARC_RADIUS = 0.25;
 }

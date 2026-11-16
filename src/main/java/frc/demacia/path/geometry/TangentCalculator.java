@@ -1,16 +1,13 @@
 package frc.demacia.path.geometry;
 
-import java.util.List;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.demacia.path.segments.ArcSegment;
 
 /**
  * Static helpers for computing tangent points between points and circles.
+ * Not used by the trajectory yet (corners are rounded by {@link CornerRounder}).
  * <ol>
- *   <li>Corner arc: entry and exit points of the arc that rounds a corner (used by the trajectory builder).</li>
  *   <li>Point to circle: tangent from an external point to a circle.</li>
  *   <li>Circle to circle, same turn direction (parallel tangent).</li>
  *   <li>Circle to circle, opposite turn direction (cross tangent).</li>
@@ -19,44 +16,6 @@ import frc.demacia.path.segments.ArcSegment;
 public final class TangentCalculator {
 
     private TangentCalculator() {}
-
-    /**
-     * Calculates where the robot enters and leaves the arc that rounds a corner.
-     * The entry point is the tangent from {@code previousPoint} to the circle.
-     * The exit point is the mirror image of the entry point across the center-to-corner line
-     * (the center is exactly one radius away from the corner, so both points lie on the circle).
-     *
-     * @param previousPoint start of the line that leads into the corner
-     * @param cornerPoint   the corner waypoint
-     * @param cornerArc     arc that rounds the corner (provides center, turn direction and end rotation)
-     * @param radiusMeters  circle radius
-     * @return [entry pose, exit pose]
-     */
-    public static List<Pose2d> calculateArcEntryAndExitPoses(Translation2d previousPoint, Translation2d cornerPoint,
-            ArcSegment cornerArc, double radiusMeters) {
-        Translation2d center = cornerArc.getCenter();
-        Translation2d previousToCenter = center.minus(previousPoint);
-        double distanceToCenter = previousToCenter.getNorm();
-
-        // Angle at the external point between the line to the center and the tangent line
-        double tangentAngleRad = Math.asin(radiusMeters / distanceToCenter);
-
-        Translation2d tangentDirection = previousToCenter.rotateBy(
-                new Rotation2d(cornerArc.isLeftTurn() ? -tangentAngleRad : tangentAngleRad));
-        double tangentLength = Math.cos(tangentAngleRad) * distanceToCenter;
-        Translation2d previousToEntry = tangentDirection.div(tangentDirection.getNorm()).times(tangentLength);
-
-        Translation2d entryPoint = previousPoint.plus(previousToEntry);
-
-        Translation2d centerToEntry = entryPoint.minus(center);
-        Translation2d centerToCorner = cornerPoint.minus(center);
-        Translation2d exitPoint = centerToCorner
-                .rotateBy(centerToCorner.getAngle().minus(centerToEntry.getAngle()))
-                .plus(center);
-
-        Rotation2d heading = cornerArc.getEndPose().getRotation();
-        return List.of(new Pose2d(entryPoint, heading), new Pose2d(exitPoint, heading));
-    }
 
     /**
      * Tangent point from an external point to a circle.

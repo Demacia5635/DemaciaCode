@@ -7,9 +7,9 @@ package frc.demacia.utils.chassis;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -39,6 +39,10 @@ public class Chassis extends SubsystemBase {
     public Pigeon gyro;
     
     private DemaciaKinematics demaciaKinematics;
+    /** Only used in simulation, to turn the simulated gyro. */
+    private SwerveDriveKinematics simKinematics;
+    /** Only used in simulation: the real heading, kept here because the gyro reading lags one loop. */
+    private double simYawRad = 0;
 
     private ChassisSpeeds lastSpeedsFieldRel = new ChassisSpeeds();
     private double lastAccelTime = Timer.getFPGATimestamp();
@@ -72,6 +76,7 @@ public class Chassis extends SubsystemBase {
         gyro = new Pigeon(chassisConfig.pigeonConfig);
 
         demaciaKinematics = new DemaciaKinematics(modulePositions);
+        simKinematics = new SwerveDriveKinematics(modulePositions);
 
         addLog();
     }
@@ -185,10 +190,6 @@ public class Chassis extends SubsystemBase {
             }
         }
         setModuleStates(states);
-
-        if (RobotBase.isSimulation()) {
-            gyro.getSimState().setRawYaw(Math.toDegrees(gyro.getCurrentYaw() + robotRelSpeeds.omegaRadiansPerSecond * 0.02));
-        }
     }
 
     public void setSteerPositions(double[] positions) {
@@ -303,5 +304,17 @@ public class Chassis extends SubsystemBase {
         if (RobotPose.getInstance() != null) {
             RobotPose.getInstance().periodic();
         }
+    }
+
+    /**
+     * In simulation nothing turns the gyro, so turn it by the rotation the wheels are making.
+     * Done here (and not in a drive method) so it works for every way of driving the chassis.
+     */
+    @Override
+    public void simulationPeriodic() {
+        double omegaRadPerSec = simKinematics.toChassisSpeeds(getModuleStates()).omegaRadiansPerSecond;
+        simYawRad += omegaRadPerSec * 0.02;
+        gyro.getSimState().setRawYaw(Math.toDegrees(simYawRad));
+        gyro.getSimState().setAngularVelocityZ(Math.toDegrees(omegaRadPerSec));
     }
 }

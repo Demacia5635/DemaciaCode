@@ -1,6 +1,5 @@
 package frc.demacia.path.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.RobotPose.RobotPose;
@@ -24,7 +23,8 @@ public class FollowTrajectoryCommand extends Command {
 
     @Override
     public void initialize() {
-        swerveCommand.odometry.resetPose(Pose2d.kZero);
+        // The trajectory reads its pose from RobotPose, so that is the pose to reset
+        RobotPose.getInstance().resetPose(trajectory.getStartPose());
         trajectory.start();
     }
 
