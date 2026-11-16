@@ -1,39 +1,29 @@
 package frc.robot.Gripper.subsystems.constants;
 
+import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
 import frc.demacia.utils.motors.TalonFXConfig;
 import frc.demacia.utils.motors.TalonSRXConfig;
-import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
-import frc.demacia.utils.sensors.DigitalEncoderConfig;
-import frc.demacia.utils.sensors.LimitSwitch;
 import frc.demacia.utils.sensors.LimitSwitchConfig;
-import frc.demacia.utils.sensors.OpticalSensorConfig;
 import frc.demacia.utils.sensors.UltraSonicSensorConfig;
 
 public class ConstantsGripper {
+    // --------------------------------------------------------- Limit Switches ---------------------------------------------------------
+    public static final int KRAKEN_ROLL_LIMIT_SWITCH_ID = -1;
+    public static final String KRAKEN_ROLL_LIMIT_SWITCH_NAME = "Kraken_Roll_Limit_Switch";
+    public static final boolean KRAKEN_ROLL_LIMIT_SWITCH_INVERTED = false;
+    public static final LimitSwitchConfig KRAKEN_ROLL_LIMIT_SWITCH_CONFIG = new LimitSwitchConfig(
+        KRAKEN_ROLL_LIMIT_SWITCH_ID, KRAKEN_ROLL_LIMIT_SWITCH_NAME
+    ).withInvert(KRAKEN_ROLL_LIMIT_SWITCH_INVERTED);
 
-    public static final int LIMIT_SWITCH_ID = -1;
-    public static final boolean IS_BRAKE_LIMIT_SWITCH = true;
-    public static final String LIMIT_SWITCH_NAME = "LIMIT_SWITCH_NAME";
-    public static final LimitSwitchConfig LIMIT_SWITCH_CONFIG_ROLL = new LimitSwitchConfig(LIMIT_SWITCH_ID,
-            LIMIT_SWITCH_NAME);
+    public static final int KRAKEN_PITCH_LIMIT_SWITCH_ID = -1;
+    public static final String KRAKEN_PITCH_LIMIT_SWITCH_NAME = "Kraken_Pitch_Limit_Switch";
+    public static final boolean KRAKEN_PITCH_LIMIT_SWITCH_INVERTED = false;
+    public static final LimitSwitchConfig KRAKEN_PITCH_LIMIT_SWITCH_CONFIG = new LimitSwitchConfig(
+        KRAKEN_PITCH_LIMIT_SWITCH_ID, KRAKEN_PITCH_LIMIT_SWITCH_NAME
+    ).withInvert(KRAKEN_PITCH_LIMIT_SWITCH_INVERTED);
 
-    public static final int LIMIT_SWITCH_ID2 = -1;
-    public static final String LIMIT_SWITCH_NAME2 = "LIMIT_SWITCH_NAME2";
-    public static final LimitSwitchConfig LIMIT_SWITCH_CONFIG_PITCH = new LimitSwitchConfig(LIMIT_SWITCH_ID2,
-            LIMIT_SWITCH_NAME2);
-    // Private PID & Feedforward Const ants
-    private static final double KP = 0;
-    private static final double KI = 0;
-    private static final double KD = 0;
-    private static final double KS = 0;
-    private static final double KV = 0;
-    private static final double KA = 0;
-    private static final double KG = 0;
-
-    // Private Motion Magic & Motor Limits
-    private static final double MOTION_MAGIC_VELOCITY = 0;
-    private static final double MOTION_MAGIC_ACCELERATION = 0;
-    private static final double MOTION_MAGIC_JERK = 0;
+    // --------------------------------------------------- Shared Kraken Defaults -------------------------------------------------------
+    public static final Canbus KRAKEN_CANBUS = Canbus.Rio;
 
     private static final boolean IS_BRAKE = true;
     private static final boolean IS_INVERTED = false;
@@ -42,64 +32,62 @@ public class ConstantsGripper {
     private static final double MAX_VOLT = 12;
     private static final double MAX_CURRENT = 40;
 
-    // Main Motor Configuration
-    public static final int kKrakenID = -1;
-    public static final boolean kIsBrake = true;
-    public static final Canbus kSKrakencanbus = Canbus.Rio;
-    public static final String kKrakename = "Kraken_Motor_1";
+    // --------------------------------------------------- Kraken Roll (TalonFX) --------------------------------------------------------
+    public static final double ROLL_KP = 0;
+    public static final double ROLL_KI = 0;
+    public static final double ROLL_KD = 0;
+    public static final double ROLL_KS = 0;
+    public static final double ROLL_KV = 0;
+    public static final double ROLL_KA = 0;
+    public static final double ROLL_KG = 0;
 
-    public static final TalonFXConfig CONFIG = new TalonFXConfig(kKrakenID, kSKrakencanbus, kKrakename)
-            .withPID(KP, KI, KD, KS, KV, KA, KG)
-            .withMotionParam(MOTION_MAGIC_VELOCITY, MOTION_MAGIC_ACCELERATION, MOTION_MAGIC_JERK)
-            .withBrake(IS_BRAKE)
-            .withInvert(IS_INVERTED)
-            .withRadiansMotor(GEAR_RATIO)
-            .withRampTime(RAMP_TIME)
-            .withVolts(MAX_VOLT)
-            .withCurrent(MAX_CURRENT);
+    public static final int KRAKEN_ROLL_ID = -1;
+    public static final String KRAKEN_ROLL_NAME = "Kraken_Roll";
+    public static final TalonFXConfig KRAKEN_ROLL_CONFIG = new TalonFXConfig(
+            KRAKEN_ROLL_ID, KRAKEN_CANBUS, KRAKEN_ROLL_NAME
+        )
+        .withPID(ROLL_KP, ROLL_KI, ROLL_KD, ROLL_KS, ROLL_KV, ROLL_KA, ROLL_KG)
+        .withBrake(IS_BRAKE)
+        .withInvert(IS_INVERTED)
+        .withRadiansMotor(GEAR_RATIO)
+        .withRampTime(RAMP_TIME)
+        .withVolts(MAX_VOLT)
+        .withCurrent(MAX_CURRENT);
 
-    // Motor 2 Configuration
-    public static final int kKrakenID2 = -1;
-    public static final boolean kIsBrake2 = true;
-    public static final Canbus kSKrakencanbus2 = Canbus.Rio;
-    public static final String kKrakename2 = "Kraken_Motor_2";
+    // -------------------------------------------------- Kraken Pitch (TalonFX) --------------------------------------------------------
+    public static final double PITCH_KP = 0;
+    public static final double PITCH_KI = 0;
+    public static final double PITCH_KD = 0;
+    public static final double PITCH_KS = 0;
+    public static final double PITCH_KV = 0;
+    public static final double PITCH_KA = 0;
+    public static final double PITCH_KG = 0;
 
-    public static final int ID = kKrakenID2;
-    public static final Canbus CAN_BUS = kSKrakencanbus2;
-    public static final String NAME = kKrakename2;
+    public static final int KRAKEN_PITCH_ID = -1;
+    public static final String KRAKEN_PITCH_NAME = "Kraken_Pitch";
+    public static final TalonFXConfig KRAKEN_PITCH_CONFIG = new TalonFXConfig(
+            KRAKEN_PITCH_ID, KRAKEN_CANBUS, KRAKEN_PITCH_NAME
+        )
+        .withPID(PITCH_KP, PITCH_KI, PITCH_KD, PITCH_KS, PITCH_KV, PITCH_KA, PITCH_KG)
+        .withBrake(IS_BRAKE)
+        .withInvert(IS_INVERTED)
+        .withRadiansMotor(GEAR_RATIO)
+        .withRampTime(RAMP_TIME)
+        .withVolts(MAX_VOLT)
+        .withCurrent(MAX_CURRENT);
 
-    public static final TalonFXConfig CONFIG2 = new TalonFXConfig(ID, CAN_BUS, NAME)
-            .withPID(KP, KI, KD, KS, KV, KA, KG)
-            .withMotionParam(MOTION_MAGIC_VELOCITY, MOTION_MAGIC_ACCELERATION, MOTION_MAGIC_JERK)
-            .withBrake(IS_BRAKE)
-            .withInvert(IS_INVERTED)
-            .withRadiansMotor(GEAR_RATIO)
-            .withRampTime(RAMP_TIME)
-            .withVolts(MAX_VOLT)
-            .withCurrent(MAX_CURRENT);
-
-    // Public PID Constants
-    public static final double Kp = -1;
-    public static final double Ki = -1;
-    public static final double Kd = -1;
-    public static final double Ks = -1;
-    public static final double Kv = -1;
-    public static final double Ka = -1;
-    public static final double Kg = -1;
-
-    
-
-    public static final int kSnowblowerID = 32;
-    public static final String kSnowBlowerName = "Snow_Blower";
+    // ------------------------------------------------- Snowblower Claw (TalonSRX) -----------------------------------------------------
+    public static final int SNOWBLOWER_CLAW_ID = 32;
+    public static final String SNOWBLOWER_CLAW_NAME = "Snowblower_Claw";
     public static final double DISTANCE_TO_BOTTLE = 0.07;
     public static final double DISTANCE_TO_BOTTLE_CLAMP = 0.1;
-
-    public static final TalonSRXConfig kSnowBlowerConfig = new TalonSRXConfig(
-        kSnowblowerID,
-        kSnowBlowerName
+    public static final TalonSRXConfig SNOWBLOWER_CLAW_CONFIG = new TalonSRXConfig(
+        SNOWBLOWER_CLAW_ID, SNOWBLOWER_CLAW_NAME
     );
-    public static final int K_OPTIC_SENSOR_ID = 8;
-    public static final String kOpticSensorNAME = "Optic_Sensor"; 
-    public static final OpticalSensorConfig kOpticSensorConfig = new OpticalSensorConfig(kOpticSensorNAME, K_OPTIC_SENSOR_ID);
-      public static final UltraSonicSensorConfig kUltraSonicSensorConfig = new UltraSonicSensorConfig(8, 9, "UltraSonic_Sensor");
+
+    // ------------------------------------------------------- Ultrasonic Sensor --------------------------------------------------------
+
+    public static final UltraSonicSensorConfig ULTRASONIC_SENSOR_CONFIG = new UltraSonicSensorConfig(
+        8, 9, "UltraSonic_Sensor"
+    );
 }

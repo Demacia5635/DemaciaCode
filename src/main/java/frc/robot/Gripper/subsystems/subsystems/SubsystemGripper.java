@@ -6,43 +6,49 @@ package frc.robot.Gripper.subsystems.subsystems;
 
 import static frc.robot.Gripper.subsystems.constants.ConstantsGripper.*;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.demacia.utils.log.LogManager;
 import frc.demacia.utils.motors.TalonFXMotor;
 import frc.demacia.utils.motors.TalonSRXMotor;
 import frc.demacia.utils.sensors.LimitSwitch;
-import frc.demacia.utils.sensors.OpticalSensor;
 import frc.demacia.utils.sensors.UltraSonicSensor;
 
 public class SubsystemGripper extends SubsystemBase {
 
-  // GreeperPro members
-  public TalonSRXMotor m_SRXSensorMotor;
-  public OpticalSensor m_opticSensor;
-  public UltraSonicSensor ultraSonicSensor;
+  // ------------------------------------------------- Snowblower Claw (TalonSRX) -----------------------------------------------------
+  public TalonSRXMotor m_snowblowerClawMotor;
+  private boolean isBottleSecured = false;
 
-  // SubsystemKraken members
-  private final TalonFXMotor m_KRAKEN1Pitch;
-  private final TalonFXMotor m_KRAKEN2Roll;
-  private final LimitSwitch limitSwitchPitch;
-  private final LimitSwitch limitSwitchRoll;
+  // ------------------------------------------------------- Ultrasonic Sensor --------------------------------------------------------
+  public UltraSonicSensor m_ultraSonicSensor;
+
+  // -------------------------------------------------- Kraken Motors (TalonFX) -------------------------------------------------------
+  private final TalonFXMotor m_krakenPitch;
+  private final TalonFXMotor m_krakenRoll;
+
+  // --------------------------------------------------------- Limit Switches ---------------------------------------------------------
+  private final LimitSwitch m_limitSwitchPitch;
+  private final LimitSwitch m_limitSwitchRoll;
 
   public SubsystemGripper() {
-    // GreeperPro init
-    m_SRXSensorMotor = new TalonSRXMotor(frc.robot.Gripper.subsystems.constants.ConstantsGripper.kSnowBlowerConfig);
-    // m_opticSensor = new OpticalSensor(ConstantsGripper.kOpticSensorConfig);
-    ultraSonicSensor = new UltraSonicSensor(frc.robot.Gripper.subsystems.constants.ConstantsGripper.kUltraSonicSensorConfig);
-    SmartDashboard.putData(new InstantCommand(() -> setPower(-0.6)));
+    // ----------------------------------------------- Snowblower Claw Init -----------------------------------------------------------
+    m_snowblowerClawMotor = new TalonSRXMotor(SNOWBLOWER_CLAW_CONFIG);
+    SmartDashboard.putData("Test Claw Reverse", new InstantCommand(() -> setClawPower(-0.6)));
 
-    // SubsystemKraken init
-    m_KRAKEN1Pitch = new TalonFXMotor(CONFIG);
-    m_KRAKEN2Roll = new TalonFXMotor(CONFIG2);
-    limitSwitchPitch = new LimitSwitch(LIMIT_SWITCH_CONFIG_PITCH);
-    limitSwitchRoll = new LimitSwitch(LIMIT_SWITCH_CONFIG_ROLL);
+    // ---------------------------------------------- Ultrasonic Sensor Init ----------------------------------------------------------
+    m_ultraSonicSensor = new UltraSonicSensor(ULTRASONIC_SENSOR_CONFIG);
+
+    // ----------------------------------------------- Kraken Motors Init -------------------------------------------------------------
+    m_krakenPitch = new TalonFXMotor(KRAKEN_PITCH_CONFIG);
+    m_krakenRoll = new TalonFXMotor(KRAKEN_ROLL_CONFIG);
+
+    // ------------------------------------------------ Limit Switches Init -----------------------------------------------------------
+    m_limitSwitchPitch = new LimitSwitch(KRAKEN_PITCH_LIMIT_SWITCH_CONFIG);
+    m_limitSwitchRoll = new LimitSwitch(KRAKEN_ROLL_LIMIT_SWITCH_CONFIG);
 
     SmartDashboard.putNumber("Differential Pitch (Degrees)", 0.0);
     SmartDashboard.putNumber("Differential Roll (Degrees)", 0.0);
@@ -51,103 +57,101 @@ public class SubsystemGripper extends SubsystemBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.addDoubleProperty("OpticSensorState", () -> ultraSonicSensor.get(), null);
-    builder.addDoubleProperty("Current", () -> m_SRXSensorMotor.getCurrentCurrent(), null);
+    builder.addDoubleProperty("UltraSonicDistance", this::getBottleDistanceMeters, null);
+    builder.addDoubleProperty("Current", this::getClawMotorCurrent, null);
   }
 
-  // GreeperPro methods
-  public double getOpticSensor() {
-    return m_opticSensor.get();
+  // ----------------------------------------------- Snowblower Claw Methods ----------------------------------------------------------
+  public void setClawPower(double power) {
+    m_snowblowerClawMotor.setDuty(power);
   }
 
-  public void setPower(double power) {
-    m_SRXSensorMotor.setDuty(power);
+  public void stopClaw() {
+    m_snowblowerClawMotor.stop();
   }
 
-  public double getUltraSonicSensor() {
-    return ultraSonicSensor.get();
+  public double getClawMotorCurrent() {
+    return m_snowblowerClawMotor.getCurrentCurrent();
   }
 
-  public double getCurrent() {
-    return m_SRXSensorMotor.getCurrentCurrent();
-  }
-
-  // SubsystemKraken methods
-  public void setPosition(double pitchRadians, double rollRadians) {
-    m_KRAKEN1Pitch.setPositionVoltage(pitchRadians + rollRadians);
-    m_KRAKEN2Roll.setPositionVoltage(pitchRadians - rollRadians);
-  }
-
-  public boolean isPitchLimitSwitchTriggered() {
-    return limitSwitchPitch.get();
-  }
-
-  public boolean isRollLimitSwitchTriggered() {
-    return limitSwitchRoll.get();
-  }
-
-  public void stop() {
-    m_KRAKEN1Pitch.stop();
-    m_KRAKEN2Roll.stop();
-  }
-
-  public final double getPitchPosition() {
-    return m_KRAKEN1Pitch.getPosition().getValueAsDouble();
-  }
-
-  public final double getRollPosition() {
-    return m_KRAKEN2Roll.getPosition().getValueAsDouble();
-  }
-
-  public final double getPitchPositionDegrees() {
-    return Math.toDegrees(getPitchPosition());
-  }
-
-  public final double getRollPositionDegrees() {
-    return Math.toDegrees(getRollPosition());
-  }
-
-  public final void Is_Out_Max() {
-    if (getPitchPositionDegrees() > 90 || getRollPositionDegrees() > 90) {
-      stop();
+  public void runAutoBottleIntake() {
+    double distance = getBottleDistanceMeters();
+    if (DISTANCE_TO_BOTTLE < distance && DISTANCE_TO_BOTTLE_CLAMP > distance && !isBottleSecured) {
+      setClawPower(0);
+      LogManager.log("Bottle clamped - stopping claw");
+    } else if (DISTANCE_TO_BOTTLE > distance && DISTANCE_TO_BOTTLE_CLAMP > distance && !isBottleSecured) {
+      setClawPower(0.6);
+      LogManager.log("Bottle detected - intaking");
     }
   }
 
-  public void resetPitchEncoder() {
-    m_KRAKEN1Pitch.getCurrentPosition();
+  // ---------------------------------------------- Ultrasonic Sensor Methods ---------------------------------------------------------
+  public double getBottleDistanceMeters() {
+    return m_ultraSonicSensor.get();
   }
 
-  public void Pitchmove(double speed) {
-    m_KRAKEN1Pitch.setVoltage(speed);
-    m_KRAKEN2Roll.setVoltage(speed);
+  // ------------------------------------------------ Limit Switch Methods ------------------------------------------------------------
+  public boolean isPitchAtHomeLimit() {
+    return m_limitSwitchPitch.get();
   }
 
-  public void rollmove(double speed) {
-    m_KRAKEN1Pitch.setVoltage(speed);
-    m_KRAKEN2Roll.setVoltage(-speed);
+  public boolean isRollAtHomeLimit() {
+    return m_limitSwitchRoll.get();
   }
 
+  public boolean isWristAtHomeLimit() {
+    return isPitchAtHomeLimit() && isRollAtHomeLimit();
+  }
+
+  // ------------------------------------------------ Kraken Motor Methods ------------------------------------------------------------
+  public void setWristPositionRadians(double targetPitchRadians, double targetRollRadians) {
+    m_krakenPitch.setPositionVoltage(targetPitchRadians + targetRollRadians);
+    m_krakenRoll.setPositionVoltage(targetPitchRadians - targetRollRadians);
+  }
+
+  public void setWristPositionDegrees(double targetPitchDegrees, double targetRollDegrees) {
+    setWristPositionRadians(Math.toRadians(targetPitchDegrees), Math.toRadians(targetRollDegrees));
+  }
+
+  public void moveWristPitchVoltage(double volts) {
+    m_krakenPitch.setVoltage(volts);
+    m_krakenRoll.setVoltage(volts);
+  }
+
+  public void moveWristRollVoltage(double volts) {
+    m_krakenPitch.setVoltage(volts);
+    m_krakenRoll.setVoltage(-volts);
+  }
+
+  public void stopWristMotors() {
+    m_krakenPitch.stop();
+    m_krakenRoll.stop();
+  }
+
+  public void resetWristEncoders() {
+    m_krakenPitch.setPosition(0);
+    m_krakenRoll.setPosition(0);
+  }
+
+  public final double getPitchMotorPositionRadians() {
+    return m_krakenPitch.getPosition().getValueAsDouble();
+  }
+
+  public final double getRollMotorPositionRadians() {
+    return m_krakenRoll.getPosition().getValueAsDouble();
+  }
+
+  public final double getActualWristPitchRadians() {
+    return (getPitchMotorPositionRadians() + getRollMotorPositionRadians()) / 2.0;
+  }
+
+  public final double getActualWristRollRadians() {
+    return (getPitchMotorPositionRadians() - getRollMotorPositionRadians()) / 2.0;
+  }
+
+
+  // ------------------------------------------------------- Periodic Loop ------------------------------------------------------------
   @Override
   public void periodic() {
-    // SubsystemKraken periodic logic
-    if (isPitchLimitSwitchTriggered() && isRollLimitSwitchTriggered()) {
-      m_KRAKEN1Pitch.setPosition(0);
-      m_KRAKEN2Roll.setPosition(0);
-    }
-
-    double targetPitchDeg = MathUtil.clamp(
-        SmartDashboard.getNumber("Differential Pitch (Degrees)", 0.0), -90.0, 90.0);
-    double targetRollDeg = MathUtil.clamp(
-        SmartDashboard.getNumber("Differential Roll (Degrees)", 0.0), -90.0, 90.0);
-
-    setPosition(Math.toRadians(targetPitchDeg), Math.toRadians(targetRollDeg));
-
-    double motor1Rad = getPitchPosition();
-    double motor2Rad = getRollPosition();
-    double actualPitchDeg = Math.toDegrees((motor1Rad + motor2Rad) / 2.0);
-    double actualRollDeg = Math.toDegrees((motor1Rad - motor2Rad) / 2.0);
-
-    SmartDashboard.putNumber("Actual Pitch (Degrees)", actualPitchDeg);
-    SmartDashboard.putNumber("Actual Roll (Degrees)", actualRollDeg);
   }
 }
