@@ -7,12 +7,15 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.chassis.Chassis;
 import static frc.robot.shootingValues.ShootingValuesConstants.*;
 
-public class ShootingValues {
+public class ShootingValues implements Sendable{
     private static ShootingValues instance;
 
     private Chassis chassis;
@@ -36,6 +39,8 @@ public class ShootingValues {
         };
 
         shootingValuesRecord = new ShootingValuesRecord(0, 0, 0);
+
+        SmartDashboard.putData("shootingValues", this);
     }
 
     public static ShootingValues getInstance() {
@@ -126,5 +131,10 @@ public class ShootingValues {
 
     public ShootingValuesRecord getShootingValues() {
         return shootingValuesRecord;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("distance",()->distanceFromHubAfterTime(PREDICTING_TIME), null);
     }
 }

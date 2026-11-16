@@ -85,7 +85,9 @@ public class Shooter extends StateBaseMechanism<ShooterStates> {
         return isReady(HOOD_NAME, HOOD_ALLOWED_ERROR);
     }
     public boolean isShooterReady() {
-        return isFlywheelReady() && isHoodReady();
+        boolean isFlywheelReady = isFlywheelReady();
+        boolean isHoodReady = isHoodReady();
+        return isFlywheelReady && isHoodReady;
     }
 
     public boolean isStuckHood() {
