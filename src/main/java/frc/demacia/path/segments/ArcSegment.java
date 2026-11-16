@@ -46,9 +46,22 @@ public class ArcSegment extends SegmentBase {
     @Override
     public Rotation2d getDirection(Translation2d position, double currentVelocity) {
         Translation2d centerToChassis = position.minus(center);
-        double baseHeading = centerToChassis.getAngle().getRadians() + (isLeft ? Math.PI / 2 : -Math.PI / 2);
-        double lookAhead = (currentVelocity / radius) * 0.02;
-        return new Rotation2d(baseHeading + (isLeft ? lookAhead : -lookAhead));
+        double tangent = centerToChassis.getAngle().getRadians() + (isLeft ? Math.PI / 2 : -Math.PI / 2);
+        double lookAhead = turnDirection((currentVelocity / radius) * 0.02);
+
+        Translation2d toEnd = getEndPose().getTranslation().minus(position);
+        double remaining = remainingAngle(position);
+        if (toEnd.getNorm() < 1e-6 || remaining <= 0) {
+            return new Rotation2d(tangent + lookAhead);
+        }
+        // a robot on the arc sees the end half the remaining angle inside the tangent
+        double error = MathUtil.angleModulus(toEnd.getAngle().getRadians() - (tangent + turnDirection(remaining / 2)));
+        // far off the arc: aim straight at the end
+        if (Math.abs(error) > Math.PI / 2) {
+            return toEnd.getAngle();
+        }
+        // same as the line: turn twice the error to pull the robot back onto the arc
+        return new Rotation2d(tangent + lookAhead + 2 * error);
     }
 
     @Override
