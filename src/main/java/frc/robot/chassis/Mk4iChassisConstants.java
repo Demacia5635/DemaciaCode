@@ -49,10 +49,10 @@ public class Mk4iChassisConstants {
 
   public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        -1.3345632854605078, //FRONT LEFT
-        -2.457437222192797, //FRONT RIGHT
-        -1.6060778849162662, //BACK LEFT
-        -0.47860200582032003 //BACK RIGHT
+        1.3499030933393643, //FRONT LEFT
+        2.408349836980457, //FRONT RIGHT
+        1.7211264440076894, //BACK LEFT
+        0.48473792897186263 //BACK RIGHT
       });
 
   public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);
@@ -82,7 +82,7 @@ public class Mk4iChassisConstants {
           new TalonFXConfig(name + " Steer", i * 3 + 2, CAN_BUS)
               .withPID(STEER_KP, STEER_KI, STEER_KD, STEER_KS, STEER_KV, STEER_KA, 0, 0, 0)
               .withBrake(true)
-              .withInvert(false)
+              .withInvert(true)
               .withRadiansMotor(STEER_GEAR_RATIO)
               .withRampTime(RAMP_TIME_STEER),
           new TalonFXConfig(name + " Drive", i * 3 + 1, CAN_BUS)
@@ -90,7 +90,7 @@ public class Mk4iChassisConstants {
               .withBrake(true)
               .withMeterMotor(DRIVE_GEAR_RATIO, WHEEL_DIAMETER),
           new CancoderConfig(name + " Cancoder", i * 3 + 3, CAN_BUS)
-            .withInvert(true))
+            .withInvert(false))
           .withPosion(MODULE_LOCATIONS[i])
           .withSteerOffset(offsets[i])
           .withMetersFrom360Degs(METERS_FROM_360_DEGS);
