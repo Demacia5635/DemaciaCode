@@ -10,8 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.demacia.odometry.RobotPose;
-import frc.demacia.swervePacgeWpilib.command.SwerveCommand;
 import frc.demacia.utils.DemaciaUtils;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
@@ -42,7 +40,7 @@ public class RobotContainer implements Sendable{
     Chassis.initialize(MK4iChassisConstants.CHASSIS_CONFIG);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
     chassis = Chassis.getInstance();
-    chassis.setDefaultCommand(new SwerveCommand(controller, RobotPose.getInstance().getVision()));
+    chassis.setDefaultCommand(new DriveCommand(chassis, controller));
     // Configure the trigger bindings
     configureBindings();
   }

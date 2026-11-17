@@ -25,7 +25,19 @@ public class DriveCommand extends Command {
     addRequirements(chassis);
   }
 
-  private void driveByJoystick() {
+  public static void setPrecisionMode() {
+    isPrecisionMode = !isPrecisionMode;
+  }
+
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+    isPrecisionMode = false;
+  }
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
     direction = RobotContainer.isRed ? 1 : -1;
     double joyX = controller.getLeftY() * direction;
     double joyY = controller.getLeftX() * direction;
@@ -47,22 +59,6 @@ public class DriveCommand extends Command {
     speeds = new ChassisSpeeds(velX, velY, velRot);
 
     chassis.setVelocities(speeds);
-  }
-
-  public static void setPrecisionMode() {
-    isPrecisionMode = !isPrecisionMode;
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    isPrecisionMode = false;
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    driveByJoystick();
   }
 
   // Called once the command ends or is interrupted.
