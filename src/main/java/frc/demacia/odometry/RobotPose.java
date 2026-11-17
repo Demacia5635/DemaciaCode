@@ -56,8 +56,7 @@ public class RobotPose {
         this.visionSTD = new Matrix<N3, N1>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 }));
         this.hasUpdatedQuestIntialPose = false;
         this.hasQuestDisconnected = false;
-        this.poseEstimator = new SwerveDrivePoseEstimator(kinematics, gyroAngle, modulePositions, Pose2d.kZero,
-                stateSTD, visionSTD);
+        this.poseEstimator = new SwerveDrivePoseEstimator(kinematics, gyroAngle, modulePositions, Pose2d.kZero,stateSTD, visionSTD);
         this.accelerometer = new BuiltInAccelerometer(); 
     }
 
