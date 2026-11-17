@@ -34,8 +34,8 @@ public class DigitalEncoderConfig extends BaseSensorConfig<DigitalEncoderConfig>
      * @param channel DIO channel number
      * @param name Descriptive name for logging
      */
-    public DigitalEncoderConfig(int channel, String name) {
-        super(channel, name);
+    public DigitalEncoderConfig(String name, int channel) {
+        super(name, channel);
         sensorType = DigitalEncoder.class;
     }
 
