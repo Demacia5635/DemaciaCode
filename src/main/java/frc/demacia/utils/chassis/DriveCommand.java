@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.controller.CommandController;
-import frc.robot.RobotContainer;
 
 public class DriveCommand extends Command {
   private Chassis chassis;
@@ -21,7 +20,6 @@ public class DriveCommand extends Command {
   public DriveCommand(Chassis chassis, CommandController controller) {
     this.chassis = chassis;
     this.controller = controller;
-    isPrecisionMode = false;
     addRequirements(chassis);
   }
 
