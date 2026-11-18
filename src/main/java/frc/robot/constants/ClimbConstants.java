@@ -48,7 +48,7 @@ public class ClimbConstants {
     public static final LimitSwitchConfig RIGHT_SWITCH_CONFIG = new LimitSwitchConfig(RIGHT_LIMIT_SWITCH_NAME, RIGHT_LIMIT_SWITCH_CHANNEL);
 
     public static final double OPEN_POSITION = 0.0;
-    public static final double BALANCE_START_DISTANCE = 0.0;
+    public static final double TARGET_CLIMB_HEIGHT = 0.0;
     public static final double BALANCE_FACTOR = 0.0;
     public static final double MAX_BALANCE_CORRECTION = 0.0;
     public static final double DRIVE_TIME = 0.0;
@@ -62,7 +62,6 @@ public class ClimbConstants {
         OPENING,
         DRIVING,
         CLIMBING,
-        BALANCING,
         FINISHED,
         AUTO_CLIMB,
         GET_OFF_CLIMB

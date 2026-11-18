@@ -126,7 +126,7 @@ public class ClimbSubsystem extends SubsystemBase {
     return Math.abs((getLeftPosition() + getRightPosition()) / 2 - target) <= ClimbConstants.POSITION_TOLERANCE;
   }
 
-  public void balance(double target) {
+  public void climbAndBalance(double target) {
     double roll = Math.toRadians(getRoll());
     double heightDiff = ClimbConstants.ARM_SEPERATION * Math.sin(roll);
     if(Math.abs(roll) > ClimbConstants.BALANCE_TOLERANCE) {
@@ -171,10 +171,5 @@ public class ClimbSubsystem extends SubsystemBase {
 
     stateChooser.onChange(newState -> this.state = newState);
     SmartDashboard.putData("Climb State Chooser", stateChooser);
-  }
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
   }
 }

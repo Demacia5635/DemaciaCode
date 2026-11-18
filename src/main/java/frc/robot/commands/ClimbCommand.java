@@ -69,17 +69,8 @@ public class ClimbCommand extends Command {
         break;
 
       case CLIMBING:
-        climbSubsystem.setPosition(ClimbConstants.BALANCE_START_DISTANCE, ClimbConstants.BALANCE_START_DISTANCE);
-        if (climbSubsystem.isAtTarget(ClimbConstants.BALANCE_START_DISTANCE)) {
-          if(climbSubsystem.isAutoClimb()){
-            climbSubsystem.setState(ClimbState.BALANCING);
-          }
-        }
-        break;
-
-      case BALANCING:
-        climbSubsystem.balance(ClimbConstants.BALANCE_START_DISTANCE);
-        if (climbSubsystem.isBalanced()) {
+        climbSubsystem.climbAndBalance(ClimbConstants.TARGET_CLIMB_HEIGHT);
+        if (climbSubsystem.isAtTarget(ClimbConstants.TARGET_CLIMB_HEIGHT) && climbSubsystem.isBalanced()) {
           if(climbSubsystem.isAutoClimb()){
             climbSubsystem.setState(ClimbState.FINISHED);
           }
