@@ -30,12 +30,12 @@ public class ClimbSubsystem extends SubsystemBase {
   private ClimbState state = ClimbState.IDLE;
   private boolean autoClimb;
 
-  public ClimbSubsystem(Pigeon gyro) {
+  public ClimbSubsystem() {
     leftMotor = new TalonFXMotor(ClimbConstants.LEFT_MOTOR_CONFIG);
     rightMotor = new TalonFXMotor(ClimbConstants.RIGHT_MOTOR_CONFIG);
     leftSwitch = new LimitSwitch(ClimbConstants.LEFT_SWITCH_CONFIG);
     rightSwitch = new LimitSwitch(ClimbConstants.RIGHT_SWITCH_CONFIG);
-    pigeon = gyro;
+    pigeon = chassis.gyro;
     SmartDashboard.putData("Climb Subsystem", this);
     SmartDashboard.putData("Climb Calibration Command", new ClimbCalibrationCommand(this));
     addSendableChooser();
@@ -47,38 +47,18 @@ public class ClimbSubsystem extends SubsystemBase {
     rightMotor.stop();
   }
 
+    public void startCalibration() {
+    stop();
+    leftCalibrated = false;
+    rightCalibrated = false;
+  }
+
   public boolean isRightClosed() {
     return rightSwitch.get();
   }
 
   public boolean isLeftClosed() {
     return leftSwitch.get();
-  }
-
-  public double getRightPosition() {
-    return rightMotor.getCurrentPosition();
-  }
-
-  public double getLeftPosition() {
-    return leftMotor.getCurrentPosition();
-  }
-
-  public void setRightDuty(double duty) {
-    rightMotor.setDuty(duty);
-  }
-
-  public void setLeftDuty(double duty) {
-    leftMotor.setDuty(duty);
-  }
-
-  public double getRoll() {
-    return pigeon.getRoll().getValueAsDouble();
-  }
-
-  public void startCalibration() {
-    stop();
-    leftCalibrated = false;
-    rightCalibrated = false;
   }
 
   public void setLeftCalibrated() {
@@ -111,6 +91,26 @@ public class ClimbSubsystem extends SubsystemBase {
 
   public boolean isAutoClimb(){
     return autoClimb;
+  }
+
+  public double getRightPosition() {
+    return rightMotor.getCurrentPosition();
+  }
+
+  public double getLeftPosition() {
+    return leftMotor.getCurrentPosition();
+  }
+
+  public void setRightDuty(double duty) {
+    rightMotor.setDuty(duty);
+  }
+
+  public void setLeftDuty(double duty) {
+    leftMotor.setDuty(duty);
+  }
+
+  public double getRoll() {
+    return pigeon.getRoll().getValueAsDouble();
   }
 
   public void setPosition(double left, double right) {
@@ -161,12 +161,13 @@ public class ClimbSubsystem extends SubsystemBase {
 
   public void addSendableChooser() {
     SendableChooser<ClimbState> stateChooser = new SendableChooser<>();
+
     for (ClimbState state : ClimbState.values()) {
       stateChooser.addOption(state.name(), state);
     }
+
     stateChooser.onChange(newState -> this.state = newState);
     SmartDashboard.putData("Climb State Chooser", stateChooser);
-
   }
 
   @Override
