@@ -6,7 +6,7 @@ import frc.demacia.utils.sensors.LimitSwitchConfig;
 
 public class ClimbConstants {
     public static final Canbus CANBUS = Canbus.Rio;
-    public static final double GEAR_RATIO = 0.0;
+    public static final double GEAR_RATIO = 20;
     public static final double DIAMATER = 0.03;
     public static final double Kp = 0.0;
     public static final double Ki = 0.0;
@@ -17,6 +17,9 @@ public class ClimbConstants {
     public static final double Kg = 0.0;
     public static final double Kcos = 0.0;
     public static final double Kv2 = 0.0;
+    public static final double MAX_VELOCITY = 0;
+    public static final double MAX_ACCELERATION = 0;
+    public static final double MAX_JERK = 0;
 
     public static final int LEFT_LIMIT_SWITCH_CHANNEL = 0;
     public static final String LEFT_LIMIT_SWITCH_NAME = "Left Limit Switch";
@@ -32,11 +35,14 @@ public class ClimbConstants {
 
     public static final TalonFXConfig LEFT_MOTOR_CONFIG = new TalonFXConfig(LEFT_MOTOR_NAME, LEFT_MOTOR_ID, CANBUS)
     .withPID(Kp, Ki, Kd, Ks, Kv, Ka, Kg, Kcos, Kv2)
-    .withMeterMotor(GEAR_RATIO, DIAMATER);
+    .withMeterMotor(GEAR_RATIO, DIAMATER)
+    .withMotionParam(MAX_VELOCITY, MAX_ACCELERATION, MAX_JERK);
 
     public static final TalonFXConfig RIGHT_MOTOR_CONFIG = new TalonFXConfig(RIGHT_MOTOR_NAME, RIGHT_MOTOR_ID, CANBUS)
     .withPID(Kp, Ki, Kd, Ks, Kv, Ka, Kg, Kcos, Kv2)
-    .withMeterMotor(GEAR_RATIO, DIAMATER);
+    .withMeterMotor(GEAR_RATIO, DIAMATER)
+    .withMotionParam(MAX_VELOCITY, MAX_ACCELERATION, MAX_JERK);
+
 
     public static final LimitSwitchConfig LEFT_SWITCH_CONFIG = new LimitSwitchConfig(LEFT_LIMIT_SWITCH_NAME, LEFT_LIMIT_SWITCH_CHANNEL);
     public static final LimitSwitchConfig RIGHT_SWITCH_CONFIG = new LimitSwitchConfig(RIGHT_LIMIT_SWITCH_NAME, RIGHT_LIMIT_SWITCH_CHANNEL);
@@ -49,6 +55,7 @@ public class ClimbConstants {
     public static final double DRIVE_SPEED = 0.0;
     public static final double POSITION_TOLERANCE = 0.0;
     public static final double BALANCE_TOLERANCE = Math.toRadians(10);
+    public static final double ARM_SEPERATION = 0.612;
 
     public enum ClimbState {
         IDLE,

@@ -24,18 +24,19 @@ public class ClimbSubsystem extends SubsystemBase {
   private final TalonFXMotor rightMotor;
   private final LimitSwitch leftSwitch;
   private final LimitSwitch rightSwitch;
-  private final Pigeon pigeon;
+  private final Pigeon gyro;
   private boolean leftCalibrated;
   private boolean rightCalibrated;
+  private double balanceOffset = 0;
   private ClimbState state = ClimbState.IDLE;
   private boolean autoClimb;
 
-  public ClimbSubsystem() {
+  public ClimbSubsystem(Pigeon gyro) {
     leftMotor = new TalonFXMotor(ClimbConstants.LEFT_MOTOR_CONFIG);
     rightMotor = new TalonFXMotor(ClimbConstants.RIGHT_MOTOR_CONFIG);
     leftSwitch = new LimitSwitch(ClimbConstants.LEFT_SWITCH_CONFIG);
     rightSwitch = new LimitSwitch(ClimbConstants.RIGHT_SWITCH_CONFIG);
-    pigeon = chassis.gyro;
+    this.gyro = gyro;
     SmartDashboard.putData("Climb Subsystem", this);
     SmartDashboard.putData("Climb Calibration Command", new ClimbCalibrationCommand(this));
     addSendableChooser();
@@ -110,15 +111,15 @@ public class ClimbSubsystem extends SubsystemBase {
   }
 
   public double getRoll() {
-    return pigeon.getRoll().getValueAsDouble();
+    return gyro.getRoll().getValueAsDouble();
   }
 
   public void setPosition(double left, double right) {
     left = MathUtil.clamp(left, 0, ClimbConstants.OPEN_POSITION);
     right = MathUtil.clamp(right, 0, ClimbConstants.OPEN_POSITION);
 
-    leftMotor.setPositionVoltage(left);
-    rightMotor.setPositionVoltage(right);
+    leftMotor.setMotion(left);
+    rightMotor.setMotion(right);
   }
 
   public boolean isAtTarget(double target) {
@@ -127,10 +128,12 @@ public class ClimbSubsystem extends SubsystemBase {
 
   public void balance(double target) {
     double roll = Math.toRadians(getRoll());
+    double heightDiff = ClimbConstants.ARM_SEPERATION * Math.sin(roll);
     if(Math.abs(roll) > ClimbConstants.BALANCE_TOLERANCE) {
-      double correction = MathUtil.clamp(roll * ClimbConstants.BALANCE_FACTOR, -ClimbConstants.MAX_BALANCE_CORRECTION, ClimbConstants.MAX_BALANCE_CORRECTION);
-      double leftTarget = target + correction;
-      double rightTarget = target - correction;
+      double step = heightDiff / 2 * ClimbConstants.BALANCE_FACTOR;
+      balanceOffset = MathUtil.clamp(balanceOffset + step, -ClimbConstants.MAX_BALANCE_CORRECTION, ClimbConstants.MAX_BALANCE_CORRECTION);
+      double leftTarget = target + balanceOffset;
+      double rightTarget = target - balanceOffset;
       setPosition(leftTarget, rightTarget);
     }   
   }
