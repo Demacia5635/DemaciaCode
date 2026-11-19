@@ -4,10 +4,13 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.Faults;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.unmanaged.Unmanaged;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.demacia.utils.Data;
+import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.log.Log;
 
 /**
@@ -34,14 +37,13 @@ public class TalonSRXMotor extends BaseMotor {
 
     if (RobotBase.isSimulation()) {
       new Data(() -> {
-        double vel = getCurrentVelocity();
-        double pos = getCurrentPosition();
-    
-        double newPos = pos + vel * 0.02;
+        Unmanaged.feedEnable(100);
 
-        double nativePosition = (newPos * getTicksPerUnit());
-        motor.getSimCollection().setQuadratureRawPosition((int) nativePosition);
-      
+        double simVoltage = motor.getSimCollection().getMotorOutputLeadVoltage();
+        double velocity = calculateSimVelocity(simVoltage);
+
+        motor.getSimCollection().setQuadratureVelocity((int) (velocity * getTicksPerUnit() / 10.0));
+        motor.getSimCollection().addQuadraturePosition((int) (velocity * getTicksPerUnit() * RobotCommon.CYCLE_DT));
         return 0;
       });
     }
@@ -170,8 +172,16 @@ public class TalonSRXMotor extends BaseMotor {
     });
     voltageSignal = new Data<>(() -> motor.getMotorOutputVoltage());
     currentSignal = new Data<>(() -> motor.getStatorCurrent());
-    closedLoopSPSignal = new Data<>(() -> motor.getClosedLoopTarget(0) / getTicksPerUnit());
-    closedLoopErrorSignal = new Data<>(() -> motor.getClosedLoopError(0) / getTicksPerUnit());
+    closedLoopSPSignal = new Data<>(() -> isClosedLoop() ? motor.getClosedLoopTarget(0) / getTicksPerUnit() : 0);
+    closedLoopErrorSignal = new Data<>(() -> isClosedLoop() ? motor.getClosedLoopError(0) / getTicksPerUnit() : 0);
+  }
+
+  private boolean isClosedLoop() {
+    ControlMode mode = getCurrentControlMode();
+    return mode == ControlMode.VELOCITY || 
+        mode == ControlMode.POSITION_VOLTAGE || 
+        mode == ControlMode.MAGIC_MOTION || 
+        mode == ControlMode.ANGLE;
   }
 
   @Override
@@ -187,64 +197,39 @@ public class TalonSRXMotor extends BaseMotor {
   @Override
   protected void setMotorDuty(double power) {
     motor.set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, power);
-
-    if (RobotBase.isSimulation()) {
-      double nativeVelocity = (power * getTicksPerUnit()) / 10.0;
-      motor.getSimCollection().setQuadratureVelocity((int) nativeVelocity);
-    }
   }
 
   @Override
   protected void setMotorVoltage(double voltage) {
     motor.set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, voltage / config.maxVolt);
-
-    if (RobotBase.isSimulation()) {
-      double nativeVelocity = (voltage / config.maxVolt * getTicksPerUnit()) / 10.0;
-      motor.getSimCollection().setQuadratureVelocity((int) nativeVelocity);
-    }
   }
 
   @Override
   protected void setMotorVelocity(double velocity, double feedForward) {
     double nativeVelocity = (velocity * getTicksPerUnit()) / 10.0;
     motor.set(com.ctre.phoenix.motorcontrol.ControlMode.Velocity, nativeVelocity,
-        DemandType.ArbitraryFeedForward, feedForward / config.maxVolt);
-
-    if (RobotBase.isSimulation()) {
-      motor.getSimCollection().setQuadratureVelocity((int) nativeVelocity);
-    }
+        DemandType.ArbitraryFeedForward, 
+        (feedForward + staticFeedForward(velocity)) / config.maxVolt);
   }
 
   @Override
   protected void setMotorPositionVoltage(double position, double feedForward) {
     double nativePosition = position * getTicksPerUnit();
     motor.set(com.ctre.phoenix.motorcontrol.ControlMode.Position, nativePosition,
-        DemandType.ArbitraryFeedForward, feedForward / config.maxVolt);
-        
-    if (RobotBase.isSimulation()) {
-      if (Math.abs(position - getCurrentPosition()) < SIM_VEL_POS_CONTROL) {
-        motor.getSimCollection().setQuadratureRawPosition((int) nativePosition);
-        motor.getSimCollection().setQuadratureVelocity(0);
-      } else {
-        motor.getSimCollection().setQuadratureVelocity((int) (Math.signum(position - getCurrentPosition())*SIM_VEL_POS_CONTROL * getTicksPerUnit() / 10.0));
-      }
-    }
+        DemandType.ArbitraryFeedForward, 
+        (feedForward + staticFeedForward(position - getCurrentPosition())) / config.maxVolt);
   }
 
   @Override
   protected void setMotorMotionMagic(double position, double feedForward) {
     double nativePosition = position * getTicksPerUnit();
     motor.set(com.ctre.phoenix.motorcontrol.ControlMode.MotionMagic, nativePosition,
-        DemandType.ArbitraryFeedForward, feedForward / config.maxVolt);
+        DemandType.ArbitraryFeedForward, 
+        (feedForward + staticFeedForward(getCurrentVelocity())) / config.maxVolt);
+  }
 
-    if (RobotBase.isSimulation()) {
-      if (Math.abs(position - getCurrentPosition()) < SIM_VEL_POS_CONTROL) {
-        motor.getSimCollection().setQuadratureRawPosition((int) nativePosition);
-        motor.getSimCollection().setQuadratureVelocity(0);
-      } else {
-        motor.getSimCollection().setQuadratureVelocity((int) (Math.signum(position - getCurrentPosition())*SIM_VEL_POS_CONTROL * getTicksPerUnit() / 10.0));
-      }
-    }
+  private double staticFeedForward(double direction) {
+    return Math.signum(direction) * config.pidFfParams[slot].kS() + config.pidFfParams[slot].kG();
   }
 
   @Override

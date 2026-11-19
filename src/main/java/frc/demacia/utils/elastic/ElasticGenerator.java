@@ -184,6 +184,12 @@ public class ElasticGenerator {
                 col++;
                 widgets.add(createWidget("Text Display", "Current Values", col, row, 1, 1, logManagerMotorPath + "/current value", "\"data_type\": \"double\", \"show_submit_button\": true"));
                 col++;
+                widgets.add(createWidget("Text Display", "Voltage", col, row, 1, 1, motorPath + "/Voltage", "\"data_type\": \"double\""));
+                col++;
+                widgets.add(createWidget("Text Display", "Velocity", col, row, 1, 1, motorPath + "/Velocity", "\"data_type\": \"double\""));
+                col++;
+                widgets.add(createWidget("Text Display", "Position", col, row, 1, 1, motorPath + "/Position", "\"data_type\": \"double\""));
+                col++;
 
                 if (col > MAX_COLS - MOTOR_WIDTH) { 
                     col = 0;

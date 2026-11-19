@@ -61,7 +61,6 @@ public abstract class BaseMotor implements MotorInterface {
 
   protected double lastSimVelocity = 0;
   protected static final double MAX_SIM_VEL = 50;
-  protected static double SIM_VEL_POS_CONTROL = Double.POSITIVE_INFINITY;
 
   /**
    * Creates a new TalonFX motor wrapper.
@@ -161,10 +160,6 @@ public abstract class BaseMotor implements MotorInterface {
     configPidFf(2);
     configPidFf(3);
     configMotionMagic();
-  }
-
-  public static void setSimVelInPosControl(double SimVelInPosControl) {
-    SIM_VEL_POS_CONTROL = SimVelInPosControl;
   }
 
   private void configureStallDetection() {

@@ -10,7 +10,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
-
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.demacia.utils.Data;
@@ -56,6 +55,7 @@ public class TalonFXMotor extends BaseMotor {
       new Data(() -> {
         double simVoltage = motor.getSimState().getMotorVoltage() * (config.inverted ? -1 : 1);
         double velocity = calculateSimVelocity(simVoltage);
+
         motor.getSimState().setRotorVelocity(toSimValue(velocity));
         motor.getSimState().addRotorPosition(toSimValue(velocity * RobotCommon.CYCLE_DT));
         return 0;
@@ -178,10 +178,6 @@ public class TalonFXMotor extends BaseMotor {
 
   protected void stopMotor() {
     motor.stopMotor();
-
-    if (RobotBase.isSimulation()) {
-      motor.getSimState().setRotorVelocity(0);
-    }
   }
 
   protected void setMotorDuty(double power) {

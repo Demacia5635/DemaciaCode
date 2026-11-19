@@ -204,12 +204,13 @@ public class Data<T> {
     private void refreshSupplier() {
         changed = false;
         if (isDouble) {
-            double newVal = ((Number) supplier.get()).doubleValue();
+            Number value = (Number) supplier.get();
+            double newVal = value.doubleValue();
             if (doubleValue != newVal) {
                 changed = true;
                 doubleValue = newVal;
             }
-            float newFloatVal = ((Number) supplier.get()).floatValue();
+            float newFloatVal = value.floatValue();
             if (floatValue != newFloatVal) {
                 changed = true;
                 floatValue = newFloatVal;

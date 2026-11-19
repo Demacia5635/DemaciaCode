@@ -2,6 +2,7 @@ package frc.demacia.utils.motors;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.sim.SparkRelativeEncoderSim;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -10,9 +11,11 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.demacia.utils.Data;
+import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.log.Log;
 
 /**
@@ -24,16 +27,19 @@ import frc.demacia.utils.log.Log;
  * </p>
  */
 public class SparkMaxMotor extends BaseMotor {
-  SparkMax motor;
-  com.revrobotics.spark.config.SparkMaxConfig cfg;
+  private SparkMax motor;
+  private com.revrobotics.spark.config.SparkMaxConfig cfg;
 
   private double lastVelocity = 0;
   private double lastAcceleration = 0;
   private double lastTime = 0;
 
-  ClosedLoopSlot closedLoopSlot;
+  private ClosedLoopSlot closedLoopSlot;
 
   private SparkRelativeEncoderSim encoderSim;
+  private SparkMaxSim sparkSim;
+
+  protected static final double SECONDS_PER_MINUTE = 60.0;
 
   /**
    * Creates a new TalonFX motor wrapper.
@@ -47,14 +53,19 @@ public class SparkMaxMotor extends BaseMotor {
     closedLoopSlot = ClosedLoopSlot.kSlot0;
 
     if (RobotBase.isSimulation()) {
+      sparkSim = new SparkMaxSim(motor, DCMotor.getNEO(1));
       encoderSim = new SparkRelativeEncoderSim(motor);
       
       new Data(() -> {
-        double vel = getCurrentVelocity();
         double pos = getCurrentPosition();
-    
-        double newPos = pos + vel * 0.02;
+        sparkSim.iterate(getCurrentVelocity(), 12.0, RobotCommon.CYCLE_DT);
 
+        double simVoltage = sparkSim.getAppliedOutput() * 12.0;
+        double velocity = calculateSimVelocity(simVoltage);
+
+        encoderSim.setVelocity(velocity);
+
+        double newPos = pos + velocity * RobotCommon.CYCLE_DT;
         encoderSim.setPosition(newPos);
         
         return 0;
@@ -97,7 +108,7 @@ public class SparkMaxMotor extends BaseMotor {
 
   protected void configMotorRatio(double motorRatio) {
     cfg.encoder.positionConversionFactor(1 / config.motorRatio);
-    cfg.encoder.velocityConversionFactor(1 / config.motorRatio);
+    cfg.encoder.velocityConversionFactor(1 / config.motorRatio / SECONDS_PER_MINUTE);
   }
 
   protected void configPidFf(CloseLoopParam[] pidFfParams) {
@@ -183,62 +194,28 @@ public class SparkMaxMotor extends BaseMotor {
 
   protected void stopMotor() {
     motor.stopMotor();
-
-    if (RobotBase.isSimulation()) {
-      encoderSim.setVelocity(0);
-    }
   }
 
   protected void setMotorDuty(double power) {
     motor.set(power);
-
-    if (RobotBase.isSimulation()) {
-      encoderSim.setVelocity(calculateSimVelocity(power * 12));
-    }
   }
 
   protected void setMotorVoltage(double voltage) {
     motor.setVoltage(voltage);
-
-    if (RobotBase.isSimulation()) {
-      encoderSim.setVelocity(calculateSimVelocity(voltage));
-    }
   }
 
   protected void setMotorVelocity(double velocity, double feedForward) {
-    motor.getClosedLoopController().setSetpoint(velocity, ControlType.kMAXMotionVelocityControl, closedLoopSlot,
-        feedForward);
-
-    if (RobotBase.isSimulation()) {
-      encoderSim.setVelocity(velocity);
-    }
+    motor.getClosedLoopController().setSetpoint(velocity, ControlType.kVelocity, closedLoopSlot,
+      feedForward);
   }
 
   protected void setMotorPositionVoltage(double position, double feedForward) {
     motor.getClosedLoopController().setSetpoint(position, ControlType.kPosition, closedLoopSlot, feedForward);
-  
-    if (RobotBase.isSimulation()) {
-      if (Math.abs(position - getCurrentPosition()) < SIM_VEL_POS_CONTROL) {
-        encoderSim.setPosition(position);
-        encoderSim.setVelocity(0);
-      } else {
-        encoderSim.setVelocity(Math.signum(position - getCurrentPosition())*SIM_VEL_POS_CONTROL);
-      }
-    }
   }
 
   protected void setMotorMotionMagic(double position, double feedForward) {
     motor.getClosedLoopController().setSetpoint(position, ControlType.kMAXMotionPositionControl, closedLoopSlot,
         feedForward);
-
-    if (RobotBase.isSimulation()) {
-      if (Math.abs(position - getCurrentPosition()) < SIM_VEL_POS_CONTROL) {
-        encoderSim.setPosition(position);
-        encoderSim.setVelocity(0);
-      } else {
-        encoderSim.setVelocity(Math.signum(position - getCurrentPosition())*SIM_VEL_POS_CONTROL);
-      }
-    }
   }
 
   @Override
@@ -254,7 +231,7 @@ public class SparkMaxMotor extends BaseMotor {
 
   @Override
   public boolean isConnected() {
-    return motor.getFirmwareVersion() != 0;
+    return RobotBase.isSimulation() || motor.getFirmwareVersion() != 0;
   }
 
   @Override
