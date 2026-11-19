@@ -132,10 +132,10 @@ public class ClimbSubsystem extends SubsystemBase {
     if(Math.abs(roll) > ClimbConstants.BALANCE_TOLERANCE) {
       double step = heightDiff / 2 * ClimbConstants.BALANCE_FACTOR;
       balanceOffset = MathUtil.clamp(balanceOffset + step, -ClimbConstants.MAX_BALANCE_CORRECTION, ClimbConstants.MAX_BALANCE_CORRECTION);
+    }
       double leftTarget = target + balanceOffset;
       double rightTarget = target - balanceOffset;
-      setPosition(leftTarget, rightTarget);
-    }   
+      setPosition(leftTarget, rightTarget);   
   }
 
   public boolean isBalanced() {

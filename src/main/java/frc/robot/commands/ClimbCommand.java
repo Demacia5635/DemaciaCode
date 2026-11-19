@@ -41,7 +41,6 @@ public class ClimbCommand extends Command {
   public void execute() {
     switch (climbSubsystem.getState()) {
       case IDLE:
-      chassis.stop();
       climbSubsystem.stop();
       break;
 
