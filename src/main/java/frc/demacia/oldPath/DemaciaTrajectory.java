@@ -78,7 +78,7 @@ public class DemaciaTrajectory {
             Translation2d prev = points.get(i - 1).getTranslation();
             Translation2d here = points.get(i).getTranslation();
             Translation2d next = points.get(i + 1).getTranslation();
-            double v = points.get(i).getVelocity();
+            double v = points.get(i).getMaxVelocityAtPoint();
 
             double turn = Math.abs(MathUtil.angleModulus(
                     next.minus(here).getAngle().getRadians() - here.minus(prev).getAngle().getRadians()));

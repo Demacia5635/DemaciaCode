@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 public abstract class SegmentBase {
 
     private Translation2d startTranslation;
-    private Pose2d endPose; // end position + wanted robot heading at the end
+    private Pose2d endPose;
     private double endVelocity;
     private double maxVelocity;
 

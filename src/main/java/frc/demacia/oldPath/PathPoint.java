@@ -7,7 +7,7 @@ import frc.demacia.path.constants.PathConstants;
 
 // rotation = wanted robot heading at this point, velocity 0 = stop exactly here
 public class PathPoint extends Pose2d {
-    private final double velocity; // m/s
+    private final double maxVelocityAtPoint; // m/s
 
     public PathPoint(Translation2d translation, Rotation2d rotation) {
         this(translation, rotation, PathConstants.MAX_VELOCITY);
@@ -15,10 +15,10 @@ public class PathPoint extends Pose2d {
 
     public PathPoint(Translation2d translation, Rotation2d rotation, double velocity) {
         super(translation, rotation);
-        this.velocity = velocity;
+        this.maxVelocityAtPoint = velocity;
     }
 
-    public double getVelocity() {
-        return velocity;
+    public double getMaxVelocityAtPoint() {
+        return maxVelocityAtPoint;
     }
 }
