@@ -217,7 +217,7 @@ public class TalonSRXMotor extends BaseMotor {
     double nativePosition = position * getTicksPerUnit();
     motor.set(com.ctre.phoenix.motorcontrol.ControlMode.Position, nativePosition,
         DemandType.ArbitraryFeedForward, 
-        (feedForward + staticFeedForward(position - getCurrentPosition())) / config.maxVolt);
+        (feedForward + staticFeedForward(position - getCurrentPosition()) - config.pidFfParams[slot].kV() * 10.0 * position) / config.maxVolt);
   }
 
   @Override
@@ -225,7 +225,7 @@ public class TalonSRXMotor extends BaseMotor {
     double nativePosition = position * getTicksPerUnit();
     motor.set(com.ctre.phoenix.motorcontrol.ControlMode.MotionMagic, nativePosition,
         DemandType.ArbitraryFeedForward, 
-        (feedForward + staticFeedForward(getCurrentVelocity())) / config.maxVolt);
+        (feedForward + staticFeedForward(position - getCurrentPosition())) / config.maxVolt);
   }
 
   private double staticFeedForward(double direction) {
