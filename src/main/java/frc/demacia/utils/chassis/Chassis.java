@@ -7,6 +7,7 @@ package frc.demacia.utils.chassis;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -15,7 +16,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.demacia.RobotPose.RobotPose;
-import frc.demacia.kinematics.DemaciaKinematics;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.sensors.Cancoder;
 import frc.demacia.utils.sensors.Pigeon;
@@ -38,7 +38,7 @@ public class Chassis extends SubsystemBase {
     public SwerveModule[] modules;
     public Pigeon gyro;
     
-    private DemaciaKinematics demaciaKinematics;
+    private SwerveDriveKinematics kinematics;
 
     private ChassisSpeeds lastSpeedsFieldRel = new ChassisSpeeds();
     private double lastAccelTime = Timer.getFPGATimestamp();
@@ -71,7 +71,7 @@ public class Chassis extends SubsystemBase {
         }
         gyro = new Pigeon(chassisConfig.pigeonConfig);
 
-        demaciaKinematics = new DemaciaKinematics(modulePositions);
+        kinematics = new SwerveDriveKinematics(modulePositions);
 
         addLog();
     }
@@ -178,7 +178,8 @@ public class Chassis extends SubsystemBase {
                 states[i] = new SwerveModuleState(0, lastAngles[i]);
             }
         } else {
-            states = demaciaKinematics.toSwerveModuleStates(robotRelSpeeds);
+            states = kinematics.toSwerveModuleStates(robotRelSpeeds);
+            SwerveDriveKinematics.desaturateWheelSpeeds(states, chassisConfig.maxDriveVelocity);
 
             for (int i = 0; i < lastAngles.length; i++) {
                 lastAngles[i] = states[i].angle;
@@ -257,16 +258,14 @@ public class Chassis extends SubsystemBase {
         return alpha;
     }
 
+    /** Translation from the wheels, rotation (omega) from the gyro. */
     public ChassisSpeeds getChassisSpeedsRobotRel() {
-        return demaciaKinematics.toChassisSpeeds(
-                getModuleStates(),
-                getGyroAngularVelocity());
+        ChassisSpeeds wheelSpeeds = kinematics.toChassisSpeeds(getModuleStates());
+        return new ChassisSpeeds(wheelSpeeds.vxMetersPerSecond, wheelSpeeds.vyMetersPerSecond, getGyroAngularVelocity());
     }
 
     public ChassisSpeeds getChassisSpeedsFieldRel() {
-        return ChassisSpeeds.fromRobotRelativeSpeeds(
-                demaciaKinematics.toChassisSpeeds(getModuleStates(), getGyroAngularVelocity()),
-                getGyroAngle());
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeedsRobotRel(), getGyroAngle());
     }
 
     public Translation2d getChassisSpeedsVector() {
