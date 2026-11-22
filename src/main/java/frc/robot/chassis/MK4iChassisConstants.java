@@ -12,9 +12,8 @@ import frc.demacia.utils.chassis.SwerveModuleConfig;
 import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
 import frc.demacia.utils.sensors.CancoderConfig;
 import frc.demacia.utils.sensors.PigeonConfig;
-import frc.demacia.vision.TagPose;
 
-public class MK4iChassisConstants {
+public class Mk4iChassisConstants {
   public static final String NAME = "Mk4i Chassis";
 
   public static final int PIGEON_ID = 14;
@@ -50,19 +49,18 @@ public class MK4iChassisConstants {
 
   public static final SwerveModuleConfig[] modules = swerveModules(
       new double[] {
-        1.3499030933393643, //FRONT LEFT
-        2.408349836980457, //FRONT RIGHT
-        1.7211264440076894, //BACK LEFT
-        0.48473792897186263 //BACK RIGHT
+        -1.3345632854605078, //FRONT LEFT
+        -2.457437222192797, //FRONT RIGHT
+        -1.6060778849162662, //BACK LEFT
+        -0.47860200582032003 //BACK RIGHT
       });
 
-  public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig( PIGEON_ID, PIGEON_CAN_BUS, NAME + " pigeon");
+  public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + " pigeon", PIGEON_ID, PIGEON_CAN_BUS);
 
   public static final ChassisConfig CHASSIS_CONFIG = new ChassisConfig(
       NAME,
       modules,
-      PIGEON_CONFIG,
-      new TagPose[]{});
+      PIGEON_CONFIG);
 
   public static final Matrix<N3, N1> STATE_STD = new Matrix<>(new SimpleMatrix(new double[] { 0.3, 0.3, 0 })); 
 
@@ -81,20 +79,21 @@ public class MK4iChassisConstants {
 
       ans[i] = new SwerveModuleConfig(
           name,
-          new TalonFXConfig(i * 3 + 2, CAN_BUS, name + " Steer")
-              .withPID(STEER_KP, STEER_KI, STEER_KD, STEER_KS, STEER_KV, STEER_KA, 0)
+          new TalonFXConfig(name + " Steer", i * 3 + 2, CAN_BUS)
+              .withPID(STEER_KP, STEER_KI, STEER_KD, STEER_KS, STEER_KV, STEER_KA, 0, 0, 0)
               .withBrake(true)
-              .withInvert(true)
+              .withInvert(false)
               .withRadiansMotor(STEER_GEAR_RATIO)
               .withRampTime(RAMP_TIME_STEER),
-          new TalonFXConfig(i * 3 + 1, CAN_BUS, name + " Drive")
-              .withPID(DRIVE_KP, DRIVE_KI, DRIVE_KD, DRIVE_KS, DRIVE_KV, DRIVE_KA, 0)
+          new TalonFXConfig(name + " Drive", i * 3 + 1, CAN_BUS)
+              .withPID(DRIVE_KP, DRIVE_KI, DRIVE_KD, DRIVE_KS, DRIVE_KV, DRIVE_KA, 0, 0, 0)
               .withBrake(true)
               .withMeterMotor(DRIVE_GEAR_RATIO, WHEEL_DIAMETER),
-          new CancoderConfig(i * 3 + 3, CAN_BUS, name + " Cancoder")
-            .withInvert(false))
+          new CancoderConfig(name + " Cancoder", i * 3 + 3, CAN_BUS)
+            .withInvert(true))
           .withPosion(MODULE_LOCATIONS[i])
-          .withSteerOffset(offsets[i]);
+          .withSteerOffset(offsets[i])
+          .withMetersFrom360Degs(METERS_FROM_360_DEGS);
     }
     return ans;
   }

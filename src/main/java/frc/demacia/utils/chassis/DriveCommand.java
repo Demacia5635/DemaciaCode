@@ -5,8 +5,9 @@
 package frc.demacia.utils.chassis;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
-
+import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.log.LogManager;
 import frc.robot.RobotContainer;
@@ -14,9 +15,8 @@ import frc.robot.RobotContainer;
 public class DriveCommand extends Command {
   private Chassis chassis;
   private CommandController controller;
-  private double direction;
   private ChassisSpeeds speeds;
-  private static boolean isPrecisionMode;
+  private boolean precisionMode;
 
   /** Creates a new DriveCommand. */
   public DriveCommand(Chassis chassis, CommandController controller) {
@@ -26,40 +26,49 @@ public class DriveCommand extends Command {
     addRequirements(chassis);
   }
 
-  public static void setPrecisionMode() {
-    isPrecisionMode = !isPrecisionMode;
+  public void invertPrecisionMode() {
+    setPrecisionMode(!precisionMode);
+  }
+
+  public void setPrecisionMode(boolean precisionMode) {
+    this.precisionMode = precisionMode;
+  }
+
+  public boolean getPrecisionMode() {
+    return precisionMode;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    isPrecisionMode = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    direction = RobotContainer.isRed ? 1 : -1;
-    double joyX = controller.getLeftY() * direction;
-    double joyY = controller.getLeftX() * direction;
-
-    // Calculate rotation from trigger axes
-    double rot = controller.getLeftTrigger() - controller.getRightTrigger();
-
-    double velX = Math.pow(joyX, 2) * chassis.getConfig().maxDriveVelocity * Math.signum(joyX);
-    double velY = Math.pow(joyY, 2) * chassis.getConfig().maxDriveVelocity * Math.signum(joyY);
-    double velRot = Math.pow(rot, 2) * chassis.getConfig().maxRotationalVelocity * Math.signum(rot);
-
-    if (isPrecisionMode) {
-      velX /= 2;
-      velY /= 2;
-      velRot /= 2;
+    if (RobotState.isAutonomous()){
+      return;
     }
 
-    // WPILib kinematics: positive omega = CCW (DemaciaKinematics was CW-positive, hence the old minus)
+    double direction = RobotCommon.getIsRed() ? 1 : -1;
+    double joyX = controller.getLeftY() * direction;
+    double joyY = controller.getLeftX() * direction;
+    
+    // Calculate r]otation from trigger axes
+    double rot = controller.getRightTrigger() - controller.getLeftTrigger();
+    
+    double velX = Math.pow(joyX, 2) * chassis.getMaxDriveVelocity() * Math.signum(joyX);
+    double velY = Math.pow(joyY, 2) * chassis.getMaxDriveVelocity() * Math.signum(joyY);
+    double velRot = Math.pow(rot, 2) * chassis.getMaxRotationalVelocity() * Math.signum(rot);
+    if(precisionMode){
+        velX /= 4;
+        velY /= 4;
+        // velRot /= 4;
+    }
+
     speeds = new ChassisSpeeds(velX, velY, velRot);
-    LogManager.log("run");
-    chassis.setVelocities(speeds);
+    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, chassis.getGyroAngle());
+    chassis.setSpeedsRobotRel(speeds);
   }
 
   // Called once the command ends or is interrupted.

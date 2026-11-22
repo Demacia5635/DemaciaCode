@@ -19,7 +19,7 @@ public class OpticalSensorConfig extends AnalogSensorConfig<OpticalSensorConfig>
      * @param port the analog input channel (0-3 on RoboRIO)
      */
     public OpticalSensorConfig(String name, int port) {
-        super(port, name);
+        super(name, port);
         sensorType = OpticalSensor.class;
     }
 

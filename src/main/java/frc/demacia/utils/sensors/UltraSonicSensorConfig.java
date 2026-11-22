@@ -29,8 +29,8 @@ public class UltraSonicSensorConfig extends AnalogSensorConfig<UltraSonicSensorC
      * @param pingChannel Ping channel (sends pulse)
      * @param name Descriptive name for logging
      */
-    public UltraSonicSensorConfig(int channel, int pingChannel, String name) {
-        super(channel, name);
+    public UltraSonicSensorConfig(String name, int channel, int pingChannel) {
+        super(name, channel);
         this.pingChannel = pingChannel;
         sensorType = UltraSonicSensor.class;
     }

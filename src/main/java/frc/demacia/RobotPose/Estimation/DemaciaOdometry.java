@@ -1,4 +1,4 @@
-// Coswpyright (c) FIRST and other WPILib contributors.
+// Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
@@ -10,8 +10,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Swerve odometry: turns gyro + module encoder readings into how far the robot moved since
@@ -45,8 +43,6 @@ public class DemaciaOdometry {
     /** Module locations relative to the robot centre (meters). */
     private final Translation2d[] moduleLocations;
 
-    private Field2d odometryField;
-
     /**
      * @param initialModulePositions Module readings right now, so the first update only counts
      *                               motion from this point.
@@ -65,10 +61,6 @@ public class DemaciaOdometry {
             moduleDisplacements[i] = Translation2d.kZero;
         }
         this.pose = Pose2d.kZero;
-
-        odometryField = new Field2d();
-        
-        SmartDashboard.putData("odometry/odometryField", odometryField);
     }
 
     /**
@@ -109,7 +101,6 @@ public class DemaciaOdometry {
             lastModulePositions[i] = modulePositions[i].copy();
         }
 
-        odometryField.setRobotPose(pose);
         return twist;
     }
 
@@ -126,9 +117,8 @@ public class DemaciaOdometry {
         double arcLength = currentPosition.distanceMeters - lastPosition.distanceMeters;
         double deltaAngle = MathUtil.angleModulus(currentPosition.angle.getRadians() - lastPosition.angle.getRadians());
 
-        if (Math.abs(Math.toDegrees(deltaAngle)) < 1E-6){
+        if (Math.abs(Math.toDegrees(deltaAngle)) < 1E-6)
             return new Translation2d(arcLength, currentPosition.angle); // case for almost straight line
-        }
 
         double centralAngle = deltaAngle;
         double radius = arcLength / centralAngle;
