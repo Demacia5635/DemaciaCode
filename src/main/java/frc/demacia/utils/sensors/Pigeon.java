@@ -360,14 +360,14 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Gyro");
         builder.addBooleanProperty("is Connected", this::isConnected, null);
-        builder.addDoubleProperty("value", this::getCurrentYaw, RobotBase.isSimulation() ? yaw -> getSimState().setRawYaw(yaw) : null);
-        builder.addDoubleProperty("yaw", this::getCurrentYaw, RobotBase.isSimulation() ? yaw -> getSimState().setRawYaw(yaw) : null);
-        builder.addDoubleProperty("yaw Degree", this::getCurrentYawDegree, RobotBase.isSimulation() ? yaw -> getSimState().setRawYaw(Math.toRadians(yaw)) : null);
-        builder.addDoubleProperty("pitch", this::getCurrentPitch, RobotBase.isSimulation() ? pitch -> getSimState().setPitch(pitch) : null);
-        builder.addDoubleProperty("roll", this::getCurrentRoll, RobotBase.isSimulation() ? roll -> getSimState().setRoll(roll) : null);
-        builder.addDoubleProperty("x velocity", this::getXVelocity, RobotBase.isSimulation() ? xVelocity -> getSimState().setAngularVelocityX(xVelocity) : null);
-        builder.addDoubleProperty("y velocity", this::getYVelocity, RobotBase.isSimulation() ? yVelocity -> getSimState().setAngularVelocityY(yVelocity) : null);
-        builder.addDoubleProperty("z velocity", this::getZVelocity, RobotBase.isSimulation() ? zVelocity -> getSimState().setAngularVelocityZ(zVelocity) : null);
+        builder.addDoubleProperty("value", this::getCurrentYaw, RobotBase.isSimulation() ? yaw -> getSimState().setRawYaw(Math.toDegrees(yaw)) : null);
+        builder.addDoubleProperty("yaw", this::getCurrentYaw, RobotBase.isSimulation() ? yaw -> getSimState().setRawYaw(Math.toDegrees(yaw)) : null);
+        builder.addDoubleProperty("yaw Degree", this::getCurrentYawDegree, RobotBase.isSimulation() ? yaw -> getSimState().setRawYaw(yaw) : null);
+        builder.addDoubleProperty("pitch", this::getCurrentPitch, RobotBase.isSimulation() ? pitch -> getSimState().setPitch(Math.toDegrees(pitch)) : null);
+        builder.addDoubleProperty("roll", this::getCurrentRoll, RobotBase.isSimulation() ? roll -> getSimState().setRoll(Math.toDegrees(roll)) : null);
+        builder.addDoubleProperty("x velocity", this::getXVelocity, RobotBase.isSimulation() ? xVelocity -> getSimState().setAngularVelocityX(Math.toDegrees(xVelocity)) : null);
+        builder.addDoubleProperty("y velocity", this::getYVelocity, RobotBase.isSimulation() ? yVelocity -> getSimState().setAngularVelocityY(Math.toDegrees(yVelocity)) : null);
+        builder.addDoubleProperty("z velocity", this::getZVelocity, RobotBase.isSimulation() ? zVelocity -> getSimState().setAngularVelocityZ(Math.toDegrees(zVelocity)) : null);
         builder.addDoubleProperty("x acceleration", this::getXAcceleration, null);
         builder.addDoubleProperty("y acceleration", this::getYAcceleration, null);
         builder.addDoubleProperty("z acceleration", this::getZAcceleration, null);

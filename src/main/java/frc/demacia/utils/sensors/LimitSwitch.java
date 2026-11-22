@@ -104,6 +104,6 @@ public class LimitSwitch extends DigitalInput implements DigitalSensorInterface{
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Digital Input");
-        builder.addBooleanProperty("Value", this::get, RobotBase.isSimulation() ? val -> sim.setIsInput(val) : null);
+        builder.addBooleanProperty("Value", this::get, RobotBase.isSimulation() ? val -> sim.setValue(val != inverted) : null);
     }
 }
