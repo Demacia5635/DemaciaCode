@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.demacia.utils.controller.CommandController;
+import frc.demacia.utils.log.LogManager;
 import frc.robot.RobotContainer;
 
 public class DriveCommand extends Command {
@@ -42,7 +43,7 @@ public class DriveCommand extends Command {
     double joyX = controller.getLeftY() * direction;
     double joyY = controller.getLeftX() * direction;
 
-    // Calculate r]otation from trigger axes
+    // Calculate rotation from trigger axes
     double rot = controller.getLeftTrigger() - controller.getRightTrigger();
 
     double velX = Math.pow(joyX, 2) * chassis.getConfig().maxDriveVelocity * Math.signum(joyX);
@@ -57,7 +58,7 @@ public class DriveCommand extends Command {
 
     // WPILib kinematics: positive omega = CCW (DemaciaKinematics was CW-positive, hence the old minus)
     speeds = new ChassisSpeeds(velX, velY, velRot);
-
+    LogManager.log("run");
     chassis.setVelocities(speeds);
   }
 

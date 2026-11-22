@@ -17,6 +17,7 @@ import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
 import frc.demacia.utils.log.LogManager;
 import frc.robot.chassis.MK4iChassisConstants;
+import frc.robot.chassis.MK5nChassisConstansRobotC;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -33,11 +34,11 @@ public class RobotContainer implements Sendable{
   public static Chassis chassis;
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandController controller = new CommandController(1, ControllerType.kXbox);
+  private final CommandController controller = new CommandController(0, ControllerType.kXbox);
   /** The container for the root. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
-    Chassis.initialize(MK4iChassisConstants.CHASSIS_CONFIG);
+    Chassis.initialize(MK5nChassisConstansRobotC.CHASSIS_CONFIG);
     new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
     chassis = Chassis.getInstance();
     chassis.setDefaultCommand(new DriveCommand(chassis, controller));
@@ -47,6 +48,7 @@ public class RobotContainer implements Sendable{
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
+   * 
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
    * predicate, or via the named factories in {@link
    * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
