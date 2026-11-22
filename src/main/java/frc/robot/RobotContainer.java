@@ -6,16 +6,6 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
-import frc.demacia.utils.log.Log;
-import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
-import frc.demacia.utils.motors.SparkFlexConfig;
-import frc.demacia.utils.motors.SparkFlexMotor;
-import frc.demacia.utils.motors.SparkMaxConfig;
-import frc.demacia.utils.motors.SparkMaxMotor;
-import frc.demacia.utils.motors.TalonFXConfig;
-import frc.demacia.utils.motors.TalonFXMotor;
-import frc.demacia.utils.motors.TalonSRXConfig;
-import frc.demacia.utils.motors.TalonSRXMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -114,47 +104,6 @@ public class RobotContainer implements Sendable {
       turret.setState(turret.IDLE_STATE);
       shooter.setState(shooter.IDLE_STATE);
     }));
-
-    
-    // boolean FLYWHEEL_BRAKE = false;
-    // boolean FLYWHEEL_INVERT = false;
-    // double FLYWHEEL_GEAR_RATIO = 1.0;
-    // double FLYWHEEL_DIAMETER = 2 * 0.0254;
-    // double RAMP_TIME = 0.6;
-    // double FLYWHEEL_KP = 0.2;
-    // double FLYWHEEL_KI = 0.0;
-    // double FLYWHEEL_KD = 0.0;
-    // double FLYWHEEL_KS = 0.47705;
-    // double FLYWHEEL_KV = 0.65384;
-    // double FLYWHEEL_KA = 0.21786;
-    // double FLYWHEEL_KG = 0.0;
-    // double FLYWHEEL_KV2 = 0.0;
-    // double FLYWHEEL_KCOS = 0.0;
-
-    // new TalonFXMotor(new TalonFXConfig("FX", 9, Canbus.Rio)
-    // .withBrake(FLYWHEEL_BRAKE)
-    //     .withInvert(FLYWHEEL_INVERT)
-    //     .withRampTime(RAMP_TIME)
-    //     .withMeterMotor(FLYWHEEL_GEAR_RATIO, FLYWHEEL_DIAMETER)
-    //     .withPID(FLYWHEEL_KP, FLYWHEEL_KI, FLYWHEEL_KD, FLYWHEEL_KS, FLYWHEEL_KV, FLYWHEEL_KA, FLYWHEEL_KG, FLYWHEEL_KCOS, FLYWHEEL_KV2));
-    // new TalonSRXMotor(new TalonSRXConfig("SRX", 10)
-    // .withBrake(FLYWHEEL_BRAKE)
-    //     .withInvert(FLYWHEEL_INVERT)
-    //     .withRampTime(RAMP_TIME)
-    //     .withMeterMotor(FLYWHEEL_GEAR_RATIO, FLYWHEEL_DIAMETER)
-    //     .withPID(FLYWHEEL_KP, FLYWHEEL_KI, FLYWHEEL_KD, FLYWHEEL_KS, FLYWHEEL_KV, FLYWHEEL_KA, FLYWHEEL_KG, FLYWHEEL_KCOS, FLYWHEEL_KV2));
-    // new SparkMaxMotor(new SparkMaxConfig("SparkMax", 18)
-    // .withBrake(FLYWHEEL_BRAKE)
-    //     .withInvert(FLYWHEEL_INVERT)
-    //     .withRampTime(RAMP_TIME)
-    //     .withMeterMotor(FLYWHEEL_GEAR_RATIO, FLYWHEEL_DIAMETER)
-    //     .withPID(FLYWHEEL_KP, FLYWHEEL_KI, FLYWHEEL_KD, FLYWHEEL_KS, FLYWHEEL_KV, FLYWHEEL_KA, FLYWHEEL_KG, FLYWHEEL_KCOS, FLYWHEEL_KV2));
-    // new SparkFlexMotor(new SparkFlexConfig("SparkFlex", 19)
-    // .withBrake(FLYWHEEL_BRAKE)
-    //     .withInvert(FLYWHEEL_INVERT)
-    //     .withRampTime(RAMP_TIME)
-    //     .withMeterMotor(FLYWHEEL_GEAR_RATIO, FLYWHEEL_DIAMETER)
-    //     .withPID(FLYWHEEL_KP, FLYWHEEL_KI, FLYWHEEL_KD, FLYWHEEL_KS, FLYWHEEL_KV, FLYWHEEL_KA, FLYWHEEL_KG, FLYWHEEL_KCOS, FLYWHEEL_KV2));
   }
 
   @Override

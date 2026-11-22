@@ -105,7 +105,7 @@ public abstract class BaseMotor implements MotorInterface {
     configMinVolt(config.minVolt);
     configMotorRatio(config.motorRatio);
     configPidFf(config.pidFfParams);
-    configMotionMagic(config.maxAcceleration, config.maxVelocity, config.maxJerk);
+    configMotionMagic(config.maxVelocity, config.maxAcceleration, config.maxJerk);
 
     applyConfigs();
   }
