@@ -8,6 +8,7 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.Data;
@@ -56,17 +57,15 @@ import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
  * </pre>
  */
 public class Cancoder extends CANcoder implements AnalogSensorInterface {
+    private CancoderConfig config;
 
-    CancoderConfig config;
-    String name;
+    private Data<Angle> positionSignal;
+    private Data<Angle> absPositionSignal;
+    private Data<AngularVelocity> velocitySignal;
 
-    Data<Angle> positionSignal;
-    Data<Angle> absPositionSignal;
-    Data<AngularVelocity> velocitySignal;
-
-    double lastVelocity;
-    double lastTimestamp;
-    double lastAcceleration;
+    private double lastVelocity;
+    private double lastTimestamp;
+    private double lastAcceleration;
 
     /**
      * Creates a CANcoder sensor.
@@ -76,13 +75,12 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface {
     public Cancoder(CancoderConfig config) {
         super(config.id, config.canbus.canbus);
         this.config = config;
-        name = config.name;
-        setName(name);
+        setName(config.name);
         configCancoder();
         setStatusSignals();
         addLog();
-        SmartDashboard.putData("sensors/" + name, this);
-        Log.log(name + " cancoder initialized");
+        SmartDashboard.putData("sensors/" + getName(), this);
+        Log.log(getName() + " cancoder initialized");
         ElasticGenerator.getInstance().registerSensor(this);
     }
 
@@ -92,12 +90,6 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface {
         canConfig.MagnetSensor.SensorDirection = config.isInverted ? SensorDirectionValue.Clockwise_Positive
                 : SensorDirectionValue.CounterClockwise_Positive;
         getConfigurator().apply(canConfig);
-    }
-
-    @Override
-    public void setName(String name) {
-        AnalogSensorInterface.super.setName(name);
-        this.name = name;
     }
 
     private void setStatusSignals() {
@@ -120,19 +112,19 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface {
      */
     public void checkElectronics() {
         if (getFaultField().getValue() != 0) {
-            Log.log(name + " have a fault: " + getFaultField().getValue());
+            Log.log(getName() + " have a fault: " + getFaultField().getValue());
         }
     }
 
     @SuppressWarnings({ "unchecked" })
     private void addLog() {
-        Log.putData(name + ": abs Position", 
-            new Supplier[]{
-                this::getCurrentAbsPosition
+        Log.putData(getName() + ": abs Position", 
+            new Data[]{
+                absPositionSignal
             }
             , LogLevel.LOG_ONLY, "sensors", false);
             
-        Log.putData(name + ": is Connected", 
+        Log.putData(getName() + ": is Connected", 
             new Supplier[]{
                 this::isConnected
             }
@@ -216,10 +208,10 @@ public class Cancoder extends CANcoder implements AnalogSensorInterface {
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("CANcoder");
         builder.addBooleanProperty("is Connected", this::isConnected, null);
-        builder.addDoubleProperty("value", this::getCurrentAbsPosition, null);
-        builder.addDoubleProperty("Abs Position", this::getCurrentAbsPosition, null);
-        builder.addDoubleProperty("Position", this::getCurrentPosition, null);
-        builder.addDoubleProperty("Velocity", this::getCurrentVelocity, null);
+        builder.addDoubleProperty("value", this::getCurrentAbsPosition, RobotBase.isSimulation() ? pos -> getSimState().setRawPosition(pos) : null);
+        builder.addDoubleProperty("Abs Position", this::getCurrentAbsPosition, RobotBase.isSimulation() ? pos -> getSimState().setRawPosition(pos) : null);
+        builder.addDoubleProperty("Position", this::getCurrentPosition, RobotBase.isSimulation() ? pos -> getSimState().setRawPosition(pos) : null);
+        builder.addDoubleProperty("Velocity", this::getCurrentVelocity, RobotBase.isSimulation() ? vel -> getSimState().setVelocity(vel) : null);
         builder.addDoubleProperty("Acceleration", this::getCurrentAcceleration, null);
     }
 }

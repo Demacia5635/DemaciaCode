@@ -7,6 +7,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.Data;
@@ -54,29 +55,28 @@ import java.util.function.Supplier;
  * </pre>
  */
 public class Pigeon extends Pigeon2 implements SensorInterface{
-    PigeonConfig config;
-    String name;
-    Pigeon2Configuration pigeonConfig;
+    private PigeonConfig config;
+    private Pigeon2Configuration pigeonConfig;
 
-    Data<Angle> yawSignal;
-    Data<Angle> pitchSignal;
-    Data<Angle> rollSignal;
-    Data<AngularVelocity> xVelocitySignal;
-    Data<AngularVelocity> yVelocitySignal;
-    Data<AngularVelocity> zVelocitySignal;
-    Data<LinearAcceleration> xAccelerationSignal;
-    Data<LinearAcceleration> yAccelerationSignal;
-    Data<LinearAcceleration> zAccelerationSignal;
+    private Data<Angle> yawSignal;
+    private Data<Angle> pitchSignal;
+    private Data<Angle> rollSignal;
+    private Data<AngularVelocity> xVelocitySignal;
+    private Data<AngularVelocity> yVelocitySignal;
+    private Data<AngularVelocity> zVelocitySignal;
+    private Data<LinearAcceleration> xAccelerationSignal;
+    private Data<LinearAcceleration> yAccelerationSignal;
+    private Data<LinearAcceleration> zAccelerationSignal;
 
-    double lastXVelocity;
-    double lastXTimestamp;
-    double lastXAcceleration;
-    double lastYVelocity;
-    double lastYTimestamp;
-    double lastYAcceleration;
-    double lastZVelocity;
-    double lastZTimestamp;
-    double lastZAcceleration;
+    private double lastXVelocity;
+    private double lastXTimestamp;
+    private double lastXAcceleration;
+    private double lastYVelocity;
+    private double lastYTimestamp;
+    private double lastYAcceleration;
+    private double lastZVelocity;
+    private double lastZTimestamp;
+    private double lastZAcceleration;
 
     /**
      * Creates a Pigeon2 IMU.
@@ -86,13 +86,12 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
     public Pigeon(PigeonConfig config){
         super(config.id, config.canbus.canbus);
         this.config = config;
-        name = config.name;
-        setName(name);
+        setName(config.name);
         configPigeon();
         setStatusSignals();
         addLog();
         SmartDashboard.putData("sensors/" + config.name, this);
-		Log.log(name + " pigeon initialized");
+		Log.log(getName() + " pigeon initialized");
         ElasticGenerator.getInstance().registerSensor(this);
     }
 
@@ -138,13 +137,13 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
      */
     public void checkElectronics() {
         if (getFaultField().getValue() != 0) {
-            Log.log(name + " have a fault: " + getFaultField().getValue());
+            Log.log(getName() + " have a fault: " + getFaultField().getValue());
         }
     }
 
     @SuppressWarnings({"unchecked"})
     private void addLog() {
-        Log.putData(name + ": yaw, pitch, roll", 
+        Log.putData(getName() + ": yaw, pitch, roll", 
             new Data[]{
                 yawSignal,
                 pitchSignal,
@@ -152,7 +151,7 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
             }
             , LogLevel.LOG_ONLY, "sensors", false);
             
-        Log.putData(name + ": is Connected", 
+        Log.putData(getName() + ": is Connected", 
             new Supplier[]{
                 this::isConnected
             }
@@ -361,14 +360,14 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Gyro");
         builder.addBooleanProperty("is Connected", this::isConnected, null);
-        builder.addDoubleProperty("value", this::getCurrentYaw, null);
-        builder.addDoubleProperty("yaw", this::getCurrentYaw, null);
-        builder.addDoubleProperty("yaw Degree", this::getCurrentYawDegree, null);
-        builder.addDoubleProperty("pitch", this::getCurrentPitch, null);
-        builder.addDoubleProperty("roll", this::getCurrentRoll, null);
-        builder.addDoubleProperty("x velocity", this::getXVelocity, null);
-        builder.addDoubleProperty("y velocity", this::getYVelocity, null);
-        builder.addDoubleProperty("z velocity", this::getZVelocity, null);
+        builder.addDoubleProperty("value", this::getCurrentYaw, RobotBase.isSimulation() ? yaw -> getSimState().setRawYaw(yaw) : null);
+        builder.addDoubleProperty("yaw", this::getCurrentYaw, RobotBase.isSimulation() ? yaw -> getSimState().setRawYaw(yaw) : null);
+        builder.addDoubleProperty("yaw Degree", this::getCurrentYawDegree, RobotBase.isSimulation() ? yaw -> getSimState().setRawYaw(Math.toRadians(yaw)) : null);
+        builder.addDoubleProperty("pitch", this::getCurrentPitch, RobotBase.isSimulation() ? pitch -> getSimState().setPitch(pitch) : null);
+        builder.addDoubleProperty("roll", this::getCurrentRoll, RobotBase.isSimulation() ? roll -> getSimState().setRoll(roll) : null);
+        builder.addDoubleProperty("x velocity", this::getXVelocity, RobotBase.isSimulation() ? xVelocity -> getSimState().setAngularVelocityX(xVelocity) : null);
+        builder.addDoubleProperty("y velocity", this::getYVelocity, RobotBase.isSimulation() ? yVelocity -> getSimState().setAngularVelocityY(yVelocity) : null);
+        builder.addDoubleProperty("z velocity", this::getZVelocity, RobotBase.isSimulation() ? zVelocity -> getSimState().setAngularVelocityZ(zVelocity) : null);
         builder.addDoubleProperty("x acceleration", this::getXAcceleration, null);
         builder.addDoubleProperty("y acceleration", this::getYAcceleration, null);
         builder.addDoubleProperty("z acceleration", this::getZAcceleration, null);

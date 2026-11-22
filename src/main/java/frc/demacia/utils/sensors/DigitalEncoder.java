@@ -4,10 +4,12 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import frc.demacia.utils.elastic.ElasticGenerator;
 import frc.demacia.utils.log.Log;
 import frc.demacia.utils.log.Log.LogLevel;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -38,8 +40,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * </pre>
  */
 public class DigitalEncoder extends DutyCycleEncoder implements AnalogSensorInterface{
-    DigitalEncoderConfig config;
-    String name;
+    private DigitalEncoderConfig config;
+
+    private DutyCycleEncoderSim sim;
 
     /**
      * Creates a digital duty-cycle encoder.
@@ -49,12 +52,14 @@ public class DigitalEncoder extends DutyCycleEncoder implements AnalogSensorInte
     public DigitalEncoder(DigitalEncoderConfig config){
         super(config.echoChannel, config.fullRange, config.offset);
         this.config = config;
-        name = config.name;
-        setName(name);
+        if (RobotBase.isSimulation()) {
+            sim = new DutyCycleEncoderSim(this);
+        }
+        setName(config.name);
         configEncoder();
         addLog();
-        SmartDashboard.putData("sensors/" + name, this);
-        Log.log(name + " digital encoder initialized");
+        SmartDashboard.putData("sensors/" + getName(), this);
+        Log.log(getName() + " digital encoder initialized");
         ElasticGenerator.getInstance().registerSensor(this);
     }
     
@@ -66,7 +71,7 @@ public class DigitalEncoder extends DutyCycleEncoder implements AnalogSensorInte
 
     @SuppressWarnings("unchecked")
     private void addLog() {
-        Log.putData(name + ": Position", 
+        Log.putData(getName() + ": Position", 
             new Supplier[]{
                 this::get
             }
@@ -87,7 +92,7 @@ public class DigitalEncoder extends DutyCycleEncoder implements AnalogSensorInte
      */
     public void checkElectronics() {
         if (!isConnected()) {
-            Log.log(name + " encoder disconnected", AlertType.kWarning);
+            Log.log(getName() + " encoder disconnected", AlertType.kWarning);
         }
     }
     
@@ -113,8 +118,8 @@ public class DigitalEncoder extends DutyCycleEncoder implements AnalogSensorInte
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("AbsoluteEncoder");
-        builder.addDoubleProperty("Position", this::get, null);
-        builder.addDoubleProperty("value", this::get, null);
+        builder.addDoubleProperty("Position", this::get, RobotBase.isSimulation() ? pos -> sim.set(pos) : null);
+        builder.addDoubleProperty("value", this::get, RobotBase.isSimulation() ? pos -> sim.set(pos) : null);
         builder.addBooleanProperty("Is Connected", this::isConnected, null);
     }
 }

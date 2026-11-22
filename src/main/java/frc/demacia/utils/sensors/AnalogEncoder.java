@@ -3,6 +3,8 @@ package frc.demacia.utils.sensors;
 import java.util.function.Supplier;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.simulation.AnalogEncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.demacia.utils.elastic.ElasticGenerator;
 import frc.demacia.utils.log.Log;
@@ -37,7 +39,9 @@ import frc.demacia.utils.log.Log.LogLevel;
  * </pre>
  */
 public class AnalogEncoder extends edu.wpi.first.wpilibj.AnalogEncoder implements AnalogSensorInterface{
-    AnalogEncoderConfig config;
+    private AnalogEncoderConfig config;
+
+    private AnalogEncoderSim sim;
 
     /**
      * Creates an analog encoder.
@@ -47,6 +51,9 @@ public class AnalogEncoder extends edu.wpi.first.wpilibj.AnalogEncoder implement
     public AnalogEncoder(AnalogEncoderConfig config){
         super(config.echoChannel, config.fullRange, config.offset);
         this.config = config;
+        if (RobotBase.isSimulation()) {
+            sim = new AnalogEncoderSim(this);
+        }
         setName(config.name);
         configEncoder();
         addLog();
@@ -107,7 +114,7 @@ public class AnalogEncoder extends edu.wpi.first.wpilibj.AnalogEncoder implement
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("AbsoluteEncoder");
-        builder.addDoubleProperty("value", this::get, null);
-        builder.addDoubleProperty("Position", this::get, null);
+        builder.addDoubleProperty("value", this::get, RobotBase.isSimulation() ? pos -> sim.set(pos) : null);
+        builder.addDoubleProperty("Position", this::get, RobotBase.isSimulation() ? pos -> sim.set(pos) : null);
     }
 }

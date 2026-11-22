@@ -120,6 +120,7 @@ public class LimelightTagCamera2d extends BaseVisionSource {
     @Override
     public void periodic() {
         super.periodic();
+        updateValues();
         
         hasNewPose = false;
 
@@ -143,7 +144,6 @@ public class LimelightTagCamera2d extends BaseVisionSource {
         // e.g. a tag at the camera's height makes the range dh / tan(0)
         hasNewPose = Double.isFinite(pose.getX()) && Double.isFinite(pose.getY());
     }
-
 
     private void updateValues(){
         values[0] = Math.toRadians(Table.getEntry("tx").getDouble(0.0));
