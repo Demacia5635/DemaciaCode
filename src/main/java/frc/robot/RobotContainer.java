@@ -13,12 +13,11 @@ import frc.demacia.vision.utils.Vision;
 import frc.demacia.wpilibSwerve.command.SwerveCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.RobotPose.RobotPose;
-import frc.demacia.oldPath.DemaciaTrajectory;
-import frc.demacia.oldPath.PathPoint;
-import frc.demacia.oldPath.commands.PathCommand;
+import frc.demacia.path.FollowTrajectoryCommand;
+import frc.demacia.path.TrajectoryBuilder;
+import frc.demacia.path.Waypoint;
 import frc.robot.vision.VisionConstants;
 import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.utils.chassis.DriveCommand;
 import frc.robot.chassis.MK5nChassisConstansRobotC;
 import frc.robot.chassis.RobotCChassisConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -38,9 +37,7 @@ public class RobotContainer implements Sendable {
   public static CommandController controller = new CommandController(0, ControllerType.kPS5);
 
   public static SwerveCommand driveCommand;
-  public static PathCommand pathCommand;
-  public List<PathPoint> points = new ArrayList<PathPoint>();
-  public DemaciaTrajectory trajectory;
+  public List<Waypoint> points = new ArrayList<Waypoint>();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -66,11 +63,11 @@ public class RobotContainer implements Sendable {
 
   private void setDefaultCommands() {
     Chassis.getInstance().setDefaultCommand(driveCommand);
-    controller.leftButton().onTrue(new PathCommand(new DemaciaTrajectory(points),
+    controller.leftButton().onTrue(new FollowTrajectoryCommand(TrajectoryBuilder.build(points),
         () -> RobotPose.getInstance().getEstimatedPose(),
         () -> Chassis.getInstance().getChassisSpeedsFieldRel(),
         driveCommand::setVelFieldRel,
-        Chassis.getInstance()));
+        Chassis.getInstance()).withTimeout(15)); // s, headroom over the ~7.6 s route so a stuck path can't hold the chassis
   }
 
   private void setController() {
@@ -83,11 +80,11 @@ public class RobotContainer implements Sendable {
   }
 
   public void addPoints(){
-    points.add(new PathPoint(new Translation2d(0, 0), new Rotation2d(Math.toRadians(0))));
-    points.add(new PathPoint(new Translation2d(2, -2), new Rotation2d(Math.toRadians(90))));
-    points.add(new PathPoint(new Translation2d(2, 0), new Rotation2d(Math.toRadians(180))));
-    points.add(new PathPoint(new Translation2d(1.5, -1), new Rotation2d(Math.toRadians(270))));
-    points.add(new PathPoint(new Translation2d(0, 0), new Rotation2d(Math.toRadians(0))));
+    points.add(new Waypoint(new Translation2d(0, 0), new Rotation2d(Math.toRadians(0))));
+    points.add(new Waypoint(new Translation2d(2, -2), new Rotation2d(Math.toRadians(90))));
+    points.add(new Waypoint(new Translation2d(2, 0), new Rotation2d(Math.toRadians(180))));
+    points.add(new Waypoint(new Translation2d(1.5, -1), new Rotation2d(Math.toRadians(270))));
+    points.add(new Waypoint(new Translation2d(0, 0), new Rotation2d(Math.toRadians(0))));
   }
 
   /**
