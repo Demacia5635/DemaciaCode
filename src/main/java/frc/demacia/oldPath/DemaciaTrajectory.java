@@ -1,4 +1,4 @@
-package frc.demacia.path;
+package frc.demacia.oldPath;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,13 +10,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import frc.demacia.path.calculator.ArcCalculator;
-import frc.demacia.path.calculator.LegCalculator;
-import frc.demacia.path.constants.PathConstants;
-import frc.demacia.path.segments.ArcSegment;
-import frc.demacia.path.segments.LineSegment;
-import frc.demacia.path.segments.SegmentBase;
-import frc.demacia.path.trapezoid.DemaciaTrapezoid;
+import frc.demacia.oldPath.calculator.ArcCalculator;
+import frc.demacia.oldPath.calculator.LegCalculator;
+import frc.demacia.oldPath.constants.PathConstants;
+import frc.demacia.oldPath.segments.ArcSegment;
+import frc.demacia.oldPath.segments.LineSegment;
+import frc.demacia.oldPath.segments.SegmentBase;
+import frc.demacia.oldPath.trapezoid.DemaciaTrapezoid;
 import frc.demacia.utils.log.Log;
 
 public class DemaciaTrajectory {

@@ -1,4 +1,4 @@
-package frc.demacia.path.constants;
+package frc.demacia.oldPath.constants;
 
 public class PathConstants {
     public static final double MAX_VELOCITY = 4; // m/s

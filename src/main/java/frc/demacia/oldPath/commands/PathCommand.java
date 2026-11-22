@@ -1,4 +1,4 @@
-package frc.demacia.path.commands;
+package frc.demacia.oldPath.commands;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.demacia.path.DemaciaTrajectory;
+import frc.demacia.oldPath.DemaciaTrajectory;
 
 public class PathCommand extends Command {
   DemaciaTrajectory trajectory;

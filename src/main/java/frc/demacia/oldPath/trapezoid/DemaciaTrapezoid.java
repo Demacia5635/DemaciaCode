@@ -1,4 +1,4 @@
-package frc.demacia.path.trapezoid;
+package frc.demacia.oldPath.trapezoid;
 
 public class DemaciaTrapezoid {
     private final double maxVelocity;

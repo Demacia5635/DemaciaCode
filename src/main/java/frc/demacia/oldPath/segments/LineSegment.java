@@ -1,10 +1,10 @@
-package frc.demacia.path.segments;
+package frc.demacia.oldPath.segments;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.demacia.path.constants.PathConstants;
+import frc.demacia.oldPath.constants.PathConstants;
 
 public class LineSegment extends SegmentBase {
     private Translation2d startToEndVector;
