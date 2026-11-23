@@ -2,18 +2,18 @@ package frc.demacia.path;
 
 import java.util.List;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import frc.demacia.path.segments.BaseSegment;
 import frc.demacia.utils.log.Log;
 
 /**
  * Drives a DemaciaTrajectory, one 20 ms cycle at a time.
  * TrajectoryBuilder plans the route once. This class runs it: it asks the current
- * line or arc for a velocity, adds a turning speed for the heading, and moves on
+ * line or arc for a velocity, adds a turning speed so the robot reaches the segment's end heading
+ * when it reaches the segment's end point, and moves on
  * to the next segment when the current one is finished.
  * FollowTrajectoryCommand calls it every cycle.
  *
@@ -37,12 +37,11 @@ public class PathFollower {
     }
 
     private List<BaseSegment> segments = List.of();
-    private ProfiledPIDController headingController;
+    private double maxAngularSpeed; // rad/s
     private double finalHeadingTolerance; // rad
 
     private int currentSegmentIndex;
     private boolean isFinished = true;
-    private boolean resetHeadingController;
 
     /**
      * Starts a new run from the first segment. Can be called again to restart.
@@ -53,12 +52,9 @@ public class PathFollower {
     public void start(DemaciaTrajectory trajectory) {
         segments = trajectory.getSegments();
         finalHeadingTolerance = trajectory.getFinalHeadingTolerance();
-        headingController = new ProfiledPIDController(PathConstants.HEADING_KP, 0, 0,
-                new Constraints(trajectory.getMaxAngularSpeed(), trajectory.getMaxAngularAccel()));
-        headingController.enableContinuousInput(-Math.PI, Math.PI);
+        maxAngularSpeed = trajectory.getMaxAngularSpeed();
         isFinished = segments.isEmpty();
         currentSegmentIndex = 0;
-        resetHeadingController = true;
     }
 
     /**
@@ -83,15 +79,9 @@ public class PathFollower {
         if (isFinished) {
             return logAndReturn(new ChassisSpeeds());
         }
-        double heading = currentPose.getRotation().getRadians();
         if (!PathUtils.allNumbersAreFinite(currentPose, fieldSpeeds)) {
             Log.log("path: pose or speeds not finite, sending zero this cycle");
             return logAndReturn(new ChassisSpeeds());
-        }
-        // first cycle only: start the heading profile from the real heading and turn speed, so it does not jump
-        if (resetHeadingController) {
-            headingController.reset(heading, fieldSpeeds.omegaRadiansPerSecond);
-            resetHeadingController = false;
         }
 
         BaseSegment segment = segments.get(currentSegmentIndex);
@@ -101,17 +91,14 @@ public class PathFollower {
         Translation2d velocity = segment.getVelocity(position,
                 new Translation2d(fieldSpeeds.vxMetersPerSecond, fieldSpeeds.vyMetersPerSecond));
 
-        // omega = the PID correction plus the profile's own turning speed.
-        // Adding the profile speed makes the robot turn smoothly instead of lagging behind.
-        double omega = headingController.calculate(heading, segment.getEndPose().getRotation().getRadians())
-                + headingController.getSetpoint().velocity;
+        double omega = calculateOmega(currentPose, segment, position, velocity.getNorm());
         ChassisSpeeds speeds = new ChassisSpeeds(velocity.getX(), velocity.getY(), omega);
         loggedSegmentIndex = currentSegmentIndex;
 
         if (!segment.isFinished(position)) {
             return logAndReturn(speeds);
         }
-        // A stop point (end speed 0) is done only once the robot really stopped (below 0.1 m/s).
+        // A stop point (end speed 0) is done only once the robot really stopped (below MAX_VELOCITY_TO_CONSIDER_STOPPED).
         // Until then keep braking and turning, but do not move on.
         if (segment.getEndVelocity() == 0 && currentVelocity > PathConstants.MAX_VELOCITY_TO_CONSIDER_STOPPED) {
             return logAndReturn(new ChassisSpeeds(0, 0, omega));
@@ -132,6 +119,25 @@ public class PathFollower {
             return logAndReturn(new ChassisSpeeds());
         }
         return logAndReturn(new ChassisSpeeds(0, 0, omega));
+    }
+
+    // Turning speed for this cycle (rad/s).
+    // Spread the heading change evenly over the distance left to the segment's end point,
+    // so the robot reaches the end heading exactly when it reaches the end point:
+    //   time left = distance left / speed  ->  omega = heading error / time left
+    // When the robot is (almost) stopped or already at the point, there is no distance left to spread
+    // the turn over, so it finishes the turn as fast as allowed (the whole error in one cycle, capped at max).
+    private double calculateOmega(Pose2d currentPose, BaseSegment segment, Translation2d position, double speed) {
+        double headingError = segment.getEndPose().getRotation().minus(currentPose.getRotation()).getRadians();
+        double distanceLeft = segment.getDistanceLeft(position);
+        double omega;
+        if (speed > PathConstants.MAX_VELOCITY_TO_CONSIDER_STOPPED
+                && distanceLeft > PathConstants.MIN_WAYPOINT_DISTANCE) {
+            omega = headingError * speed / distanceLeft;
+        } else {
+            omega = headingError / PathConstants.DT;
+        }
+        return MathUtil.clamp(omega, -maxAngularSpeed, maxAngularSpeed);
     }
 
     // logs the speeds we are about to send, then returns them

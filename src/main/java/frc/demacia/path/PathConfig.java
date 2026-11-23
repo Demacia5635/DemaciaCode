@@ -17,7 +17,7 @@ public class PathConfig {
     public double maxAccel = 3; // m/s^2
     public double maxLateralAccel = 3; // m/s^2
     public double maxAngularSpeed = 2; // rad/s
-    public double maxAngularAccel = 0.6; // rad/s^2
+    public double maxAngularAccel = 0.6; // rad/s^2, not used by PathFollower right now
     // "reached" distances: how close counts as being at the end of a segment
     public double maxPositionThreshold = 0.1; // m, during the path
     public double finalPositionThreshold = 0.1; // m, at a stop point
@@ -51,7 +51,10 @@ public class PathConfig {
         return this;
     }
 
-    /** @param maxAngularAccel turning speed-up rate, in rad/s^2 */
+    /**
+     * @param maxAngularAccel turning speed-up rate, in rad/s^2.
+     *        Not used by PathFollower right now: it only caps the turning speed (maxAngularSpeed).
+     */
     public PathConfig withMaxAngularAccel(double maxAngularAccel) {
         this.maxAngularAccel = maxAngularAccel;
         return this;

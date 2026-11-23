@@ -20,7 +20,7 @@ public class DemaciaTrajectory {
      *
      * @param segments the lines and arcs in driving order (the list is copied)
      * @param maxAngularSpeed fastest allowed turning speed, in rad/s
-     * @param maxAngularAccel fastest allowed change of turning speed, in rad/s^2
+     * @param maxAngularAccel fastest allowed change of turning speed, in rad/s^2 (not used by PathFollower right now)
      * @param finalHeadingTolerance how far the final heading may be off, in rad
      */
     public DemaciaTrajectory(List<BaseSegment> segments, double maxAngularSpeed,
@@ -47,7 +47,7 @@ public class DemaciaTrajectory {
     }
 
     /**
-     * @return fastest allowed change of turning speed, in rad/s^2
+     * @return fastest allowed change of turning speed, in rad/s^2 (not used by PathFollower right now)
      */
     public double getMaxAngularAccel() {
         return maxAngularAccel;
