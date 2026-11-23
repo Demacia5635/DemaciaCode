@@ -12,7 +12,7 @@ import frc.demacia.path.DemaciaTrapezoid;
  * This base class handles speed (with a DemaciaTrapezoid). The subclasses handle direction and distance.
  * All positions are field-relative, in meters.
  */
-public abstract class PathSegment {
+public abstract class BaseSegment {
 
     private final Translation2d startTranslation;
     private final Pose2d endPose;
@@ -27,7 +27,7 @@ public abstract class PathSegment {
      * @param maxVelocity top speed on this segment, in m/s
      * @param maxAccel speed-up and slow-down rate, in m/s^2
      */
-    public PathSegment(Translation2d startTranslation, Pose2d endPose, double endVelocity, double maxVelocity, double maxAccel) {
+    public BaseSegment(Translation2d startTranslation, Pose2d endPose, double endVelocity, double maxVelocity, double maxAccel) {
         this.startTranslation = startTranslation;
         this.endPose = endPose;
         this.endVelocity = endVelocity;

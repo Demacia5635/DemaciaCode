@@ -10,7 +10,7 @@ import frc.demacia.path.PathConfig;
  * A straight piece of the route.
  * It steers the robot back onto the line if the robot drifts off it.
  */
-public class LineSegment extends PathSegment {
+public class LineSegment extends BaseSegment {
     private final Translation2d startToEndVector;
     private final double maxPositionThreshold; // m
     private final double finalPositionThreshold; // m

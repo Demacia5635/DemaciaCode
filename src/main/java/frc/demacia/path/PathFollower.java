@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import frc.demacia.path.segments.PathSegment;
+import frc.demacia.path.segments.BaseSegment;
 import frc.demacia.utils.log.Log;
 
 /**
@@ -36,7 +36,7 @@ public class PathFollower {
         Log.putData("Path/omega", () -> loggedOmega);
     }
 
-    private List<PathSegment> segments = List.of();
+    private List<BaseSegment> segments = List.of();
     private ProfiledPIDController headingController;
     private double finalHeadingTolerance; // rad
 
@@ -84,7 +84,7 @@ public class PathFollower {
             return logAndReturn(new ChassisSpeeds());
         }
         double heading = currentPose.getRotation().getRadians();
-        if (!allNumbersAreFinite(currentPose, fieldSpeeds)) {
+        if (!PathUtils.allNumbersAreFinite(currentPose, fieldSpeeds)) {
             Log.log("path: pose or speeds not finite, sending zero this cycle");
             return logAndReturn(new ChassisSpeeds());
         }
@@ -94,7 +94,7 @@ public class PathFollower {
             resetHeadingController = false;
         }
 
-        PathSegment segment = segments.get(currentSegmentIndex);
+        BaseSegment segment = segments.get(currentSegmentIndex);
         Translation2d position = currentPose.getTranslation();
         double currentVelocity = Math.hypot(fieldSpeeds.vxMetersPerSecond, fieldSpeeds.vyMetersPerSecond);
 
@@ -132,18 +132,6 @@ public class PathFollower {
             return logAndReturn(new ChassisSpeeds());
         }
         return logAndReturn(new ChassisSpeeds(0, 0, omega));
-    }
-
-    // NaN guard: one bad sensor value would otherwise poison the heading controller and the segment math.
-    // Returns false if the pose or the speeds contain NaN or infinity.
-    private static boolean allNumbersAreFinite(Pose2d pose, ChassisSpeeds speeds) {
-        double heading = pose.getRotation().getRadians();
-        return Double.isFinite(pose.getX())
-                && Double.isFinite(pose.getY())
-                && Double.isFinite(heading)
-                && Double.isFinite(speeds.vxMetersPerSecond)
-                && Double.isFinite(speeds.vyMetersPerSecond)
-                && Double.isFinite(speeds.omegaRadiansPerSecond);
     }
 
     // logs the speeds we are about to send, then returns them

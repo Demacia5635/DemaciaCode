@@ -2,7 +2,7 @@ package frc.demacia.path;
 
 import java.util.List;
 
-import frc.demacia.path.segments.PathSegment;
+import frc.demacia.path.segments.BaseSegment;
 
 /**
  * The finished route: an ordered list of lines and arcs, plus the heading limits.
@@ -10,7 +10,7 @@ import frc.demacia.path.segments.PathSegment;
  * It never changes after it is built, so many commands can share one.
  */
 public class DemaciaTrajectory {
-    private final List<PathSegment> segments;
+    private final List<BaseSegment> segments;
     private final double maxAngularSpeed; // rad/s
     private final double maxAngularAccel; // rad/s^2
     private final double finalHeadingTolerance; // rad
@@ -23,7 +23,7 @@ public class DemaciaTrajectory {
      * @param maxAngularAccel fastest allowed change of turning speed, in rad/s^2
      * @param finalHeadingTolerance how far the final heading may be off, in rad
      */
-    public DemaciaTrajectory(List<PathSegment> segments, double maxAngularSpeed,
+    public DemaciaTrajectory(List<BaseSegment> segments, double maxAngularSpeed,
             double maxAngularAccel, double finalHeadingTolerance) {
         // copy the list so nobody can change the trajectory after it is built
         this.segments = List.copyOf(segments);
@@ -35,7 +35,7 @@ public class DemaciaTrajectory {
     /**
      * @return the lines and arcs in driving order (cannot be changed)
      */
-    public List<PathSegment> getSegments() {
+    public List<BaseSegment> getSegments() {
         return segments;
     }
 

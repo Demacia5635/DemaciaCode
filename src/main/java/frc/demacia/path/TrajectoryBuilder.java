@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.demacia.path.segments.ArcSegment;
 import frc.demacia.path.segments.LineSegment;
-import frc.demacia.path.segments.PathSegment;
+import frc.demacia.path.segments.BaseSegment;
 import frc.demacia.utils.log.Log;
 
 /**
@@ -55,7 +55,7 @@ public class TrajectoryBuilder {
         checkConfig(config);
         checkWaypoints(points);
 
-        List<PathSegment> segments = new ArrayList<>();
+        List<BaseSegment> segments = new ArrayList<>();
         if (points.size() < 2) {
             Log.log("Not enough points to build a trajectory");
         } else {
@@ -116,7 +116,7 @@ public class TrajectoryBuilder {
 
     // The path is: line, arc, line, arc, ..., line. A point with no arc has only a line before it.
     // Each array below has one value for every waypoint.
-    private static void buildSegments(List<Waypoint> points, PathConfig config, List<PathSegment> segments) {
+    private static void buildSegments(List<Waypoint> points, PathConfig config, List<BaseSegment> segments) {
         int size = points.size();
         Translation2d[] centers = new Translation2d[size]; // the point itself when it has no arc
         double[] signedRadius = new double[size]; // m, positive = left arc, negative = right arc, 0 = no arc
@@ -157,7 +157,7 @@ public class TrajectoryBuilder {
             segmentSpeeds.add(new SegmentSpeeds(velocities[i], config.maxSpeed, lineLength));
             if (signedRadius[i] != 0) {
                 double radius = Math.abs(signedRadius[i]);
-                double arcLength = radius * ArcSegment.sweep(entry[i], exit[i], centers[i], signedRadius[i] > 0);
+                double arcLength = radius * PathUtils.arcSweep(entry[i], exit[i], centers[i], signedRadius[i] > 0);
                 segmentSpeeds.add(new SegmentSpeeds(velocities[i], velocities[i], arcLength));
             }
         }
@@ -188,7 +188,7 @@ public class TrajectoryBuilder {
     private static boolean buildLegsOrRemoveArc(List<Waypoint> points, Translation2d[] centers, double[] signedRadius,
             Translation2d[] entry, Translation2d[] exit) {
         for (int i = 0; i < points.size() - 1; i++) {
-            List<Translation2d> leg = tangentPoints(centers[i], signedRadius[i], centers[i + 1], signedRadius[i + 1]);
+            List<Translation2d> leg = PathUtils.tangentPoints(centers[i], signedRadius[i], centers[i + 1], signedRadius[i + 1]);
             if (leg.isEmpty()) {
                 makePlainPoint(i, points, centers, signedRadius);
                 makePlainPoint(i + 1, points, centers, signedRadius);
@@ -243,36 +243,5 @@ public class TrajectoryBuilder {
             double reachable = Math.sqrt(next.endVelocity * next.endVelocity + 2 * maxAccel * next.length);
             segment.endVelocity = Math.min(segment.endVelocity, Math.min(next.maxVelocity, reachable));
         }
-    }
-
-    // Finds the straight line that touches circle 1 and circle 2 (an "outer or inner tangent").
-    // A plain point is treated as a circle with radius 0.
-    // returns the points where the straight leg leaves circle 1 and touches circle 2
-    // signed radius: positive = left (counter-clockwise) arc, negative = right arc, 0 = a plain point
-    // returns an empty list when there is no such leg (the circles are too close)
-    private static List<Translation2d> tangentPoints(Translation2d center1, double signedRadius1, Translation2d center2, double signedRadius2) {
-        List<Translation2d> points = new ArrayList<>();
-        Translation2d centerToCenter = center2.minus(center1);
-
-        if (centerToCenter.getNorm() < 1e-9) {
-            points.add(center1);
-            points.add(center2);
-            return points;
-        }
-        // If the radii differ by at least the distance between the centers, one circle is
-        // inside the other and no line can touch both.
-        if (Math.abs(signedRadius2 - signedRadius1) >= centerToCenter.getNorm()) {
-            return points;
-        }
-
-        // the angle between the line connecting the centers and the leg
-        double alpha = Math.asin((signedRadius2 - signedRadius1) / centerToCenter.getNorm());
-
-        // unit vector pointing to the left of the leg
-        Translation2d left = new Translation2d(1, new Rotation2d(centerToCenter.getAngle().getRadians() - alpha + Math.PI / 2));
-
-        points.add(center1.minus(left.times(signedRadius1)));
-        points.add(center2.minus(left.times(signedRadius2)));
-        return points;
     }
 }

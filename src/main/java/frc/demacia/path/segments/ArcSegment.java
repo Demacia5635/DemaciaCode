@@ -6,19 +6,20 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.demacia.path.PathConfig;
 import frc.demacia.path.PathConstants;
+import frc.demacia.path.PathUtils;
 
 /**
  * A curved piece of the route that rounds a corner. It is part of a circle.
  * TrajectoryBuilder places it between two lines. It drives the robot along the
  * circle at the corner speed.
  */
-public class ArcSegment extends PathSegment {
+public class ArcSegment extends BaseSegment {
 
     private final Translation2d center;
     private final boolean isLeft; // left = counter-clockwise
     private final double radius; // m
     private final double startAngle; // rad, center to start
-    private final double sweep; // rad, start to end in the turn direction, [0, 2PI)
+    private final double sweep; // rad, start to end in the turn direction, (0, 2PI]
     private final double maxPositionThreshold; // m
 
     /**
@@ -40,22 +41,8 @@ public class ArcSegment extends PathSegment {
         this.isLeft = isLeft;
         this.radius = radius;
         this.startAngle = start.minus(center).getAngle().getRadians();
-        this.sweep = sweep(start, end.getTranslation(), center, isLeft);
+        this.sweep = PathUtils.arcSweep(start, end.getTranslation(), center, isLeft);
         this.maxPositionThreshold = config.maxPositionThreshold;
-    }
-
-    /**
-     * How far around the circle the arc goes.
-     *
-     * @param start arc start, in m
-     * @param end arc end, in m
-     * @param center circle center, in m
-     * @param isLeft true for a left (counter-clockwise) turn
-     * @return the angle from start to end in the turn direction, in rad, from 0 up to (not including) 2 pi
-     */
-    public static double sweep(Translation2d start, Translation2d end, Translation2d center, boolean isLeft) {
-        double angle = end.minus(center).getAngle().getRadians() - start.minus(center).getAngle().getRadians();
-        return MathUtil.inputModulus(isLeft ? angle : -angle, 0, 2 * Math.PI);
     }
 
     /** @return circle radius, in m */
