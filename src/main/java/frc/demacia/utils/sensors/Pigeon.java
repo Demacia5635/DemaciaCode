@@ -360,9 +360,9 @@ public class Pigeon extends Pigeon2 implements SensorInterface{
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Gyro");
         builder.addBooleanProperty("is Connected", this::isConnected, null);
-        builder.addDoubleProperty("value", this::getCurrentYaw, RobotBase.isSimulation() ? yaw -> getSimState().setRawYaw(Math.toDegrees(yaw)) : null);
-        builder.addDoubleProperty("yaw", this::getCurrentYaw, RobotBase.isSimulation() ? yaw -> getSimState().setRawYaw(Math.toDegrees(yaw)) : null);
-        builder.addDoubleProperty("yaw Degree", this::getCurrentYawDegree, RobotBase.isSimulation() ? yaw -> getSimState().setRawYaw(yaw) : null);
+        builder.addDoubleProperty("value", this::getCurrentYaw, RobotBase.isSimulation() ? yaw -> setYaw(Math.toDegrees(yaw)) : null);
+        builder.addDoubleProperty("yaw", this::getCurrentYaw, RobotBase.isSimulation() ? yaw -> setYaw(Math.toDegrees(yaw)) : null);
+        builder.addDoubleProperty("yaw Degree", this::getCurrentYawDegree, RobotBase.isSimulation() ? yawDeg -> setYaw(yawDeg) : null);
         builder.addDoubleProperty("pitch", this::getCurrentPitch, RobotBase.isSimulation() ? pitch -> getSimState().setPitch(Math.toDegrees(pitch)) : null);
         builder.addDoubleProperty("roll", this::getCurrentRoll, RobotBase.isSimulation() ? roll -> getSimState().setRoll(Math.toDegrees(roll)) : null);
         builder.addDoubleProperty("x velocity", this::getXVelocity, RobotBase.isSimulation() ? xVelocity -> getSimState().setAngularVelocityX(Math.toDegrees(xVelocity)) : null);

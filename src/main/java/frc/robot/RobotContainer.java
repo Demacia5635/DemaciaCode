@@ -1,6 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -8,7 +7,6 @@ import frc.demacia.utils.controller.CommandController;
 import frc.demacia.utils.controller.CommandController.ControllerType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.demacia.RobotPose.RobotPose;
 import frc.robot.vision.VisionConstants;
 import frc.demacia.utils.chassis.Chassis;
@@ -80,25 +78,25 @@ public class RobotContainer implements Sendable {
   }
 
   private void setController() {
-    controller.upButton().onTrue(new InstantCommand(() -> {
+    SmartDashboard.putData("SHOOTING", new InstantCommand(() -> {
       intake.setState(IntakeConstants.IntakeStates.SHOOTING);
       shinua.setState(ShinuaConstants.ShinuaStates.SHOOTING);
       turret.setState(TurretConstants.TurretStates.SHOOTING);
       shooter.setState(ShooterConstants.ShooterStates.SHOOTING);
     }));
-    controller.downButton().onTrue(new InstantCommand(() -> {
+    SmartDashboard.putData("INTAKING", new InstantCommand(() -> {
       intake.setState(IntakeConstants.IntakeStates.INTAKING);
       shinua.setState(ShinuaConstants.ShinuaStates.NO_MECANUM);
       turret.setState(TurretConstants.TurretStates.SHOOTING);
       shooter.setState(ShooterConstants.ShooterStates.TRANCH);
     }));
-    controller.rightButton().onTrue(new InstantCommand(() -> {
+    SmartDashboard.putData("ready to shoot", new InstantCommand(() -> {
       intake.setState(IntakeConstants.IntakeStates.CLOSED);
       shinua.setState(ShinuaConstants.ShinuaStates.NOT_SHOOTING);
       turret.setState(TurretConstants.TurretStates.SHOOTING);
       shooter.setState(ShooterConstants.ShooterStates.TRANCH);
     }));
-    controller.leftButton().onTrue(new InstantCommand(() -> {
+    SmartDashboard.putData("IDLE", new InstantCommand(() -> {
       intake.setState(intake.IDLE_STATE);
       shinua.setState(shinua.IDLE_STATE);
       turret.setState(turret.IDLE_STATE);

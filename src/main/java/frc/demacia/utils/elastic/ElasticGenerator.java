@@ -113,6 +113,7 @@ public class ElasticGenerator {
         json.append(buildVisionTab());
         json.append(buildSysidTabs());
         json.append(buildMechanismTabs());
+        json.append(buildRobotTab());
 
         json.append("\n  ]\n");
         json.append("}\n");
@@ -654,6 +655,44 @@ public class ElasticGenerator {
             }
         }
         return sb.toString();
+    }
+
+    private String buildRobotTab() {
+        if (mechanisms.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+
+        final int WIDGET_WIDTH = 2;
+        int col = 0;
+
+        sb.append(",\n");
+        sb.append("    {\n");
+        sb.append("      \"name\": \"Robot\",\n");
+        sb.append("      \"grid_layout\": {\n        \"layouts\": [],\n        \"containers\": [\n");
+        List<String> widgets = new ArrayList<>();
+
+        for (int i = 0; i < mechanisms.size(); i++) {
+            BaseMechanism mech = mechanisms.get(i);
+
+            if (mech instanceof StateBaseMechanism) {
+                String mechPath = "/SmartDashboard/" + mech.getName();
+
+                widgets.add(createWidget("ComboBox Chooser", mech.getName() + " State Chooser", col, 0, 1, 1, mechPath + "/" + mech.getName() + " State Chooser", "\"sort_options\": false"));
+                widgets.add(createWidget("Text Display", "State", col + 1, 0, 1, 1, mechPath + "/" + mech.getName() + " State", "\"data_type\": \"string\", \"show_submit_button\": false"));
+                widgets.add(createWidget("Text Display", "Test Values", col, 1, WIDGET_WIDTH, 1, mechPath + "/" + mech.getName() + " Test Values", "\"data_type\": \"double[]\", \"show_submit_button\": true"));
+                col += WIDGET_WIDTH;
+            }
+        }
+
+        sb.append(String.join(",\n", widgets));
+        
+        sb.append(",\n");
+        sb.append(createWidget("Command", "Reset Gyro", 0, 2, 2, 1, "/SmartDashboard/chassis/reset gyro", "\"show_type\": true"));
+        sb.append(",\n");
+        sb.append(createWidget("Command", "Reset 180", 0, 3, 2, 1, "/SmartDashboard/chassis/reset gyro 180", "\"show_type\": true"));
+
+        sb.append("\n        ]\n      }\n    }");
+
+        return sb.toString();   
     }
 
     private String createWidget(String type, String title, double gridX, double gridY, double gridWidth, double gridHeight, String topic, String extraProps) {

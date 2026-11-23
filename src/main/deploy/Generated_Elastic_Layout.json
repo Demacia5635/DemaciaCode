@@ -7094,6 +7094,196 @@
           }
         ]
       }
+    },
+    {
+      "name": "Robot",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "type": "ComboBox Chooser",
+            "title": "intake State Chooser",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake State Chooser",
+              "period": 0.06,
+              "sort_options": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "State",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake State",
+              "period": 0.06,
+              "data_type": "string", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Test Values",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/intake/intake Test Values",
+              "period": 0.06,
+              "data_type": "double[]", "show_submit_button": true
+            }
+          },
+          {
+            "type": "ComboBox Chooser",
+            "title": "shinua State Chooser",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/shinua State Chooser",
+              "period": 0.06,
+              "sort_options": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "State",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/shinua State",
+              "period": 0.06,
+              "data_type": "string", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Test Values",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shinua/shinua Test Values",
+              "period": 0.06,
+              "data_type": "double[]", "show_submit_button": true
+            }
+          },
+          {
+            "type": "ComboBox Chooser",
+            "title": "turret State Chooser",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/turret/turret State Chooser",
+              "period": 0.06,
+              "sort_options": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "State",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/turret/turret State",
+              "period": 0.06,
+              "data_type": "string", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Test Values",
+            "x": 512.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/turret/turret Test Values",
+              "period": 0.06,
+              "data_type": "double[]", "show_submit_button": true
+            }
+          },
+          {
+            "type": "ComboBox Chooser",
+            "title": "shooter State Chooser",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/shooter State Chooser",
+              "period": 0.06,
+              "sort_options": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "State",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/shooter State",
+              "period": 0.06,
+              "data_type": "string", "show_submit_button": false
+            }
+          },
+          {
+            "type": "Text Display",
+            "title": "Test Values",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/shooter/shooter Test Values",
+              "period": 0.06,
+              "data_type": "double[]", "show_submit_button": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Reset Gyro",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/chassis/reset gyro",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "type": "Command",
+            "title": "Reset 180",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "properties": {
+              "topic": "/SmartDashboard/chassis/reset gyro 180",
+              "period": 0.06,
+              "show_type": true
+            }
+          }
+        ]
+      }
     }
   ]
 }
