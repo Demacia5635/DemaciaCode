@@ -8,10 +8,9 @@ import frc.demacia.utils.sensors.UltraSonicSensorConfig;
 
 public class ConstantsGripper {
 
-    //---------------------------------------------------------all----------------------------------------
-    public static final boolean Is_Right_Calibraete = false; 
-    public static final boolean Is_Left_Calibrate = false;
-    int ZeroPointCalinbrate;
+    // --------------------------------------------------------- Calibration ------------------------------------------------------------
+    public static double ZeroPositionCalibrte = 0;
+
     // --------------------------------------------------------- Limit Switches ---------------------------------------------------------
     public static final int KRAKEN_ROLL_LIMIT_SWITCH_ID = -1;
     public static final String KRAKEN_ROLL_LIMIT_SWITCH_NAME = "Kraken_Roll_Limit_Switch";
@@ -36,9 +35,8 @@ public class ConstantsGripper {
     private static final double RAMP_TIME = 0;
     private static final double MAX_VOLT = 12;
     private static final double MAX_CURRENT = 40;
-    public static double  ZeroPositionCalibrte = 0;
-    public static final double KRAKEN_PITCH_MIN_RADIANS = -1.57079633 ; // -90 degrees
-    public static final double KRAKEN_PITCH_MAX_RADIANS = 1.57079633 ; // 90 degrees
+    public static final double KRAKEN_PITCH_MIN_RADIANS = -1.57079633; // -90 degrees
+    public static final double KRAKEN_PITCH_MAX_RADIANS = 1.57079633;  // 90 degrees
 
     // --------------------------------------------------- Kraken Roll (TalonFX) --------------------------------------------------------
     public static final double ROLL_KP = 0;
@@ -94,8 +92,30 @@ public class ConstantsGripper {
     );
 
     // ------------------------------------------------------- Ultrasonic Sensor --------------------------------------------------------
-
     public static final UltraSonicSensorConfig ULTRASONIC_SENSOR_CONFIG = new UltraSonicSensorConfig(
         8, 9, "UltraSonic_Sensor"
     );
+
+    // ------------------------------------------------------- States & Poses -----------------------------------------------------------
+    public enum GripperState {
+        IDLE,
+        POSE1,
+        POSE2,
+        SECURING,
+        MANUAL
+    }
+
+    public enum CalibrateSide {
+        NONE,
+        LEFT,
+        RIGHT
+    }
+
+    // Pose 1: Pitch 45°, Roll 90°
+    public static final double POSE1_PITCH_RADIANS = Math.toRadians(45.0);
+    public static final double POSE1_ROLL_RADIANS = Math.toRadians(90.0);
+
+    // Pose 2: Pitch 0°, Roll 0°
+    public static final double POSE2_PITCH_RADIANS = Math.toRadians(0.0);
+    public static final double POSE2_ROLL_RADIANS = Math.toRadians(0.0);
 }

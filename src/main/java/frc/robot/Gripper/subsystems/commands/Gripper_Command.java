@@ -1,20 +1,19 @@
 package frc.robot.Gripper.subsystems.commands;
 
-import static frc.robot.Gripper.subsystems.constants.ConstantsGripper.Is_Left_Calibrate;
-import static frc.robot.Gripper.subsystems.constants.ConstantsGripper.Is_Right_Calibraete;
+import static frc.robot.Gripper.subsystems.constants.ConstantsGripper.*;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Gripper.subsystems.subsystems.SubsystemGripper;
 
-public class Claw_DiffCommand extends Command {
+public class Gripper_Command extends Command {
 
   // =========================================================================
   // Subsystem & Target Angles
   // =========================================================================
 
   private final SubsystemGripper gripperSub;
-  // Removed 'final' so Elastic can update these values live
   private double targetPitchRadians;
   private double targetRollRadians;
 
@@ -22,8 +21,7 @@ public class Claw_DiffCommand extends Command {
   // Constructor
   // =========================================================================
 
-  /** Creates a new Claw_DiffCommand. */
-  public Claw_DiffCommand(
+  public Gripper_Command(
       SubsystemGripper gripperSub,
       double targetPitchRadians,
       double targetRollRadians) {
@@ -31,20 +29,22 @@ public class Claw_DiffCommand extends Command {
     this.targetPitchRadians = targetPitchRadians;
     this.targetRollRadians = targetRollRadians;
     addRequirements(gripperSub);
+
+    SmartDashboard.putData("Gripper Command", this);
   }
 
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
     builder.addDoubleProperty(
-        "Target Pitch", 
-        () -> targetPitchRadians, 
-        (x) -> targetPitchRadians = x
+        "Target Pitch (Deg)",
+        () -> Math.toDegrees(targetPitchRadians),
+        (deg) -> targetPitchRadians = Math.toRadians(deg)
     );
     builder.addDoubleProperty(
-        "Target Roll", 
-        () -> targetRollRadians, 
-        (x) -> targetRollRadians = x
+        "Target Roll (Deg)",
+        () -> Math.toDegrees(targetRollRadians),
+        (deg) -> targetRollRadians = Math.toRadians(deg)
     );
   }
 
@@ -57,20 +57,35 @@ public class Claw_DiffCommand extends Command {
 
   @Override
   public void execute() {
-    // 1. Calibration checks
-    if (Is_Right_Calibraete) {
-      gripperSub.Rightcalibrate();
+    switch (gripperSub.getState()) {
+      case IDLE:
+        gripperSub.stopClaw();
+        gripperSub.stopWristMotors();
+        break;
+
+      case POSE1:
+        // Pitch: 45°, Roll: 90°
+        targetPitchRadians = POSE1_PITCH_RADIANS;
+        targetRollRadians = POSE1_ROLL_RADIANS;
+        gripperSub.setWristPositionRadians(targetPitchRadians, targetRollRadians);
+        break;
+
+      case POSE2:
+        // Pitch: 0°, Roll: 0°
+        targetPitchRadians = POSE2_PITCH_RADIANS;
+        targetRollRadians = POSE2_ROLL_RADIANS;
+        gripperSub.setWristPositionRadians(targetPitchRadians, targetRollRadians);
+        break;
+
+      case SECURING:
+        gripperSub.runAutoBottleIntake();
+        break;
+
+      case MANUAL:
+        // Uses the live Target Pitch (Deg) & Target Roll (Deg) values from Elastic
+        gripperSub.setWristPositionRadians(targetPitchRadians, targetRollRadians);
+        break;
     }
-
-    if (Is_Left_Calibrate) {
-      gripperSub.Leftcalibrate();
-    }
-
-    // 2. Move Pitch and Roll simultaneously to target angles
-    gripperSub.setWristPositionRadians(targetPitchRadians, targetRollRadians);
-
-    // 3. Auto bottle intake
-    gripperSub.runAutoBottleIntake();
   }
 
   @Override
