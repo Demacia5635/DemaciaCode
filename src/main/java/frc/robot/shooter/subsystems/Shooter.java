@@ -85,9 +85,7 @@ public class Shooter extends StateBaseMechanism<ShooterStates> {
         return isReady(HOOD_NAME, HOOD_ALLOWED_ERROR);
     }
     public boolean isShooterReady() {
-        boolean isFlywheelReady = isFlywheelReady();
-        boolean isHoodReady = isHoodReady();
-        return isFlywheelReady && isHoodReady;
+        return isFlywheelReady() && isHoodReady();
     }
 
     public boolean isStuckHood() {
@@ -137,5 +135,7 @@ public class Shooter extends StateBaseMechanism<ShooterStates> {
         super.periodic();
 
         ShootingValues.getInstance().updateShootingValues();
+        isFlywheelReady();
+        isHoodReady();
     }
 }

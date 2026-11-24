@@ -296,6 +296,10 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
         return (T) this;
     }
 
+    public T withDetectStall(double current, double velocity, double stallConfirmSeconds) {
+        return withDetectStall(current, velocity, stallConfirmSeconds, Double.POSITIVE_INFINITY);
+    }
+
     /**
      * Helper method to copy fields from another configuration object.
      * 
