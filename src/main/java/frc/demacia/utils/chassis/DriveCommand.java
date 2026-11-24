@@ -9,8 +9,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.controller.CommandController;
-import frc.demacia.utils.log.LogManager;
-import frc.robot.RobotContainer;
+import frc.demacia.utils.log.Log;
 
 public class DriveCommand extends Command {
   private Chassis chassis;
@@ -22,7 +21,7 @@ public class DriveCommand extends Command {
   public DriveCommand(Chassis chassis, CommandController controller) {
     this.chassis = chassis;
     this.controller = controller;
-    isPrecisionMode = false;
+    precisionMode = false;
     addRequirements(chassis);
   }
 
@@ -55,7 +54,7 @@ public class DriveCommand extends Command {
     double joyY = controller.getLeftX() * direction;
     
     // Calculate r]otation from trigger axes
-    double rot = controller.getRightTrigger() - controller.getLeftTrigger();
+    double rot = controller.getLeftTrigger() - controller.getRightTrigger();
     
     double velX = Math.pow(joyX, 2) * chassis.getMaxDriveVelocity() * Math.signum(joyX);
     double velY = Math.pow(joyY, 2) * chassis.getMaxDriveVelocity() * Math.signum(joyY);
@@ -63,12 +62,11 @@ public class DriveCommand extends Command {
     if(precisionMode){
         velX /= 4;
         velY /= 4;
-        // velRot /= 4;
+        velRot /= 4;
     }
 
     speeds = new ChassisSpeeds(velX, velY, velRot);
-    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, chassis.getGyroAngle());
-    chassis.setSpeedsRobotRel(speeds);
+    chassis.setSpeedsFieldRel(speeds);
   }
 
   // Called once the command ends or is interrupted.

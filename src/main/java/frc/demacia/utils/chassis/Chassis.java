@@ -35,6 +35,7 @@ public class Chassis extends SubsystemBase {
 
     private final ChassisConfig chassisConfig;
 
+    public Translation2d[] modulePositions;
     public SwerveModule[] modules;
     public Pigeon gyro;
     
@@ -168,6 +169,10 @@ public class Chassis extends SubsystemBase {
         }
     }
 
+    public void setSpeedsFieldRel(ChassisSpeeds fieldRelSpeeds){
+        setSpeedsRobotRel(ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelSpeeds, Chassis.getInstance().getGyroAngle()));
+    }
+    
     public void setSpeedsRobotRel(ChassisSpeeds robotRelSpeeds) {
         boolean isStopped = Math.abs(robotRelSpeeds.vxMetersPerSecond) < 0.01 &&
             Math.abs(robotRelSpeeds.vyMetersPerSecond) < 0.01 &&
@@ -180,7 +185,7 @@ public class Chassis extends SubsystemBase {
             }
         } else {
             states = demaciaKinematics.toSwerveModuleStates(robotRelSpeeds);
-
+            Log.log(states[0] + ", " + states[1] + ", " + states[2] + ", " + states[3]);
             for (int i = 0; i < lastAngles.length; i++) {
                 lastAngles[i] = states[i].angle;
             }

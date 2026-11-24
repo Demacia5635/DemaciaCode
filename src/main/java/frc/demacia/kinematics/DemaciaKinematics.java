@@ -177,28 +177,31 @@ public class DemaciaKinematics {
                     KinematicsUtilities.getAngleFromVector(velocityVector.getX(), velocityVector.getY())));
         }
 
-        swerveStates = factorModuleVelocities(swerveStates);
+        factorModuleVelocities(swerveStates);
+        accelLimitedVelocities(swerveStates);
         return swerveStates;
     }
 
-    private SwerveModuleState[] factorModuleVelocities(SwerveModuleState[] swerveStates) {
+    private void factorModuleVelocities(SwerveModuleState[] swerveStates) {
         double maxVelocityCalculated = 0;
         for (int i = 0; i < swerveStates.length; i++) {
             double cur = Math.abs(swerveStates[i].speedMetersPerSecond);
             if (cur == 0)
-                return swerveStates;
+                return;
             if (cur > maxVelocityCalculated)
                 maxVelocityCalculated = cur;
         }
         double factor = MAX_ALLOWED_MODULE_VELOCITY / maxVelocityCalculated;
 
         if (factor >= 1)
-            return swerveStates;
+            return;
 
         for (SwerveModuleState state : swerveStates) {
             state.speedMetersPerSecond = state.speedMetersPerSecond * factor;
         }
-        return swerveStates;
+    }
 
+    public void accelLimitedVelocities(SwerveModuleState[] swerveStates){
+        
     }
 }

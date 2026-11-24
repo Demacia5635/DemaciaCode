@@ -13,7 +13,7 @@ import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
 import frc.demacia.utils.sensors.CancoderConfig;
 import frc.demacia.utils.sensors.PigeonConfig;
 
-public class Mk4iChassisConstants {
+public class MK4iChassisConstants {
   public static final String NAME = "Mk4i Chassis";
 
   public static final int PIGEON_ID = 14;

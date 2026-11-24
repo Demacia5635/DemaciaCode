@@ -63,11 +63,6 @@ public class SwerveModuleConfig {
         return this;
     }
 
-    public SwerveModuleConfig withPosion(Translation2d position) {
-        this.position = position;
-        return this;
-    }
-
     public SwerveModuleConfig withMetersFrom360Degs(double metersFrom360Degs) {
         steerVelToDriveVel = metersFrom360Degs / (2 * Math.PI);
         return this;

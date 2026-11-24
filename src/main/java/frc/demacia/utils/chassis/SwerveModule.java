@@ -1,8 +1,6 @@
 
 package frc.demacia.utils.chassis;
 
-import java.util.logging.LogManager;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;

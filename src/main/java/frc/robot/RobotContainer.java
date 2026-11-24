@@ -8,14 +8,12 @@ import frc.demacia.utils.controller.CommandController.ControllerType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.demacia.utils.DemaciaUtils;
+import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
-import frc.demacia.utils.controller.CommandController;
-import frc.demacia.utils.controller.CommandController.ControllerType;
-import frc.demacia.utils.log.LogManager;
-import frc.robot.chassis.MK4iChassisConstants;
 import frc.robot.chassis.MK5nChassisConstansRobotC;
+import frc.robot.chassis.RobotCChassisConstants;
+import frc.robot.vision.VisionConstants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -28,24 +26,16 @@ import frc.robot.chassis.MK5nChassisConstansRobotC;
  */
 public class RobotContainer implements Sendable {
 
-  public static boolean isComp = false;
+  private boolean isComp = false;
   private static boolean hasRemovedFromLog = false;
-  public static boolean isRed = false;
+  private boolean isRed = false;
   // The robot's subsystems and commands are defined here...
-  public static Chassis chassis;
+  private Chassis chassis;
+  private DriveCommand driveCommand;
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandController controller = new CommandController(0, ControllerType.kXbox);
+  private final CommandController controller = new CommandController(0, ControllerType.kPS5);
   /** The container for the root. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    SmartDashboard.putData("RC", this);
-    Chassis.initialize(MK5nChassisConstansRobotC.CHASSIS_CONFIG);
-    new DemaciaUtils(() -> getIsComp(), () -> getIsRed());
-    chassis = Chassis.getInstance();
-    chassis.setDefaultCommand(new DriveCommand(chassis, controller));
-    // Configure the trigger bindings
-    configureBindings();
-  }
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
