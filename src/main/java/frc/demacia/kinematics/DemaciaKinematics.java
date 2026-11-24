@@ -20,6 +20,7 @@ public class DemaciaKinematics {
     private Pose2d startRobotPosition;
     private Translation2d[] modulePositionOnTheRobot;
     private SwerveModuleState[] lastStates = new SwerveModuleState[4];
+    private ChassisSpeeds lastSpeeds = new ChassisSpeeds();
 
     public DemaciaKinematics(Translation2d... modulePositionOnTheRobot) {
         this.startRobotPosition = Pose2d.kZero;
@@ -114,14 +115,17 @@ public class DemaciaKinematics {
 
         if (Math.abs(velocityHeadingDiff) < MAX_FAST_TURN_ANGLE) { // small heading change
             // accelerate to target v
-            targetVelocity = MathUtil.clamp(targetVelocity, currentVelocity - MAX_DELTA_V, currentVelocity + MAX_DELTA_V);
-        } else if (Math.abs(velocityHeadingDiff) > MIN_REVERSE_ANGLE) { // optimization - deaccdelerate and turn the other way
+            targetVelocity = MathUtil.clamp(targetVelocity, currentVelocity - MAX_DELTA_V,
+                    currentVelocity + MAX_DELTA_V);
+        } else if (Math.abs(velocityHeadingDiff) > MIN_REVERSE_ANGLE) { // optimization - deaccdelerate and turn the
+                                                                        // other way
 
             targetVelocity = currentVelocity - MAX_DELTA_V;
             velocityHeadingDiff = optimizeAngleChange(velocityHeadingDiff);
 
         } else {
-            targetVelocity = MathUtil.clamp(Math.min(MAX_ROTATION_VELOCITY, targetVelocity), currentVelocity - MAX_DELTA_V, currentVelocity + MAX_DELTA_V);
+            targetVelocity = MathUtil.clamp(Math.min(MAX_ROTATION_VELOCITY, targetVelocity),
+                    currentVelocity - MAX_DELTA_V, currentVelocity + MAX_DELTA_V);
         }
 
         if (targetVelocity < MIN_VELOCITY) {
@@ -135,7 +139,8 @@ public class DemaciaKinematics {
         targetVelocityHeading = currentVelocityHeading + velocityHeadingDiff;
 
         // return the speeds - using target velocity and target angle
-        return new ChassisSpeeds(targetVelocity * Math.cos(targetVelocityHeading), targetVelocity * Math.sin(targetVelocityHeading),
+        return new ChassisSpeeds(targetVelocity * Math.cos(targetVelocityHeading),
+                targetVelocity * Math.sin(targetVelocityHeading),
                 wantedSpeeds.omegaRadiansPerSecond);
     }
 
@@ -163,6 +168,8 @@ public class DemaciaKinematics {
 
     public SwerveModuleState[] toSwerveModuleStates(ChassisSpeeds wantedSpeeds) {
 
+        linearAccelerationLimit(wantedSpeeds);
+
         double omega = wantedSpeeds.omegaRadiansPerSecond;
 
         for (int i = 0; i < 4; i++) {
@@ -178,7 +185,6 @@ public class DemaciaKinematics {
         }
 
         factorModuleVelocities(swerveStates);
-        accelLimitedVelocities(swerveStates);
         return swerveStates;
     }
 
@@ -201,7 +207,36 @@ public class DemaciaKinematics {
         }
     }
 
-    public void accelLimitedVelocities(SwerveModuleState[] swerveStates){
-        
+    public void linearAccelerationLimit(ChassisSpeeds speeds) {
+
+        Translation2d speedsTranslation = new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+        Translation2d lastSpeedsTranslation = new Translation2d(lastSpeeds.vxMetersPerSecond,
+                lastSpeeds.vyMetersPerSecond);
+
+        Translation2d deltaSpeedsTranslation = speedsTranslation.minus(lastSpeedsTranslation);
+
+        double radialAccel = Math.abs(
+                deltaSpeedsTranslation.rotateBy(speedsTranslation.getAngle().times(-1)).getY());
+
+        double minRaduis = Math.pow(speedsTranslation.getNorm(), 2) / MAX_RADIAL_ACCEL;
+        double currRaduis = Math.pow(speedsTranslation.getNorm(), 2) / radialAccel;
+
+        double radialOmega = (minRaduis > currRaduis) ? Math.sqrt(MAX_RADIAL_ACCEL / minRaduis)
+                : Math.sqrt(radialAccel / currRaduis);
+
+        // double radialOmega = ((MAX_RADIAL_ACCEL < radialAccel) ? MAX_RADIAL_ACCEL :
+        // radialAccel)
+        // / speedsTranslation.getNorm();
+
+        radialOmega *= Math.signum(
+                lastSpeedsTranslation.rotateBy(speedsTranslation.getAngle()).getAngle().getRadians());
+
+        speedsTranslation.rotateBy(new Rotation2d(radialOmega * CYCLE_DT));
+
+        speeds.vxMetersPerSecond = speedsTranslation.getX();
+        speeds.vyMetersPerSecond = speedsTranslation.getY();
+
+        lastSpeeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond,
+                speeds.omegaRadiansPerSecond);
     }
 }
