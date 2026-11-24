@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 640" width="900" height="640" font-family="Segoe UI, Arial, sans-serif" role="img" aria-label="Path code architecture: command calls trajectory each cycle, trajectory asks the follower and the current segment, PathBuilder builds the segments once.">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1b2530"/>
+    </marker>
+  </defs>
+  <rect width="900" height="640" fill="#ffffff"/>
+
+  <!-- Command -->
+  <rect x="180" y="30" width="280" height="60" rx="6" fill="#e3f1f5" stroke="#0b6e8a" stroke-width="2"/>
+  <text x="320" y="55" text-anchor="middle" font-size="18" font-weight="600" fill="#1b2530">FollowTrajectoryCommand</text>
+  <text x="320" y="77" text-anchor="middle" font-size="14" fill="#5b6876">glue only, runs every 20 ms</text>
+
+  <!-- swerveCommand -->
+  <rect x="560" y="30" width="280" height="60" rx="6" fill="#f3f4f6" stroke="#1b2530" stroke-width="2"/>
+  <text x="700" y="55" text-anchor="middle" font-size="18" font-weight="600" fill="#1b2530">SwerveCommand</text>
+  <text x="700" y="77" text-anchor="middle" font-size="14" fill="#5b6876">setVelFieldRel(speeds)</text>
+  <line x1="460" y1="60" x2="558" y2="60" stroke="#1b2530" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="509" y="50" text-anchor="middle" font-size="13" fill="#1b2530">speeds</text>
+
+  <!-- Trajectory -->
+  <rect x="180" y="170" width="280" height="80" rx="6" fill="#e3f1f5" stroke="#0b6e8a" stroke-width="2"/>
+  <text x="320" y="198" text-anchor="middle" font-size="18" font-weight="600" fill="#1b2530">DemaciaTrajectory</text>
+  <text x="320" y="220" text-anchor="middle" font-size="14" fill="#5b6876">current index, finished flag,</text>
+  <text x="320" y="238" text-anchor="middle" font-size="14" fill="#5b6876">move to next segment</text>
+
+  <!-- Follower -->
+  <rect x="180" y="330" width="280" height="80" rx="6" fill="#e3f1f5" stroke="#0b6e8a" stroke-width="2"/>
+  <text x="320" y="358" text-anchor="middle" font-size="18" font-weight="600" fill="#1b2530">SegmentFollower</text>
+  <text x="320" y="380" text-anchor="middle" font-size="14" fill="#5b6876">trapezoid speed + heading PID</text>
+  <text x="320" y="398" text-anchor="middle" font-size="14" fill="#5b6876">omega comes from here</text>
+
+  <!-- Segments -->
+  <rect x="180" y="490" width="280" height="80" rx="6" fill="#e3f1f5" stroke="#0b6e8a" stroke-width="2"/>
+  <text x="320" y="518" text-anchor="middle" font-size="18" font-weight="600" fill="#1b2530">LineSegment | ArcSegment</text>
+  <text x="320" y="540" text-anchor="middle" font-size="14" fill="#5b6876">velocity direction for its shape</text>
+  <text x="320" y="558" text-anchor="middle" font-size="14" fill="#5b6876">isFinished(pose, speeds)</text>
+
+  <!-- PathBuilder -->
+  <rect x="560" y="170" width="280" height="80" rx="6" fill="#ffffff" stroke="#1b2530" stroke-width="2" stroke-dasharray="7 5"/>
+  <text x="700" y="198" text-anchor="middle" font-size="18" font-weight="600" fill="#1b2530">PathBuilder</text>
+  <text x="700" y="220" text-anchor="middle" font-size="14" fill="#5b6876">runs once at construction</text>
+  <text x="700" y="238" text-anchor="middle" font-size="14" fill="#5b6876">uses Corner / Tangent / Leg calculators</text>
+  <text x="700" y="285" text-anchor="middle" font-size="13" fill="#1b2530">input: waypoints (Pose2d list)</text>
+  <line x1="700" y1="270" x2="700" y2="252" stroke="#1b2530" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="560" y1="210" x2="462" y2="210" stroke="#1b2530" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+  <text x="511" y="200" text-anchor="middle" font-size="13" fill="#1b2530">segments</text>
+
+  <!-- Command <-> Trajectory -->
+  <line x1="270" y1="90" x2="270" y2="168" stroke="#1b2530" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="262" y="134" text-anchor="end" font-size="13" fill="#1b2530">pose, speeds</text>
+  <line x1="370" y1="168" x2="370" y2="92" stroke="#1b2530" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="378" y="134" text-anchor="start" font-size="13" fill="#1b2530">wanted speeds</text>
+
+  <!-- Trajectory <-> Follower -->
+  <line x1="270" y1="250" x2="270" y2="328" stroke="#1b2530" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="262" y="294" text-anchor="end" font-size="13" fill="#1b2530">segment, pose</text>
+  <line x1="370" y1="328" x2="370" y2="252" stroke="#1b2530" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="378" y="294" text-anchor="start" font-size="13" fill="#1b2530">vx, vy, omega</text>
+
+  <!-- Follower <-> Segment -->
+  <line x1="270" y1="410" x2="270" y2="488" stroke="#1b2530" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="262" y="454" text-anchor="end" font-size="13" fill="#1b2530">pose, speeds</text>
+  <line x1="370" y1="488" x2="370" y2="412" stroke="#1b2530" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="378" y="454" text-anchor="start" font-size="13" fill="#1b2530">vx, vy</text>
+
+  <!-- Trajectory asks segment isFinished (left bypass) -->
+  <polyline points="180,210 110,210 110,530 178,530" fill="none" stroke="#1b2530" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="102" y="370" text-anchor="end" font-size="13" fill="#1b2530">isFinished?</text>
+
+  <!-- Legend -->
+  <line x1="560" y1="520" x2="620" y2="520" stroke="#1b2530" stroke-width="2"/>
+  <text x="632" y="525" font-size="14" fill="#1b2530">every 20 ms cycle</text>
+  <line x1="560" y1="550" x2="620" y2="550" stroke="#1b2530" stroke-width="2" stroke-dasharray="7 5"/>
+  <text x="632" y="555" font-size="14" fill="#1b2530">once, at construction</text>
+</svg>
