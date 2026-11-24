@@ -18,6 +18,7 @@ import frc.demacia.path.commands.FollowTrajectoryCommand;
 import frc.robot.vision.VisionConstants;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
+import frc.robot.chassis.MK4iChassisConstants;
 import frc.robot.chassis.MK5nChassisConstansRobotC;
 import frc.robot.chassis.RobotCChassisConstants;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -66,7 +67,7 @@ public class RobotContainer implements Sendable {
 
   private void setDefaultCommands() {
     Chassis.getInstance().setDefaultCommand(driveCommand);
-    controller.leftButton().onTrue(new FollowTrajectoryCommand(new DemaciaTrajectory(points), driveCommand));
+    // controller.leftButton().onTrue(new FollowTrajectoryCommand(new DemaciaTrajectory(points), driveCommand));
   }
 
   private void setController() {

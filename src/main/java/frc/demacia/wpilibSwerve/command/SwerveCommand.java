@@ -43,7 +43,7 @@ public class SwerveCommand extends Command {
   private final SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
   private SwerveModuleState[] moduleStates = new SwerveModuleState[4];
   private ChassisSpeeds speeds;
-  private boolean isPrecisionMode = false;
+  private boolean isPrecisionMode = true;
 
   private Matrix<N3, N1> visionSTD;
   private Matrix<N3, N1> odmetryStd;
@@ -105,6 +105,8 @@ public class SwerveCommand extends Command {
     
     // Calculate rotation from trigger axes
     double rot = controller.getLeftTrigger() - controller.getRightTrigger();
+
+    rot *= -1; //TODO: remove this line
     
     double velX = Math.pow(joyX, 2) * chassis.getConfig().maxDriveVelocity * Math.signum(joyX);
     double velY = Math.pow(joyY, 2) * chassis.getConfig().maxDriveVelocity * Math.signum(joyY);
@@ -113,7 +115,6 @@ public class SwerveCommand extends Command {
     if (isPrecisionMode) {
       velX /= 2.0;
       velY /= 2.0;
-      velRot /= 2.0;
     }
 
     

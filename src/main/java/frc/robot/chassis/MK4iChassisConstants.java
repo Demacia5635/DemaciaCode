@@ -90,10 +90,10 @@ public class MK4iChassisConstants {
 
     public static final SwerveModuleConfig[] modules = swerveModules(
             new double[] {
-                    /* Front Left Offset: */ -0.286621 * 2 * Math.PI,
-                    /* Front Right Offset: */ 0.383057 * 2 * Math.PI,
-                    /* Back Left Offset: */ -0.286621 * 2 * Math.PI,
-                    /* Back Right Offset: */ 0.080322 * 2 * Math.PI
+                    /* Front Left Offset: */ -1.7932235410383146,
+                    /* Front Right Offset: */ -0.7332428166093364,
+                    /* Back Left Offset: */ 1.6919808090378623,
+                    /* Back Right Offset: */ -2.6384469551633027
             });
 
     public static final PigeonConfig PIGEON_CONFIG = new PigeonConfig(NAME + "/pigeon", PIGEON_ID, PIGEON_CAN_BUS);
