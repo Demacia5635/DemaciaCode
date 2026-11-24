@@ -1,6 +1,6 @@
 package frc.demacia.utils.sensors;
 
-import com.ctre.phoenix6.CANBus;
+import frc.demacia.utils.motors.BaseMotorConfig.Canbus;
 
 /**
  * Base configuration for analog sensors.
@@ -18,8 +18,8 @@ public abstract class AnalogSensorConfig<T extends AnalogSensorConfig<T>> extend
      * @param channel Analog input port (0-3 on RoboRIO)
      * @param name Descriptive name for logging
      */
-    public AnalogSensorConfig(int channel, String name) {
-        super(channel, name);
+    public AnalogSensorConfig(String name, int channel) {
+        super(name, channel);
     }
 
     /**
@@ -29,8 +29,8 @@ public abstract class AnalogSensorConfig<T extends AnalogSensorConfig<T>> extend
      * @param canbus CAN bus instance
      * @param name Descriptive name for logging
      */
-    public AnalogSensorConfig(int id, CANBus canbus, String name) {
-        super(id, canbus, name);
+    public AnalogSensorConfig(String name, int id, Canbus canbus) {
+        super(name, id, canbus);
     }
 
     /**
