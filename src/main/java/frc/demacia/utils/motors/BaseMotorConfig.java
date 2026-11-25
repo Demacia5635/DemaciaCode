@@ -63,7 +63,7 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
 
     public double maxVolt = 12;
     public double minVolt = -12;
-    public double maxCurrent = 40;
+    public double maxCurrent = 10;
     public double rampUpTime = 0.3;
 
     public boolean brake = true;
@@ -82,10 +82,10 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
 
     public double posToRad = 0;
 
-    public double highCurrentThreshold = 0;
-    public double lowVelocityThreshold = 0;
-    public double stallConfirmSeconds = 0;
-    public double stuckDurationSeconds = 0;
+    public double highCurrentThreshold = 10;
+    public double lowVelocityThreshold = 0.5;
+    public double stallConfirmSeconds = 0.2;
+    public double stuckDurationSeconds = 0.2;
 
     /**
      * Base constructor.

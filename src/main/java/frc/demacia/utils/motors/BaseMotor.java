@@ -254,6 +254,10 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setDuty(double power) {
+    if(isStuck()) {
+      stop();
+      return;
+    }
     setMotorDuty(power);
     wantedValue = power;
     if (power == 0) {
@@ -265,6 +269,10 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setVoltage(double voltage) {
+    if(isStuck()) {
+      stop();
+      return;
+    }
     setMotorVoltage(voltage);
     wantedValue = voltage;
     controlMode = ControlMode.VOLTAGE;
@@ -272,6 +280,10 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setVelocity(double velocity, double feedForward) {
+    if(isStuck()) {
+      stop();
+      return;
+    }
     if (isPidFfParamsZero(config.pidFfParams[getSlot()])) {
       Log.alert(getName() + " pid and FF are all zero")
         .withDescription("you used setVelocity in" + getName() + " but the pid and FF are all zero");
@@ -294,6 +306,10 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setPositionVoltage(double position, double feedForward) {
+    if(isStuck()) {
+      stop();
+      return;
+    }
     if (isPidFfParamsZero(config.pidFfParams[getSlot()])) {
       Log.alert(getName() + " pid and FF are all zero")
         .withDescription("you used setPositionVoltage in" + getName() + " but the pid and FF are all zero");
@@ -311,6 +327,10 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setMotion(double position, double feedForward) {
+    if(isStuck()) {
+      stop();
+      return;
+    }
     if (isPidFfParamsZero(config.pidFfParams[getSlot()])) {
       Log.alert(getName() + " pid and FF are all zero")
         .withDescription("you used setMotion in" + getName() + " but the pid and FF are all zero");
@@ -333,6 +353,10 @@ public abstract class BaseMotor implements MotorInterface {
 
   @Override
   public void setAngle(double angle, double feedForward) {
+    if(isStuck()) {
+      stop();
+      return;
+    }
     if (config.isRadiansMotor) {
       setMotion(getCurrentPosition() + MathUtil.angleModulus(angle - getCurrentAngle()), feedForward);
       wantedValue = MathUtil.angleModulus(angle);

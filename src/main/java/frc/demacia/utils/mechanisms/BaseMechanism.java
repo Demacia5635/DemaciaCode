@@ -821,6 +821,13 @@ public class BaseMechanism extends SubsystemBase{
 
     @Override
     public void periodic() {
+        for (MotorNode node : motors.values()){
+            if(node.motor.isStuck()) {
+                stop();
+                return;
+            }
+        }
+
         for (MotorNode node : motors.values()) {
             node.autoCalibration.run();
         }
