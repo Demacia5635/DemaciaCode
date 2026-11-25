@@ -3,7 +3,6 @@ package frc.demacia.utils.mechanisms;
 import java.util.HashMap;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -351,7 +350,7 @@ public class BaseMechanism extends SubsystemBase{
     public void setPowerAll(double power) {
         if (motors == null) return;
         for (MotorNode node : motors.values()){
-            node.motor.setDuty(power);
+            setPower(node.motor.getName(), power);
         }
     }
 
@@ -363,6 +362,15 @@ public class BaseMechanism extends SubsystemBase{
     public void setPower(String motorName, double power){
         MotorNode node = getNode(motorName);
         if (node != null) {
+            if (getIsCalibration(motorName)) {
+                if (node.motor.getCurrentPosition() >= node.maxLimit) {
+                    node.motor.setDuty(Math.min(power, 0));
+                    return;
+                } else if (node.motor.getCurrentPosition() <= node.minLimit) {
+                    node.motor.setDuty(Math.max(power, 0));
+                    return;
+                }
+            }
             node.motor.setDuty(power);
         }
     }
@@ -384,6 +392,15 @@ public class BaseMechanism extends SubsystemBase{
     public void setVoltage(String motorName, double voltage){
         MotorNode node = getNode(motorName);
         if (node != null) {
+            if (getIsCalibration(motorName)) {
+                if (node.motor.getCurrentPosition() >= node.maxLimit) {
+                    node.motor.setVoltage(Math.min(voltage, 0));
+                    return;
+                } else if (node.motor.getCurrentPosition() <= node.minLimit) {
+                    node.motor.setVoltage(Math.max(voltage, 0));
+                    return;
+                }
+            }
             node.motor.setVoltage(voltage);
         }
     }
@@ -405,6 +422,15 @@ public class BaseMechanism extends SubsystemBase{
     public void setVelocity(String motorName, double velocity){
         MotorNode node = getNode(motorName);
         if (node != null) {
+            if (getIsCalibration(motorName)) {
+                if (node.motor.getCurrentPosition() >= node.maxLimit) {
+                    node.motor.setVelocity(Math.min(velocity, 0));
+                    return;
+                } else if (node.motor.getCurrentPosition() <= node.minLimit) {
+                    node.motor.setVelocity(Math.max(velocity, 0));
+                    return;
+                }
+            }
             node.motor.setVelocity(velocity);
         }
     }
