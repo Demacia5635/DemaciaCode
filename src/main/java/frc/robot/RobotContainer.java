@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.demacia.RobotPose.RobotPose;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
+import frc.robot.chassis.MK4iChassisConstants;
 import frc.robot.chassis.MK5nChassisConstansRobotC;
 import frc.robot.chassis.RobotCChassisConstants;
 import frc.robot.vision.VisionConstants;
@@ -34,7 +35,7 @@ public class RobotContainer implements Sendable {
   private DriveCommand driveCommand;
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandController controller = new CommandController(0, ControllerType.kPS5);
+  private final CommandController controller = new CommandController(0, ControllerType.kXbox);
   /** The container for the root. Contains subsystems, OI devices, and commands. */
 
   /**
@@ -49,7 +50,7 @@ public class RobotContainer implements Sendable {
    */
   public RobotContainer() {
     SmartDashboard.putData("RC", this);
-    Chassis.initialize(RobotCChassisConstants.CHASSIS_CONFIG);
+    Chassis.initialize(MK4iChassisConstants.CHASSIS_CONFIG);
     driveCommand = new DriveCommand(Chassis.getInstance(), controller);
 
     RobotPose.initialize(

@@ -168,7 +168,7 @@ public class DemaciaKinematics {
 
     public SwerveModuleState[] toSwerveModuleStates(ChassisSpeeds wantedSpeeds) {
 
-        linearAccelerationLimit(wantedSpeeds);
+        radialAccelerationLimit(wantedSpeeds);
 
         double omega = wantedSpeeds.omegaRadiansPerSecond;
 
@@ -207,7 +207,7 @@ public class DemaciaKinematics {
         }
     }
 
-    public void linearAccelerationLimit(ChassisSpeeds speeds) {
+    public void radialAccelerationLimit(ChassisSpeeds speeds) {
 
         Translation2d speedsTranslation = new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
         Translation2d lastSpeedsTranslation = new Translation2d(lastSpeeds.vxMetersPerSecond,
@@ -216,7 +216,7 @@ public class DemaciaKinematics {
         Translation2d deltaSpeedsTranslation = speedsTranslation.minus(lastSpeedsTranslation);
 
         double radialAccel = Math.abs(
-                deltaSpeedsTranslation.rotateBy(speedsTranslation.getAngle().times(-1)).getY());
+                deltaSpeedsTranslation.rotateBy(speedsTranslation.getAngle().times(-1)).getY()) / CYCLE_DT;
 
         double minRaduis = Math.pow(speedsTranslation.getNorm(), 2) / MAX_RADIAL_ACCEL;
         double currRaduis = Math.pow(speedsTranslation.getNorm(), 2) / radialAccel;
