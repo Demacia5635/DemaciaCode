@@ -74,7 +74,7 @@ public class IntakeConstants {
         SHOOTING(0.2, IntakeDeployConstants.INTAKE_DEPLOY_MIDDLE); // TODO
 
         private final double[] values;
-        private IntakeStates(double... vals) { this.values = vals; }
+        private IntakeStates(double rollersPower, double deployAngle) { this.values = new double[] {rollersPower, deployAngle}; }
         @Override public double[] getValues() { return values; }
     }
 }

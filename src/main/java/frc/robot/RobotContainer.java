@@ -8,7 +8,6 @@ import frc.demacia.utils.controller.CommandController.ControllerType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.demacia.RobotPose.RobotPose;
-import frc.robot.vision.VisionConstants;
 import frc.demacia.utils.chassis.Chassis;
 import frc.demacia.utils.chassis.DriveCommand;
 import frc.robot.chassis.RobotCChassisConstants;
@@ -58,7 +57,7 @@ public class RobotContainer implements Sendable {
 
     RobotPose.initialize(
       RobotCChassisConstants.STATE_STD, 
-      VisionConstants.visionConfig);
+      RobotCChassisConstants.VisionConstants.visionConfig);
 
     configureBindings();
     setDefaultCommands();
