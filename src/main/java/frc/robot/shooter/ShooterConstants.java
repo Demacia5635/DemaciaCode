@@ -27,13 +27,20 @@ public class ShooterConstants {
         public static final double FLYWHEEL_KG = 0.0;
         public static final double FLYWHEEL_KV2 = 0.00488;
         public static final double FLYWHEEL_KCOS = 0.0;
+        public static final double FLYWHEEL_MAX_CURRENT = 40;
+        public static final double FLYWHEEL_HIGH_CURRENT_THRESHOLD = 30; // TODO
+        public static final double FLYWHEEL_LOW_VELOCITY_THRESHOLD = 0.1; // TODO
+        public static final double FLYWHEEL_STALL_CONFIRM_SECONDS = 0.1; // TODO
+
 
         public static final TalonFXConfig FLYWHEEL_CONFIG = new TalonFXConfig(FLYWHEEL_NAME, FLYWHEEL_ID, FLYWHEEL_CANBUS)
             .withBrake(FLYWHEEL_BRAKE)
             .withInvert(FLYWHEEL_INVERT)
+            .withCurrent(FLYWHEEL_MAX_CURRENT)
             .withRampTime(RAMP_TIME)
             .withMeterMotor(FLYWHEEL_GEAR_RATIO, FLYWHEEL_DIAMETER)
-            .withPID(FLYWHEEL_KP, FLYWHEEL_KI, FLYWHEEL_KD, FLYWHEEL_KS, FLYWHEEL_KV, FLYWHEEL_KA, FLYWHEEL_KG, FLYWHEEL_KCOS, FLYWHEEL_KV2);
+            .withPID(FLYWHEEL_KP, FLYWHEEL_KI, FLYWHEEL_KD, FLYWHEEL_KS, FLYWHEEL_KV, FLYWHEEL_KA, FLYWHEEL_KG, FLYWHEEL_KCOS, FLYWHEEL_KV2)
+            .withDetectStall(FLYWHEEL_HIGH_CURRENT_THRESHOLD, FLYWHEEL_LOW_VELOCITY_THRESHOLD, FLYWHEEL_STALL_CONFIRM_SECONDS);
 
         public static final double FLYWHEEL_ALLOWED_ERROR = 0.5;
     }
@@ -57,13 +64,15 @@ public class ShooterConstants {
         public static final double HOOD_MAX_VELOCITY = 2.5; // TODO
         public static final double HOOD_MAX_ACCELERATION = 16; // TODO
         public static final double HOOD_MAX_JERK = 0.0; // TODO
-        public static final double HOOD_HIGH_CURRENT_THRESHOLD = 20.0; // TODO
-        public static final double HOOD_LOW_VELOCITY_THRESHOLD = 0.1; // TODO
+        public static final double HOOD_MAX_CURRENT = 12;
+        public static final double HOOD_HIGH_CURRENT_THRESHOLD = 10; // TODO
+        public static final double HOOD_LOW_VELOCITY_THRESHOLD = 0.3; // TODO
         public static final double HOOD_STALL_CONFIRM_SECONDS = 0.1; // TODO
 
         public static final TalonFXConfig HOOD_CONFIG = new TalonFXConfig(HOOD_NAME, HOOD_ID, HOOD_CANBUS)
             .withBrake(HOOD_BRAKE)
             .withInvert(HOOD_INVERT)
+            .withCurrent(HOOD_MAX_CURRENT)
             .withRadiansMotor(HOOD_GEAR_RATIO)
             .withPID(HOOD_KP, HOOD_KI, HOOD_KD, HOOD_KS, HOOD_KV, HOOD_KA, HOOD_KG, HOOD_KCOS, HOOD_KV2)
             .withMotionParam(HOOD_MAX_VELOCITY, HOOD_MAX_ACCELERATION, HOOD_MAX_JERK)
@@ -83,7 +92,8 @@ public class ShooterConstants {
         public static final Canbus FEEDER_CANBUS = Canbus.Rio; // TODO
         public static final boolean FEEDER_BRAKE = false;
         public static final boolean FEEDER_INVERT = false;
-        public static final double FEEDER_HIGH_CURRENT_THRESHOLD = 30.0; // TODO
+        public static final double FEEDER_MAX_CURRENT = 25;
+        public static final double FEEDER_HIGH_CURRENT_THRESHOLD = 20.0; // TODO
         public static final double FEEDER_LOW_VELOCITY_THRESHOLD = 5.0; // TODO
         public static final double FEEDER_STALL_CONFIRM_SECONDS = 0.2; // TODO
         public static final double FEEDER_STUCK_DURATION_SECONDS = 0.2; // TODO
@@ -93,8 +103,8 @@ public class ShooterConstants {
         public static final TalonFXConfig FEEDER_CONFIG = new TalonFXConfig(FEEDER_NAME, FEEDER_ID, FEEDER_CANBUS)
             .withBrake(FEEDER_BRAKE)
             .withInvert(FEEDER_INVERT)
+            .withCurrent(FEEDER_MAX_CURRENT)
             .withDetectStall(FEEDER_HIGH_CURRENT_THRESHOLD, FEEDER_LOW_VELOCITY_THRESHOLD, FEEDER_STALL_CONFIRM_SECONDS, FEEDER_STUCK_DURATION_SECONDS);
-
     }
 
     public static final class HoodMinLimitSwitchConstants {

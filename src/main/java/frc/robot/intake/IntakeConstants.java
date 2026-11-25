@@ -14,10 +14,17 @@ public class IntakeConstants {
         public static final Canbus INTAKE_ROLLERS_CANBUS = Canbus.Rio;
         public static final boolean INTAKE_ROLLERS_BRAKE = false;
         public static final boolean INTAKE_ROLLERS_INVERT = true;
+        public static final double MECANUM_MAX_CURRENT = 25;
+        public static final double SHINUA_ROLLERS_HIGH_CURRENT_THRESHOLD = 20.0; // TODO
+        public static final double SHINUA_ROLLERS_LOW_VELOCITY_THRESHOLD = 5.0; // TODO
+        public static final double SHINUA_ROLLERS_STALL_CONFIRM_SECONDS = 0.2; // TODO
+        public static final double SHINUA_ROLLERS_STUCK_DURATION_SECONDS = 0.2; // TODO
 
         public static final TalonFXConfig INTAKE_ROLLERS_CONFIG = new TalonFXConfig(INTAKE_ROLLERS_NAME, INTAKE_ROLLERS_ID, INTAKE_ROLLERS_CANBUS)
             .withBrake(INTAKE_ROLLERS_BRAKE)
-            .withInvert(INTAKE_ROLLERS_INVERT);
+            .withInvert(INTAKE_ROLLERS_INVERT)
+            .withCurrent(MECANUM_MAX_CURRENT)
+            .withDetectStall(SHINUA_ROLLERS_HIGH_CURRENT_THRESHOLD, SHINUA_ROLLERS_LOW_VELOCITY_THRESHOLD, SHINUA_ROLLERS_STALL_CONFIRM_SECONDS, SHINUA_ROLLERS_STUCK_DURATION_SECONDS);
     }
 
     public static final class IntakeDeployConstants {

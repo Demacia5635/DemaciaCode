@@ -14,7 +14,8 @@ public class ShinuaConstants {
         public static final boolean SHINUA_ROLLERS_BRAKE = false;
         public static final boolean SHINUA_ROLLERS_INVERT = true;
         public static final double SHINUA_ROLLERS_RAMP_TIME = 0.6;
-        public static final double SHINUA_ROLLERS_HIGH_CURRENT_THRESHOLD = 30.0; // TODO
+        public static final double MECANUM_MAX_CURRENT = 25;
+        public static final double SHINUA_ROLLERS_HIGH_CURRENT_THRESHOLD = 20.0; // TODO
         public static final double SHINUA_ROLLERS_LOW_VELOCITY_THRESHOLD = 5.0; // TODO
         public static final double SHINUA_ROLLERS_STALL_CONFIRM_SECONDS = 0.2; // TODO
         public static final double SHINUA_ROLLERS_STUCK_DURATION_SECONDS = 0.2; // TODO
@@ -33,7 +34,8 @@ public class ShinuaConstants {
         public static final Canbus MECANUM_CANBUS = Canbus.Rio; // TODO
         public static final boolean MECANUM_BRAKE = false;
         public static final boolean MECANUM_INVERT = true;
-        public static final double MECANUM_HIGH_CURRENT_THRESHOLD = 30.0; // TODO
+        public static final double MECANUM_MAX_CURRENT = 25;
+        public static final double MECANUM_HIGH_CURRENT_THRESHOLD = 20.0; // TODO
         public static final double MECANUM_LOW_VELOCITY_THRESHOLD = 5.0; // TODO
         public static final double MECANUM_STALL_CONFIRM_SECONDS = 0.2; // TODO
         public static final double MECANUM_STUCK_DURATION_SECONDS = 0.2; // TODO
@@ -41,6 +43,7 @@ public class ShinuaConstants {
         public static final TalonFXConfig MECANUM_CONFIG = new TalonFXConfig(MECANUM_NAME, MECANUM_ID, MECANUM_CANBUS)
             .withBrake(MECANUM_BRAKE)
             .withInvert(MECANUM_INVERT)
+            .withCurrent(MECANUM_MAX_CURRENT)
             .withDetectStall(MECANUM_HIGH_CURRENT_THRESHOLD, MECANUM_LOW_VELOCITY_THRESHOLD, MECANUM_STALL_CONFIRM_SECONDS, MECANUM_STUCK_DURATION_SECONDS);
 
     }

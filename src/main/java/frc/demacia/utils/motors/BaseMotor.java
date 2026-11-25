@@ -155,6 +155,8 @@ public abstract class BaseMotor implements MotorInterface {
     valueControlModeChooser.onChange(mode -> this.valueControlMode = mode);
     SmartDashboard.putData("motors/" + getName() + "/Value Control Mode Chooser", valueControlModeChooser);
 
+    SmartDashboard.putData("motors/" + getName() + "/releaseStuck", new InstantCommand(() -> releaseStuck()));
+
     configPidFf(0);
     configPidFf(1);
     configPidFf(2);

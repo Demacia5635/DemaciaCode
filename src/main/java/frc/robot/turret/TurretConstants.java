@@ -25,22 +25,23 @@ public class TurretConstants {
         public static final double TURRET_MOTOR_KG = 0.0;
         public static final double TURRET_MOTOR_KV2 = 0.0;
         public static final double TURRET_MOTOR_KCOS = 0.0;
-
-        public static final double TURRET_MOTOR_KP_2 = 50;
-        public static final double TURRET_MOTOR_KS_2 = 0.02372912256018203;
-        public static final double TURRET_MOTOR_KV_2 = 3.6253345888164152;
-        public static final double TURRET_MOTOR_KA_2 = 0.23323206336301763;
         public static final double TURRET_MOTOR_MAX_VELOCITY = 3;
         public static final double TURRET_MOTOR_MAX_ACCELERATION = 9;
         public static final double TURRET_MOTOR_MAX_JERK = 0;
+        public static final double MECANUM_MAX_CURRENT = 10;
+        public static final double SHINUA_ROLLERS_HIGH_CURRENT_THRESHOLD = 8; // TODO
+        public static final double SHINUA_ROLLERS_LOW_VELOCITY_THRESHOLD = 0.1; // TODO
+        public static final double SHINUA_ROLLERS_STALL_CONFIRM_SECONDS = 0.1; // TODO
+        public static final double SHINUA_ROLLERS_STUCK_DURATION_SECONDS = 0.5; // TODO
 
         public static final TalonFXConfig TURRET_MOTOR_CONFIG = new TalonFXConfig(TURRET_MOTOR_NAME, TURRET_MOTOR_ID, TURRET_MOTOR_CANBUS)
             .withBrake(TURRET_MOTOR_BRAKE)
             .withInvert(TURRET_MOTOR_INVERT)
+            .withCurrent(MECANUM_MAX_CURRENT)
             .withRadiansMotor(TURRET_MOTOR_GEAR_RATIO)
             .withPID(TURRET_MOTOR_KP, TURRET_MOTOR_KI, TURRET_MOTOR_KD, TURRET_MOTOR_KS, TURRET_MOTOR_KV, TURRET_MOTOR_KA, TURRET_MOTOR_KG, TURRET_MOTOR_KCOS, TURRET_MOTOR_KV2)
-            .withPID(1, TURRET_MOTOR_KP_2, TURRET_MOTOR_KI, TURRET_MOTOR_KD, TURRET_MOTOR_KS_2, TURRET_MOTOR_KV_2, TURRET_MOTOR_KA_2, TURRET_MOTOR_KG, TURRET_MOTOR_KCOS, TURRET_MOTOR_KV2)
-            .withMotionParam(TURRET_MOTOR_MAX_VELOCITY, TURRET_MOTOR_MAX_ACCELERATION, TURRET_MOTOR_MAX_JERK);
+            .withMotionParam(TURRET_MOTOR_MAX_VELOCITY, TURRET_MOTOR_MAX_ACCELERATION, TURRET_MOTOR_MAX_JERK)
+            .withDetectStall(SHINUA_ROLLERS_HIGH_CURRENT_THRESHOLD, SHINUA_ROLLERS_LOW_VELOCITY_THRESHOLD, SHINUA_ROLLERS_STALL_CONFIRM_SECONDS, SHINUA_ROLLERS_STUCK_DURATION_SECONDS);
 
         public static final double TURRET_MOTOR_MIN_LIMIT = Math.toRadians(-317);
         public static final double TURRET_MOTOR_MAX_LIMIT = Math.toRadians(24);
