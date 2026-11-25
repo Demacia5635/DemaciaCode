@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.demacia.utils.log.Log;
 
 import static frc.demacia.kinematics.KinematicsConstants.*;
 
@@ -168,6 +169,7 @@ public class DemaciaKinematics {
 
     public SwerveModuleState[] toSwerveModuleStates(ChassisSpeeds wantedSpeeds) {
 
+        linearAccelerationLimit(wantedSpeeds);
         radialAccelerationLimit(wantedSpeeds);
 
         double omega = wantedSpeeds.omegaRadiansPerSecond;
@@ -178,7 +180,7 @@ public class DemaciaKinematics {
             Translation2d velocityVector = new Translation2d(
                     wantedSpeeds.vxMetersPerSecond + omega * modulePositionOnTheRobot[i].getNorm()
                             * Math.sin(moduleCurrentAngle + omega * 0.02 + moduleAngleFromCenter),
-                    -wantedSpeeds.vyMetersPerSecond + omega * modulePositionOnTheRobot[i].getNorm()
+                    wantedSpeeds.vyMetersPerSecond - omega * modulePositionOnTheRobot[i].getNorm()
                             * Math.cos(moduleCurrentAngle + omega * 0.02 + moduleAngleFromCenter));
             swerveStates[i] = new SwerveModuleState(velocityVector.getNorm(), new Rotation2d(
                     KinematicsUtilities.getAngleFromVector(velocityVector.getX(), velocityVector.getY())));
@@ -205,6 +207,27 @@ public class DemaciaKinematics {
         for (SwerveModuleState state : swerveStates) {
             state.speedMetersPerSecond = state.speedMetersPerSecond * factor;
         }
+    }
+
+    public void linearAccelerationLimit(ChassisSpeeds speeds) {
+
+        Translation2d speedsTranslation = new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+        Translation2d lastSpeedsTranslation = new Translation2d(lastSpeeds.vxMetersPerSecond,
+                lastSpeeds.vyMetersPerSecond);
+
+        double normDiff = lastSpeedsTranslation.getNorm() - speedsTranslation.getNorm();
+
+        Log.log("" + normDiff + speedsTranslation + lastSpeedsTranslation);
+
+        if (MAX_LINEAR_ACCEL * CYCLE_DT < Math.abs(normDiff)) {
+            speedsTranslation = new Translation2d(lastSpeedsTranslation.getNorm() + MAX_LINEAR_ACCEL * CYCLE_DT * (- Math.signum(normDiff)),
+                    speedsTranslation.getAngle());
+        }
+        Log.log("" + speedsTranslation);
+
+        speeds.vxMetersPerSecond = speedsTranslation.getX();
+        speeds.vyMetersPerSecond = speedsTranslation.getY();
+
     }
 
     public void radialAccelerationLimit(ChassisSpeeds speeds) {

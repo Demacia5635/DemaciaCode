@@ -35,7 +35,7 @@ public class RobotContainer implements Sendable {
   private DriveCommand driveCommand;
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandController controller = new CommandController(0, ControllerType.kXbox);
+  private final CommandController controller = new CommandController(0, ControllerType.kPS5);
   /** The container for the root. Contains subsystems, OI devices, and commands. */
 
   /**

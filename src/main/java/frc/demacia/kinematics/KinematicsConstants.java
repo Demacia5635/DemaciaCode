@@ -13,7 +13,7 @@ public class KinematicsConstants {
     public static final double MIN_VELOCITY = 0.01; // slower is 0
     
     public static final double MAX_RADIAL_ACCEL = 8;
-    public static final double MAX_LINEAR_ACCEL = 10.0; 
+    public static final double MAX_LINEAR_ACCEL = 10; 
     public static final double MAX_DELTA_V = MAX_LINEAR_ACCEL * CYCLE_DT;
     public static final double MAX_FAST_TURN_ANGLE = MAX_RADIAL_ACCEL / MAX_LINEAR_ACCEL; //if angle is lower, no need to slow down to turn (max angle the robot can keep it's speeds while rotating)
     public static final double MIN_REVERSE_ANGLE = Math.PI - MAX_FAST_TURN_ANGLE; // if heading is bigger than this - deaccelerate and turn to reverse (instead of doing 180 turn)
