@@ -8,7 +8,6 @@ import org.ejml.simple.SimpleMatrix;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -18,8 +17,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Timer;
-import frc.demacia.utils.chassis.Chassis;
-import frc.demacia.utils.log.Log;
 // import frc.demacia.vision.subsystem.Quest;
 // import frc.demacia.vision.utils.Vision;
 // import frc.demacia.vision.utils.VisionConstants;

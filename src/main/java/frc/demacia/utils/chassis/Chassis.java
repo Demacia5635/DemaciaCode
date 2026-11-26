@@ -185,7 +185,7 @@ public class Chassis extends SubsystemBase {
             }
         } else {
             states = demaciaKinematics.toSwerveModuleStates(robotRelSpeeds);
-            Log.log(states[0] + ", " + states[1] + ", " + states[2] + ", " + states[3]);
+            // Log.log(states[0] + ", " + states[1] + ", " + states[2] + ", " + states[3]);
             for (int i = 0; i < lastAngles.length; i++) {
                 lastAngles[i] = states[i].angle;
             }

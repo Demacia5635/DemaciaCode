@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.demacia.utils.RobotCommon;
 import frc.demacia.utils.controller.CommandController;
-import frc.demacia.utils.log.Log;
 
 public class DriveCommand extends Command {
   private Chassis chassis;
@@ -60,9 +59,9 @@ public class DriveCommand extends Command {
     double velY = Math.pow(joyY, 2) * chassis.getMaxDriveVelocity() * Math.signum(joyY);
     double velRot = Math.pow(rot, 2) * chassis.getMaxRotationalVelocity() * Math.signum(rot);
     if(precisionMode){
-        velX /= 4;
-        velY /= 4;
-        velRot /= 4;
+        velX /= 2;
+        velY /= 2;
+        velRot /= 2;
     }
 
     speeds = new ChassisSpeeds(velX, velY, velRot);
