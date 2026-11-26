@@ -61,10 +61,15 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
     public MotorControllerType motorClass = MotorControllerType.TalonFX;
     public String name;
 
+    public double maxCurrent = 10;
     public double maxVolt = 12;
     public double minVolt = -12;
-    public double maxCurrent = 10;
     public double rampUpTime = 0.3;
+
+    public double highCurrentThreshold = 7;
+    public double lowVelocityThreshold = 0.5;
+    public double stallConfirmSeconds = 0.2;
+    public double stuckDurationSeconds = 0.5;
 
     public boolean brake = true;
     public double motorRatio = 1;
@@ -81,11 +86,6 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
     public boolean isRadiansMotor = false;
 
     public double posToRad = 0;
-
-    public double highCurrentThreshold = 10;
-    public double lowVelocityThreshold = 0.5;
-    public double stallConfirmSeconds = 0.2;
-    public double stuckDurationSeconds = 0.2;
 
     /**
      * Base constructor.
@@ -307,10 +307,14 @@ public abstract class BaseMotorConfig<T extends BaseMotorConfig<T>> {
      */
     protected void copyBaseFields(BaseMotorConfig<?> other) {
         this.canbus = other.canbus;
+        this.maxCurrent = other.maxCurrent;
         this.maxVolt = other.maxVolt;
         this.minVolt = other.minVolt;
-        this.maxCurrent = other.maxCurrent;
         this.rampUpTime = other.rampUpTime;
+        this.highCurrentThreshold = other.highCurrentThreshold;
+        this.lowVelocityThreshold = other.lowVelocityThreshold;
+        this.stallConfirmSeconds = other.stallConfirmSeconds;
+        this.stuckDurationSeconds = other.stuckDurationSeconds;
         this.brake = other.brake;
         this.motorRatio = other.motorRatio;
         this.inverted = other.inverted;

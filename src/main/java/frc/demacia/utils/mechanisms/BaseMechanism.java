@@ -813,7 +813,7 @@ public class BaseMechanism extends SubsystemBase{
      * @return true if valid, false otherwise
      */
     protected boolean isValidSensor(int sensorIndex) {
-        if (sensorIndex < 0 || sensorIndex >= motorsAmount) {
+        if (sensorIndex < 0 || sensorIndex >= sensorsAmount) {
             return false;
         }
         return isValidSensor(sensorNames[sensorIndex]);
@@ -821,13 +821,6 @@ public class BaseMechanism extends SubsystemBase{
 
     @Override
     public void periodic() {
-        for (MotorNode node : motors.values()){
-            if(node.motor.isStuck()) {
-                stop();
-                return;
-            }
-        }
-
         for (MotorNode node : motors.values()) {
             node.autoCalibration.run();
         }

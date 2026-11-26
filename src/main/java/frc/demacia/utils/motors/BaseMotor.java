@@ -154,8 +154,10 @@ public abstract class BaseMotor implements MotorInterface {
     }
     valueControlModeChooser.onChange(mode -> this.valueControlMode = mode);
     SmartDashboard.putData("motors/" + getName() + "/Value Control Mode Chooser", valueControlModeChooser);
-
-    SmartDashboard.putData("motors/" + getName() + "/releaseStuck", new InstantCommand(() -> releaseStuck()));
+    
+    if (config.highCurrentThreshold > 0) {
+      SmartDashboard.putData("motors/" + getName() + "/releaseStuck", new InstantCommand(() -> releaseStuck()));
+    }
 
     configPidFf(0);
     configPidFf(1);
@@ -180,6 +182,9 @@ public abstract class BaseMotor implements MotorInterface {
   private static void updateAllStuckStates() {
     for (BaseMotor motor : stallMonitoredMotors) {
       motor.updateIsStuck();
+      if (motor.isStuck()) {
+        motor.stop();
+      }
     }
   }
 
@@ -203,6 +208,8 @@ public abstract class BaseMotor implements MotorInterface {
         stuckDurationTimer.reset();
         stuckDurationTimer.start();
         isStuck = true;
+        Log.alert("the motor " + getName() + " is stuck")
+        .withDescription("you can use releaseStuck in elastic to release it, if it is not stuck think about changing the DetectStall Config");
     }
 
     if (stuckDurationTimer.hasElapsed(config.stuckDurationSeconds)) {
@@ -213,11 +220,13 @@ public abstract class BaseMotor implements MotorInterface {
   }
 
   public void releaseStuck() {
-    isStuck = false;
-    stallConfirmTimer.stop();
-    stallConfirmTimer.reset();
-    stuckDurationTimer.stop();
-    stuckDurationTimer.reset();
+    if (config.highCurrentThreshold > 0) {
+      isStuck = false;
+      stallConfirmTimer.stop();
+      stallConfirmTimer.reset();
+      stuckDurationTimer.stop();
+      stuckDurationTimer.reset();
+    }
   }
 
   @Override
@@ -506,7 +515,7 @@ public abstract class BaseMotor implements MotorInterface {
   }
 
   @Override
-  public void setConfigPidFf(CloseLoopParam newParams, int Slot) {
+  public void setConfigPidFf(CloseLoopParam newParams, int slot) {
     config.pidFfParams[slot] = newParams;
     configPidFf(config.pidFfParams);
     applyPidFfConfigs(slot);
@@ -622,7 +631,7 @@ public abstract class BaseMotor implements MotorInterface {
   }
 
   public boolean isReady(double allowedError) {
-    boolean isReady = Math.abs(getCurrentClosedLoopError()) < allowedError;
+    boolean isReady = !isStuck() && Math.abs(getCurrentClosedLoopError()) < allowedError;
     lastIsReady = isReady;
     return isReady;
   }
